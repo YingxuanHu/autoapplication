@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { createApplicationSchema } from "@/lib/validators/application";
-import type { ApplicationStatus } from "@/generated/prisma";
+import type { ApplicationStatus, Prisma } from "@/generated/prisma";
 
 export async function GET(request: NextRequest) {
   try {
@@ -67,19 +67,68 @@ export async function POST(request: Request) {
       );
     }
 
-    const application = await prisma.application.create({
-      data: {
-        userId: session.user.id,
-        jobId: result.data.jobId,
-        resumeId: result.data.resumeId,
-        coverLetter: result.data.coverLetter,
-        portfolioUrls: result.data.portfolioUrls || [],
-        answers: result.data.answers as Record<string, string> | undefined,
+    const job = await prisma.job.findUnique({
+      where: { id: result.data.jobId },
+      select: { id: true },
+    });
+
+    if (!job) {
+      return NextResponse.json({ error: "Job not found" }, { status: 404 });
+    }
+
+    if (result.data.resumeId) {
+      const resume = await prisma.resume.findFirst({
+        where: {
+          id: result.data.resumeId,
+          userId: session.user.id,
+        },
+      });
+
+      if (!resume) {
+        return NextResponse.json(
+          { error: "Resume not found" },
+          { status: 400 }
+        );
+      }
+    }
+
+    const applicationUpdateData: Prisma.ApplicationUncheckedUpdateInput = {
+      ...(result.data.resumeId ? { resumeId: result.data.resumeId } : {}),
+      ...(result.data.coverLetter !== undefined
+        ? { coverLetter: result.data.coverLetter }
+        : {}),
+      ...(result.data.portfolioUrls
+        ? { portfolioUrls: result.data.portfolioUrls }
+        : {}),
+      ...(result.data.answers !== undefined
+        ? {
+            answers: result.data.answers as Prisma.InputJsonValue,
+          }
+        : {}),
+    };
+
+    const applicationCreateData: Prisma.ApplicationUncheckedCreateInput = {
+      userId: session.user.id,
+      jobId: result.data.jobId,
+      resumeId: result.data.resumeId,
+      coverLetter: result.data.coverLetter,
+      portfolioUrls: result.data.portfolioUrls ?? [],
+      answers: result.data.answers as Prisma.InputJsonValue | undefined,
+    };
+
+    const application = await prisma.application.upsert({
+      where: {
+        userId_jobId: {
+          userId: session.user.id,
+          jobId: result.data.jobId,
+        },
       },
+      update: applicationUpdateData,
+      create: applicationCreateData,
       include: { job: true, resume: true },
     });
 
-    return NextResponse.json(application, { status: 201 });
+    return NextResponse.json(application);
   } catch (error) {
     console.error("Failed to create application:", error);
     return NextResponse.json(

@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { findBestResume } from "@/lib/resume/matcher";
 import {
   Card,
   CardContent,
@@ -38,7 +39,14 @@ import {
   DollarSign,
   Loader2,
   Briefcase,
+  ChevronDown,
+  ChevronUp,
+  Filter,
 } from "lucide-react";
+import { SourceBadge } from "@/components/jobs/source-badge";
+import { MatchReasonChips } from "@/components/jobs/match-reason";
+
+import type { SourceType } from "@/components/jobs/source-badge";
 
 interface ScoredJob {
   id: string;
@@ -58,16 +66,32 @@ interface ScoredJob {
   postedAt: string | null;
   score: number;
   matchReasons: string[];
+  sourceLabel: string | null;
+  sourceType: SourceType | null;
+  source: string | null;
+  isDirectApply: boolean | null;
+  trustScore: number | null;
+  sourceTrust: number | null;
 }
 
 interface Resume {
   id: string;
   name: string;
   fileName: string;
+  skills: string[];
   isPrimary: boolean;
 }
 
+type FeedAction = "APPLY" | "PASS" | "SAVE";
 type SwipeDirection = "left" | "down" | "right" | null;
+
+interface FeedActionPayload {
+  jobId: string;
+  action: FeedAction;
+  score: number;
+  resumeId?: string;
+  coverLetter?: string;
+}
 
 function formatSalary(min: number | null, max: number | null, currency: string | null) {
   const cur = currency || "USD";
@@ -98,12 +122,16 @@ export default function FeedPage() {
   const [selectedResumeId, setSelectedResumeId] = useState<string>("");
   const [coverLetter, setCoverLetter] = useState("");
   const [submittingApply, setSubmittingApply] = useState(false);
-  const pendingActionRef = useRef<{ jobId: string; action: string; score: number } | null>(null);
+  const [expanded, setExpanded] = useState(false);
+  const [directOnly, setDirectOnly] = useState(false);
+  const pendingActionRef = useRef<{ jobId: string; score: number } | null>(null);
 
   const fetchJobs = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await fetch("/api/feed?limit=20");
+      const params = new URLSearchParams({ limit: "20" });
+      if (directOnly) params.set("directOnly", "true");
+      const res = await fetch(`/api/feed?${params.toString()}`);
       if (!res.ok) throw new Error("Failed to fetch feed");
       const data = await res.json();
       setJobs(data);
@@ -112,7 +140,7 @@ export default function FeedPage() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [directOnly]);
 
   const fetchResumes = useCallback(async () => {
     try {
@@ -120,9 +148,6 @@ export default function FeedPage() {
       if (!res.ok) return;
       const data = await res.json();
       setResumes(data);
-      const primary = data.find((r: Resume) => r.isPrimary);
-      if (primary) setSelectedResumeId(primary.id);
-      else if (data.length > 0) setSelectedResumeId(data[0].id);
     } catch {
       // ignore
     }
@@ -134,41 +159,86 @@ export default function FeedPage() {
   }, [fetchJobs, fetchResumes]);
 
   const currentJob = jobs[0] ?? null;
+  const recommendedResume = currentJob
+    ? findBestResume(resumes, currentJob)
+    : null;
+
+  useEffect(() => {
+    if (!currentJob) {
+      setSelectedResumeId("");
+      return;
+    }
+
+    if (recommendedResume) {
+      setSelectedResumeId(recommendedResume.id);
+      return;
+    }
+
+    const primary = resumes.find((resume) => resume.isPrimary);
+    if (primary) {
+      setSelectedResumeId(primary.id);
+      return;
+    }
+
+    setSelectedResumeId(resumes[0]?.id ?? "");
+  }, [currentJob, recommendedResume, resumes]);
+
+  // Reset expanded state when card changes
+  useEffect(() => {
+    setExpanded(false);
+  }, [currentJob?.id]);
 
   const recordAction = useCallback(
-    async (jobId: string, action: string, score: number) => {
-      try {
-        await fetch("/api/feed/action", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ jobId, action, score }),
-        });
-      } catch {
-        toast.error("Failed to record action");
+    async (payload: FeedActionPayload) => {
+      const res = await fetch("/api/feed/action", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      if (!res.ok) {
+        const errorBody = await res.json().catch(() => null);
+        throw new Error(errorBody?.error || "Request failed");
       }
+
+      return res.json().catch(() => null);
     },
     []
   );
 
   const animateAndRemove = useCallback(
-    (direction: SwipeDirection, action: string) => {
+    (direction: SwipeDirection, action: FeedAction) => {
       if (!currentJob || animating) return;
+
       if (action === "APPLY") {
         pendingActionRef.current = {
           jobId: currentJob.id,
-          action: "APPLY",
           score: currentJob.score,
         };
         setApplyDialogOpen(true);
         return;
       }
+
       setSwipeDir(direction);
       setAnimating(true);
       setTimeout(() => {
-        recordAction(currentJob.id, action, currentJob.score);
-        setJobs((prev) => prev.slice(1));
-        setSwipeDir(null);
-        setAnimating(false);
+        void (async () => {
+          try {
+            await recordAction({
+              jobId: currentJob.id,
+              action,
+              score: currentJob.score,
+            });
+            setJobs((prev) => prev.slice(1));
+          } catch (error) {
+            toast.error(
+              error instanceof Error ? error.message : "Failed to record action"
+            );
+          } finally {
+            setSwipeDir(null);
+            setAnimating(false);
+          }
+        })();
       }, 300);
     },
     [currentJob, animating, recordAction]
@@ -180,40 +250,47 @@ export default function FeedPage() {
 
   const handleApplySubmit = useCallback(async () => {
     if (!pendingActionRef.current) return;
+    if (!selectedResumeId) {
+      toast.error("Select a resume before applying");
+      return;
+    }
+
     setSubmittingApply(true);
     try {
       const { jobId, score } = pendingActionRef.current;
-      await recordAction(jobId, "APPLY", score);
-      if (selectedResumeId) {
-        await fetch("/api/applications", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            jobId,
-            resumeId: selectedResumeId,
-            coverLetter: coverLetter || undefined,
-          }),
-        });
-      }
+      await recordAction({
+        jobId,
+        action: "APPLY",
+        score,
+        resumeId: selectedResumeId,
+        coverLetter: coverLetter || undefined,
+      });
+
       toast.success("Application prepared!");
       setJobs((prev) => prev.slice(1));
       setApplyDialogOpen(false);
       setCoverLetter("");
       pendingActionRef.current = null;
-    } catch {
-      toast.error("Failed to apply");
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Failed to apply"
+      );
     } finally {
       setSubmittingApply(false);
     }
-  }, [recordAction, selectedResumeId, coverLetter]);
+  }, [coverLetter, recordAction, selectedResumeId]);
 
   const handleSync = async () => {
     setSyncing(true);
     try {
-      const res = await fetch("/api/jobs/sync", { method: "POST" });
-      if (!res.ok) throw new Error("Sync failed");
-      const data = await res.json();
-      toast.success(`Synced ${data.newJobs ?? 0} new jobs`);
+      const aggregatorRes = await fetch("/api/jobs/sync", { method: "POST" });
+      if (!aggregatorRes.ok) throw new Error("Sync failed");
+
+      const aggregatorData = await aggregatorRes.json();
+
+      toast.success(
+        `Synced ${aggregatorData.newJobs ?? aggregatorData.synced ?? 0} jobs from aggregators`,
+      );
       fetchJobs();
     } catch {
       toast.error("Failed to sync jobs");
@@ -241,6 +318,8 @@ export default function FeedPage() {
     ? "translate-y-[120%]"
     : "";
 
+  const trustScore = currentJob?.sourceTrust ?? currentJob?.trustScore ?? null;
+
   return (
     <div className="mx-auto max-w-lg space-y-6">
       {/* Header */}
@@ -248,22 +327,33 @@ export default function FeedPage() {
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Job Feed</h1>
           <p className="text-sm text-muted-foreground">
-            Swipe through matched jobs
+            Swipe through matched jobs while refresh runs across all sources
           </p>
         </div>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={handleSync}
-          disabled={syncing}
-        >
-          {syncing ? (
-            <Loader2 className="size-4 animate-spin" />
-          ) : (
-            <RefreshCw className="size-4" />
-          )}
-          Sync Jobs
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            variant={directOnly ? "default" : "outline"}
+            size="sm"
+            onClick={() => setDirectOnly((v) => !v)}
+            title="Show only direct-apply jobs"
+          >
+            <Filter className="size-4" />
+            Direct Only
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleSync}
+            disabled={syncing}
+          >
+            {syncing ? (
+              <Loader2 className="size-4 animate-spin" />
+            ) : (
+              <RefreshCw className="size-4" />
+            )}
+            Refresh Jobs
+          </Button>
+        </div>
       </div>
 
       {/* Card Stack */}
@@ -309,7 +399,7 @@ export default function FeedPage() {
                 ) : (
                   <RefreshCw className="size-4" />
                 )}
-                Sync New Jobs
+                Refresh Jobs
               </Button>
             </CardContent>
           </Card>
@@ -323,9 +413,13 @@ export default function FeedPage() {
               <Card className="absolute inset-x-0 top-1 scale-[0.97] opacity-60" />
             )}
 
-            {/* Top card */}
+            {/* Top card - direct-apply jobs get green left border */}
             <Card
-              className={`relative w-full transition-transform duration-300 ease-out ${swipeTransform}`}
+              className={`relative w-full transition-transform duration-300 ease-out ${swipeTransform} ${
+                currentJob.isDirectApply
+                  ? "border-l-4 border-l-emerald-500"
+                  : ""
+              }`}
             >
               <CardHeader>
                 <div className="flex items-start justify-between gap-2">
@@ -337,12 +431,25 @@ export default function FeedPage() {
                     <CardTitle className="mt-1 text-lg leading-snug">
                       {currentJob.title}
                     </CardTitle>
+                    {/* Source badge */}
+                    <div className="mt-1.5">
+                      <SourceBadge
+                        sourceType={currentJob.sourceType}
+                        sourceName={currentJob.source}
+                        sourceLabel={currentJob.sourceLabel}
+                        isDirectApply={currentJob.isDirectApply}
+                        trustScore={trustScore}
+                        compact
+                      />
+                    </div>
                   </div>
-                  <span
-                    className={`shrink-0 rounded-full px-2.5 py-0.5 text-xs font-bold ${scoreColor(currentJob.score)}`}
-                  >
-                    {currentJob.score}%
-                  </span>
+                  <div className="flex shrink-0 flex-col items-end gap-1">
+                    <span
+                      className={`rounded-full px-2.5 py-0.5 text-xs font-bold ${scoreColor(currentJob.score)}`}
+                    >
+                      {currentJob.score}%
+                    </span>
+                  </div>
                 </div>
               </CardHeader>
 
@@ -397,17 +504,60 @@ export default function FeedPage() {
                   </div>
                 )}
 
-                {/* Match Reasons */}
+                {/* Match Reasons (always visible as compact chips) */}
                 {currentJob.matchReasons.length > 0 && (
-                  <div className="flex flex-wrap gap-1.5">
-                    {currentJob.matchReasons.map((reason) => (
-                      <span
-                        key={reason}
-                        className="rounded-md bg-emerald-50 px-2 py-0.5 text-xs text-emerald-700"
-                      >
-                        {reason}
-                      </span>
-                    ))}
+                  <MatchReasonChips matchReasons={currentJob.matchReasons} compact />
+                )}
+
+                {/* Expandable "Why this matches" section */}
+                {currentJob.matchReasons.length > 0 && (
+                  <button
+                    type="button"
+                    className="flex w-full items-center justify-center gap-1 rounded-md py-1 text-xs text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                    onClick={() => setExpanded((v) => !v)}
+                  >
+                    {expanded ? (
+                      <>
+                        <ChevronUp className="size-3" />
+                        Hide details
+                      </>
+                    ) : (
+                      <>
+                        <ChevronDown className="size-3" />
+                        Why this matches
+                      </>
+                    )}
+                  </button>
+                )}
+                {expanded && (
+                  <div className="space-y-2 rounded-md bg-muted/50 p-3">
+                    <p className="text-xs font-medium text-foreground">Match Details</p>
+                    <ul className="space-y-1">
+                      {currentJob.matchReasons.map((reason) => (
+                        <li key={reason} className="flex items-start gap-1.5 text-xs text-muted-foreground">
+                          <Check className="mt-0.5 size-3 shrink-0 text-emerald-500" />
+                          {reason}
+                        </li>
+                      ))}
+                    </ul>
+                    {trustScore != null && (
+                      <div className="mt-2 flex items-center gap-2 border-t pt-2 text-xs text-muted-foreground">
+                        <span>Source trust:</span>
+                        <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-muted">
+                          <div
+                            className={`h-full rounded-full ${
+                              trustScore > 0.8
+                                ? "bg-emerald-500"
+                                : trustScore >= 0.5
+                                  ? "bg-amber-500"
+                                  : "bg-gray-400"
+                            }`}
+                            style={{ width: `${Math.round(trustScore * 100)}%` }}
+                          />
+                        </div>
+                        <span>{Math.round(trustScore * 100)}%</span>
+                      </div>
+                    )}
                   </div>
                 )}
               </CardContent>
@@ -436,7 +586,11 @@ export default function FeedPage() {
                 <Button
                   variant="outline"
                   size="icon-lg"
-                  className="rounded-full border-emerald-200 text-emerald-500 hover:bg-emerald-50 hover:text-emerald-600"
+                  className={`rounded-full ${
+                    currentJob.isDirectApply
+                      ? "border-emerald-300 bg-emerald-50 text-emerald-600 hover:bg-emerald-100 hover:text-emerald-700"
+                      : "border-emerald-200 text-emerald-500 hover:bg-emerald-50 hover:text-emerald-600"
+                  }`}
                   onClick={handleApply}
                   disabled={animating}
                   title="Apply (Right Arrow / A)"
@@ -472,7 +626,16 @@ export default function FeedPage() {
       </div>
 
       {/* Apply Dialog */}
-      <Dialog open={applyDialogOpen} onOpenChange={setApplyDialogOpen}>
+      <Dialog
+        open={applyDialogOpen}
+        onOpenChange={(open) => {
+          setApplyDialogOpen(open);
+          if (!open && !submittingApply) {
+            pendingActionRef.current = null;
+            setCoverLetter("");
+          }
+        }}
+      >
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>Apply to {currentJob?.title}</DialogTitle>
@@ -482,6 +645,13 @@ export default function FeedPage() {
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-2">
+            {/* Direct apply indicator */}
+            {currentJob?.isDirectApply && (
+              <div className="flex items-center gap-2 rounded-md bg-emerald-50 px-3 py-2 text-sm text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400">
+                <Check className="size-4" />
+                Direct to employer — no middleman
+              </div>
+            )}
             <div className="space-y-2">
               <label className="text-sm font-medium">Resume</label>
               {resumes.length > 0 ? (
@@ -506,6 +676,14 @@ export default function FeedPage() {
                   No resumes uploaded. Visit the Resumes page to upload one.
                 </p>
               )}
+              {recommendedResume && (
+                <p className="text-xs text-muted-foreground">
+                  Recommended based on skill overlap:{" "}
+                  <span className="font-medium text-foreground">
+                    {recommendedResume.name}
+                  </span>
+                </p>
+              )}
             </div>
             <div className="space-y-2">
               <label className="text-sm font-medium">
@@ -526,11 +704,20 @@ export default function FeedPage() {
               onClick={() => {
                 setApplyDialogOpen(false);
                 pendingActionRef.current = null;
+                setCoverLetter("");
               }}
             >
               Cancel
             </Button>
-            <Button onClick={handleApplySubmit} disabled={submittingApply}>
+            <Button
+              className={
+                currentJob?.isDirectApply
+                  ? "bg-emerald-600 text-white hover:bg-emerald-700"
+                  : ""
+              }
+              onClick={handleApplySubmit}
+              disabled={submittingApply || resumes.length === 0 || !selectedResumeId}
+            >
               {submittingApply && <Loader2 className="size-4 animate-spin" />}
               Prepare Application
             </Button>

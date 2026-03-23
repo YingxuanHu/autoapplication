@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
+import { findBestResume } from "@/lib/resume/matcher";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -64,6 +65,7 @@ interface Job {
 interface Resume {
   id: string;
   name: string;
+  skills: string[];
   isPrimary: boolean;
 }
 
@@ -84,6 +86,18 @@ function formatDate(dateStr: string | null) {
     day: "numeric",
     year: "numeric",
   });
+}
+
+function formatDescription(description: string) {
+  return description
+    .replace(/<\s*br\s*\/?>/gi, "\n")
+    .replace(/<\/(p|div|li|ul|ol|h[1-6])>/gi, "\n")
+    .replace(/<[^>]+>/g, " ")
+    .replace(/&nbsp;/gi, " ")
+    .replace(/&amp;/gi, "&")
+    .replace(/\n{3,}/g, "\n\n")
+    .replace(/[ \t]{2,}/g, " ")
+    .trim();
 }
 
 export default function JobDetailPage() {
@@ -128,9 +142,6 @@ export default function JobDetailPage() {
       if (!res.ok) return;
       const data = await res.json();
       setResumes(data);
-      const primary = data.find((r: Resume) => r.isPrimary);
-      if (primary) setSelectedResumeId(primary.id);
-      else if (data.length > 0) setSelectedResumeId(data[0].id);
     } catch {
       // ignore
     }
@@ -141,18 +152,48 @@ export default function JobDetailPage() {
     fetchResumes();
   }, [fetchJob, fetchResumes]);
 
+  const recommendedResume = job ? findBestResume(resumes, job) : null;
+
+  useEffect(() => {
+    if (!job) {
+      setSelectedResumeId("");
+      return;
+    }
+
+    if (recommendedResume) {
+      setSelectedResumeId(recommendedResume.id);
+      return;
+    }
+
+    const primary = resumes.find((resume) => resume.isPrimary);
+    if (primary) {
+      setSelectedResumeId(primary.id);
+      return;
+    }
+
+    setSelectedResumeId(resumes[0]?.id ?? "");
+  }, [job, recommendedResume, resumes]);
+
   const handleSave = async () => {
     if (!job) return;
     setSaving(true);
     try {
-      await fetch("/api/feed/action", {
+      const res = await fetch("/api/feed/action", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ jobId: job.id, action: "SAVE" }),
       });
+
+      if (!res.ok) {
+        const errorBody = await res.json().catch(() => null);
+        throw new Error(errorBody?.error || "Failed to save job");
+      }
+
       toast.success("Job saved!");
-    } catch {
-      toast.error("Failed to save job");
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Failed to save job"
+      );
     } finally {
       setSaving(false);
     }
@@ -160,22 +201,37 @@ export default function JobDetailPage() {
 
   const handleApplySubmit = async () => {
     if (!job) return;
+    if (!selectedResumeId) {
+      toast.error("Select a resume before applying");
+      return;
+    }
+
     setSubmitting(true);
     try {
-      await fetch("/api/applications", {
+      const res = await fetch("/api/feed/action", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           jobId: job.id,
+          action: "APPLY",
+          score: 0,
           resumeId: selectedResumeId || undefined,
           coverLetter: coverLetter || undefined,
         }),
       });
+
+      if (!res.ok) {
+        const errorBody = await res.json().catch(() => null);
+        throw new Error(errorBody?.error || "Failed to prepare application");
+      }
+
       toast.success("Application prepared!");
       setApplyOpen(false);
       setCoverLetter("");
-    } catch {
-      toast.error("Failed to apply");
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Failed to apply"
+      );
     } finally {
       setSubmitting(false);
     }
@@ -216,6 +272,10 @@ export default function JobDetailPage() {
 
   const salary = formatSalary(job.salaryMin, job.salaryMax, job.salaryCurrency);
   const postedDate = formatDate(job.postedAt || job.createdAt);
+  const formattedDescription =
+    formatDescription(job.description) ||
+    job.summary ||
+    "No description available.";
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
@@ -314,15 +374,22 @@ export default function JobDetailPage() {
           <CardTitle>Job Description</CardTitle>
         </CardHeader>
         <CardContent>
-          <div
-            className="prose prose-sm max-w-none dark:prose-invert"
-            dangerouslySetInnerHTML={{ __html: job.description }}
-          />
+          <div className="whitespace-pre-wrap text-sm leading-6">
+            {formattedDescription}
+          </div>
         </CardContent>
       </Card>
 
       {/* Apply Dialog */}
-      <Dialog open={applyOpen} onOpenChange={setApplyOpen}>
+      <Dialog
+        open={applyOpen}
+        onOpenChange={(open) => {
+          setApplyOpen(open);
+          if (!open && !submitting) {
+            setCoverLetter("");
+          }
+        }}
+      >
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>Apply to {job.title}</DialogTitle>
@@ -356,6 +423,14 @@ export default function JobDetailPage() {
                   No resumes uploaded. Visit the Resumes page to upload one.
                 </p>
               )}
+              {recommendedResume && (
+                <p className="text-xs text-muted-foreground">
+                  Recommended based on skill overlap:{" "}
+                  <span className="font-medium text-foreground">
+                    {recommendedResume.name}
+                  </span>
+                </p>
+              )}
             </div>
             <div className="space-y-2">
               <label className="text-sm font-medium">
@@ -371,10 +446,19 @@ export default function JobDetailPage() {
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setApplyOpen(false)}>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setApplyOpen(false);
+                setCoverLetter("");
+              }}
+            >
               Cancel
             </Button>
-            <Button onClick={handleApplySubmit} disabled={submitting}>
+            <Button
+              onClick={handleApplySubmit}
+              disabled={submitting || resumes.length === 0 || !selectedResumeId}
+            >
               {submitting && <Loader2 className="size-4 animate-spin" />}
               Prepare Application
             </Button>

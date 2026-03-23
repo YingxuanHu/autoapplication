@@ -27,9 +27,9 @@ import {
   RefreshCw,
   Loader2,
   ExternalLink,
-  Briefcase,
   ChevronLeft,
   ChevronRight,
+  Briefcase,
 } from "lucide-react";
 
 interface Job {
@@ -52,6 +52,15 @@ interface JobsResponse {
   total: number;
   page: number;
   totalPages: number;
+}
+
+async function readErrorMessage(response: Response, fallback: string) {
+  try {
+    const data = await response.json() as { error?: string; message?: string };
+    return data.error || data.message || fallback;
+  } catch {
+    return fallback;
+  }
 }
 
 function formatSalary(min: number | null, max: number | null) {
@@ -115,21 +124,75 @@ export default function JobsPage() {
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
+    if (page === 1) {
+      fetchJobs();
+      return;
+    }
+
     setPage(1);
-    fetchJobs();
   };
 
   const handleSync = async () => {
     setSyncing(true);
     try {
-      const res = await fetch("/api/jobs/sync", { method: "POST" });
-      if (!res.ok) throw new Error("Sync failed");
+      const syncPayload = {
+        query: query || undefined,
+        location: location || undefined,
+        workMode:
+          workMode && workMode !== "ALL"
+            ? (workMode as "REMOTE" | "HYBRID" | "ONSITE")
+            : undefined,
+      };
+
+      // Trigger background sync — returns immediately
+      const res = await fetch("/api/jobs/sync", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(syncPayload),
+      });
+
+      if (!res.ok) {
+        const errMsg = await readErrorMessage(res, "Sync failed");
+        throw new Error(errMsg);
+      }
+
       const data = await res.json();
-      toast.success(`Synced ${data.newJobs ?? 0} new jobs`);
-      fetchJobs();
-    } catch {
-      toast.error("Failed to sync jobs");
-    } finally {
+      toast.success(
+        `Syncing jobs in background. ${data.totalJobsAvailable ?? 0} jobs available now.`,
+      );
+
+      // Poll for updates every 3 seconds while sync is running
+      const pollInterval = setInterval(async () => {
+        try {
+          const statusRes = await fetch("/api/jobs/sync");
+          if (!statusRes.ok) return;
+          const status = await statusRes.json();
+
+          // Refresh the job list to show new jobs as they come in
+          void fetchJobs();
+
+          if (!status.syncing) {
+            clearInterval(pollInterval);
+            setSyncing(false);
+            toast.success(
+              `Sync complete. ${status.totalJobsAvailable} jobs available.`,
+            );
+          }
+        } catch {
+          clearInterval(pollInterval);
+          setSyncing(false);
+        }
+      }, 3000);
+
+      // Safety timeout — stop polling after 3 minutes
+      setTimeout(() => {
+        clearInterval(pollInterval);
+        setSyncing(false);
+      }, 180000);
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Failed to sync jobs",
+      );
       setSyncing(false);
     }
   };
@@ -137,26 +200,29 @@ export default function JobsPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Jobs</h1>
           <p className="text-sm text-muted-foreground">
-            {total} job{total !== 1 ? "s" : ""} found
+            {total} job{total !== 1 ? "s" : ""} found. This table only loads one
+            paginated slice at a time.
           </p>
         </div>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={handleSync}
-          disabled={syncing}
-        >
-          {syncing ? (
-            <Loader2 className="size-4 animate-spin" />
-          ) : (
-            <RefreshCw className="size-4" />
-          )}
-          Sync New Jobs
-        </Button>
+        <div className="flex flex-wrap items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleSync}
+            disabled={syncing}
+          >
+            {syncing ? (
+              <Loader2 className="size-4 animate-spin" />
+            ) : (
+              <RefreshCw className="size-4" />
+            )}
+            Refresh Jobs
+          </Button>
+        </div>
       </div>
 
       {/* Filters */}
