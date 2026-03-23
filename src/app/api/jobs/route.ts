@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { ensureDiscoveryWorkerStarted } from "@/lib/discovery/bootstrap";
 import type { WorkMode } from "@/generated/prisma";
 import type { Prisma } from "@/generated/prisma";
 
@@ -10,6 +11,8 @@ export async function GET(request: NextRequest) {
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
+
+    ensureDiscoveryWorkerStarted();
 
     const searchParams = request.nextUrl.searchParams;
     const q = searchParams.get("q");
@@ -22,7 +25,9 @@ export async function GET(request: NextRequest) {
       Math.max(1, parseInt(searchParams.get("limit") || "20", 10))
     );
 
-    const where: Prisma.JobWhereInput = {};
+    const where: Prisma.JobWhereInput = {
+      isActive: true,
+    };
 
     if (q) {
       where.OR = [
@@ -48,7 +53,14 @@ export async function GET(request: NextRequest) {
     const [jobs, total] = await Promise.all([
       prisma.job.findMany({
         where,
-        orderBy: { createdAt: "desc" },
+        orderBy:
+          q || location || workMode || salaryMin
+            ? { createdAt: "desc" }
+            : [
+                { stemScore: "desc" },
+                { sourceTrust: "desc" },
+                { createdAt: "desc" },
+              ],
         skip,
         take: limit,
       }),

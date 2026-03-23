@@ -13,6 +13,8 @@ export type JobSearchInput = z.infer<typeof jobSearchSchema>;
 
 export const jobSyncSchema = z.object({
   query: z.string().optional(),
+  location: z.string().optional(),
+  workMode: z.enum(WorkMode).optional(),
   sources: z.array(z.enum(JobSource)).optional(),
 });
 

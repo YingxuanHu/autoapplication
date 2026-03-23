@@ -17,8 +17,8 @@ model User {
   image         String?
   passwordHash  String?
 
-  accounts      Account[]
-  sessions      Session[]
+  accounts Account[]
+  sessions Session[]
 
   profile       UserProfile?
   resumes       Resume[]
@@ -73,23 +73,23 @@ model UserProfile {
   userId String @unique
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  jobTitles        String[]
-  jobAreas         String[]
-  locations        String[]
-  workModes        WorkMode[]
-  experienceLevel  ExperienceLevel?
-  salaryMin        Int?
-  salaryMax        Int?
-  salaryCurrency   String?          @default("USD")
+  jobTitles       String[]
+  jobAreas        String[]
+  locations       String[]
+  workModes       WorkMode[]
+  experienceLevel ExperienceLevel?
+  salaryMin       Int?
+  salaryMax       Int?
+  salaryCurrency  String?          @default("USD")
 
   excludeCompanies String[]
   excludeKeywords  String[]
 
-  skills           String[]
-  yearsExperience  Int?
+  skills          String[]
+  yearsExperience Int?
 
-  automationLevel  AutomationLevel  @default(DISCOVERY)
-  learnedWeights   Json?
+  automationLevel AutomationLevel @default(DISCOVERY)
+  learnedWeights  Json?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -118,19 +118,19 @@ enum AutomationLevel {
 // ─── Resumes ───
 
 model Resume {
-  id       String @id @default(cuid())
-  userId   String
-  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  name        String
-  fileName    String
-  fileUrl     String
-  fileSize    Int
-  mimeType    String @default("application/pdf")
+  name     String
+  fileName String
+  fileUrl  String
+  fileSize Int
+  mimeType String @default("application/pdf")
 
-  parsedText  String? @db.Text
-  skills      String[]
-  isPrimary   Boolean @default(false)
+  parsedText String?  @db.Text
+  skills     String[]
+  isPrimary  Boolean  @default(false)
 
   applications Application[]
 
@@ -143,33 +143,50 @@ model Resume {
 // ─── Jobs ───
 
 model Job {
-  id          String @id @default(cuid())
+  id String @id @default(cuid())
 
-  externalId  String
-  source      JobSource
+  externalId String
+  source     JobSource
 
-  title       String
-  company     String
-  companyLogo String?
-  location    String?
-  workMode    WorkMode?
-  salaryMin   Int?
-  salaryMax   Int?
+  title          String
+  company        String
+  companyLogo    String?
+  location       String?
+  workMode       WorkMode?
+  salaryMin      Int?
+  salaryMax      Int?
   salaryCurrency String?
-  description String     @db.Text
-  summary     String?    @db.VarChar(500)
-  url         String
-  applyUrl    String?
+  description    String    @db.Text
+  summary        String?   @db.Text
+  url            String
+  applyUrl       String?
 
-  postedAt    DateTime?
-  expiresAt   DateTime?
-  skills      String[]
-  jobType     String?
-  isActive    Boolean    @default(true)
+  postedAt  DateTime?
+  expiresAt DateTime?
+  skills    String[]
+  jobType   String?
+  isActive  Boolean   @default(true)
 
-  feedActions   FeedAction[]
-  applications  Application[]
-  savedJobs     SavedJob[]
+  companyId  String?
+  companyRef Company? @relation(fields: [companyId], references: [id], onDelete: SetNull)
+
+  sourceTrust   Float       @default(0.5)
+  sourceType    SourceType?
+  isDirectApply Boolean     @default(false)
+  fingerprint   String?
+  countryCode   String?
+  regionScope   RegionScope?
+  jobFamily     JobFamily?
+  jobSubfamily  String?
+  stemScore     Float       @default(0)
+  canonicalCompanyDomain String?
+  isAgency      Boolean     @default(false)
+  isPublicSector Boolean    @default(false)
+  isInternship  Boolean     @default(false)
+
+  feedActions  FeedAction[]
+  applications Application[]
+  savedJobs    SavedJob[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -178,12 +195,69 @@ model Job {
   @@index([source])
   @@index([createdAt])
   @@index([isActive])
+  @@index([fingerprint])
+  @@index([companyId])
+  @@index([countryCode])
+  @@index([regionScope])
+  @@index([jobFamily])
+  @@index([stemScore])
+  @@index([canonicalCompanyDomain])
 }
 
 enum JobSource {
+  // Aggregator APIs
   JSEARCH
   ADZUNA
+  THE_MUSE
+  USAJOBS
+  REED
+  REMOTIVE
+  JOBICY
+  CAREERONESTOP
+  JOOBLE
+  // New aggregators
+  REMOTEOK
+  ARBEITNOW
+  HIMALAYAS
+  LINKEDIN
+  INDEED
+  GLASSDOOR
+  // ATS direct
+  GREENHOUSE
+  LEVER
+  ASHBY
+  SMARTRECRUITERS
+  WORKABLE
+  WORKDAY
+  TEAMTAILOR
+  RECRUITEE
+  // Other
+  COMPANY_SITE
+  STRUCTURED_DATA
   MANUAL
+}
+
+enum RegionScope {
+  US
+  CA
+  NA
+  GLOBAL
+}
+
+enum JobFamily {
+  SOFTWARE
+  DATA
+  AI_ML
+  SECURITY
+  DEVOPS
+  ENGINEERING
+  SCIENCE
+  ANALYTICS
+  MATH
+  QUANT
+  ACTUARIAL
+  OPERATIONS_RESEARCH
+  OTHER
 }
 
 // ─── Feed Actions ───
@@ -195,8 +269,8 @@ model FeedAction {
   jobId  String
   job    Job    @relation(fields: [jobId], references: [id], onDelete: Cascade)
 
-  action    FeedActionType
-  score     Float?
+  action FeedActionType
+  score  Float?
 
   createdAt DateTime @default(now())
 
@@ -220,7 +294,7 @@ model SavedJob {
   jobId  String
   job    Job    @relation(fields: [jobId], references: [id], onDelete: Cascade)
 
-  notes  String? @db.Text
+  notes String? @db.Text
 
   createdAt DateTime @default(now())
 
@@ -231,24 +305,24 @@ model SavedJob {
 // ─── Applications ───
 
 model Application {
-  id       String @id @default(cuid())
-  userId   String
-  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  jobId    String
-  job      Job    @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  jobId  String
+  job    Job    @relation(fields: [jobId], references: [id], onDelete: Cascade)
 
-  resumeId    String?
-  resume      Resume?  @relation(fields: [resumeId], references: [id], onDelete: SetNull)
+  resumeId String?
+  resume   Resume? @relation(fields: [resumeId], references: [id], onDelete: SetNull)
 
-  status      ApplicationStatus @default(PREPARED)
+  status ApplicationStatus @default(PREPARED)
 
   coverLetter   String?  @db.Text
   portfolioUrls String[]
   notes         String?  @db.Text
   answers       Json?
 
-  submittedAt   DateTime?
-  respondedAt   DateTime?
+  submittedAt DateTime?
+  respondedAt DateTime?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -271,16 +345,160 @@ enum ApplicationStatus {
 // ─── Search Queries ───
 
 model SearchQuery {
-  id       String @id @default(cuid())
-  userId   String
-  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  query    String
-  filters  Json?
-  source   JobSource
-  resultCount Int @default(0)
+  query       String
+  filters     Json?
+  source      JobSource
+  resultCount Int       @default(0)
 
   createdAt DateTime @default(now())
 
   @@index([userId, createdAt])
+}
+
+// ─── Company-Direct Job Discovery ───
+
+enum ATSType {
+  GREENHOUSE
+  LEVER
+  ASHBY
+  SMARTRECRUITERS
+  WORKABLE
+  WORKDAY
+  TEAMTAILOR
+  RECRUITEE
+  CUSTOM_SITE
+  UNKNOWN
+}
+
+enum SourceType {
+  CAREER_PAGE
+  ATS_BOARD
+  STRUCTURED_DATA
+  AGGREGATOR
+}
+
+enum CrawlStatus {
+  PENDING
+  CRAWLING
+  SUCCESS
+  FAILED
+  RATE_LIMITED
+  BLOCKED
+}
+
+enum DiscoveryMethod {
+  HOMEPAGE_LINK
+  SITEMAP
+  ROBOTS_TXT
+  DNS_PATTERN
+  ATS_DETECTION
+  MANUAL
+  STRUCTURED_DATA
+}
+
+model Company {
+  id            String      @id @default(cuid())
+  name          String
+  domain        String      @unique
+  careersUrl    String?
+  logoUrl       String?
+  detectedATS   ATSType?
+  trustScore    Float       @default(0.5)
+  crawlStatus   CrawlStatus @default(PENDING)
+  lastSyncAt    DateTime?
+  lastSuccessAt DateTime?
+  isActive      Boolean     @default(true)
+  metadata      Json?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  sources     CompanySource[]
+  crawlRuns   SourceCrawlRun[]
+  discoveries SourceDiscovery[]
+  jobs        Job[]
+
+  @@index([domain])
+  @@index([crawlStatus])
+  @@index([trustScore])
+  @@map("companies")
+}
+
+model CompanySource {
+  id              String       @id @default(cuid())
+  companyId       String
+  sourceType      SourceType
+  atsType         ATSType?
+  sourceUrl       String
+  boardToken      String?
+  isVerified      Boolean      @default(false)
+  isActive        Boolean      @default(true)
+  priority        Int          @default(0)
+  lastCrawlStatus CrawlStatus?
+  lastCrawlAt     DateTime?
+  lastJobCount    Int?
+  failCount       Int          @default(0)
+  successCount    Int          @default(0)
+  metadata        Json?
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  company   Company          @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  crawlRuns SourceCrawlRun[]
+
+  @@unique([companyId, sourceUrl])
+  @@index([sourceType])
+  @@index([atsType])
+  @@index([isActive])
+  @@map("company_sources")
+}
+
+model SourceCrawlRun {
+  id           String      @id @default(cuid())
+  companyId    String
+  sourceId     String?
+  status       CrawlStatus @default(PENDING)
+  jobsFound    Int         @default(0)
+  jobsNew      Int         @default(0)
+  jobsUpdated  Int         @default(0)
+  jobsRemoved  Int         @default(0)
+  errorMessage String?
+  durationMs   Int?
+  startedAt    DateTime    @default(now())
+  completedAt  DateTime?
+  metadata     Json?
+
+  company     Company           @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  source      CompanySource?    @relation(fields: [sourceId], references: [id], onDelete: SetNull)
+  discoveries SourceDiscovery[]
+
+  @@index([companyId])
+  @@index([sourceId])
+  @@index([status])
+  @@index([startedAt])
+  @@map("source_crawl_runs")
+}
+
+model SourceDiscovery {
+  id              String          @id @default(cuid())
+  companyId       String
+  crawlRunId      String?
+  discoveredUrl   String
+  discoveryMethod DiscoveryMethod
+  sourceType      SourceType?
+  atsType         ATSType?
+  confidence      Float           @default(0.5)
+  isPromoted      Boolean         @default(false)
+  metadata        Json?
+  createdAt       DateTime        @default(now())
+
+  company  Company         @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  crawlRun SourceCrawlRun? @relation(fields: [crawlRunId], references: [id], onDelete: SetNull)
+
+  @@index([companyId])
+  @@index([discoveryMethod])
+  @@map("source_discoveries")
 }

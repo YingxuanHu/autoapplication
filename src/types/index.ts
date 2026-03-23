@@ -10,6 +10,8 @@ import type {
   ApplicationStatus,
   FeedActionType,
   JobSource,
+  RegionScope,
+  JobFamily,
 } from "@/generated/prisma";
 
 export type {
@@ -24,6 +26,8 @@ export type {
   ApplicationStatus,
   FeedActionType,
   JobSource,
+  RegionScope,
+  JobFamily,
 };
 
 export interface ScoredJob extends Job {
@@ -34,6 +38,7 @@ export interface ScoredJob extends Job {
 export interface JobSearchParams {
   query: string;
   location?: string;
+  locations?: string[];
   workMode?: WorkMode;
   page?: number;
   limit?: number;
