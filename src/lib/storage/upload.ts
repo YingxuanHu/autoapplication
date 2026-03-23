@@ -1,23 +1,41 @@
-import { promises as fs } from "fs";
+import { constants, promises as fs } from "fs";
 import path from "path";
 
-const UPLOADS_DIR = path.join(process.cwd(), "uploads");
+const UPLOADS_DIR = path.join(process.cwd(), "public", "uploads");
 
 async function ensureUploadsDir(): Promise<void> {
   await fs.mkdir(UPLOADS_DIR, { recursive: true });
 }
 
+function buildSafeFileName(fileName: string, mimeType?: string): string {
+  const originalExt = path.extname(fileName);
+  const ext = originalExt || (mimeType === "application/pdf" ? ".pdf" : "");
+  const base = path
+    .basename(fileName, originalExt)
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "") || "file";
+
+  return `${base}-${Date.now()}${ext}`;
+}
+
+async function fileExists(filePath: string): Promise<boolean> {
+  try {
+    await fs.access(filePath, constants.F_OK);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export async function saveFile(
   buffer: Buffer,
   fileName: string,
-  _mimeType: string,
+  mimeType?: string,
 ): Promise<string> {
   await ensureUploadsDir();
 
-  const timestamp = Date.now();
-  const ext = path.extname(fileName);
-  const base = path.basename(fileName, ext);
-  const safeName = `${base}-${timestamp}${ext}`;
+  const safeName = buildSafeFileName(fileName, mimeType);
   const filePath = path.join(UPLOADS_DIR, safeName);
 
   await fs.writeFile(filePath, buffer);
@@ -26,7 +44,7 @@ export async function saveFile(
 }
 
 export async function deleteFile(filePath: string): Promise<void> {
-  const absolutePath = getFilePath(filePath);
+  const absolutePath = await getFilePath(filePath);
   try {
     await fs.unlink(absolutePath);
   } catch (error) {
@@ -36,7 +54,17 @@ export async function deleteFile(filePath: string): Promise<void> {
   }
 }
 
-export function getFilePath(relativePath: string): string {
+export async function getFilePath(relativePath: string): Promise<string> {
   const cleaned = relativePath.replace(/^\//, "");
-  return path.join(process.cwd(), cleaned);
+  const publicPath = path.join(process.cwd(), "public", cleaned);
+  if (await fileExists(publicPath)) {
+    return publicPath;
+  }
+
+  const legacyPath = path.join(process.cwd(), cleaned);
+  if (await fileExists(legacyPath)) {
+    return legacyPath;
+  }
+
+  return publicPath;
 }

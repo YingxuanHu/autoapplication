@@ -3,7 +3,7 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { parseResumePdf } from "@/lib/resume/parser";
 import fs from "fs/promises";
-import path from "path";
+import { getFilePath } from "@/lib/storage/upload";
 
 export async function POST(
   _request: Request,
@@ -25,7 +25,7 @@ export async function POST(
       return NextResponse.json({ error: "Not found" }, { status: 404 });
     }
 
-    const filePath = path.join(process.cwd(), "public", resume.fileUrl);
+    const filePath = await getFilePath(resume.fileUrl);
     const fileBuffer = await fs.readFile(filePath);
 
     const parsed = await parseResumePdf(fileBuffer);

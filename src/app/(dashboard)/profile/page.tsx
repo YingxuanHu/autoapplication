@@ -28,6 +28,7 @@ interface Profile {
   id: string;
   jobTitles: string[];
   jobAreas: string[];
+  skills: string[];
   locations: string[];
   workModes: string[];
   experienceLevel: string | null;
@@ -118,13 +119,13 @@ function TagInput({
 }
 
 export default function ProfilePage() {
-  const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
   // Form state
   const [jobTitles, setJobTitles] = useState<string[]>([]);
   const [jobAreas, setJobAreas] = useState<string[]>([]);
+  const [skills, setSkills] = useState<string[]>([]);
   const [locations, setLocations] = useState<string[]>([]);
   const [workModes, setWorkModes] = useState<string[]>([]);
   const [experienceLevel, setExperienceLevel] = useState("");
@@ -139,9 +140,9 @@ export default function ProfilePage() {
       const res = await fetch("/api/profile");
       if (!res.ok) throw new Error("Failed to fetch profile");
       const data: Profile = await res.json();
-      setProfile(data);
       setJobTitles(data.jobTitles);
       setJobAreas(data.jobAreas);
+      setSkills(data.skills ?? []);
       setLocations(data.locations);
       setWorkModes(data.workModes);
       setExperienceLevel(data.experienceLevel || "");
@@ -166,6 +167,7 @@ export default function ProfilePage() {
       const body: Record<string, unknown> = {
         jobTitles,
         jobAreas,
+        skills,
         locations,
         workModes,
         excludeCompanies,
@@ -266,6 +268,23 @@ export default function ProfilePage() {
             tags={jobAreas}
             onChange={setJobAreas}
             placeholder="e.g. Frontend, Machine Learning"
+          />
+        </CardContent>
+      </Card>
+
+      {/* Skills */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Skills</CardTitle>
+          <CardDescription>
+            Use core skills to improve job matching and resume recommendations
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <TagInput
+            tags={skills}
+            onChange={setSkills}
+            placeholder="e.g. React, TypeScript, Python"
           />
         </CardContent>
       </Card>

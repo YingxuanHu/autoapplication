@@ -1,21 +1,36 @@
 "use client";
 
-import { useState } from "react";
-import { SessionProvider } from "next-auth/react";
+import { useEffect, useState } from "react";
+import { SessionProvider, signOut, useSession } from "next-auth/react";
 import { Sidebar } from "@/components/layout/sidebar";
 import { Topbar } from "@/components/layout/topbar";
 import { MobileNav } from "@/components/layout/mobile-nav";
 import { Toaster } from "@/components/ui/sonner";
+import { Loader2 } from "lucide-react";
 
-export default function DashboardLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+function DashboardShell({ children }: { children: React.ReactNode }) {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  const { data: session, status } = useSession();
+
+  useEffect(() => {
+    if (status === "authenticated" && !session?.user?.id) {
+      void signOut({ callbackUrl: "/login" });
+    }
+  }, [session?.user?.id, status]);
+
+  if (status === "authenticated" && !session?.user?.id) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="flex items-center gap-3 text-sm text-muted-foreground">
+          <Loader2 className="size-4 animate-spin" />
+          Redirecting to login...
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <SessionProvider>
+    <>
       {/* Sidebar (desktop only) */}
       <Sidebar />
 
@@ -33,6 +48,18 @@ export default function DashboardLayout({
       </div>
 
       <Toaster richColors position="bottom-right" />
+    </>
+  );
+}
+
+export default function DashboardLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <SessionProvider>
+      <DashboardShell>{children}</DashboardShell>
     </SessionProvider>
   );
 }

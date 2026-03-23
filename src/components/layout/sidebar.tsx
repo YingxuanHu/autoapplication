@@ -11,6 +11,7 @@ import {
   Settings,
   Briefcase,
 } from "lucide-react";
+import { SignOutButton } from "@/components/auth/sign-out-button";
 
 const navItems = [
   { label: "Feed", href: "/feed", icon: Layers },
@@ -63,6 +64,11 @@ export function Sidebar() {
 
         {/* Footer */}
         <div className="px-6 py-4 border-t border-sidebar-border">
+          <SignOutButton
+            variant="ghost"
+            fullWidth
+            className="mb-3 w-full justify-start px-2 text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+          />
           <p className="text-xs text-sidebar-foreground/50">
             AutoApplication v0.1
           </p>

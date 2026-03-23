@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { signIn } from "next-auth/react";
+import { getCsrfToken } from "next-auth/react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -27,11 +27,26 @@ export default function LoginPage() {
     setIsLoading(true);
 
     try {
-      await signIn("credentials", {
-        email,
-        password,
-        redirectTo: "/feed",
+      const csrfToken = await getCsrfToken();
+
+      const res = await fetch("/api/auth/callback/credentials", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({
+          csrfToken: csrfToken ?? "",
+          email,
+          password,
+          json: "true",
+        }),
+        redirect: "manual",
       });
+
+      if (res.ok || res.status === 302 || res.status === 200) {
+        window.location.href = "/feed";
+      } else {
+        setError("Invalid email or password.");
+        setIsLoading(false);
+      }
     } catch {
       setError("Invalid email or password.");
       setIsLoading(false);

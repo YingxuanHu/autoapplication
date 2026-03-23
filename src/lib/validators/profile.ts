@@ -1,5 +1,9 @@
 import { z } from "zod/v4";
-import { WorkMode, ExperienceLevel } from "@/generated/prisma";
+import {
+  AutomationLevel,
+  ExperienceLevel,
+  WorkMode,
+} from "@/generated/prisma";
 
 export const updateProfileSchema = z.object({
   jobTitles: z.array(z.string()).optional(),
@@ -10,6 +14,9 @@ export const updateProfileSchema = z.object({
   salaryMin: z.number().int().positive().optional(),
   salaryMax: z.number().int().positive().optional(),
   salaryCurrency: z.string().max(3).optional(),
+  skills: z.array(z.string()).optional(),
+  yearsExperience: z.number().int().nonnegative().optional(),
+  automationLevel: z.enum(AutomationLevel).optional(),
   excludeCompanies: z.array(z.string()).optional(),
   excludeKeywords: z.array(z.string()).optional(),
 });

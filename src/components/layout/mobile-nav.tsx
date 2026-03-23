@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Briefcase, X } from "lucide-react";
 import { navItems } from "./sidebar";
+import { SignOutButton } from "@/components/auth/sign-out-button";
 
 interface MobileNavProps {
   isOpen: boolean;
@@ -72,6 +73,14 @@ export function MobileNav({ isOpen, onClose }: MobileNavProps) {
             );
           })}
         </nav>
+
+        <div className="mt-auto border-t border-sidebar-border px-3 py-4">
+          <SignOutButton
+            variant="ghost"
+            fullWidth
+            className="w-full justify-start text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+          />
+        </div>
       </div>
     </>
   );

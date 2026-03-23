@@ -5,13 +5,11 @@ import { useSession } from "next-auth/react";
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Separator } from "@/components/ui/separator";
+import { SignOutButton } from "@/components/auth/sign-out-button";
 import { toast } from "sonner";
 import { Loader2, Save, Search, ShieldCheck, Zap, User } from "lucide-react";
 
@@ -218,6 +216,10 @@ export default function SettingsPage() {
             </div>
           </CardContent>
         </Card>
+
+        <div className="flex justify-end">
+          <SignOutButton variant="outline" />
+        </div>
       </section>
     </div>
   );
