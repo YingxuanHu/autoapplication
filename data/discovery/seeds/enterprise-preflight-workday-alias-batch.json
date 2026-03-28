@@ -1,0 +1,45 @@
+[
+  {
+    "url": "https://ia.wd3.myworkdayjobs.com/professional",
+    "boardUrl": "https://ia.wd3.myworkdayjobs.com/professional",
+    "sourceKey": "workday:ia.wd3.myworkdayjobs.com|ia|professional",
+    "connectorName": "workday",
+    "token": "ia.wd3.myworkdayjobs.com|ia|professional",
+    "companyNames": [
+      "iA Financial Group"
+    ],
+    "discoveredFromQueries": [
+      "site:myworkdayjobs.com \"iA\" careers"
+    ],
+    "searchResultUrls": [
+      "https://ia.wd3.myworkdayjobs.com/Professional"
+    ],
+    "matchedReasons": [
+      "company_alias_direct"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "fetchedCount": 100,
+      "acceptedCount": 12,
+      "previewCreatedCount": 12,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 88,
+      "sampleTitles": [
+        "Analyste en actuariat",
+        "Analyste sénior en actuariat",
+        "Conseiller(ère) en performance financière",
+        "Conseiller(ère) principal(e), Régimes de retraite",
+        "Consultant Support Associate"
+      ],
+      "sampleLocations": [
+        "Quebec / 1080, Grande Allee West (35 Hrs), Canada",
+        "Montreal / 1981 McGill College Avenue (35 Hrs), Canada",
+        "Quebec / 1080, Grande Allee West (35 Hrs), Canada",
+        "Quebec / 1080, Grande Allee West (35 Hrs), Canada",
+        "Quebec / 1080, Grande Allee West (35 Hrs), Canada"
+      ]
+    },
+    "recommendedPromotion": true
+  }
+]

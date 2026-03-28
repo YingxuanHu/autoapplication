@@ -1,0 +1,64 @@
+[
+  {
+    "url": "https://suncor.wd1.myworkdayjobs.com/suncor_external",
+    "boardUrl": "https://suncor.wd1.myworkdayjobs.com/suncor_external",
+    "sourceKey": "workday:suncor.wd1.myworkdayjobs.com|suncor|suncor_external",
+    "connectorName": "workday",
+    "token": "suncor.wd1.myworkdayjobs.com|suncor|suncor_external",
+    "companyNames": [
+      "Suncor"
+    ],
+    "discoveredFromQueries": [
+      "site:myworkdayjobs.com \"Suncor\" careers",
+      "site:myworkdayjobs.com \"Suncor\" jobs"
+    ],
+    "searchResultUrls": [
+      "https://suncor.wd1.myworkdayjobs.com/Suncor_External"
+    ],
+    "matchedReasons": [
+      "company_name_direct",
+      "company_name_jobs"
+    ],
+    "knownStatus": null
+  },
+  {
+    "url": "https://enbridge.wd3.myworkdayjobs.com/enbridge_careers",
+    "boardUrl": "https://enbridge.wd3.myworkdayjobs.com/enbridge_careers",
+    "sourceKey": "workday:enbridge.wd3.myworkdayjobs.com|enbridge|enbridge_careers",
+    "connectorName": "workday",
+    "token": "enbridge.wd3.myworkdayjobs.com|enbridge|enbridge_careers",
+    "companyNames": [
+      "Enbridge"
+    ],
+    "discoveredFromQueries": [
+      "site:myworkdayjobs.com \"Enbridge\" careers"
+    ],
+    "searchResultUrls": [
+      "https://enbridge.wd3.myworkdayjobs.com/enbridge_careers"
+    ],
+    "matchedReasons": [
+      "company_name_direct"
+    ],
+    "knownStatus": null
+  },
+  {
+    "url": "https://myview.wd3.myworkdayjobs.com/loblaw_careers",
+    "boardUrl": "https://myview.wd3.myworkdayjobs.com/loblaw_careers",
+    "sourceKey": "workday:myview.wd3.myworkdayjobs.com|myview|loblaw_careers",
+    "connectorName": "workday",
+    "token": "myview.wd3.myworkdayjobs.com|myview|loblaw_careers",
+    "companyNames": [
+      "Loblaw"
+    ],
+    "discoveredFromQueries": [
+      "site:myworkdayjobs.com \"Loblaw\" jobs"
+    ],
+    "searchResultUrls": [
+      "https://myview.wd3.myworkdayjobs.com/loblaw_careers"
+    ],
+    "matchedReasons": [
+      "company_name_jobs"
+    ],
+    "knownStatus": null
+  }
+]

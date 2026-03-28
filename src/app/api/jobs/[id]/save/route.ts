@@ -1,5 +1,6 @@
 import { type NextRequest } from "next/server";
 import { saveJob, unsaveJob } from "@/lib/queries/saved-jobs";
+import { recordAction } from "@/lib/queries/behavior";
 import { successResponse, errorResponse } from "@/lib/api-utils";
 
 export async function POST(
@@ -8,7 +9,10 @@ export async function POST(
 ) {
   try {
     const { id } = await params;
-    const saved = await saveJob(id);
+    const [saved] = await Promise.all([
+      saveJob(id),
+      recordAction(id, "SAVE"),
+    ]);
     return successResponse(saved, 201);
   } catch (error) {
     console.error("POST /api/jobs/[id]/save error:", error);

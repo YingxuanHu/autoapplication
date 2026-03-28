@@ -1,0 +1,952 @@
+{
+  "generatedAt": "2026-03-27T19:21:01.557Z",
+  "families": [
+    "workday"
+  ],
+  "limitCompanies": 50,
+  "previewLimit": 100,
+  "threshold": 5,
+  "discoverySummary": {
+    "companiesSelected": [
+      "American Express",
+      "Capital One",
+      "Databricks",
+      "Mastercard",
+      "MongoDB",
+      "Okta",
+      "AMD",
+      "Atlassian",
+      "Confluent",
+      "CrowdStrike",
+      "DocuSign",
+      "Elastic",
+      "FIS",
+      "Fiserv",
+      "Jack Henry",
+      "Moody's",
+      "MSCI",
+      "Palo Alto Networks",
+      "ServiceNow",
+      "Snowflake",
+      "Twilio",
+      "Zscaler",
+      "HubSpot",
+      "Nvidia",
+      "Qualcomm"
+    ],
+    "queryCount": 100,
+    "cacheHits": 93,
+    "cacheMisses": 7,
+    "resultUrlsFetched": 424,
+    "uniqueResultUrls": 424,
+    "directSeedUrls": 0,
+    "candidatesDiscovered": 1,
+    "newCandidates": 0,
+    "skippedKnownCandidates": 1,
+    "candidatesByFamily": {},
+    "queryReports": [
+      {
+        "companyName": "AMD",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"AMD\" \"Toronto\" careers",
+        "reason": "canada_city_direct",
+        "fromCache": true,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "American Express",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"American Express\" \"Toronto\" careers",
+        "reason": "canada_city_direct",
+        "fromCache": true,
+        "resultUrlsFetched": 5,
+        "errors": []
+      },
+      {
+        "companyName": "Capital One",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"Capital One\" \"Toronto\" careers",
+        "reason": "canada_city_direct",
+        "fromCache": true,
+        "resultUrlsFetched": 5,
+        "errors": []
+      },
+      {
+        "companyName": "Databricks",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"Databricks\" \"Toronto\" careers",
+        "reason": "canada_city_direct",
+        "fromCache": true,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "HubSpot",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"HubSpot\" \"Toronto\" careers",
+        "reason": "canada_city_direct",
+        "fromCache": true,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Mastercard",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"Mastercard\" \"Toronto\" careers",
+        "reason": "canada_city_direct",
+        "fromCache": true,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "MongoDB",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"MongoDB\" \"Toronto\" careers",
+        "reason": "canada_city_direct",
+        "fromCache": true,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Nvidia",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"Nvidia\" \"Toronto\" careers",
+        "reason": "canada_city_direct",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Okta",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"Okta\" \"Toronto\" careers",
+        "reason": "canada_city_direct",
+        "fromCache": true,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "AMD",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"AMD\" careers",
+        "reason": "company_name_direct",
+        "fromCache": true,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "American Express",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"American Express\" careers",
+        "reason": "company_name_direct",
+        "fromCache": true,
+        "resultUrlsFetched": 5,
+        "errors": []
+      },
+      {
+        "companyName": "Atlassian",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"Atlassian\" careers",
+        "reason": "company_name_direct",
+        "fromCache": true,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Capital One",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"Capital One\" careers",
+        "reason": "company_name_direct",
+        "fromCache": true,
+        "resultUrlsFetched": 5,
+        "errors": []
+      },
+      {
+        "companyName": "Confluent",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"Confluent\" careers",
+        "reason": "company_name_direct",
+        "fromCache": true,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "CrowdStrike",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"CrowdStrike\" careers",
+        "reason": "company_name_direct",
+        "fromCache": true,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Databricks",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"Databricks\" careers",
+        "reason": "company_name_direct",
+        "fromCache": true,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "DocuSign",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"DocuSign\" careers",
+        "reason": "company_name_direct",
+        "fromCache": true,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Elastic",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"Elastic\" careers",
+        "reason": "company_name_direct",
+        "fromCache": true,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "FIS",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"FIS\" careers",
+        "reason": "company_name_direct",
+        "fromCache": true,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Fiserv",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"Fiserv\" careers",
+        "reason": "company_name_direct",
+        "fromCache": true,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "HubSpot",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"HubSpot\" careers",
+        "reason": "company_name_direct",
+        "fromCache": true,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Jack Henry",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"Jack Henry\" careers",
+        "reason": "company_name_direct",
+        "fromCache": true,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Mastercard",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"Mastercard\" careers",
+        "reason": "company_name_direct",
+        "fromCache": true,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "MongoDB",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"MongoDB\" careers",
+        "reason": "company_name_direct",
+        "fromCache": true,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Moody's",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"Moody's\" careers",
+        "reason": "company_name_direct",
+        "fromCache": true,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "MSCI",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"MSCI\" careers",
+        "reason": "company_name_direct",
+        "fromCache": true,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Nvidia",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"Nvidia\" careers",
+        "reason": "company_name_direct",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Okta",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"Okta\" careers",
+        "reason": "company_name_direct",
+        "fromCache": true,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Palo Alto Networks",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"Palo Alto Networks\" careers",
+        "reason": "company_name_direct",
+        "fromCache": true,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Qualcomm",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"Qualcomm\" careers",
+        "reason": "company_name_direct",
+        "fromCache": false,
+        "resultUrlsFetched": 6,
+        "errors": []
+      },
+      {
+        "companyName": "ServiceNow",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"ServiceNow\" careers",
+        "reason": "company_name_direct",
+        "fromCache": true,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Snowflake",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"Snowflake\" careers",
+        "reason": "company_name_direct",
+        "fromCache": true,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Twilio",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"Twilio\" careers",
+        "reason": "company_name_direct",
+        "fromCache": true,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Zscaler",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"Zscaler\" careers",
+        "reason": "company_name_direct",
+        "fromCache": true,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "AMD",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"AMD\" jobs",
+        "reason": "company_name_jobs",
+        "fromCache": true,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "American Express",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"American Express\" jobs",
+        "reason": "company_name_jobs",
+        "fromCache": true,
+        "resultUrlsFetched": 5,
+        "errors": []
+      },
+      {
+        "companyName": "Atlassian",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"Atlassian\" jobs",
+        "reason": "company_name_jobs",
+        "fromCache": true,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Capital One",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"Capital One\" jobs",
+        "reason": "company_name_jobs",
+        "fromCache": true,
+        "resultUrlsFetched": 5,
+        "errors": []
+      },
+      {
+        "companyName": "Confluent",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"Confluent\" jobs",
+        "reason": "company_name_jobs",
+        "fromCache": true,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "CrowdStrike",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"CrowdStrike\" jobs",
+        "reason": "company_name_jobs",
+        "fromCache": true,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Databricks",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"Databricks\" jobs",
+        "reason": "company_name_jobs",
+        "fromCache": true,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "DocuSign",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"DocuSign\" jobs",
+        "reason": "company_name_jobs",
+        "fromCache": true,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Elastic",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"Elastic\" jobs",
+        "reason": "company_name_jobs",
+        "fromCache": true,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "FIS",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"FIS\" jobs",
+        "reason": "company_name_jobs",
+        "fromCache": true,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Fiserv",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"Fiserv\" jobs",
+        "reason": "company_name_jobs",
+        "fromCache": true,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "HubSpot",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"HubSpot\" jobs",
+        "reason": "company_name_jobs",
+        "fromCache": true,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Jack Henry",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"Jack Henry\" jobs",
+        "reason": "company_name_jobs",
+        "fromCache": true,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Mastercard",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"Mastercard\" jobs",
+        "reason": "company_name_jobs",
+        "fromCache": true,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "MongoDB",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"MongoDB\" jobs",
+        "reason": "company_name_jobs",
+        "fromCache": true,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Moody's",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"Moody's\" jobs",
+        "reason": "company_name_jobs",
+        "fromCache": true,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "MSCI",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"MSCI\" jobs",
+        "reason": "company_name_jobs",
+        "fromCache": true,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Nvidia",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"Nvidia\" jobs",
+        "reason": "company_name_jobs",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Okta",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"Okta\" jobs",
+        "reason": "company_name_jobs",
+        "fromCache": true,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Palo Alto Networks",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"Palo Alto Networks\" jobs",
+        "reason": "company_name_jobs",
+        "fromCache": true,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Qualcomm",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"Qualcomm\" jobs",
+        "reason": "company_name_jobs",
+        "fromCache": false,
+        "resultUrlsFetched": 4,
+        "errors": []
+      },
+      {
+        "companyName": "ServiceNow",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"ServiceNow\" jobs",
+        "reason": "company_name_jobs",
+        "fromCache": true,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Snowflake",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"Snowflake\" jobs",
+        "reason": "company_name_jobs",
+        "fromCache": true,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Twilio",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"Twilio\" jobs",
+        "reason": "company_name_jobs",
+        "fromCache": true,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Zscaler",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"Zscaler\" jobs",
+        "reason": "company_name_jobs",
+        "fromCache": true,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "AMD",
+        "family": "workday",
+        "query": "\"AMD\" \"myworkdayjobs.com\"",
+        "reason": "company_name_host_hint",
+        "fromCache": true,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "American Express",
+        "family": "workday",
+        "query": "\"American Express\" \"myworkdayjobs.com\"",
+        "reason": "company_name_host_hint",
+        "fromCache": true,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Atlassian",
+        "family": "workday",
+        "query": "\"Atlassian\" \"myworkdayjobs.com\"",
+        "reason": "company_name_host_hint",
+        "fromCache": true,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Capital One",
+        "family": "workday",
+        "query": "\"Capital One\" \"myworkdayjobs.com\"",
+        "reason": "company_name_host_hint",
+        "fromCache": true,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Confluent",
+        "family": "workday",
+        "query": "\"Confluent\" \"myworkdayjobs.com\"",
+        "reason": "company_name_host_hint",
+        "fromCache": true,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "CrowdStrike",
+        "family": "workday",
+        "query": "\"CrowdStrike\" \"myworkdayjobs.com\"",
+        "reason": "company_name_host_hint",
+        "fromCache": true,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Databricks",
+        "family": "workday",
+        "query": "\"Databricks\" \"myworkdayjobs.com\"",
+        "reason": "company_name_host_hint",
+        "fromCache": true,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "DocuSign",
+        "family": "workday",
+        "query": "\"DocuSign\" \"myworkdayjobs.com\"",
+        "reason": "company_name_host_hint",
+        "fromCache": true,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Elastic",
+        "family": "workday",
+        "query": "\"Elastic\" \"myworkdayjobs.com\"",
+        "reason": "company_name_host_hint",
+        "fromCache": true,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "FIS",
+        "family": "workday",
+        "query": "\"FIS\" \"myworkdayjobs.com\"",
+        "reason": "company_name_host_hint",
+        "fromCache": true,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Fiserv",
+        "family": "workday",
+        "query": "\"Fiserv\" \"myworkdayjobs.com\"",
+        "reason": "company_name_host_hint",
+        "fromCache": true,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "HubSpot",
+        "family": "workday",
+        "query": "\"HubSpot\" \"myworkdayjobs.com\"",
+        "reason": "company_name_host_hint",
+        "fromCache": true,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Jack Henry",
+        "family": "workday",
+        "query": "\"Jack Henry\" \"myworkdayjobs.com\"",
+        "reason": "company_name_host_hint",
+        "fromCache": true,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Mastercard",
+        "family": "workday",
+        "query": "\"Mastercard\" \"myworkdayjobs.com\"",
+        "reason": "company_name_host_hint",
+        "fromCache": true,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "MongoDB",
+        "family": "workday",
+        "query": "\"MongoDB\" \"myworkdayjobs.com\"",
+        "reason": "company_name_host_hint",
+        "fromCache": true,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Moody's",
+        "family": "workday",
+        "query": "\"Moody's\" \"myworkdayjobs.com\"",
+        "reason": "company_name_host_hint",
+        "fromCache": true,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "MSCI",
+        "family": "workday",
+        "query": "\"MSCI\" \"myworkdayjobs.com\"",
+        "reason": "company_name_host_hint",
+        "fromCache": true,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Nvidia",
+        "family": "workday",
+        "query": "\"Nvidia\" \"myworkdayjobs.com\"",
+        "reason": "company_name_host_hint",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Okta",
+        "family": "workday",
+        "query": "\"Okta\" \"myworkdayjobs.com\"",
+        "reason": "company_name_host_hint",
+        "fromCache": true,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Palo Alto Networks",
+        "family": "workday",
+        "query": "\"Palo Alto Networks\" \"myworkdayjobs.com\"",
+        "reason": "company_name_host_hint",
+        "fromCache": true,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Qualcomm",
+        "family": "workday",
+        "query": "\"Qualcomm\" \"myworkdayjobs.com\"",
+        "reason": "company_name_host_hint",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "ServiceNow",
+        "family": "workday",
+        "query": "\"ServiceNow\" \"myworkdayjobs.com\"",
+        "reason": "company_name_host_hint",
+        "fromCache": true,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Snowflake",
+        "family": "workday",
+        "query": "\"Snowflake\" \"myworkdayjobs.com\"",
+        "reason": "company_name_host_hint",
+        "fromCache": true,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Twilio",
+        "family": "workday",
+        "query": "\"Twilio\" \"myworkdayjobs.com\"",
+        "reason": "company_name_host_hint",
+        "fromCache": true,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Zscaler",
+        "family": "workday",
+        "query": "\"Zscaler\" \"myworkdayjobs.com\"",
+        "reason": "company_name_host_hint",
+        "fromCache": true,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "American Express",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"americanexpress\" careers",
+        "reason": "tenant_direct",
+        "fromCache": true,
+        "resultUrlsFetched": 5,
+        "errors": []
+      },
+      {
+        "companyName": "Capital One",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"capitalone\" careers",
+        "reason": "tenant_direct",
+        "fromCache": true,
+        "resultUrlsFetched": 5,
+        "errors": []
+      },
+      {
+        "companyName": "Jack Henry",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"jackhenry\" careers",
+        "reason": "tenant_direct",
+        "fromCache": true,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Moody's",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"moodys\" careers",
+        "reason": "tenant_direct",
+        "fromCache": true,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Palo Alto Networks",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"paloaltonetworks\" careers",
+        "reason": "tenant_direct",
+        "fromCache": true,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Canada:Calgary",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"Calgary\" Canada careers",
+        "reason": "generic_canada_city",
+        "fromCache": true,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Canada:Montreal",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"Montreal\" Canada careers",
+        "reason": "generic_canada_city",
+        "fromCache": true,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Canada:Ottawa",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"Ottawa\" Canada careers",
+        "reason": "generic_canada_city",
+        "fromCache": true,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Canada:Toronto",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"Toronto\" Canada careers",
+        "reason": "generic_canada_city",
+        "fromCache": true,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Canada:Vancouver",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"Vancouver\" Canada careers",
+        "reason": "generic_canada_city",
+        "fromCache": true,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Canada:Waterloo",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"Waterloo\" Canada careers",
+        "reason": "generic_canada_city",
+        "fromCache": true,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Canada:cloud",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com Canada \"cloud\" careers",
+        "reason": "generic_canada_sector",
+        "fromCache": true,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Canada:enterprise software",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com Canada \"enterprise software\" careers",
+        "reason": "generic_canada_sector",
+        "fromCache": true,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Canada:fintech",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com Canada \"fintech\" careers",
+        "reason": "generic_canada_sector",
+        "fromCache": true,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Canada:healthcare",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com Canada \"healthcare\" careers",
+        "reason": "generic_canada_sector",
+        "fromCache": true,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Canada:telecom",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com Canada \"telecom\" careers",
+        "reason": "generic_canada_sector",
+        "fromCache": true,
+        "resultUrlsFetched": 8,
+        "errors": []
+      }
+    ]
+  },
+  "previewedCount": 0,
+  "recommendedPromotions": []
+}

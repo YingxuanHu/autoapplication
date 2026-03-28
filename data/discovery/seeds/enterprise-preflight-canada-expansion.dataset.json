@@ -1,0 +1,144 @@
+[
+  {
+    "url": "https://canadiantirecorporation.wd3.myworkdayjobs.com/enterprise_external_careers_site",
+    "boardUrl": "https://canadiantirecorporation.wd3.myworkdayjobs.com/enterprise_external_careers_site",
+    "sourceKey": "workday:canadiantirecorporation.wd3.myworkdayjobs.com|canadiantirecorporation|enterprise_external_careers_site",
+    "connectorName": "workday",
+    "token": "canadiantirecorporation.wd3.myworkdayjobs.com|canadiantirecorporation|enterprise_external_careers_site",
+    "companyNames": [
+      "Canadian Tire"
+    ],
+    "discoveredFromQueries": [
+      "site:myworkdayjobs.com \"Canadian Tire\" careers",
+      "site:myworkdayjobs.com \"Canadian Tire\" jobs"
+    ],
+    "searchResultUrls": [
+      "https://canadiantirecorporation.wd3.myworkdayjobs.com/Enterprise_External_Careers_Site"
+    ],
+    "matchedReasons": [
+      "company_name_direct",
+      "company_name_jobs"
+    ],
+    "knownStatus": null
+  },
+  {
+    "url": "https://jobs.opg.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+    "boardUrl": "https://jobs.opg.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+    "sourceKey": "successfactors:jobs.opg.com",
+    "connectorName": "successfactors",
+    "token": "jobs.opg.com",
+    "companyNames": [
+      "Ontario Power Generation"
+    ],
+    "discoveredFromQueries": [
+      "https://jobs.opg.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc"
+    ],
+    "searchResultUrls": [
+      "https://jobs.opg.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc"
+    ],
+    "matchedReasons": [
+      "direct_seed_url"
+    ],
+    "knownStatus": null
+  },
+  {
+    "url": "https://bdc.wd10.myworkdayjobs.com/bdc_careers",
+    "boardUrl": "https://bdc.wd10.myworkdayjobs.com/bdc_careers",
+    "sourceKey": "workday:bdc.wd10.myworkdayjobs.com|bdc|bdc_careers",
+    "connectorName": "workday",
+    "token": "bdc.wd10.myworkdayjobs.com|bdc|bdc_careers",
+    "companyNames": [
+      "BDC"
+    ],
+    "discoveredFromQueries": [
+      "site:myworkdayjobs.com \"BDC\" careers"
+    ],
+    "searchResultUrls": [
+      "https://bdc.wd10.myworkdayjobs.com/BDC_Careers"
+    ],
+    "matchedReasons": [
+      "company_name_direct"
+    ],
+    "knownStatus": null
+  },
+  {
+    "url": "https://interac.wd3.myworkdayjobs.com/interac",
+    "boardUrl": "https://interac.wd3.myworkdayjobs.com/interac",
+    "sourceKey": "workday:interac.wd3.myworkdayjobs.com|interac|interac",
+    "connectorName": "workday",
+    "token": "interac.wd3.myworkdayjobs.com|interac|interac",
+    "companyNames": [
+      "Interac"
+    ],
+    "discoveredFromQueries": [
+      "site:myworkdayjobs.com \"Interac\" careers"
+    ],
+    "searchResultUrls": [
+      "https://interac.wd3.myworkdayjobs.com/Interac"
+    ],
+    "matchedReasons": [
+      "company_name_direct"
+    ],
+    "knownStatus": null
+  },
+  {
+    "url": "https://myview.wd3.myworkdayjobs.com/loblaw_careers",
+    "boardUrl": "https://myview.wd3.myworkdayjobs.com/loblaw_careers",
+    "sourceKey": "workday:myview.wd3.myworkdayjobs.com|myview|loblaw_careers",
+    "connectorName": "workday",
+    "token": "myview.wd3.myworkdayjobs.com|myview|loblaw_careers",
+    "companyNames": [
+      "Loblaw"
+    ],
+    "discoveredFromQueries": [
+      "site:myworkdayjobs.com \"Loblaw\" jobs"
+    ],
+    "searchResultUrls": [
+      "https://myview.wd3.myworkdayjobs.com/loblaw_careers"
+    ],
+    "matchedReasons": [
+      "company_name_jobs"
+    ],
+    "knownStatus": null
+  },
+  {
+    "url": "https://slihrms.wd3.myworkdayjobs.com/careers",
+    "boardUrl": "https://slihrms.wd3.myworkdayjobs.com/careers",
+    "sourceKey": "workday:slihrms.wd3.myworkdayjobs.com|slihrms|careers",
+    "connectorName": "workday",
+    "token": "slihrms.wd3.myworkdayjobs.com|slihrms|careers",
+    "companyNames": [
+      "AtkinsRéalis"
+    ],
+    "discoveredFromQueries": [
+      "site:myworkdayjobs.com \"atkinsrealis\" careers"
+    ],
+    "searchResultUrls": [
+      "https://slihrms.wd3.myworkdayjobs.com/careers"
+    ],
+    "matchedReasons": [
+      "tenant_direct"
+    ],
+    "knownStatus": null
+  },
+  {
+    "url": "https://tcenergy.wd3.myworkdayjobs.com/career_site_tc",
+    "boardUrl": "https://tcenergy.wd3.myworkdayjobs.com/career_site_tc",
+    "sourceKey": "workday:tcenergy.wd3.myworkdayjobs.com|tcenergy|career_site_tc",
+    "connectorName": "workday",
+    "token": "tcenergy.wd3.myworkdayjobs.com|tcenergy|career_site_tc",
+    "companyNames": [
+      "TC Energy"
+    ],
+    "discoveredFromQueries": [
+      "site:myworkdayjobs.com \"TC Energy\" careers"
+    ],
+    "searchResultUrls": [
+      "https://tcenergy.wd3.myworkdayjobs.com/CAREER_SITE_TC"
+    ],
+    "matchedReasons": [
+      "company_name_direct"
+    ],
+    "knownStatus": null
+  }
+]

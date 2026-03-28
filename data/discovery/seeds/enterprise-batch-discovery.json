@@ -1,0 +1,72 @@
+{
+  "generatedAt": "2026-03-27T20:35:47.704Z",
+  "flags": {
+    "canadaOnly": true,
+    "family": "all",
+    "companies": [],
+    "skipProbe": true,
+    "skipPages": false
+  },
+  "probeResults": [],
+  "sfValidations": [
+    {
+      "companyName": "Ontario Power Generation",
+      "host": "jobs.opg.com",
+      "pathPrefix": null,
+      "token": "jobs.opg.com",
+      "boardUrl": "https://jobs.opg.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+      "valid": true,
+      "pageTitle": "Ontario Power Generation Jobs"
+    },
+    {
+      "companyName": "Siemens",
+      "host": "jobs.siemens.com",
+      "pathPrefix": null,
+      "token": "jobs.siemens.com",
+      "boardUrl": "https://jobs.siemens.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+      "valid": false,
+      "reason": "error: SuccessFactors fetch failed for https://jobs.siemens.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc: 404 Not Found"
+    },
+    {
+      "companyName": "Ericsson",
+      "host": "jobs.ericsson.com",
+      "pathPrefix": null,
+      "token": "jobs.ericsson.com",
+      "boardUrl": "https://jobs.ericsson.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+      "valid": false,
+      "reason": "no_structured_listing",
+      "pageTitle": "Sign in to your account"
+    },
+    {
+      "companyName": "Nokia",
+      "host": "careers.nokia.com",
+      "pathPrefix": null,
+      "token": "careers.nokia.com",
+      "boardUrl": "https://careers.nokia.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+      "valid": false,
+      "reason": "no_structured_listing",
+      "pageTitle": "Nokia"
+    },
+    {
+      "companyName": "Accenture",
+      "host": "www.accenture.com",
+      "pathPrefix": null,
+      "token": "www.accenture.com",
+      "boardUrl": "https://www.accenture.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+      "valid": false,
+      "reason": "no_structured_listing",
+      "pageTitle": "Search | Accenture"
+    }
+  ],
+  "careerPageDiscoveries": [],
+  "allDiscovered": [
+    {
+      "token": "jobs.opg.com",
+      "connectorName": "successfactors",
+      "sourceKey": "successfactors:jobs.opg.com",
+      "boardUrl": "https://jobs.opg.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+      "companyName": "Ontario Power Generation",
+      "discoveryMethod": "sf_board_validation"
+    }
+  ]
+}

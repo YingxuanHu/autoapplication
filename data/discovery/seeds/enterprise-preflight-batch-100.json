@@ -1,0 +1,212 @@
+[
+  {
+    "url": "https://allstate.wd5.myworkdayjobs.com/allstate_careers",
+    "boardUrl": "https://allstate.wd5.myworkdayjobs.com/allstate_careers",
+    "sourceKey": "workday:allstate.wd5.myworkdayjobs.com|allstate|allstate_careers",
+    "connectorName": "workday",
+    "token": "allstate.wd5.myworkdayjobs.com|allstate|allstate_careers",
+    "companyNames": [
+      "Allstate"
+    ],
+    "discoveredFromQueries": [
+      "site:myworkdayjobs.com \"Allstate\" careers"
+    ],
+    "searchResultUrls": [
+      "https://allstate.wd5.myworkdayjobs.com/allstate_careers"
+    ],
+    "matchedReasons": [
+      "company_name_direct"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "fetchedCount": 59,
+      "acceptedCount": 10,
+      "previewCreatedCount": 10,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 49,
+      "sampleTitles": [
+        "Attorney-Represented Claims Adjuster",
+        "Direct Sales Agent Lead Specialist (2918)",
+        "Field Auto Adjuster Austin TX",
+        "Management Adjusting CSL Associate Manager",
+        "Direct Sales Agent Specialist (2398)"
+      ],
+      "sampleLocations": [
+        "United States of America",
+        "United States of America",
+        "United States of America",
+        "United States of America",
+        "United States of America"
+      ]
+    },
+    "recommendedPromotion": true
+  },
+  {
+    "url": "https://philips.wd3.myworkdayjobs.com/jobs-and-careers",
+    "boardUrl": "https://philips.wd3.myworkdayjobs.com/jobs-and-careers",
+    "sourceKey": "workday:philips.wd3.myworkdayjobs.com|philips|jobs-and-careers",
+    "connectorName": "workday",
+    "token": "philips.wd3.myworkdayjobs.com|philips|jobs-and-careers",
+    "companyNames": [
+      "Philips"
+    ],
+    "discoveredFromQueries": [
+      "\"Philips\" careers"
+    ],
+    "searchResultUrls": [
+      "https://philips.wd3.myworkdayjobs.com/jobs-and-careers/"
+    ],
+    "matchedReasons": [
+      "company_careers_page"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "fetchedCount": 100,
+      "acceptedCount": 9,
+      "previewCreatedCount": 9,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 91,
+      "sampleTitles": [
+        "Program Management Specialist",
+        "Biomedical Equipment Technician - Elmer, New Jersey",
+        "Biomedical Equipment Technician - Loma Linda, CA",
+        "Sustainability Operations Intern (all genders)",
+        "Systems Design Quality Engineer"
+      ],
+      "sampleLocations": [
+        "United States of America - Remote Based, United States of America",
+        "United States of America - Remote Based, United States of America",
+        "United States of America - Remote Based, United States of America",
+        "Lodz - Symetris, Poland",
+        "Cambridge - B3 Crossing, United States of America"
+      ]
+    },
+    "recommendedPromotion": true
+  },
+  {
+    "url": "https://jobs.bosch-group.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+    "boardUrl": "https://jobs.bosch-group.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+    "sourceKey": "successfactors:jobs.bosch-group.com",
+    "connectorName": "successfactors",
+    "token": "jobs.bosch-group.com",
+    "companyNames": [
+      "Bosch"
+    ],
+    "discoveredFromQueries": [
+      "https://jobs.bosch-group.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc"
+    ],
+    "searchResultUrls": [
+      "https://jobs.bosch-group.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc"
+    ],
+    "matchedReasons": [
+      "direct_seed_url"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "fetchedCount": 0,
+      "acceptedCount": 0,
+      "previewCreatedCount": 0,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 0,
+      "sampleTitles": [],
+      "sampleLocations": []
+    },
+    "recommendedPromotion": false
+  },
+  {
+    "url": "https://jobs.philips.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+    "boardUrl": "https://jobs.philips.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+    "sourceKey": "successfactors:jobs.philips.com",
+    "connectorName": "successfactors",
+    "token": "jobs.philips.com",
+    "companyNames": [
+      "Philips"
+    ],
+    "discoveredFromQueries": [
+      "https://jobs.philips.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc"
+    ],
+    "searchResultUrls": [
+      "https://jobs.philips.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc"
+    ],
+    "matchedReasons": [
+      "direct_seed_url"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "fetchedCount": 0,
+      "acceptedCount": 0,
+      "previewCreatedCount": 0,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 0,
+      "sampleTitles": [],
+      "sampleLocations": []
+    },
+    "recommendedPromotion": false
+  },
+  {
+    "url": "https://jobs.siemens.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+    "boardUrl": "https://jobs.siemens.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+    "sourceKey": "successfactors:jobs.siemens.com",
+    "connectorName": "successfactors",
+    "token": "jobs.siemens.com",
+    "companyNames": [
+      "Siemens"
+    ],
+    "discoveredFromQueries": [
+      "https://jobs.siemens.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc"
+    ],
+    "searchResultUrls": [
+      "https://jobs.siemens.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc"
+    ],
+    "matchedReasons": [
+      "direct_seed_url"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "fetchedCount": 0,
+      "acceptedCount": 0,
+      "previewCreatedCount": 0,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 0,
+      "sampleTitles": [],
+      "sampleLocations": []
+    },
+    "recommendedPromotion": false
+  },
+  {
+    "url": "https://jobs.smartrecruiters.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+    "boardUrl": "https://jobs.smartrecruiters.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+    "sourceKey": "successfactors:jobs.smartrecruiters.com",
+    "connectorName": "successfactors",
+    "token": "jobs.smartrecruiters.com",
+    "companyNames": [
+      "Bosch"
+    ],
+    "discoveredFromQueries": [
+      "https://jobs.smartrecruiters.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc"
+    ],
+    "searchResultUrls": [
+      "https://jobs.smartrecruiters.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc"
+    ],
+    "matchedReasons": [
+      "direct_seed_url"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "fetchedCount": 0,
+      "acceptedCount": 0,
+      "previewCreatedCount": 0,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 0,
+      "sampleTitles": [],
+      "sampleLocations": []
+    },
+    "recommendedPromotion": false
+  }
+]

@@ -1,0 +1,106 @@
+[
+  {
+    "url": "https://jobs.philips.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+    "boardUrl": "https://jobs.philips.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+    "sourceKey": "successfactors:jobs.philips.com",
+    "connectorName": "successfactors",
+    "token": "jobs.philips.com",
+    "companyNames": [
+      "Philips"
+    ],
+    "discoveredFromQueries": [
+      "https://jobs.philips.com/search/?createNewAlert=false&q=&locationsearch=&optionsFacetsDD_country=&optionsFacetsDD_customfield3=",
+      "https://jobs.philips.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc"
+    ],
+    "searchResultUrls": [
+      "https://jobs.philips.com/search/?createNewAlert=false&q=&locationsearch=&optionsFacetsDD_country=&optionsFacetsDD_customfield3=",
+      "https://jobs.philips.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc"
+    ],
+    "matchedReasons": [
+      "direct_seed_url"
+    ],
+    "knownStatus": null
+  },
+  {
+    "url": "https://jobs.siemens.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+    "boardUrl": "https://jobs.siemens.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+    "sourceKey": "successfactors:jobs.siemens.com",
+    "connectorName": "successfactors",
+    "token": "jobs.siemens.com",
+    "companyNames": [
+      "Siemens"
+    ],
+    "discoveredFromQueries": [
+      "https://jobs.siemens.com/search/?createNewAlert=false&q=&locationsearch=&optionsFacetsDD_customfield3=&optionsFacetsDD_country=&optionsFacetsDD_department=",
+      "https://jobs.siemens.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc"
+    ],
+    "searchResultUrls": [
+      "https://jobs.siemens.com/search/?createNewAlert=false&q=&locationsearch=&optionsFacetsDD_customfield3=&optionsFacetsDD_country=&optionsFacetsDD_department=",
+      "https://jobs.siemens.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc"
+    ],
+    "matchedReasons": [
+      "direct_seed_url"
+    ],
+    "knownStatus": null
+  },
+  {
+    "url": "https://jobs.bosch-group.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+    "boardUrl": "https://jobs.bosch-group.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+    "sourceKey": "successfactors:jobs.bosch-group.com",
+    "connectorName": "successfactors",
+    "token": "jobs.bosch-group.com",
+    "companyNames": [
+      "Bosch"
+    ],
+    "discoveredFromQueries": [
+      "https://jobs.bosch-group.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc"
+    ],
+    "searchResultUrls": [
+      "https://jobs.bosch-group.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc"
+    ],
+    "matchedReasons": [
+      "direct_seed_url"
+    ],
+    "knownStatus": null
+  },
+  {
+    "url": "https://jobs.opg.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+    "boardUrl": "https://jobs.opg.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+    "sourceKey": "successfactors:jobs.opg.com",
+    "connectorName": "successfactors",
+    "token": "jobs.opg.com",
+    "companyNames": [
+      "Ontario Power Generation"
+    ],
+    "discoveredFromQueries": [
+      "https://jobs.opg.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc"
+    ],
+    "searchResultUrls": [
+      "https://jobs.opg.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc"
+    ],
+    "matchedReasons": [
+      "direct_seed_url"
+    ],
+    "knownStatus": null
+  },
+  {
+    "url": "https://jobs.sap.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+    "boardUrl": "https://jobs.sap.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+    "sourceKey": "successfactors:jobs.sap.com",
+    "connectorName": "successfactors",
+    "token": "jobs.sap.com",
+    "companyNames": [
+      "SAP"
+    ],
+    "discoveredFromQueries": [
+      "https://jobs.sap.com/search/?createNewAlert=false&q=&locationsearch=&optionsFacetsDD_department=&optionsFacetsDD_customfield5=&optionsFacetsDD_country=&optionsFacetsDD_city=&optionsFacetsDD_customfield3="
+    ],
+    "searchResultUrls": [
+      "https://jobs.sap.com/search/?createNewAlert=false&q=&locationsearch=&optionsFacetsDD_department=&optionsFacetsDD_customfield5=&optionsFacetsDD_country=&optionsFacetsDD_city=&optionsFacetsDD_customfield3="
+    ],
+    "matchedReasons": [
+      "direct_seed_url"
+    ],
+    "knownStatus": null
+  }
+]

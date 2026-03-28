@@ -1,0 +1,198 @@
+{
+  "generatedAt": "2026-03-27T16:28:54.023Z",
+  "families": [
+    "workday"
+  ],
+  "limitCompanies": 5,
+  "previewLimit": 20,
+  "threshold": 5,
+  "discoverySummary": {
+    "companiesSelected": [
+      "Bell",
+      "CGI",
+      "Intact Financial",
+      "Manulife",
+      "Sun Life"
+    ],
+    "queryCount": 17,
+    "cacheHits": 0,
+    "cacheMisses": 17,
+    "resultUrlsFetched": 38,
+    "uniqueResultUrls": 38,
+    "directSeedUrls": 0,
+    "candidatesDiscovered": 2,
+    "newCandidates": 1,
+    "skippedKnownCandidates": 1,
+    "candidatesByFamily": {
+      "workday": 1
+    },
+    "queryReports": [
+      {
+        "companyName": "Bell",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"Bell\" \"Montreal\" careers",
+        "reason": "canada_city_direct",
+        "fromCache": false,
+        "resultUrlsFetched": 3,
+        "errors": []
+      },
+      {
+        "companyName": "CGI",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"CGI\" \"Montreal\" careers",
+        "reason": "canada_city_direct",
+        "fromCache": false,
+        "resultUrlsFetched": 3,
+        "errors": []
+      },
+      {
+        "companyName": "Intact Financial",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"Intact Financial\" \"Toronto\" careers",
+        "reason": "canada_city_direct",
+        "fromCache": false,
+        "resultUrlsFetched": 3,
+        "errors": []
+      },
+      {
+        "companyName": "Manulife",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"Manulife\" \"Toronto\" careers",
+        "reason": "canada_city_direct",
+        "fromCache": false,
+        "resultUrlsFetched": 3,
+        "errors": []
+      },
+      {
+        "companyName": "Sun Life",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"Sun Life\" \"Toronto\" careers",
+        "reason": "canada_city_direct",
+        "fromCache": false,
+        "resultUrlsFetched": 3,
+        "errors": []
+      },
+      {
+        "companyName": "Bell",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"Bell\" careers",
+        "reason": "company_name_direct",
+        "fromCache": false,
+        "resultUrlsFetched": 3,
+        "errors": []
+      },
+      {
+        "companyName": "CGI",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"CGI\" careers",
+        "reason": "company_name_direct",
+        "fromCache": false,
+        "resultUrlsFetched": 3,
+        "errors": []
+      },
+      {
+        "companyName": "Intact Financial",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"Intact Financial\" careers",
+        "reason": "company_name_direct",
+        "fromCache": false,
+        "resultUrlsFetched": 3,
+        "errors": []
+      },
+      {
+        "companyName": "Manulife",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"Manulife\" careers",
+        "reason": "company_name_direct",
+        "fromCache": false,
+        "resultUrlsFetched": 3,
+        "errors": []
+      },
+      {
+        "companyName": "Sun Life",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"Sun Life\" careers",
+        "reason": "company_name_direct",
+        "fromCache": false,
+        "resultUrlsFetched": 3,
+        "errors": []
+      },
+      {
+        "companyName": "Bell",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"Bell\" jobs",
+        "reason": "company_name_jobs",
+        "fromCache": false,
+        "resultUrlsFetched": 3,
+        "errors": []
+      },
+      {
+        "companyName": "CGI",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"CGI\" jobs",
+        "reason": "company_name_jobs",
+        "fromCache": false,
+        "resultUrlsFetched": 3,
+        "errors": []
+      },
+      {
+        "companyName": "Intact Financial",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"Intact Financial\" jobs",
+        "reason": "company_name_jobs",
+        "fromCache": false,
+        "resultUrlsFetched": 3,
+        "errors": []
+      },
+      {
+        "companyName": "Manulife",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"Manulife\" jobs",
+        "reason": "company_name_jobs",
+        "fromCache": false,
+        "resultUrlsFetched": 3,
+        "errors": []
+      },
+      {
+        "companyName": "Sun Life",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"Sun Life\" jobs",
+        "reason": "company_name_jobs",
+        "fromCache": false,
+        "resultUrlsFetched": 3,
+        "errors": []
+      },
+      {
+        "companyName": "Intact Financial",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"intact\" careers",
+        "reason": "tenant_direct",
+        "fromCache": false,
+        "resultUrlsFetched": 3,
+        "errors": []
+      },
+      {
+        "companyName": "Sun Life",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"sunlife\" careers",
+        "reason": "tenant_direct",
+        "fromCache": false,
+        "resultUrlsFetched": 3,
+        "errors": []
+      }
+    ]
+  },
+  "previewedCount": 1,
+  "recommendedPromotions": [
+    {
+      "sourceKey": "workday:intactfc.wd3.myworkdayjobs.com|intactfc|intactfc",
+      "companyNames": [
+        "Intact Financial"
+      ],
+      "connectorName": "workday",
+      "previewCreatedCount": 6,
+      "acceptedCount": 6,
+      "boardUrl": "https://intactfc.wd3.myworkdayjobs.com/intactfc"
+    }
+  ]
+}

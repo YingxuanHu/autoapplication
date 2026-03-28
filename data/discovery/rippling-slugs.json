@@ -1,0 +1,1651 @@
+{
+  "updatedAt": "2026-03-26T22:24:27.641Z",
+  "entries": [
+    {
+      "boardSlug": "rippling",
+      "boardUrl": "https://ats.rippling.com/rippling/jobs",
+      "status": "promoted",
+      "firstDiscoveredAt": "2026-03-26T21:26:55.524Z",
+      "lastDiscoveredAt": "2026-03-26T22:24:27.641Z",
+      "discoveredFrom": [
+        {
+          "type": "manual_slug",
+          "value": "rippling",
+          "discoveredAt": "2026-03-26T21:26:55.524Z"
+        },
+        {
+          "type": "internal",
+          "value": "https://ats.rippling.com/rippling/jobs",
+          "discoveredAt": "2026-03-26T21:26:55.524Z"
+        }
+      ],
+      "decisionReason": "scheduled_default_coverage",
+      "promotedAt": "2026-03-26T21:26:55.524Z",
+      "lastValidatedAt": "2026-03-26T21:26:55.524Z",
+      "validation": {
+        "valid": true,
+        "threshold": 5,
+        "recommendedPromotion": true,
+        "pageTitle": "Rippling: #1 Workforce Management System | HR, IT, Finance",
+        "fetchedCount": 757,
+        "acceptedCount": 163,
+        "previewCreatedCount": 10,
+        "previewUpdatedCount": 153,
+        "dedupedCount": 38,
+        "rejectedCount": 594,
+        "sampleTitles": [
+          "Account Executive",
+          "Account Executive - Accountant Channel - Toronto",
+          "Account Executive - Accountant Channel (West Coast)",
+          "Account Executive - Accountant Channel (West Coast)",
+          "Account Executive - Accountants Channel (East Coast)"
+        ],
+        "sampleLocations": [
+          "Singapore",
+          "Toronto, CA",
+          "San Francisco, CA",
+          "United States",
+          "Massachusetts, US"
+        ]
+      }
+    },
+    {
+      "boardSlug": "anaconda",
+      "boardUrl": "https://ats.rippling.com/anaconda/jobs",
+      "status": "promoted",
+      "firstDiscoveredAt": "2026-03-26T21:26:55.524Z",
+      "lastDiscoveredAt": "2026-03-26T22:24:27.641Z",
+      "discoveredFrom": [
+        {
+          "type": "manual_slug",
+          "value": "anaconda",
+          "discoveredAt": "2026-03-26T21:26:55.524Z"
+        },
+        {
+          "type": "internal",
+          "value": "https://ats.rippling.com/anaconda/jobs",
+          "discoveredAt": "2026-03-26T21:26:55.524Z"
+        }
+      ],
+      "decisionReason": "scheduled_default_coverage",
+      "promotedAt": "2026-03-26T21:26:55.524Z",
+      "lastValidatedAt": "2026-03-26T21:26:55.524Z",
+      "validation": {
+        "valid": true,
+        "threshold": 5,
+        "recommendedPromotion": false,
+        "pageTitle": "AI &amp; Python Careers | Anaconda Careers | Anaconda",
+        "fetchedCount": 20,
+        "acceptedCount": 4,
+        "previewCreatedCount": 0,
+        "previewUpdatedCount": 4,
+        "dedupedCount": 0,
+        "rejectedCount": 16,
+        "sampleTitles": [
+          "Deal Desk Manager",
+          "Director Enterprise Sales- West",
+          "Director, Global Channels & Systems Integrators",
+          "Enterprise Account Executive - East (US)",
+          "Enterprise Account Executive - EMEA"
+        ],
+        "sampleLocations": [
+          "United States",
+          "United States",
+          "United States",
+          "Atlanta, Georgia, US",
+          "United Kingdom"
+        ]
+      }
+    },
+    {
+      "boardSlug": "tixr",
+      "boardUrl": "https://ats.rippling.com/tixr/jobs",
+      "status": "promoted",
+      "firstDiscoveredAt": "2026-03-26T21:26:55.524Z",
+      "lastDiscoveredAt": "2026-03-26T22:24:27.641Z",
+      "discoveredFrom": [
+        {
+          "type": "manual_slug",
+          "value": "tixr",
+          "discoveredAt": "2026-03-26T21:26:55.524Z"
+        },
+        {
+          "type": "internal",
+          "value": "https://ats.rippling.com/tixr/jobs",
+          "discoveredAt": "2026-03-26T21:26:55.524Z"
+        }
+      ],
+      "decisionReason": "scheduled_default_coverage",
+      "promotedAt": "2026-03-26T21:26:55.524Z",
+      "lastValidatedAt": "2026-03-26T21:26:55.524Z",
+      "validation": {
+        "valid": true,
+        "threshold": 5,
+        "recommendedPromotion": false,
+        "pageTitle": null,
+        "fetchedCount": 21,
+        "acceptedCount": 8,
+        "previewCreatedCount": 0,
+        "previewUpdatedCount": 8,
+        "dedupedCount": 0,
+        "rejectedCount": 13,
+        "sampleTitles": [
+          "Accounting Manager",
+          "Business Operations Manager",
+          "CEM, Canada",
+          "Client Experience Manager (London Based)",
+          "DataOps Engineer"
+        ],
+        "sampleLocations": [
+          "Santa Monica, CA",
+          "Santa Monica, CA",
+          "Canada",
+          "London, United Kingdom",
+          "United States"
+        ]
+      }
+    },
+    {
+      "boardSlug": "n3xt-jobs",
+      "boardUrl": "https://ats.rippling.com/n3xt-jobs/jobs",
+      "status": "promoted",
+      "firstDiscoveredAt": "2026-03-26T21:26:55.524Z",
+      "lastDiscoveredAt": "2026-03-26T22:24:27.641Z",
+      "discoveredFrom": [
+        {
+          "type": "manual_slug",
+          "value": "n3xt-jobs",
+          "discoveredAt": "2026-03-26T21:26:55.524Z"
+        },
+        {
+          "type": "internal",
+          "value": "https://ats.rippling.com/n3xt-jobs/jobs",
+          "discoveredAt": "2026-03-26T21:26:55.524Z"
+        }
+      ],
+      "decisionReason": "scheduled_default_coverage",
+      "promotedAt": "2026-03-26T21:26:55.524Z",
+      "lastValidatedAt": "2026-03-26T21:26:55.524Z",
+      "validation": {
+        "valid": true,
+        "threshold": 5,
+        "recommendedPromotion": false,
+        "pageTitle": null,
+        "fetchedCount": 12,
+        "acceptedCount": 7,
+        "previewCreatedCount": 0,
+        "previewUpdatedCount": 7,
+        "dedupedCount": 0,
+        "rejectedCount": 5,
+        "sampleTitles": [
+          "Client Success Analyst",
+          "Compliance Lead, Quality Assurance (QA) Testing",
+          "Compliance Lead, Quality Assurance (QA) Testing",
+          "DevOps Engineer - Blockchain & Digital Assets",
+          "DevOps Engineer - Blockchain & Digital Assets"
+        ],
+        "sampleLocations": [
+          "Cheyenne, WY",
+          "Denver, Colorado, US",
+          "Cheyenne, Wyoming, US",
+          "United States",
+          "Canada"
+        ]
+      }
+    },
+    {
+      "boardSlug": "exacare-inc",
+      "boardUrl": "https://ats.rippling.com/exacare-inc/jobs",
+      "status": "promoted",
+      "firstDiscoveredAt": "2026-03-26T21:26:55.524Z",
+      "lastDiscoveredAt": "2026-03-26T22:24:27.641Z",
+      "discoveredFrom": [
+        {
+          "type": "manual_slug",
+          "value": "exacare-inc",
+          "discoveredAt": "2026-03-26T21:26:55.524Z"
+        },
+        {
+          "type": "internal",
+          "value": "https://ats.rippling.com/exacare-inc/jobs",
+          "discoveredAt": "2026-03-26T21:26:55.524Z"
+        }
+      ],
+      "decisionReason": "scheduled_default_coverage",
+      "promotedAt": "2026-03-26T21:26:55.524Z",
+      "lastValidatedAt": "2026-03-26T21:26:55.524Z",
+      "validation": {
+        "valid": true,
+        "threshold": 5,
+        "recommendedPromotion": false,
+        "pageTitle": null,
+        "fetchedCount": 15,
+        "acceptedCount": 6,
+        "previewCreatedCount": 0,
+        "previewUpdatedCount": 6,
+        "dedupedCount": 0,
+        "rejectedCount": 9,
+        "sampleTitles": [
+          "Business Operations Manager",
+          "Customer Support Specialist",
+          "Enterprise Account Executive",
+          "Executive Assistant",
+          "Growth Marketing Manager"
+        ],
+        "sampleLocations": [
+          "Toronto, Canada",
+          "Canada",
+          "Remote, US",
+          "Toronto, Canada",
+          "Toronto, Canada"
+        ]
+      }
+    },
+    {
+      "boardSlug": "inrule",
+      "boardUrl": "https://ats.rippling.com/inrule/jobs",
+      "status": "promoted",
+      "firstDiscoveredAt": "2026-03-26T21:26:55.524Z",
+      "lastDiscoveredAt": "2026-03-26T22:24:27.641Z",
+      "discoveredFrom": [
+        {
+          "type": "manual_slug",
+          "value": "inrule",
+          "discoveredAt": "2026-03-26T21:26:55.524Z"
+        },
+        {
+          "type": "internal",
+          "value": "https://ats.rippling.com/inrule/jobs",
+          "discoveredAt": "2026-03-26T21:26:55.524Z"
+        }
+      ],
+      "decisionReason": "scheduled_default_coverage",
+      "promotedAt": "2026-03-26T21:26:55.524Z",
+      "lastValidatedAt": "2026-03-26T21:26:55.524Z",
+      "validation": {
+        "valid": true,
+        "threshold": 5,
+        "recommendedPromotion": false,
+        "pageTitle": null,
+        "fetchedCount": 8,
+        "acceptedCount": 5,
+        "previewCreatedCount": 0,
+        "previewUpdatedCount": 5,
+        "dedupedCount": 0,
+        "rejectedCount": 3,
+        "sampleTitles": [
+          "Account Executive (Enterprise Growth Track)",
+          "IT Operations Manager",
+          "Product Manager — Product Modernization",
+          "Product Manager — Product Modernization",
+          "Product Manager — Product Modernization"
+        ],
+        "sampleLocations": [
+          "Chicago, IL",
+          "Chicago, IL",
+          "Chicago, IL",
+          "Portugal",
+          "United States"
+        ]
+      }
+    },
+    {
+      "boardSlug": "join-the-hipcamp-team",
+      "boardUrl": "https://ats.rippling.com/join-the-hipcamp-team/jobs",
+      "status": "rejected",
+      "firstDiscoveredAt": "2026-03-26T21:26:55.524Z",
+      "lastDiscoveredAt": "2026-03-26T21:26:55.524Z",
+      "discoveredFrom": [
+        {
+          "type": "manual_slug",
+          "value": "join-the-hipcamp-team",
+          "discoveredAt": "2026-03-26T21:26:55.524Z"
+        }
+      ],
+      "decisionReason": "below_threshold",
+      "lastValidatedAt": "2026-03-26T21:26:55.524Z",
+      "validation": {
+        "valid": true,
+        "threshold": 5,
+        "recommendedPromotion": false,
+        "pageTitle": null,
+        "fetchedCount": 3,
+        "acceptedCount": 1,
+        "previewCreatedCount": 1,
+        "previewUpdatedCount": 0,
+        "dedupedCount": 0,
+        "rejectedCount": 2,
+        "sampleTitles": [
+          "Join Our Talent Pool!",
+          "Staff Product Manager",
+          "Australia Supply Acquisition Manager (12 month contract)"
+        ],
+        "sampleLocations": [
+          "United States",
+          "United States",
+          "Australia"
+        ]
+      },
+      "rejectedAt": "2026-03-26T21:26:55.524Z"
+    },
+    {
+      "boardSlug": "scratch-financial",
+      "boardUrl": "https://ats.rippling.com/scratch-financial/jobs",
+      "status": "rejected",
+      "firstDiscoveredAt": "2026-03-26T21:26:55.524Z",
+      "lastDiscoveredAt": "2026-03-26T21:26:55.524Z",
+      "discoveredFrom": [
+        {
+          "type": "manual_slug",
+          "value": "scratch-financial",
+          "discoveredAt": "2026-03-26T21:26:55.524Z"
+        }
+      ],
+      "decisionReason": "no_accepted_jobs",
+      "lastValidatedAt": "2026-03-26T21:26:55.524Z",
+      "validation": {
+        "valid": false,
+        "threshold": 5,
+        "recommendedPromotion": false,
+        "pageTitle": null,
+        "fetchedCount": 4,
+        "acceptedCount": 0,
+        "previewCreatedCount": 0,
+        "previewUpdatedCount": 0,
+        "dedupedCount": 0,
+        "rejectedCount": 4,
+        "sampleTitles": [
+          "Director of Engineering, Integrations",
+          "Director of Engineering, Integrations",
+          "Sales Development Representative",
+          "Sales Development Representative"
+        ],
+        "sampleLocations": [
+          "Pasadena, CA",
+          "United States",
+          "United States",
+          "Pasadena, CA"
+        ]
+      },
+      "rejectedAt": "2026-03-26T21:26:55.524Z"
+    },
+    {
+      "boardSlug": "foundant-careers",
+      "boardUrl": "https://ats.rippling.com/foundant-careers/jobs",
+      "status": "rejected",
+      "firstDiscoveredAt": "2026-03-26T21:26:55.524Z",
+      "lastDiscoveredAt": "2026-03-26T21:26:55.524Z",
+      "discoveredFrom": [
+        {
+          "type": "manual_slug",
+          "value": "foundant-careers",
+          "discoveredAt": "2026-03-26T21:26:55.524Z"
+        }
+      ],
+      "decisionReason": "no_accepted_jobs",
+      "lastValidatedAt": "2026-03-26T21:26:55.524Z",
+      "validation": {
+        "valid": false,
+        "threshold": 5,
+        "recommendedPromotion": false,
+        "pageTitle": null,
+        "fetchedCount": 17,
+        "acceptedCount": 0,
+        "previewCreatedCount": 0,
+        "previewUpdatedCount": 0,
+        "dedupedCount": 0,
+        "rejectedCount": 17,
+        "sampleTitles": [
+          "Business Development Representative",
+          "Client Success Consultant - Fund Accounting",
+          "Director, Product Marketing",
+          "Director, Product Marketing",
+          "Director, Product Marketing"
+        ],
+        "sampleLocations": [
+          "United States",
+          "United States",
+          "United States",
+          "Ireland",
+          "United Kingdom"
+        ]
+      },
+      "rejectedAt": "2026-03-26T21:26:55.524Z"
+    },
+    {
+      "boardSlug": "resident-interface",
+      "boardUrl": "https://ats.rippling.com/resident-interface/jobs",
+      "status": "rejected",
+      "firstDiscoveredAt": "2026-03-26T21:26:55.524Z",
+      "lastDiscoveredAt": "2026-03-26T21:26:55.524Z",
+      "discoveredFrom": [
+        {
+          "type": "manual_slug",
+          "value": "resident-interface",
+          "discoveredAt": "2026-03-26T21:26:55.524Z"
+        }
+      ],
+      "decisionReason": "below_threshold",
+      "lastValidatedAt": "2026-03-26T21:26:55.524Z",
+      "validation": {
+        "valid": true,
+        "threshold": 5,
+        "recommendedPromotion": false,
+        "pageTitle": null,
+        "fetchedCount": 11,
+        "acceptedCount": 3,
+        "previewCreatedCount": 3,
+        "previewUpdatedCount": 0,
+        "dedupedCount": 0,
+        "rejectedCount": 8,
+        "sampleTitles": [
+          "Case Analyst",
+          "Collections Representative",
+          "Data Insights & Analytics Manager",
+          "IT Help Desk Support Specialist",
+          "Jr. QA Specialist"
+        ],
+        "sampleLocations": [
+          "Ciudad de Guatemala, Guatemala",
+          "Ciudad de Guatemala, Guatemala",
+          "Tampa, FL",
+          "Tampa, FL",
+          "Ciudad de Guatemala, Guatemala"
+        ]
+      },
+      "rejectedAt": "2026-03-26T21:26:55.524Z"
+    },
+    {
+      "boardSlug": "qu-careers",
+      "boardUrl": "https://ats.rippling.com/qu-careers/jobs",
+      "status": "rejected",
+      "firstDiscoveredAt": "2026-03-26T21:26:55.524Z",
+      "lastDiscoveredAt": "2026-03-26T21:26:55.524Z",
+      "discoveredFrom": [
+        {
+          "type": "manual_slug",
+          "value": "qu-careers",
+          "discoveredAt": "2026-03-26T21:26:55.524Z"
+        }
+      ],
+      "decisionReason": "below_threshold",
+      "lastValidatedAt": "2026-03-26T21:26:55.524Z",
+      "validation": {
+        "valid": true,
+        "threshold": 5,
+        "recommendedPromotion": false,
+        "pageTitle": null,
+        "fetchedCount": 5,
+        "acceptedCount": 1,
+        "previewCreatedCount": 1,
+        "previewUpdatedCount": 0,
+        "dedupedCount": 0,
+        "rejectedCount": 4,
+        "sampleTitles": [
+          "Digital Marketing Manager",
+          "[LATAM] AI Developer - Software Engineer",
+          "[LATAM] Security Engineer – Detection & Visibility",
+          "QA Engineer (Payments Squad)",
+          "Sales Director"
+        ],
+        "sampleLocations": [
+          "United States",
+          "Argentina",
+          "Argentina",
+          "Arlington, VA",
+          "United States"
+        ]
+      },
+      "rejectedAt": "2026-03-26T21:26:55.524Z"
+    },
+    {
+      "boardSlug": "zivian-health-inc",
+      "boardUrl": "https://ats.rippling.com/zivian-health-inc/jobs",
+      "status": "rejected",
+      "firstDiscoveredAt": "2026-03-26T21:26:55.524Z",
+      "lastDiscoveredAt": "2026-03-26T21:26:55.524Z",
+      "discoveredFrom": [
+        {
+          "type": "manual_slug",
+          "value": "zivian-health-inc",
+          "discoveredAt": "2026-03-26T21:26:55.524Z"
+        }
+      ],
+      "decisionReason": "below_threshold",
+      "lastValidatedAt": "2026-03-26T21:26:55.524Z",
+      "validation": {
+        "valid": true,
+        "threshold": 5,
+        "recommendedPromotion": false,
+        "pageTitle": null,
+        "fetchedCount": 5,
+        "acceptedCount": 1,
+        "previewCreatedCount": 1,
+        "previewUpdatedCount": 0,
+        "dedupedCount": 0,
+        "rejectedCount": 4,
+        "sampleTitles": [
+          "Founder's Associate",
+          "Growth Marketing Manager",
+          "Implementation Manager",
+          "Senior Software Engineer",
+          "VP, Sales"
+        ],
+        "sampleLocations": [
+          "United States",
+          "United States",
+          "United States",
+          "United States",
+          "United States"
+        ]
+      },
+      "rejectedAt": "2026-03-26T21:26:55.524Z"
+    },
+    {
+      "boardSlug": "andium-careers",
+      "boardUrl": "https://ats.rippling.com/andium-careers/jobs",
+      "status": "rejected",
+      "firstDiscoveredAt": "2026-03-26T21:26:55.524Z",
+      "lastDiscoveredAt": "2026-03-26T21:26:55.524Z",
+      "discoveredFrom": [
+        {
+          "type": "manual_slug",
+          "value": "andium-careers",
+          "discoveredAt": "2026-03-26T21:26:55.524Z"
+        }
+      ],
+      "decisionReason": "below_threshold",
+      "lastValidatedAt": "2026-03-26T21:26:55.524Z",
+      "validation": {
+        "valid": true,
+        "threshold": 5,
+        "recommendedPromotion": false,
+        "pageTitle": null,
+        "fetchedCount": 1,
+        "acceptedCount": 1,
+        "previewCreatedCount": 1,
+        "previewUpdatedCount": 0,
+        "dedupedCount": 0,
+        "rejectedCount": 0,
+        "sampleTitles": [
+          "Product Manager"
+        ],
+        "sampleLocations": [
+          "United States"
+        ]
+      },
+      "rejectedAt": "2026-03-26T21:26:55.524Z"
+    },
+    {
+      "boardSlug": "apprenticareers",
+      "boardUrl": "https://ats.rippling.com/apprenticareers/jobs",
+      "status": "rejected",
+      "firstDiscoveredAt": "2026-03-26T21:26:55.524Z",
+      "lastDiscoveredAt": "2026-03-26T21:26:55.524Z",
+      "discoveredFrom": [
+        {
+          "type": "manual_slug",
+          "value": "apprenticareers",
+          "discoveredAt": "2026-03-26T21:26:55.524Z"
+        }
+      ],
+      "decisionReason": "empty_board",
+      "lastValidatedAt": "2026-03-26T21:26:55.524Z",
+      "validation": {
+        "valid": false,
+        "threshold": 5,
+        "recommendedPromotion": false,
+        "pageTitle": null,
+        "fetchedCount": 0,
+        "acceptedCount": 0,
+        "previewCreatedCount": 0,
+        "previewUpdatedCount": 0,
+        "dedupedCount": 0,
+        "rejectedCount": 0,
+        "sampleTitles": [],
+        "sampleLocations": []
+      },
+      "rejectedAt": "2026-03-26T21:26:55.524Z"
+    },
+    {
+      "boardSlug": "personifycorp",
+      "boardUrl": "https://ats.rippling.com/personifycorp/jobs",
+      "status": "rejected",
+      "firstDiscoveredAt": "2026-03-26T21:26:55.524Z",
+      "lastDiscoveredAt": "2026-03-26T21:26:55.524Z",
+      "discoveredFrom": [
+        {
+          "type": "manual_slug",
+          "value": "personifycorp",
+          "discoveredAt": "2026-03-26T21:26:55.524Z"
+        }
+      ],
+      "decisionReason": "empty_board",
+      "lastValidatedAt": "2026-03-26T21:26:55.524Z",
+      "validation": {
+        "valid": false,
+        "threshold": 5,
+        "recommendedPromotion": false,
+        "pageTitle": null,
+        "fetchedCount": 0,
+        "acceptedCount": 0,
+        "previewCreatedCount": 0,
+        "previewUpdatedCount": 0,
+        "dedupedCount": 0,
+        "rejectedCount": 0,
+        "sampleTitles": [],
+        "sampleLocations": []
+      },
+      "rejectedAt": "2026-03-26T21:26:55.524Z"
+    },
+    {
+      "boardSlug": "veruna",
+      "boardUrl": "https://ats.rippling.com/veruna/jobs",
+      "status": "rejected",
+      "firstDiscoveredAt": "2026-03-26T21:26:55.524Z",
+      "lastDiscoveredAt": "2026-03-26T21:26:55.524Z",
+      "discoveredFrom": [
+        {
+          "type": "manual_slug",
+          "value": "veruna",
+          "discoveredAt": "2026-03-26T21:26:55.524Z"
+        }
+      ],
+      "decisionReason": "preview_error",
+      "lastValidatedAt": "2026-03-26T21:26:55.524Z",
+      "validation": {
+        "valid": false,
+        "threshold": 5,
+        "recommendedPromotion": false,
+        "pageTitle": null,
+        "fetchedCount": 0,
+        "acceptedCount": 0,
+        "previewCreatedCount": 0,
+        "previewUpdatedCount": 0,
+        "dedupedCount": 0,
+        "rejectedCount": 0,
+        "sampleTitles": [],
+        "sampleLocations": [],
+        "error": "Rippling fetch failed for veruna: 404 Not Found"
+      },
+      "rejectedAt": "2026-03-26T21:26:55.524Z"
+    },
+    {
+      "boardSlug": "advision-development-careers",
+      "boardUrl": "https://ats.rippling.com/advision-development-careers/jobs",
+      "status": "rejected",
+      "firstDiscoveredAt": "2026-03-26T21:26:55.524Z",
+      "lastDiscoveredAt": "2026-03-26T21:26:55.524Z",
+      "discoveredFrom": [
+        {
+          "type": "manual_slug",
+          "value": "advision-development-careers",
+          "discoveredAt": "2026-03-26T21:26:55.524Z"
+        }
+      ],
+      "decisionReason": "below_threshold",
+      "lastValidatedAt": "2026-03-26T21:26:55.524Z",
+      "validation": {
+        "valid": true,
+        "threshold": 5,
+        "recommendedPromotion": false,
+        "pageTitle": null,
+        "fetchedCount": 11,
+        "acceptedCount": 4,
+        "previewCreatedCount": 4,
+        "previewUpdatedCount": 0,
+        "dedupedCount": 0,
+        "rejectedCount": 7,
+        "sampleTitles": [
+          "DevOps / Platform Engineer",
+          "DevOps / Platform Engineer",
+          "Junior Backend Developer (AI & LLM Focus)",
+          "Junior Backend Developer (AI & LLM Focus)",
+          "Senior Backend Developer (AI & LLM Focus)"
+        ],
+        "sampleLocations": [
+          "United States",
+          "Santa Ana, San José Province, CR",
+          "Austin, Texas, US",
+          "Austin, TX",
+          "Austin, TX"
+        ]
+      },
+      "rejectedAt": "2026-03-26T21:26:55.524Z"
+    },
+    {
+      "boardSlug": "netwrix-corporation",
+      "boardUrl": "https://ats.rippling.com/netwrix-corporation/jobs",
+      "status": "rejected",
+      "firstDiscoveredAt": "2026-03-26T21:26:55.524Z",
+      "lastDiscoveredAt": "2026-03-26T21:26:55.524Z",
+      "discoveredFrom": [
+        {
+          "type": "manual_slug",
+          "value": "netwrix-corporation",
+          "discoveredAt": "2026-03-26T21:26:55.524Z"
+        }
+      ],
+      "decisionReason": "below_threshold",
+      "lastValidatedAt": "2026-03-26T21:26:55.524Z",
+      "validation": {
+        "valid": true,
+        "threshold": 5,
+        "recommendedPromotion": false,
+        "pageTitle": null,
+        "fetchedCount": 21,
+        "acceptedCount": 3,
+        "previewCreatedCount": 3,
+        "previewUpdatedCount": 0,
+        "dedupedCount": 0,
+        "rejectedCount": 18,
+        "sampleTitles": [
+          "AI Data Engineer",
+          "DACH and CEE Field & Channel Marketing Manager",
+          "DACH and CEE Field & Channel Marketing Manager",
+          "Director, Sales Operations",
+          "Field & Channel Marketing Manager"
+        ],
+        "sampleLocations": [
+          "United States",
+          "Kraków, Lesser Poland Voivodeship, PL",
+          "Cluj-Napoca, Cluj County, RO",
+          "United States",
+          "India"
+        ]
+      },
+      "rejectedAt": "2026-03-26T21:26:55.524Z"
+    },
+    {
+      "boardSlug": "signaladvisors",
+      "boardUrl": "https://ats.rippling.com/signaladvisors/jobs",
+      "status": "rejected",
+      "firstDiscoveredAt": "2026-03-26T21:26:55.524Z",
+      "lastDiscoveredAt": "2026-03-26T21:26:55.524Z",
+      "discoveredFrom": [
+        {
+          "type": "manual_slug",
+          "value": "signaladvisors",
+          "discoveredAt": "2026-03-26T21:26:55.524Z"
+        }
+      ],
+      "decisionReason": "below_threshold",
+      "lastValidatedAt": "2026-03-26T21:26:55.524Z",
+      "validation": {
+        "valid": true,
+        "threshold": 5,
+        "recommendedPromotion": false,
+        "pageTitle": null,
+        "fetchedCount": 15,
+        "acceptedCount": 2,
+        "previewCreatedCount": 2,
+        "previewUpdatedCount": 0,
+        "dedupedCount": 0,
+        "rejectedCount": 13,
+        "sampleTitles": [
+          "Account Executive",
+          "Accounting Associate",
+          "Compliance Associate",
+          "Director of Advisor Success",
+          "Director of Advisor Success"
+        ],
+        "sampleLocations": [
+          "Detroit, Michigan, US",
+          "Signal HQ- Detroit, MI",
+          "Detroit, MI",
+          "United States",
+          "Detroit, Michigan, US"
+        ]
+      },
+      "rejectedAt": "2026-03-26T21:26:55.524Z"
+    },
+    {
+      "boardSlug": "mdintegrations",
+      "boardUrl": "https://ats.rippling.com/mdintegrations/jobs",
+      "status": "rejected",
+      "firstDiscoveredAt": "2026-03-26T21:26:55.524Z",
+      "lastDiscoveredAt": "2026-03-26T21:26:55.524Z",
+      "discoveredFrom": [
+        {
+          "type": "manual_slug",
+          "value": "mdintegrations",
+          "discoveredAt": "2026-03-26T21:26:55.524Z"
+        }
+      ],
+      "decisionReason": "below_threshold",
+      "lastValidatedAt": "2026-03-26T21:26:55.524Z",
+      "validation": {
+        "valid": true,
+        "threshold": 5,
+        "recommendedPromotion": false,
+        "pageTitle": null,
+        "fetchedCount": 1,
+        "acceptedCount": 1,
+        "previewCreatedCount": 1,
+        "previewUpdatedCount": 0,
+        "dedupedCount": 0,
+        "rejectedCount": 0,
+        "sampleTitles": [
+          "Product Manager"
+        ],
+        "sampleLocations": [
+          "United States"
+        ]
+      },
+      "rejectedAt": "2026-03-26T21:26:55.524Z"
+    },
+    {
+      "boardSlug": "incredible-health",
+      "boardUrl": "https://ats.rippling.com/incredible-health/jobs",
+      "status": "rejected",
+      "firstDiscoveredAt": "2026-03-26T21:26:55.524Z",
+      "lastDiscoveredAt": "2026-03-26T21:26:55.524Z",
+      "discoveredFrom": [
+        {
+          "type": "manual_slug",
+          "value": "incredible-health",
+          "discoveredAt": "2026-03-26T21:26:55.524Z"
+        }
+      ],
+      "decisionReason": "no_accepted_jobs",
+      "lastValidatedAt": "2026-03-26T21:26:55.524Z",
+      "validation": {
+        "valid": false,
+        "threshold": 5,
+        "recommendedPromotion": false,
+        "pageTitle": null,
+        "fetchedCount": 1,
+        "acceptedCount": 0,
+        "previewCreatedCount": 0,
+        "previewUpdatedCount": 0,
+        "dedupedCount": 0,
+        "rejectedCount": 1,
+        "sampleTitles": [
+          "Enterprise Account Executive"
+        ],
+        "sampleLocations": [
+          "United States"
+        ]
+      },
+      "rejectedAt": "2026-03-26T21:26:55.524Z"
+    },
+    {
+      "boardSlug": "rivet",
+      "boardUrl": "https://ats.rippling.com/rivet/jobs",
+      "status": "rejected",
+      "firstDiscoveredAt": "2026-03-26T21:26:55.524Z",
+      "lastDiscoveredAt": "2026-03-26T21:26:55.524Z",
+      "discoveredFrom": [
+        {
+          "type": "manual_slug",
+          "value": "rivet",
+          "discoveredAt": "2026-03-26T21:26:55.524Z"
+        }
+      ],
+      "decisionReason": "no_accepted_jobs",
+      "lastValidatedAt": "2026-03-26T21:26:55.524Z",
+      "validation": {
+        "valid": false,
+        "threshold": 5,
+        "recommendedPromotion": false,
+        "pageTitle": null,
+        "fetchedCount": 1,
+        "acceptedCount": 0,
+        "previewCreatedCount": 0,
+        "previewUpdatedCount": 0,
+        "dedupedCount": 0,
+        "rejectedCount": 1,
+        "sampleTitles": [
+          "Sales Development Representative"
+        ],
+        "sampleLocations": [
+          "Sandy, UT"
+        ]
+      },
+      "rejectedAt": "2026-03-26T21:26:55.524Z"
+    },
+    {
+      "boardSlug": "teamsideline-job-board",
+      "boardUrl": "https://ats.rippling.com/teamsideline-job-board/jobs",
+      "status": "rejected",
+      "firstDiscoveredAt": "2026-03-26T21:26:55.524Z",
+      "lastDiscoveredAt": "2026-03-26T21:26:55.524Z",
+      "discoveredFrom": [
+        {
+          "type": "manual_slug",
+          "value": "teamsideline-job-board",
+          "discoveredAt": "2026-03-26T21:26:55.524Z"
+        }
+      ],
+      "decisionReason": "empty_board",
+      "lastValidatedAt": "2026-03-26T21:26:55.524Z",
+      "validation": {
+        "valid": false,
+        "threshold": 5,
+        "recommendedPromotion": false,
+        "pageTitle": null,
+        "fetchedCount": 0,
+        "acceptedCount": 0,
+        "previewCreatedCount": 0,
+        "previewUpdatedCount": 0,
+        "dedupedCount": 0,
+        "rejectedCount": 0,
+        "sampleTitles": [],
+        "sampleLocations": []
+      },
+      "rejectedAt": "2026-03-26T21:26:55.524Z"
+    },
+    {
+      "boardSlug": "tangible-materials-inc",
+      "boardUrl": "https://ats.rippling.com/tangible-materials-inc/jobs",
+      "status": "rejected",
+      "firstDiscoveredAt": "2026-03-26T21:26:55.524Z",
+      "lastDiscoveredAt": "2026-03-26T21:26:55.524Z",
+      "discoveredFrom": [
+        {
+          "type": "manual_slug",
+          "value": "tangible-materials-inc",
+          "discoveredAt": "2026-03-26T21:26:55.524Z"
+        }
+      ],
+      "decisionReason": "empty_board",
+      "lastValidatedAt": "2026-03-26T21:26:55.524Z",
+      "validation": {
+        "valid": false,
+        "threshold": 5,
+        "recommendedPromotion": false,
+        "pageTitle": null,
+        "fetchedCount": 0,
+        "acceptedCount": 0,
+        "previewCreatedCount": 0,
+        "previewUpdatedCount": 0,
+        "dedupedCount": 0,
+        "rejectedCount": 0,
+        "sampleTitles": [],
+        "sampleLocations": []
+      },
+      "rejectedAt": "2026-03-26T21:26:55.524Z"
+    },
+    {
+      "boardSlug": "patientnow",
+      "boardUrl": "https://ats.rippling.com/patientnow/jobs",
+      "status": "promoted",
+      "firstDiscoveredAt": "2026-03-26T21:26:55.524Z",
+      "lastDiscoveredAt": "2026-03-26T22:24:27.641Z",
+      "discoveredFrom": [
+        {
+          "type": "manual_slug",
+          "value": "patientnow",
+          "discoveredAt": "2026-03-26T21:26:55.524Z"
+        },
+        {
+          "type": "internal",
+          "value": "https://ats.rippling.com/patientnow/jobs",
+          "discoveredAt": "2026-03-26T21:28:19.189Z"
+        }
+      ],
+      "decisionReason": "manually_promoted",
+      "lastValidatedAt": "2026-03-26T21:28:19.189Z",
+      "validation": {
+        "valid": true,
+        "threshold": 5,
+        "recommendedPromotion": false,
+        "pageTitle": null,
+        "fetchedCount": 10,
+        "acceptedCount": 7,
+        "previewCreatedCount": 0,
+        "previewUpdatedCount": 7,
+        "dedupedCount": 0,
+        "rejectedCount": 3,
+        "sampleTitles": [
+          "Associate Product Manager",
+          "Design Engineer - Mobile / UX",
+          "Fullstack Engineer - CPaaS",
+          "Onboarding Specialist",
+          "Product Manager - Recura"
+        ],
+        "sampleLocations": [
+          "United States",
+          "Brooklyn, NY",
+          "Brooklyn, NY",
+          "Brooklyn, NY",
+          "Brooklyn, NY"
+        ]
+      },
+      "rejectedAt": null,
+      "promotedAt": "2026-03-26T21:28:19.189Z"
+    },
+    {
+      "boardSlug": "swimlane",
+      "boardUrl": "https://ats.rippling.com/swimlane/jobs",
+      "status": "rejected",
+      "firstDiscoveredAt": "2026-03-26T21:26:55.524Z",
+      "lastDiscoveredAt": "2026-03-26T21:26:55.524Z",
+      "discoveredFrom": [
+        {
+          "type": "manual_slug",
+          "value": "swimlane",
+          "discoveredAt": "2026-03-26T21:26:55.524Z"
+        }
+      ],
+      "decisionReason": "no_accepted_jobs",
+      "lastValidatedAt": "2026-03-26T21:26:55.524Z",
+      "validation": {
+        "valid": false,
+        "threshold": 5,
+        "recommendedPromotion": false,
+        "pageTitle": null,
+        "fetchedCount": 12,
+        "acceptedCount": 0,
+        "previewCreatedCount": 0,
+        "previewUpdatedCount": 0,
+        "dedupedCount": 0,
+        "rejectedCount": 12,
+        "sampleTitles": [
+          "Associate SDET",
+          "Engineering Manager",
+          "Platform/ Devops/ CICD  Engineer",
+          "Professional Services Engineer",
+          "Sales Director (TX)"
+        ],
+        "sampleLocations": [
+          "India",
+          "India",
+          "India",
+          "India",
+          "Houston, Texas, US"
+        ]
+      },
+      "rejectedAt": "2026-03-26T21:26:55.524Z"
+    },
+    {
+      "boardSlug": "tort-experts",
+      "boardUrl": "https://ats.rippling.com/tort-experts/jobs",
+      "status": "rejected",
+      "firstDiscoveredAt": "2026-03-26T21:26:55.524Z",
+      "lastDiscoveredAt": "2026-03-26T21:26:55.524Z",
+      "discoveredFrom": [
+        {
+          "type": "manual_slug",
+          "value": "tort-experts",
+          "discoveredAt": "2026-03-26T21:26:55.524Z"
+        }
+      ],
+      "decisionReason": "no_accepted_jobs",
+      "lastValidatedAt": "2026-03-26T21:26:55.524Z",
+      "validation": {
+        "valid": false,
+        "threshold": 5,
+        "recommendedPromotion": false,
+        "pageTitle": null,
+        "fetchedCount": 40,
+        "acceptedCount": 0,
+        "previewCreatedCount": 0,
+        "previewUpdatedCount": 0,
+        "dedupedCount": 0,
+        "rejectedCount": 40,
+        "sampleTitles": [
+          "Intake Advocate",
+          "Intake Advocate",
+          "Intake Advocate",
+          "Intake Advocate",
+          "Jr. AI Automation Engineer"
+        ],
+        "sampleLocations": [
+          "Florida, US",
+          "Tennessee, US",
+          "Texas, US",
+          "Wyoming, Pennsylvania, US",
+          "Argentina"
+        ]
+      },
+      "rejectedAt": "2026-03-26T21:26:55.524Z"
+    },
+    {
+      "boardSlug": "ati",
+      "boardUrl": "https://ats.rippling.com/ati/jobs",
+      "status": "rejected",
+      "firstDiscoveredAt": "2026-03-26T21:41:28.615Z",
+      "lastDiscoveredAt": "2026-03-26T21:41:28.615Z",
+      "discoveredFrom": [
+        {
+          "type": "manual_url",
+          "value": "https://ats.rippling.com/ati/jobs/25256305-8578-4da7-9625-e88033e3028e",
+          "discoveredAt": "2026-03-26T21:41:28.615Z"
+        }
+      ],
+      "decisionReason": "below_threshold",
+      "lastValidatedAt": "2026-03-26T21:41:28.615Z",
+      "validation": {
+        "valid": true,
+        "threshold": 5,
+        "recommendedPromotion": false,
+        "pageTitle": null,
+        "fetchedCount": 5,
+        "acceptedCount": 4,
+        "previewCreatedCount": 4,
+        "previewUpdatedCount": 0,
+        "dedupedCount": 0,
+        "rejectedCount": 1,
+        "sampleTitles": [
+          "Chief Technology Officer",
+          "Product Manager",
+          "Senior Electrical Engineer",
+          "Senior/Principal Mechanical Engineer",
+          "Technical Lead Mechanical Engineer"
+        ],
+        "sampleLocations": [
+          "Waltham, MA",
+          "Waltham, MA",
+          "Waltham, MA",
+          "Waltham, MA",
+          "Waltham, MA"
+        ]
+      },
+      "rejectedAt": "2026-03-26T21:41:28.615Z"
+    },
+    {
+      "boardSlug": "harborcompliance",
+      "boardUrl": "https://ats.rippling.com/harborcompliance/jobs",
+      "status": "rejected",
+      "firstDiscoveredAt": "2026-03-26T21:41:28.615Z",
+      "lastDiscoveredAt": "2026-03-26T21:41:28.615Z",
+      "discoveredFrom": [
+        {
+          "type": "manual_url",
+          "value": "https://ats.rippling.com/en-US/harborcompliance/jobs/06eb3886-d972-4045-a7cb-dac316bc337d",
+          "discoveredAt": "2026-03-26T21:41:28.615Z"
+        }
+      ],
+      "decisionReason": "no_accepted_jobs",
+      "lastValidatedAt": "2026-03-26T21:41:28.615Z",
+      "validation": {
+        "valid": false,
+        "threshold": 5,
+        "recommendedPromotion": false,
+        "pageTitle": null,
+        "fetchedCount": 10,
+        "acceptedCount": 0,
+        "previewCreatedCount": 0,
+        "previewUpdatedCount": 0,
+        "dedupedCount": 0,
+        "rejectedCount": 10,
+        "sampleTitles": [
+          "Account Executive",
+          "Channel Account Manager",
+          "Client Development Executive",
+          "Controller",
+          "Customer Success Coordinator"
+        ],
+        "sampleLocations": [
+          "United States",
+          "United States",
+          "United States",
+          "United States",
+          "United States"
+        ]
+      },
+      "rejectedAt": "2026-03-26T21:41:28.615Z"
+    },
+    {
+      "boardSlug": "patientfi",
+      "boardUrl": "https://ats.rippling.com/patientfi/jobs",
+      "status": "rejected",
+      "firstDiscoveredAt": "2026-03-26T21:41:28.615Z",
+      "lastDiscoveredAt": "2026-03-26T21:41:28.615Z",
+      "discoveredFrom": [
+        {
+          "type": "manual_url",
+          "value": "https://ats.rippling.com/patientfi/jobs/c45b4eef-971d-4b18-bf70-5e10a2a2a7eb",
+          "discoveredAt": "2026-03-26T21:41:28.615Z"
+        }
+      ],
+      "decisionReason": "below_threshold",
+      "lastValidatedAt": "2026-03-26T21:41:28.615Z",
+      "validation": {
+        "valid": true,
+        "threshold": 5,
+        "recommendedPromotion": false,
+        "pageTitle": null,
+        "fetchedCount": 4,
+        "acceptedCount": 1,
+        "previewCreatedCount": 1,
+        "previewUpdatedCount": 0,
+        "dedupedCount": 0,
+        "rejectedCount": 3,
+        "sampleTitles": [
+          "Business Development Manager (SoCal)",
+          "Credit Analyst",
+          "Principal/Director of Product",
+          "Vice President, Capital Markets"
+        ],
+        "sampleLocations": [
+          "California, US",
+          "United States",
+          "United States",
+          "United States"
+        ]
+      },
+      "rejectedAt": "2026-03-26T21:41:28.615Z"
+    },
+    {
+      "boardSlug": "everflow",
+      "boardUrl": "https://ats.rippling.com/everflow/jobs",
+      "status": "rejected",
+      "firstDiscoveredAt": "2026-03-26T21:41:28.615Z",
+      "lastDiscoveredAt": "2026-03-26T21:41:28.615Z",
+      "discoveredFrom": [
+        {
+          "type": "manual_url",
+          "value": "https://ats.rippling.com/everflow/jobs/dac6d124-b082-4f5c-93a2-df1f54913c10",
+          "discoveredAt": "2026-03-26T21:41:28.615Z"
+        }
+      ],
+      "decisionReason": "no_accepted_jobs",
+      "lastValidatedAt": "2026-03-26T21:41:28.615Z",
+      "validation": {
+        "valid": false,
+        "threshold": 5,
+        "recommendedPromotion": false,
+        "pageTitle": null,
+        "fetchedCount": 7,
+        "acceptedCount": 0,
+        "previewCreatedCount": 0,
+        "previewUpdatedCount": 0,
+        "dedupedCount": 0,
+        "rejectedCount": 7,
+        "sampleTitles": [
+          "Sales Operations Specialist",
+          "Sales Operations Specialist",
+          "Technical Solutions Manager",
+          "Technical Solutions Manager",
+          "Technical Solutions Manager"
+        ],
+        "sampleLocations": [
+          "Oakland, California, US",
+          "Costa Mesa, California, US",
+          "Orlando, Florida, US",
+          "Tampa, Florida, US",
+          "New York, New York, US"
+        ]
+      },
+      "rejectedAt": "2026-03-26T21:41:28.615Z"
+    },
+    {
+      "boardSlug": "ambyint-careers",
+      "boardUrl": "https://ats.rippling.com/ambyint-careers/jobs",
+      "status": "rejected",
+      "firstDiscoveredAt": "2026-03-26T21:41:28.615Z",
+      "lastDiscoveredAt": "2026-03-26T21:41:28.615Z",
+      "discoveredFrom": [
+        {
+          "type": "manual_url",
+          "value": "https://ats.rippling.com/ambyint-careers/jobs/ae4e2126-05ec-49b7-af4a-9ab2420890c1",
+          "discoveredAt": "2026-03-26T21:41:28.615Z"
+        }
+      ],
+      "decisionReason": "below_threshold",
+      "lastValidatedAt": "2026-03-26T21:41:28.615Z",
+      "validation": {
+        "valid": true,
+        "threshold": 5,
+        "recommendedPromotion": false,
+        "pageTitle": null,
+        "fetchedCount": 3,
+        "acceptedCount": 1,
+        "previewCreatedCount": 1,
+        "previewUpdatedCount": 0,
+        "dedupedCount": 0,
+        "rejectedCount": 2,
+        "sampleTitles": [
+          "Frontend Developer",
+          "Head of Customer Success",
+          "SCADA Data Specialist"
+        ],
+        "sampleLocations": [
+          "Calgary, Canada",
+          "Calgary, Canada",
+          "Calgary, AB, Canada"
+        ]
+      },
+      "rejectedAt": "2026-03-26T21:41:28.615Z"
+    },
+    {
+      "boardSlug": "vouch-inc",
+      "boardUrl": "https://ats.rippling.com/vouch-inc/jobs",
+      "status": "promoted",
+      "firstDiscoveredAt": "2026-03-26T21:41:28.615Z",
+      "lastDiscoveredAt": "2026-03-26T22:24:27.641Z",
+      "discoveredFrom": [
+        {
+          "type": "manual_url",
+          "value": "https://ats.rippling.com/vouch-inc/jobs/49897f43-f828-4a59-89c1-99d1c80ecfb2",
+          "discoveredAt": "2026-03-26T21:41:28.615Z"
+        },
+        {
+          "type": "manual_slug",
+          "value": "vouch-inc",
+          "discoveredAt": "2026-03-26T21:42:47.773Z"
+        },
+        {
+          "type": "internal",
+          "value": "https://ats.rippling.com/vouch-inc/jobs",
+          "discoveredAt": "2026-03-26T21:42:47.773Z"
+        }
+      ],
+      "decisionReason": "manually_promoted",
+      "lastValidatedAt": "2026-03-26T21:42:47.773Z",
+      "validation": {
+        "valid": true,
+        "threshold": 5,
+        "recommendedPromotion": false,
+        "pageTitle": null,
+        "fetchedCount": 20,
+        "acceptedCount": 6,
+        "previewCreatedCount": 0,
+        "previewUpdatedCount": 6,
+        "dedupedCount": 0,
+        "rejectedCount": 14,
+        "sampleTitles": [
+          "Analytics Engineer",
+          "Brokerage Operations Associate",
+          "Client Coordinator",
+          "Client Coordinator",
+          "Client Coordinator"
+        ],
+        "sampleLocations": [
+          "United States",
+          "United States",
+          "Hybrid",
+          "Hybrid",
+          "Hybrid"
+        ]
+      },
+      "rejectedAt": null,
+      "promotedAt": "2026-03-26T21:42:47.773Z"
+    },
+    {
+      "boardSlug": "careers-at-disco",
+      "boardUrl": "https://ats.rippling.com/careers-at-disco/jobs",
+      "status": "rejected",
+      "firstDiscoveredAt": "2026-03-26T21:41:28.615Z",
+      "lastDiscoveredAt": "2026-03-26T21:41:28.615Z",
+      "discoveredFrom": [
+        {
+          "type": "manual_url",
+          "value": "https://ats.rippling.com/careers-at-disco/jobs/03111fd6-153d-4f0b-8309-1948a85e7670",
+          "discoveredAt": "2026-03-26T21:41:28.615Z"
+        }
+      ],
+      "decisionReason": "no_accepted_jobs",
+      "lastValidatedAt": "2026-03-26T21:41:28.615Z",
+      "validation": {
+        "valid": false,
+        "threshold": 5,
+        "recommendedPromotion": false,
+        "pageTitle": null,
+        "fetchedCount": 1,
+        "acceptedCount": 0,
+        "previewCreatedCount": 0,
+        "previewUpdatedCount": 0,
+        "dedupedCount": 0,
+        "rejectedCount": 1,
+        "sampleTitles": [
+          "Vice President, Product"
+        ],
+        "sampleLocations": [
+          "New York, NY"
+        ]
+      },
+      "rejectedAt": "2026-03-26T21:41:28.615Z"
+    },
+    {
+      "boardSlug": "crisp-careers",
+      "boardUrl": "https://ats.rippling.com/crisp-careers/jobs",
+      "status": "rejected",
+      "firstDiscoveredAt": "2026-03-26T21:41:28.615Z",
+      "lastDiscoveredAt": "2026-03-26T21:41:28.615Z",
+      "discoveredFrom": [
+        {
+          "type": "manual_url",
+          "value": "https://ats.rippling.com/crisp-careers/jobs/329f68e4-fdf8-4a69-9089-484cdb719a97",
+          "discoveredAt": "2026-03-26T21:41:28.615Z"
+        }
+      ],
+      "decisionReason": "below_threshold",
+      "lastValidatedAt": "2026-03-26T21:41:28.615Z",
+      "validation": {
+        "valid": true,
+        "threshold": 5,
+        "recommendedPromotion": false,
+        "pageTitle": null,
+        "fetchedCount": 3,
+        "acceptedCount": 2,
+        "previewCreatedCount": 2,
+        "previewUpdatedCount": 0,
+        "dedupedCount": 0,
+        "rejectedCount": 1,
+        "sampleTitles": [
+          "Product Analytics Data Scientist",
+          "Product Marketing Manager",
+          "Sr. Software Engineer, Data Modeling"
+        ],
+        "sampleLocations": [
+          "United States",
+          "London, United Kingdom",
+          "United States"
+        ]
+      },
+      "rejectedAt": "2026-03-26T21:41:28.615Z"
+    },
+    {
+      "boardSlug": "free-market-health",
+      "boardUrl": "https://ats.rippling.com/free-market-health/jobs",
+      "status": "rejected",
+      "firstDiscoveredAt": "2026-03-26T22:02:18.557Z",
+      "lastDiscoveredAt": "2026-03-26T22:24:27.641Z",
+      "discoveredFrom": [
+        {
+          "type": "dataset",
+          "value": "https://ats.rippling.com/free-market-health/jobs/76b58756-888b-4812-8921-4a59aa5c65be",
+          "sourcePageUrl": "https://www.linkedin.com/redir/redirect?url=https%3A%2F%2Fats.rippling.com%2Ffree-market-health%2Fjobs%2F76b58756-888b-4812-8921-4a59aa5c65be",
+          "discoveredAt": "2026-03-26T22:02:18.557Z"
+        },
+        {
+          "type": "manual_url",
+          "value": "https://ats.rippling.com/free-market-health/jobs/76b58756-888b-4812-8921-4a59aa5c65be",
+          "sourcePageUrl": "https://www.linkedin.com/redir/redirect?url=https%3A%2F%2Fats.rippling.com%2Ffree-market-health%2Fjobs%2F76b58756-888b-4812-8921-4a59aa5c65be",
+          "discoveredAt": "2026-03-26T22:04:04.850Z"
+        }
+      ],
+      "decisionReason": "below_threshold",
+      "lastValidatedAt": "2026-03-26T22:04:04.850Z",
+      "validation": {
+        "valid": true,
+        "threshold": 5,
+        "recommendedPromotion": false,
+        "pageTitle": null,
+        "fetchedCount": 5,
+        "acceptedCount": 4,
+        "previewCreatedCount": 4,
+        "previewUpdatedCount": 0,
+        "dedupedCount": 0,
+        "rejectedCount": 1,
+        "sampleTitles": [
+          "FP&A Analyst",
+          "Pharmacist in Charge",
+          "Product Manager",
+          "Software Engineer",
+          "Software Engineer"
+        ],
+        "sampleLocations": [
+          "Pittsburgh, PA",
+          "Pittsburgh, PA",
+          "Pittsburgh, PA",
+          "United States",
+          "Pittsburgh, PA"
+        ]
+      },
+      "rejectedAt": "2026-03-26T22:04:04.850Z"
+    },
+    {
+      "boardSlug": "heads-up-technologies",
+      "boardUrl": "https://ats.rippling.com/heads-up-technologies/jobs",
+      "status": "promoted",
+      "firstDiscoveredAt": "2026-03-26T22:02:18.557Z",
+      "lastDiscoveredAt": "2026-03-26T22:24:27.641Z",
+      "discoveredFrom": [
+        {
+          "type": "dataset",
+          "value": "https://ats.rippling.com/heads-up-technologies/jobs/b3f98805-7c5d-428a-8eb7-c0112970fca1",
+          "sourcePageUrl": "https://www.linkedin.com/redir/redirect?url=https%3A%2F%2Fats.rippling.com%2Fheads-up-technologies%2Fjobs%2Fb3f98805-7c5d-428a-8eb7-c0112970fca1",
+          "discoveredAt": "2026-03-26T22:02:18.557Z"
+        },
+        {
+          "type": "manual_slug",
+          "value": "heads-up-technologies",
+          "discoveredAt": "2026-03-26T22:02:54.213Z"
+        },
+        {
+          "type": "internal",
+          "value": "https://ats.rippling.com/heads-up-technologies/jobs",
+          "discoveredAt": "2026-03-26T22:02:54.213Z"
+        }
+      ],
+      "decisionReason": "manually_promoted",
+      "lastValidatedAt": "2026-03-26T22:02:54.213Z",
+      "validation": {
+        "valid": true,
+        "threshold": 5,
+        "recommendedPromotion": false,
+        "pageTitle": null,
+        "fetchedCount": 18,
+        "acceptedCount": 12,
+        "previewCreatedCount": 2,
+        "previewUpdatedCount": 10,
+        "dedupedCount": 0,
+        "rejectedCount": 6,
+        "sampleTitles": [
+          "Applications Developer",
+          "Aviation Warehouse Order Clerk",
+          "DevOps Engineer",
+          "Electrical Engineer",
+          "Electronic Test Technician"
+        ],
+        "sampleLocations": [
+          "Kirkland, WA",
+          "Addison, TX",
+          "Kirkland, WA",
+          "Dallas, TX",
+          "Addison, TX"
+        ]
+      },
+      "rejectedAt": null,
+      "promotedAt": "2026-03-26T22:02:54.213Z"
+    },
+    {
+      "boardSlug": "american-technology-services",
+      "boardUrl": "https://ats.rippling.com/american-technology-services/jobs",
+      "status": "rejected",
+      "firstDiscoveredAt": "2026-03-26T22:02:18.557Z",
+      "lastDiscoveredAt": "2026-03-26T22:02:18.557Z",
+      "discoveredFrom": [
+        {
+          "type": "dataset",
+          "value": "https://ats.rippling.com/american-technology-services/jobs/1a6e748f-6fb3-4227-a971-128046af10b0",
+          "sourcePageUrl": "https://www.linkedin.com/redir/redirect?url=https%3A%2F%2Fats.rippling.com%2Famerican-technology-services%2Fjobs%2F1a6e748f-6fb3-4227-a971-128046af10b0",
+          "discoveredAt": "2026-03-26T22:02:18.557Z"
+        }
+      ],
+      "decisionReason": "below_threshold",
+      "lastValidatedAt": "2026-03-26T22:02:18.557Z",
+      "validation": {
+        "valid": true,
+        "threshold": 5,
+        "recommendedPromotion": false,
+        "pageTitle": null,
+        "fetchedCount": 3,
+        "acceptedCount": 1,
+        "previewCreatedCount": 1,
+        "previewUpdatedCount": 0,
+        "dedupedCount": 0,
+        "rejectedCount": 2,
+        "sampleTitles": [
+          "Copy of  Desktop Support Technician",
+          "Incident Response Eng",
+          "Senior Engineer Subject Matter Expert (SME)"
+        ],
+        "sampleLocations": [
+          "Irving, Texas, US",
+          "Atlanta, Georgia, US",
+          "Atlanta, GA"
+        ]
+      },
+      "rejectedAt": "2026-03-26T22:02:18.557Z"
+    },
+    {
+      "boardSlug": "inkit-careers",
+      "boardUrl": "https://ats.rippling.com/inkit-careers/jobs",
+      "status": "rejected",
+      "firstDiscoveredAt": "2026-03-26T22:02:18.557Z",
+      "lastDiscoveredAt": "2026-03-26T22:02:18.557Z",
+      "discoveredFrom": [
+        {
+          "type": "dataset",
+          "value": "https://ats.rippling.com/inkit-careers/jobs",
+          "sourcePageUrl": "https://www.linkedin.com/redir/redirect?url=https%3A%2F%2Fats.rippling.com%2Finkit-careers%2Fjobs",
+          "discoveredAt": "2026-03-26T22:02:18.557Z"
+        }
+      ],
+      "decisionReason": "below_threshold",
+      "lastValidatedAt": "2026-03-26T22:02:18.557Z",
+      "validation": {
+        "valid": true,
+        "threshold": 5,
+        "recommendedPromotion": false,
+        "pageTitle": null,
+        "fetchedCount": 5,
+        "acceptedCount": 2,
+        "previewCreatedCount": 2,
+        "previewUpdatedCount": 0,
+        "dedupedCount": 0,
+        "rejectedCount": 3,
+        "sampleTitles": [
+          "Puerto Rico Software Engineering Apprentice",
+          "Senior Product Designer",
+          "Senior Product Designer",
+          "Senior Software Engineer",
+          "Senior Software Engineer"
+        ],
+        "sampleLocations": [
+          "San Juan, PR",
+          "San Juan, PR",
+          "Saint Paul, MN",
+          "San Juan, PR",
+          "Saint Paul, MN"
+        ]
+      },
+      "rejectedAt": "2026-03-26T22:02:18.557Z"
+    }
+  ],
+  "queryReports": [
+    {
+      "query": "\"ats.rippling.com\" \"Product Manager\"",
+      "searchProvider": "bing_rss",
+      "resultUrlsFetched": 5,
+      "ripplingUrlsDiscovered": 0,
+      "errors": [
+        "https://www.zhihu.com/question/47878985: Fetch failed: 403 Forbidden"
+      ],
+      "searchedAt": "2026-03-26T21:28:27.601Z"
+    }
+  ],
+  "pageReports": [
+    {
+      "pageUrl": "https://www.vouch.us/careers",
+      "ripplingUrlsDiscovered": 0,
+      "errors": [],
+      "fetchedAt": "2026-03-26T21:43:17.513Z"
+    }
+  ]
+}

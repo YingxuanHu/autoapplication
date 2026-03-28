@@ -1,0 +1,185 @@
+[
+  {
+    "url": "https://jobs.sap.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+    "boardUrl": "https://jobs.sap.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+    "sourceKey": "successfactors:jobs.sap.com",
+    "connectorName": "successfactors",
+    "token": "jobs.sap.com",
+    "companyNames": [
+      "SAP"
+    ],
+    "discoveredFromQueries": [
+      "https://jobs.sap.com/search/?createNewAlert=false&q=&locationsearch=&optionsFacetsDD_department=&optionsFacetsDD_customfield5=&optionsFacetsDD_country=&optionsFacetsDD_city=&optionsFacetsDD_customfield3="
+    ],
+    "searchResultUrls": [
+      "https://jobs.sap.com/search/?createNewAlert=false&q=&locationsearch=&optionsFacetsDD_department=&optionsFacetsDD_customfield5=&optionsFacetsDD_country=&optionsFacetsDD_city=&optionsFacetsDD_customfield3="
+    ],
+    "matchedReasons": [
+      "direct_seed_url"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "fetchedCount": 100,
+      "acceptedCount": 3,
+      "previewCreatedCount": 3,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 97,
+      "sampleTitles": [
+        "SAP Senior Architekt (w/m/d) für den Bereich Energiewirtschaft",
+        "SAP BDC Solution Sales Expert (f/m/d)",
+        "DIgital Customer Engagement Manager - SAP Basis - PC3",
+        "Senior Solution Advisor, HCM - F/M",
+        "(Senior/Expert) Go and Kubernetes Developer for Open-Source project Gardener, Gardener Addons Area"
+      ],
+      "sampleLocations": [
+        "Walldorf, DE, 69190",
+        "Berlin, DE, 10557",
+        "Bangalore, IN, 560066",
+        "Levallois-Perret, FR, 92300",
+        "Sofia, BG, 1407"
+      ]
+    },
+    "recommendedPromotion": false
+  },
+  {
+    "url": "https://jobs.bosch-group.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+    "boardUrl": "https://jobs.bosch-group.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+    "sourceKey": "successfactors:jobs.bosch-group.com",
+    "connectorName": "successfactors",
+    "token": "jobs.bosch-group.com",
+    "companyNames": [
+      "Bosch"
+    ],
+    "discoveredFromQueries": [
+      "https://jobs.bosch-group.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc"
+    ],
+    "searchResultUrls": [
+      "https://jobs.bosch-group.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc"
+    ],
+    "matchedReasons": [
+      "direct_seed_url"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "fetchedCount": 0,
+      "acceptedCount": 0,
+      "previewCreatedCount": 0,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 0,
+      "sampleTitles": [],
+      "sampleLocations": []
+    },
+    "recommendedPromotion": false
+  },
+  {
+    "url": "https://jobs.opg.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+    "boardUrl": "https://jobs.opg.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+    "sourceKey": "successfactors:jobs.opg.com",
+    "connectorName": "successfactors",
+    "token": "jobs.opg.com",
+    "companyNames": [
+      "Ontario Power Generation"
+    ],
+    "discoveredFromQueries": [
+      "https://jobs.opg.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc"
+    ],
+    "searchResultUrls": [
+      "https://jobs.opg.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc"
+    ],
+    "matchedReasons": [
+      "direct_seed_url"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "fetchedCount": 15,
+      "acceptedCount": 0,
+      "previewCreatedCount": 0,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 15,
+      "sampleTitles": [
+        "Senior Business Architect",
+        "Information Systems Technician",
+        "Senior Electrical Engineer - Hydroelectric Generation",
+        "Manager, Change & Talent",
+        "Finance Controller"
+      ],
+      "sampleLocations": [
+        "Oshawa, ON, CA, L1H 8W8",
+        "Bowmanville, ON, CA, L1C 3Z8",
+        "Timmins, ON, CA, P4N 7C6",
+        "Oshawa, ON, CA, L1H 8W8",
+        "Oshawa, ON, CA, L1H 8P7"
+      ]
+    },
+    "recommendedPromotion": false
+  },
+  {
+    "url": "https://jobs.philips.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+    "boardUrl": "https://jobs.philips.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+    "sourceKey": "successfactors:jobs.philips.com",
+    "connectorName": "successfactors",
+    "token": "jobs.philips.com",
+    "companyNames": [
+      "Philips"
+    ],
+    "discoveredFromQueries": [
+      "https://jobs.philips.com/search/?createNewAlert=false&q=&locationsearch=&optionsFacetsDD_country=&optionsFacetsDD_customfield3=",
+      "https://jobs.philips.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc"
+    ],
+    "searchResultUrls": [
+      "https://jobs.philips.com/search/?createNewAlert=false&q=&locationsearch=&optionsFacetsDD_country=&optionsFacetsDD_customfield3=",
+      "https://jobs.philips.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc"
+    ],
+    "matchedReasons": [
+      "direct_seed_url"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "fetchedCount": 0,
+      "acceptedCount": 0,
+      "previewCreatedCount": 0,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 0,
+      "sampleTitles": [],
+      "sampleLocations": []
+    },
+    "recommendedPromotion": false
+  },
+  {
+    "url": "https://jobs.siemens.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+    "boardUrl": "https://jobs.siemens.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+    "sourceKey": "successfactors:jobs.siemens.com",
+    "connectorName": "successfactors",
+    "token": "jobs.siemens.com",
+    "companyNames": [
+      "Siemens"
+    ],
+    "discoveredFromQueries": [
+      "https://jobs.siemens.com/search/?createNewAlert=false&q=&locationsearch=&optionsFacetsDD_customfield3=&optionsFacetsDD_country=&optionsFacetsDD_department=",
+      "https://jobs.siemens.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc"
+    ],
+    "searchResultUrls": [
+      "https://jobs.siemens.com/search/?createNewAlert=false&q=&locationsearch=&optionsFacetsDD_customfield3=&optionsFacetsDD_country=&optionsFacetsDD_department=",
+      "https://jobs.siemens.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc"
+    ],
+    "matchedReasons": [
+      "direct_seed_url"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "fetchedCount": 0,
+      "acceptedCount": 0,
+      "previewCreatedCount": 0,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 0,
+      "sampleTitles": [],
+      "sampleLocations": []
+    },
+    "recommendedPromotion": false
+  }
+]

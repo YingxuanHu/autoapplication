@@ -1,0 +1,1344 @@
+{
+  "companiesSelected": [
+    "CGI",
+    "Stantec",
+    "WSP",
+    "BlackBerry",
+    "Enbridge",
+    "Export Development Canada",
+    "Great-West Lifeco",
+    "iA Financial Group",
+    "Kinaxis",
+    "OpenText",
+    "Shopify",
+    "Air Canada",
+    "Brookfield",
+    "Constellation Software",
+    "CPP Investments",
+    "Descartes Systems",
+    "Nuvei",
+    "Ontario Teachers",
+    "Power Corp",
+    "TMX Group",
+    "CN Rail",
+    "CPKC (CP Rail)",
+    "Nutrien",
+    "Sobeys",
+    "FortisBC",
+    "Loblaw",
+    "Questrade",
+    "Suncor",
+    "Teck",
+    "Toronto Hydro"
+  ],
+  "queryCount": 144,
+  "cacheHits": 126,
+  "cacheMisses": 18,
+  "resultUrlsFetched": 560,
+  "uniqueResultUrls": 570,
+  "directSeedUrls": 13,
+  "candidatesDiscovered": 4,
+  "newCandidates": 3,
+  "skippedKnownCandidates": 1,
+  "candidatesByFamily": {
+    "workday": 3
+  },
+  "queryReports": [
+    {
+      "companyName": "Air Canada",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Air Canada\" \"Montreal\" careers",
+      "reason": "canada_city_direct",
+      "fromCache": true,
+      "resultUrlsFetched": 6,
+      "errors": []
+    },
+    {
+      "companyName": "BlackBerry",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"BlackBerry\" \"Waterloo\" careers",
+      "reason": "canada_city_direct",
+      "fromCache": true,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Brookfield",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Brookfield\" \"Toronto\" careers",
+      "reason": "canada_city_direct",
+      "fromCache": true,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "CGI",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"CGI\" \"Montreal\" careers",
+      "reason": "canada_city_direct",
+      "fromCache": true,
+      "resultUrlsFetched": 3,
+      "errors": []
+    },
+    {
+      "companyName": "CN Rail",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"CN Rail\" \"Montreal\" careers",
+      "reason": "canada_city_direct",
+      "fromCache": false,
+      "resultUrlsFetched": 8,
+      "errors": []
+    },
+    {
+      "companyName": "Constellation Software",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Constellation Software\" \"Toronto\" careers",
+      "reason": "canada_city_direct",
+      "fromCache": true,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "CPKC (CP Rail)",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"CPKC (CP Rail)\" \"Calgary\" careers",
+      "reason": "canada_city_direct",
+      "fromCache": false,
+      "resultUrlsFetched": 8,
+      "errors": []
+    },
+    {
+      "companyName": "CPP Investments",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"CPP Investments\" \"Toronto\" careers",
+      "reason": "canada_city_direct",
+      "fromCache": true,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Descartes Systems",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Descartes Systems\" \"Waterloo\" careers",
+      "reason": "canada_city_direct",
+      "fromCache": true,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Enbridge",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Enbridge\" \"Calgary\" careers",
+      "reason": "canada_city_direct",
+      "fromCache": false,
+      "resultUrlsFetched": 8,
+      "errors": []
+    },
+    {
+      "companyName": "Export Development Canada",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Export Development Canada\" \"Ottawa\" careers",
+      "reason": "canada_city_direct",
+      "fromCache": true,
+      "resultUrlsFetched": 6,
+      "errors": []
+    },
+    {
+      "companyName": "FortisBC",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"FortisBC\" \"Vancouver\" careers",
+      "reason": "canada_city_direct",
+      "fromCache": true,
+      "resultUrlsFetched": 6,
+      "errors": []
+    },
+    {
+      "companyName": "Great-West Lifeco",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Great-West Lifeco\" \"Winnipeg\" careers",
+      "reason": "canada_city_direct",
+      "fromCache": true,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "iA Financial Group",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"iA Financial Group\" \"Quebec City\" careers",
+      "reason": "canada_city_direct",
+      "fromCache": true,
+      "resultUrlsFetched": 6,
+      "errors": []
+    },
+    {
+      "companyName": "Kinaxis",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Kinaxis\" \"Ottawa\" careers",
+      "reason": "canada_city_direct",
+      "fromCache": true,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Loblaw",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Loblaw\" \"Toronto\" careers",
+      "reason": "canada_city_direct",
+      "fromCache": true,
+      "resultUrlsFetched": 6,
+      "errors": []
+    },
+    {
+      "companyName": "Nutrien",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Nutrien\" \"Saskatoon\" careers",
+      "reason": "canada_city_direct",
+      "fromCache": true,
+      "resultUrlsFetched": 6,
+      "errors": []
+    },
+    {
+      "companyName": "Nuvei",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Nuvei\" \"Montreal\" careers",
+      "reason": "canada_city_direct",
+      "fromCache": true,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Ontario Teachers",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Ontario Teachers\" \"Toronto\" careers",
+      "reason": "canada_city_direct",
+      "fromCache": true,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "OpenText",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"OpenText\" \"Waterloo\" careers",
+      "reason": "canada_city_direct",
+      "fromCache": true,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Power Corp",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Power Corp\" \"Montreal\" careers",
+      "reason": "canada_city_direct",
+      "fromCache": true,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Questrade",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Questrade\" \"Toronto\" careers",
+      "reason": "canada_city_direct",
+      "fromCache": true,
+      "resultUrlsFetched": 6,
+      "errors": []
+    },
+    {
+      "companyName": "Shopify",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Shopify\" \"Toronto\" careers",
+      "reason": "canada_city_direct",
+      "fromCache": true,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Sobeys",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Sobeys\" \"Stellarton\" careers",
+      "reason": "canada_city_direct",
+      "fromCache": true,
+      "resultUrlsFetched": 6,
+      "errors": []
+    },
+    {
+      "companyName": "Stantec",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Stantec\" \"Edmonton\" careers",
+      "reason": "canada_city_direct",
+      "fromCache": true,
+      "resultUrlsFetched": 6,
+      "errors": []
+    },
+    {
+      "companyName": "Suncor",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Suncor\" \"Calgary\" careers",
+      "reason": "canada_city_direct",
+      "fromCache": false,
+      "resultUrlsFetched": 8,
+      "errors": []
+    },
+    {
+      "companyName": "Teck",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Teck\" \"Vancouver\" careers",
+      "reason": "canada_city_direct",
+      "fromCache": true,
+      "resultUrlsFetched": 6,
+      "errors": []
+    },
+    {
+      "companyName": "TMX Group",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"TMX Group\" \"Toronto\" careers",
+      "reason": "canada_city_direct",
+      "fromCache": true,
+      "resultUrlsFetched": 6,
+      "errors": []
+    },
+    {
+      "companyName": "Toronto Hydro",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Toronto Hydro\" \"Toronto\" careers",
+      "reason": "canada_city_direct",
+      "fromCache": true,
+      "resultUrlsFetched": 6,
+      "errors": []
+    },
+    {
+      "companyName": "WSP",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"WSP\" \"Montreal\" careers",
+      "reason": "canada_city_direct",
+      "fromCache": true,
+      "resultUrlsFetched": 6,
+      "errors": []
+    },
+    {
+      "companyName": "Air Canada",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Air Canada\" careers",
+      "reason": "company_name_direct",
+      "fromCache": true,
+      "resultUrlsFetched": 6,
+      "errors": []
+    },
+    {
+      "companyName": "BlackBerry",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"BlackBerry\" careers",
+      "reason": "company_name_direct",
+      "fromCache": true,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Brookfield",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Brookfield\" careers",
+      "reason": "company_name_direct",
+      "fromCache": true,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "CGI",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"CGI\" careers",
+      "reason": "company_name_direct",
+      "fromCache": true,
+      "resultUrlsFetched": 3,
+      "errors": []
+    },
+    {
+      "companyName": "CN Rail",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"CN Rail\" careers",
+      "reason": "company_name_direct",
+      "fromCache": false,
+      "resultUrlsFetched": 8,
+      "errors": []
+    },
+    {
+      "companyName": "Constellation Software",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Constellation Software\" careers",
+      "reason": "company_name_direct",
+      "fromCache": true,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "CPKC (CP Rail)",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"CPKC (CP Rail)\" careers",
+      "reason": "company_name_direct",
+      "fromCache": false,
+      "resultUrlsFetched": 8,
+      "errors": []
+    },
+    {
+      "companyName": "CPP Investments",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"CPP Investments\" careers",
+      "reason": "company_name_direct",
+      "fromCache": true,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Descartes Systems",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Descartes Systems\" careers",
+      "reason": "company_name_direct",
+      "fromCache": true,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Enbridge",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Enbridge\" careers",
+      "reason": "company_name_direct",
+      "fromCache": false,
+      "resultUrlsFetched": 8,
+      "errors": []
+    },
+    {
+      "companyName": "Export Development Canada",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Export Development Canada\" careers",
+      "reason": "company_name_direct",
+      "fromCache": true,
+      "resultUrlsFetched": 6,
+      "errors": []
+    },
+    {
+      "companyName": "FortisBC",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"FortisBC\" careers",
+      "reason": "company_name_direct",
+      "fromCache": true,
+      "resultUrlsFetched": 6,
+      "errors": []
+    },
+    {
+      "companyName": "Great-West Lifeco",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Great-West Lifeco\" careers",
+      "reason": "company_name_direct",
+      "fromCache": true,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "iA Financial Group",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"iA Financial Group\" careers",
+      "reason": "company_name_direct",
+      "fromCache": true,
+      "resultUrlsFetched": 6,
+      "errors": []
+    },
+    {
+      "companyName": "Kinaxis",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Kinaxis\" careers",
+      "reason": "company_name_direct",
+      "fromCache": true,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Loblaw",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Loblaw\" careers",
+      "reason": "company_name_direct",
+      "fromCache": true,
+      "resultUrlsFetched": 6,
+      "errors": []
+    },
+    {
+      "companyName": "Nutrien",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Nutrien\" careers",
+      "reason": "company_name_direct",
+      "fromCache": true,
+      "resultUrlsFetched": 6,
+      "errors": []
+    },
+    {
+      "companyName": "Nuvei",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Nuvei\" careers",
+      "reason": "company_name_direct",
+      "fromCache": true,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Ontario Teachers",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Ontario Teachers\" careers",
+      "reason": "company_name_direct",
+      "fromCache": true,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "OpenText",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"OpenText\" careers",
+      "reason": "company_name_direct",
+      "fromCache": true,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Power Corp",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Power Corp\" careers",
+      "reason": "company_name_direct",
+      "fromCache": true,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Questrade",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Questrade\" careers",
+      "reason": "company_name_direct",
+      "fromCache": true,
+      "resultUrlsFetched": 6,
+      "errors": []
+    },
+    {
+      "companyName": "Shopify",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Shopify\" careers",
+      "reason": "company_name_direct",
+      "fromCache": true,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Sobeys",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Sobeys\" careers",
+      "reason": "company_name_direct",
+      "fromCache": true,
+      "resultUrlsFetched": 6,
+      "errors": []
+    },
+    {
+      "companyName": "Stantec",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Stantec\" careers",
+      "reason": "company_name_direct",
+      "fromCache": true,
+      "resultUrlsFetched": 6,
+      "errors": []
+    },
+    {
+      "companyName": "Suncor",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Suncor\" careers",
+      "reason": "company_name_direct",
+      "fromCache": false,
+      "resultUrlsFetched": 8,
+      "errors": []
+    },
+    {
+      "companyName": "Teck",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Teck\" careers",
+      "reason": "company_name_direct",
+      "fromCache": true,
+      "resultUrlsFetched": 6,
+      "errors": []
+    },
+    {
+      "companyName": "TMX Group",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"TMX Group\" careers",
+      "reason": "company_name_direct",
+      "fromCache": true,
+      "resultUrlsFetched": 6,
+      "errors": []
+    },
+    {
+      "companyName": "Toronto Hydro",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Toronto Hydro\" careers",
+      "reason": "company_name_direct",
+      "fromCache": true,
+      "resultUrlsFetched": 6,
+      "errors": []
+    },
+    {
+      "companyName": "WSP",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"WSP\" careers",
+      "reason": "company_name_direct",
+      "fromCache": true,
+      "resultUrlsFetched": 6,
+      "errors": []
+    },
+    {
+      "companyName": "Air Canada",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Air Canada\" jobs",
+      "reason": "company_name_jobs",
+      "fromCache": true,
+      "resultUrlsFetched": 6,
+      "errors": []
+    },
+    {
+      "companyName": "BlackBerry",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"BlackBerry\" jobs",
+      "reason": "company_name_jobs",
+      "fromCache": true,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Brookfield",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Brookfield\" jobs",
+      "reason": "company_name_jobs",
+      "fromCache": true,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "CGI",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"CGI\" jobs",
+      "reason": "company_name_jobs",
+      "fromCache": true,
+      "resultUrlsFetched": 3,
+      "errors": []
+    },
+    {
+      "companyName": "CN Rail",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"CN Rail\" jobs",
+      "reason": "company_name_jobs",
+      "fromCache": false,
+      "resultUrlsFetched": 8,
+      "errors": []
+    },
+    {
+      "companyName": "Constellation Software",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Constellation Software\" jobs",
+      "reason": "company_name_jobs",
+      "fromCache": true,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "CPKC (CP Rail)",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"CPKC (CP Rail)\" jobs",
+      "reason": "company_name_jobs",
+      "fromCache": false,
+      "resultUrlsFetched": 8,
+      "errors": []
+    },
+    {
+      "companyName": "CPP Investments",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"CPP Investments\" jobs",
+      "reason": "company_name_jobs",
+      "fromCache": true,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Descartes Systems",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Descartes Systems\" jobs",
+      "reason": "company_name_jobs",
+      "fromCache": true,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Enbridge",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Enbridge\" jobs",
+      "reason": "company_name_jobs",
+      "fromCache": false,
+      "resultUrlsFetched": 8,
+      "errors": []
+    },
+    {
+      "companyName": "Export Development Canada",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Export Development Canada\" jobs",
+      "reason": "company_name_jobs",
+      "fromCache": true,
+      "resultUrlsFetched": 6,
+      "errors": []
+    },
+    {
+      "companyName": "FortisBC",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"FortisBC\" jobs",
+      "reason": "company_name_jobs",
+      "fromCache": true,
+      "resultUrlsFetched": 6,
+      "errors": []
+    },
+    {
+      "companyName": "Great-West Lifeco",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Great-West Lifeco\" jobs",
+      "reason": "company_name_jobs",
+      "fromCache": true,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "iA Financial Group",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"iA Financial Group\" jobs",
+      "reason": "company_name_jobs",
+      "fromCache": true,
+      "resultUrlsFetched": 6,
+      "errors": []
+    },
+    {
+      "companyName": "Kinaxis",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Kinaxis\" jobs",
+      "reason": "company_name_jobs",
+      "fromCache": true,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Loblaw",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Loblaw\" jobs",
+      "reason": "company_name_jobs",
+      "fromCache": true,
+      "resultUrlsFetched": 6,
+      "errors": []
+    },
+    {
+      "companyName": "Nutrien",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Nutrien\" jobs",
+      "reason": "company_name_jobs",
+      "fromCache": true,
+      "resultUrlsFetched": 6,
+      "errors": []
+    },
+    {
+      "companyName": "Nuvei",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Nuvei\" jobs",
+      "reason": "company_name_jobs",
+      "fromCache": true,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Ontario Teachers",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Ontario Teachers\" jobs",
+      "reason": "company_name_jobs",
+      "fromCache": true,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "OpenText",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"OpenText\" jobs",
+      "reason": "company_name_jobs",
+      "fromCache": true,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Power Corp",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Power Corp\" jobs",
+      "reason": "company_name_jobs",
+      "fromCache": true,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Questrade",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Questrade\" jobs",
+      "reason": "company_name_jobs",
+      "fromCache": true,
+      "resultUrlsFetched": 6,
+      "errors": []
+    },
+    {
+      "companyName": "Shopify",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Shopify\" jobs",
+      "reason": "company_name_jobs",
+      "fromCache": true,
+      "resultUrlsFetched": 3,
+      "errors": []
+    },
+    {
+      "companyName": "Sobeys",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Sobeys\" jobs",
+      "reason": "company_name_jobs",
+      "fromCache": true,
+      "resultUrlsFetched": 6,
+      "errors": []
+    },
+    {
+      "companyName": "Stantec",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Stantec\" jobs",
+      "reason": "company_name_jobs",
+      "fromCache": true,
+      "resultUrlsFetched": 6,
+      "errors": []
+    },
+    {
+      "companyName": "Suncor",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Suncor\" jobs",
+      "reason": "company_name_jobs",
+      "fromCache": false,
+      "resultUrlsFetched": 8,
+      "errors": []
+    },
+    {
+      "companyName": "Teck",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Teck\" jobs",
+      "reason": "company_name_jobs",
+      "fromCache": true,
+      "resultUrlsFetched": 6,
+      "errors": []
+    },
+    {
+      "companyName": "TMX Group",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"TMX Group\" jobs",
+      "reason": "company_name_jobs",
+      "fromCache": true,
+      "resultUrlsFetched": 6,
+      "errors": []
+    },
+    {
+      "companyName": "Toronto Hydro",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Toronto Hydro\" jobs",
+      "reason": "company_name_jobs",
+      "fromCache": true,
+      "resultUrlsFetched": 6,
+      "errors": []
+    },
+    {
+      "companyName": "WSP",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"WSP\" jobs",
+      "reason": "company_name_jobs",
+      "fromCache": true,
+      "resultUrlsFetched": 6,
+      "errors": []
+    },
+    {
+      "companyName": "Air Canada",
+      "family": "workday",
+      "query": "\"Air Canada\" \"myworkdayjobs.com\"",
+      "reason": "company_name_host_hint",
+      "fromCache": true,
+      "resultUrlsFetched": 6,
+      "errors": []
+    },
+    {
+      "companyName": "BlackBerry",
+      "family": "workday",
+      "query": "\"BlackBerry\" \"myworkdayjobs.com\"",
+      "reason": "company_name_host_hint",
+      "fromCache": true,
+      "resultUrlsFetched": 8,
+      "errors": []
+    },
+    {
+      "companyName": "Brookfield",
+      "family": "workday",
+      "query": "\"Brookfield\" \"myworkdayjobs.com\"",
+      "reason": "company_name_host_hint",
+      "fromCache": true,
+      "resultUrlsFetched": 3,
+      "errors": []
+    },
+    {
+      "companyName": "CGI",
+      "family": "workday",
+      "query": "\"CGI\" \"myworkdayjobs.com\"",
+      "reason": "company_name_host_hint",
+      "fromCache": true,
+      "resultUrlsFetched": 8,
+      "errors": []
+    },
+    {
+      "companyName": "CN Rail",
+      "family": "workday",
+      "query": "\"CN Rail\" \"myworkdayjobs.com\"",
+      "reason": "company_name_host_hint",
+      "fromCache": false,
+      "resultUrlsFetched": 8,
+      "errors": []
+    },
+    {
+      "companyName": "Constellation Software",
+      "family": "workday",
+      "query": "\"Constellation Software\" \"myworkdayjobs.com\"",
+      "reason": "company_name_host_hint",
+      "fromCache": true,
+      "resultUrlsFetched": 8,
+      "errors": []
+    },
+    {
+      "companyName": "CPKC (CP Rail)",
+      "family": "workday",
+      "query": "\"CPKC (CP Rail)\" \"myworkdayjobs.com\"",
+      "reason": "company_name_host_hint",
+      "fromCache": false,
+      "resultUrlsFetched": 8,
+      "errors": []
+    },
+    {
+      "companyName": "CPP Investments",
+      "family": "workday",
+      "query": "\"CPP Investments\" \"myworkdayjobs.com\"",
+      "reason": "company_name_host_hint",
+      "fromCache": true,
+      "resultUrlsFetched": 8,
+      "errors": []
+    },
+    {
+      "companyName": "Descartes Systems",
+      "family": "workday",
+      "query": "\"Descartes Systems\" \"myworkdayjobs.com\"",
+      "reason": "company_name_host_hint",
+      "fromCache": true,
+      "resultUrlsFetched": 8,
+      "errors": []
+    },
+    {
+      "companyName": "Enbridge",
+      "family": "workday",
+      "query": "\"Enbridge\" \"myworkdayjobs.com\"",
+      "reason": "company_name_host_hint",
+      "fromCache": false,
+      "resultUrlsFetched": 8,
+      "errors": []
+    },
+    {
+      "companyName": "Export Development Canada",
+      "family": "workday",
+      "query": "\"Export Development Canada\" \"myworkdayjobs.com\"",
+      "reason": "company_name_host_hint",
+      "fromCache": true,
+      "resultUrlsFetched": 6,
+      "errors": []
+    },
+    {
+      "companyName": "FortisBC",
+      "family": "workday",
+      "query": "\"FortisBC\" \"myworkdayjobs.com\"",
+      "reason": "company_name_host_hint",
+      "fromCache": true,
+      "resultUrlsFetched": 6,
+      "errors": []
+    },
+    {
+      "companyName": "Great-West Lifeco",
+      "family": "workday",
+      "query": "\"Great-West Lifeco\" \"myworkdayjobs.com\"",
+      "reason": "company_name_host_hint",
+      "fromCache": true,
+      "resultUrlsFetched": 8,
+      "errors": []
+    },
+    {
+      "companyName": "iA Financial Group",
+      "family": "workday",
+      "query": "\"iA Financial Group\" \"myworkdayjobs.com\"",
+      "reason": "company_name_host_hint",
+      "fromCache": true,
+      "resultUrlsFetched": 6,
+      "errors": []
+    },
+    {
+      "companyName": "Kinaxis",
+      "family": "workday",
+      "query": "\"Kinaxis\" \"myworkdayjobs.com\"",
+      "reason": "company_name_host_hint",
+      "fromCache": true,
+      "resultUrlsFetched": 8,
+      "errors": []
+    },
+    {
+      "companyName": "Loblaw",
+      "family": "workday",
+      "query": "\"Loblaw\" \"myworkdayjobs.com\"",
+      "reason": "company_name_host_hint",
+      "fromCache": true,
+      "resultUrlsFetched": 6,
+      "errors": []
+    },
+    {
+      "companyName": "Nutrien",
+      "family": "workday",
+      "query": "\"Nutrien\" \"myworkdayjobs.com\"",
+      "reason": "company_name_host_hint",
+      "fromCache": true,
+      "resultUrlsFetched": 6,
+      "errors": []
+    },
+    {
+      "companyName": "Nuvei",
+      "family": "workday",
+      "query": "\"Nuvei\" \"myworkdayjobs.com\"",
+      "reason": "company_name_host_hint",
+      "fromCache": true,
+      "resultUrlsFetched": 8,
+      "errors": []
+    },
+    {
+      "companyName": "Ontario Teachers",
+      "family": "workday",
+      "query": "\"Ontario Teachers\" \"myworkdayjobs.com\"",
+      "reason": "company_name_host_hint",
+      "fromCache": true,
+      "resultUrlsFetched": 8,
+      "errors": []
+    },
+    {
+      "companyName": "OpenText",
+      "family": "workday",
+      "query": "\"OpenText\" \"myworkdayjobs.com\"",
+      "reason": "company_name_host_hint",
+      "fromCache": true,
+      "resultUrlsFetched": 8,
+      "errors": []
+    },
+    {
+      "companyName": "Power Corp",
+      "family": "workday",
+      "query": "\"Power Corp\" \"myworkdayjobs.com\"",
+      "reason": "company_name_host_hint",
+      "fromCache": true,
+      "resultUrlsFetched": 8,
+      "errors": []
+    },
+    {
+      "companyName": "Questrade",
+      "family": "workday",
+      "query": "\"Questrade\" \"myworkdayjobs.com\"",
+      "reason": "company_name_host_hint",
+      "fromCache": true,
+      "resultUrlsFetched": 6,
+      "errors": []
+    },
+    {
+      "companyName": "Shopify",
+      "family": "workday",
+      "query": "\"Shopify\" \"myworkdayjobs.com\"",
+      "reason": "company_name_host_hint",
+      "fromCache": true,
+      "resultUrlsFetched": 8,
+      "errors": []
+    },
+    {
+      "companyName": "Sobeys",
+      "family": "workday",
+      "query": "\"Sobeys\" \"myworkdayjobs.com\"",
+      "reason": "company_name_host_hint",
+      "fromCache": true,
+      "resultUrlsFetched": 6,
+      "errors": []
+    },
+    {
+      "companyName": "Stantec",
+      "family": "workday",
+      "query": "\"Stantec\" \"myworkdayjobs.com\"",
+      "reason": "company_name_host_hint",
+      "fromCache": true,
+      "resultUrlsFetched": 6,
+      "errors": []
+    },
+    {
+      "companyName": "Suncor",
+      "family": "workday",
+      "query": "\"Suncor\" \"myworkdayjobs.com\"",
+      "reason": "company_name_host_hint",
+      "fromCache": false,
+      "resultUrlsFetched": 8,
+      "errors": []
+    },
+    {
+      "companyName": "Teck",
+      "family": "workday",
+      "query": "\"Teck\" \"myworkdayjobs.com\"",
+      "reason": "company_name_host_hint",
+      "fromCache": true,
+      "resultUrlsFetched": 6,
+      "errors": []
+    },
+    {
+      "companyName": "TMX Group",
+      "family": "workday",
+      "query": "\"TMX Group\" \"myworkdayjobs.com\"",
+      "reason": "company_name_host_hint",
+      "fromCache": true,
+      "resultUrlsFetched": 6,
+      "errors": []
+    },
+    {
+      "companyName": "Toronto Hydro",
+      "family": "workday",
+      "query": "\"Toronto Hydro\" \"myworkdayjobs.com\"",
+      "reason": "company_name_host_hint",
+      "fromCache": true,
+      "resultUrlsFetched": 6,
+      "errors": []
+    },
+    {
+      "companyName": "WSP",
+      "family": "workday",
+      "query": "\"WSP\" \"myworkdayjobs.com\"",
+      "reason": "company_name_host_hint",
+      "fromCache": true,
+      "resultUrlsFetched": 6,
+      "errors": []
+    },
+    {
+      "companyName": "Air Canada",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"aircanada\" careers",
+      "reason": "tenant_direct",
+      "fromCache": true,
+      "resultUrlsFetched": 6,
+      "errors": []
+    },
+    {
+      "companyName": "CN Rail",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"cn\" careers",
+      "reason": "tenant_direct",
+      "fromCache": false,
+      "resultUrlsFetched": 8,
+      "errors": []
+    },
+    {
+      "companyName": "CPKC (CP Rail)",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"cpkc\" careers",
+      "reason": "tenant_direct",
+      "fromCache": false,
+      "resultUrlsFetched": 8,
+      "errors": []
+    },
+    {
+      "companyName": "CPP Investments",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"cppinvestments\" careers",
+      "reason": "tenant_direct",
+      "fromCache": true,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Constellation Software",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"csisoftware\" careers",
+      "reason": "tenant_direct",
+      "fromCache": true,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Descartes Systems",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"descartes\" careers",
+      "reason": "tenant_direct",
+      "fromCache": true,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Export Development Canada",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"edc\" careers",
+      "reason": "tenant_direct",
+      "fromCache": true,
+      "resultUrlsFetched": 6,
+      "errors": []
+    },
+    {
+      "companyName": "Great-West Lifeco",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"greatwestlifeco\" careers",
+      "reason": "tenant_direct",
+      "fromCache": true,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "iA Financial Group",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"iafinancial\" careers",
+      "reason": "tenant_direct",
+      "fromCache": true,
+      "resultUrlsFetched": 6,
+      "errors": []
+    },
+    {
+      "companyName": "Ontario Teachers",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"otpp\" careers",
+      "reason": "tenant_direct",
+      "fromCache": true,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Power Corp",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"powercorp\" careers",
+      "reason": "tenant_direct",
+      "fromCache": true,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "TMX Group",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"tmxgroup\" careers",
+      "reason": "tenant_direct",
+      "fromCache": true,
+      "resultUrlsFetched": 6,
+      "errors": []
+    },
+    {
+      "companyName": "Toronto Hydro",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"torontohydro\" careers",
+      "reason": "tenant_direct",
+      "fromCache": true,
+      "resultUrlsFetched": 6,
+      "errors": []
+    },
+    {
+      "companyName": "Canada:Calgary",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Calgary\" Canada careers",
+      "reason": "generic_canada_city",
+      "fromCache": true,
+      "resultUrlsFetched": 8,
+      "errors": []
+    },
+    {
+      "companyName": "Canada:Montreal",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Montreal\" Canada careers",
+      "reason": "generic_canada_city",
+      "fromCache": true,
+      "resultUrlsFetched": 8,
+      "errors": []
+    },
+    {
+      "companyName": "Canada:Ottawa",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Ottawa\" Canada careers",
+      "reason": "generic_canada_city",
+      "fromCache": true,
+      "resultUrlsFetched": 8,
+      "errors": []
+    },
+    {
+      "companyName": "Canada:Toronto",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Toronto\" Canada careers",
+      "reason": "generic_canada_city",
+      "fromCache": true,
+      "resultUrlsFetched": 8,
+      "errors": []
+    },
+    {
+      "companyName": "Canada:Vancouver",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Vancouver\" Canada careers",
+      "reason": "generic_canada_city",
+      "fromCache": true,
+      "resultUrlsFetched": 8,
+      "errors": []
+    },
+    {
+      "companyName": "Canada:Waterloo",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Waterloo\" Canada careers",
+      "reason": "generic_canada_city",
+      "fromCache": true,
+      "resultUrlsFetched": 8,
+      "errors": []
+    },
+    {
+      "companyName": "Canada:cloud",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com Canada \"cloud\" careers",
+      "reason": "generic_canada_sector",
+      "fromCache": true,
+      "resultUrlsFetched": 8,
+      "errors": []
+    },
+    {
+      "companyName": "Canada:enterprise software",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com Canada \"enterprise software\" careers",
+      "reason": "generic_canada_sector",
+      "fromCache": true,
+      "resultUrlsFetched": 8,
+      "errors": []
+    },
+    {
+      "companyName": "Canada:fintech",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com Canada \"fintech\" careers",
+      "reason": "generic_canada_sector",
+      "fromCache": true,
+      "resultUrlsFetched": 8,
+      "errors": []
+    },
+    {
+      "companyName": "Canada:healthcare",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com Canada \"healthcare\" careers",
+      "reason": "generic_canada_sector",
+      "fromCache": true,
+      "resultUrlsFetched": 8,
+      "errors": []
+    },
+    {
+      "companyName": "Canada:telecom",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com Canada \"telecom\" careers",
+      "reason": "generic_canada_sector",
+      "fromCache": true,
+      "resultUrlsFetched": 8,
+      "errors": []
+    }
+  ]
+}

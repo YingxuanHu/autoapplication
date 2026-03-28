@@ -1,0 +1,88 @@
+{
+  "generatedAt": "2026-03-27T15:43:00.141Z",
+  "candidatesGenerated": 999,
+  "candidatesValid": 5,
+  "bestPerCompany": 5,
+  "totalAvailableJobs": 2609,
+  "workdayTokens": [
+    "bmo.wd3.myworkdayjobs.com|bmo|external",
+    "intel.wd1.myworkdayjobs.com|intel|external",
+    "prudential.wd3.myworkdayjobs.com|prudential|prudential",
+    "zoom.wd5.myworkdayjobs.com|zoom|zoom",
+    "brookfield.wd5.myworkdayjobs.com|brookfield|brookfield"
+  ],
+  "sfTokens": [],
+  "results": [
+    {
+      "companyName": "BMO",
+      "family": "workday",
+      "sourceToken": "bmo.wd3.myworkdayjobs.com|bmo|external",
+      "totalCount": 1152,
+      "firstTitle": "Retail Relationship Banker - Los Angeles (Little Tokyo)",
+      "canadaHq": true,
+      "canadaCityCount": 2,
+      "sectors": [
+        "finance",
+        "banking"
+      ]
+    },
+    {
+      "companyName": "Intel",
+      "family": "workday",
+      "sourceToken": "intel.wd1.myworkdayjobs.com|intel|external",
+      "totalCount": 621,
+      "firstTitle": "Senior Member of Technical Staff, Thin Films Engineer",
+      "canadaHq": false,
+      "canadaCityCount": 1,
+      "sectors": [
+        "semiconductors",
+        "hardware"
+      ]
+    },
+    {
+      "companyName": "Prudential",
+      "family": "workday",
+      "sourceToken": "prudential.wd3.myworkdayjobs.com|prudential|prudential",
+      "totalCount": 575,
+      "firstTitle": "Senior Underwriting Specialist",
+      "canadaHq": false,
+      "canadaCityCount": 0,
+      "sectors": [
+        "insurance",
+        "finance"
+      ]
+    },
+    {
+      "companyName": "Zoom",
+      "family": "workday",
+      "sourceToken": "zoom.wd5.myworkdayjobs.com|zoom|zoom",
+      "totalCount": 160,
+      "firstTitle": "WebRTC Engineering Lead",
+      "canadaHq": false,
+      "canadaCityCount": 0,
+      "sectors": [
+        "communications"
+      ]
+    },
+    {
+      "companyName": "Brookfield",
+      "family": "workday",
+      "sourceToken": "brookfield.wd5.myworkdayjobs.com|brookfield|brookfield",
+      "totalCount": 101,
+      "firstTitle": "12 Month FTC Executive Assistant",
+      "canadaHq": true,
+      "canadaCityCount": 1,
+      "sectors": [
+        "finance",
+        "infrastructure"
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "companyName": "Block / Square",
+      "sourceToken": "squareup.wd1.myworkdayjobs.com|squareup|external",
+      "error": "fetch failed"
+    }
+  ]
+}

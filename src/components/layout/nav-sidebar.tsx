@@ -2,13 +2,15 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Briefcase, Bookmark, User, Zap } from "lucide-react";
+import { Bookmark, Briefcase, Database, FileCheck2, User, Zap } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const NAV_ITEMS = [
   { href: "/jobs", label: "Jobs", icon: Briefcase },
   { href: "/saved", label: "Saved", icon: Bookmark },
+  { href: "/applications", label: "Applications", icon: FileCheck2 },
   { href: "/profile", label: "Profile", icon: User },
+  { href: "/ops/ingestion", label: "Ops", icon: Database },
 ];
 
 export function NavSidebar() {

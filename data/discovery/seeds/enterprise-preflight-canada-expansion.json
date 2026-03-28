@@ -1,0 +1,297 @@
+[
+  {
+    "url": "https://canadiantirecorporation.wd3.myworkdayjobs.com/enterprise_external_careers_site",
+    "boardUrl": "https://canadiantirecorporation.wd3.myworkdayjobs.com/enterprise_external_careers_site",
+    "sourceKey": "workday:canadiantirecorporation.wd3.myworkdayjobs.com|canadiantirecorporation|enterprise_external_careers_site",
+    "connectorName": "workday",
+    "token": "canadiantirecorporation.wd3.myworkdayjobs.com|canadiantirecorporation|enterprise_external_careers_site",
+    "companyNames": [
+      "Canadian Tire"
+    ],
+    "discoveredFromQueries": [
+      "site:myworkdayjobs.com \"Canadian Tire\" careers",
+      "site:myworkdayjobs.com \"Canadian Tire\" jobs"
+    ],
+    "searchResultUrls": [
+      "https://canadiantirecorporation.wd3.myworkdayjobs.com/Enterprise_External_Careers_Site"
+    ],
+    "matchedReasons": [
+      "company_name_direct",
+      "company_name_jobs"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "fetchedCount": 100,
+      "acceptedCount": 28,
+      "previewCreatedCount": 28,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 72,
+      "sampleTitles": [
+        "Store Manager, New Store, Chidlow Connector",
+        "Manager, Customer Performance",
+        "eCommerce Consultant",
+        "Project Manager, Cloud Data Platforms",
+        "Apparel Design Student (4 months) - Summer 2026"
+      ],
+      "sampleLocations": [
+        "Partsource Victoria [808], Canada",
+        "20 Eglinton West, Canada",
+        "Quarry Park, Canada",
+        "2180 Yonge, Canada",
+        "Quarry Park, Canada"
+      ]
+    },
+    "recommendedPromotion": true
+  },
+  {
+    "url": "https://slihrms.wd3.myworkdayjobs.com/careers",
+    "boardUrl": "https://slihrms.wd3.myworkdayjobs.com/careers",
+    "sourceKey": "workday:slihrms.wd3.myworkdayjobs.com|slihrms|careers",
+    "connectorName": "workday",
+    "token": "slihrms.wd3.myworkdayjobs.com|slihrms|careers",
+    "companyNames": [
+      "AtkinsRéalis"
+    ],
+    "discoveredFromQueries": [
+      "site:myworkdayjobs.com \"atkinsrealis\" careers"
+    ],
+    "searchResultUrls": [
+      "https://slihrms.wd3.myworkdayjobs.com/careers"
+    ],
+    "matchedReasons": [
+      "tenant_direct"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "fetchedCount": 100,
+      "acceptedCount": 24,
+      "previewCreatedCount": 24,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 76,
+      "sampleTitles": [
+        "Senior Electrical Design/Drafter",
+        "Resident Engineering Manager - Plant Modifications",
+        "Part Time HSE Manager",
+        "Senior I&amp;C Engineer",
+        "I&amp;C Engineer"
+      ],
+      "sampleLocations": [
+        "CA.ON.Mississauga.2251 Speakman Drive, Canada",
+        "CA.ON.Courtice.1855 Energy Drive, Canada",
+        "US.MD.Laurel, United States of America",
+        "CA.ON.Mississauga.2285 Speakman Drive, Canada",
+        "CA.ON.Mississauga.2285 Speakman Drive, Canada"
+      ]
+    },
+    "recommendedPromotion": true
+  },
+  {
+    "url": "https://tcenergy.wd3.myworkdayjobs.com/career_site_tc",
+    "boardUrl": "https://tcenergy.wd3.myworkdayjobs.com/career_site_tc",
+    "sourceKey": "workday:tcenergy.wd3.myworkdayjobs.com|tcenergy|career_site_tc",
+    "connectorName": "workday",
+    "token": "tcenergy.wd3.myworkdayjobs.com|tcenergy|career_site_tc",
+    "companyNames": [
+      "TC Energy"
+    ],
+    "discoveredFromQueries": [
+      "site:myworkdayjobs.com \"TC Energy\" careers"
+    ],
+    "searchResultUrls": [
+      "https://tcenergy.wd3.myworkdayjobs.com/CAREER_SITE_TC"
+    ],
+    "matchedReasons": [
+      "company_name_direct"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "fetchedCount": 50,
+      "acceptedCount": 15,
+      "previewCreatedCount": 15,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 35,
+      "sampleTitles": [
+        "Short Term Marketer - West Desk",
+        "Short Term Marketer - East Desk",
+        "Construction Technician",
+        "Operations Planning Engineer",
+        "EIC Measurement Technician"
+      ],
+      "sampleLocations": [
+        "Houston Office TC Energy Center, United States of America",
+        "Houston Office TC Energy Center, United States of America",
+        "Sugar Grove Office, United States of America",
+        "Houston Office TC Energy Center, United States of America",
+        "NEW WINDSOR COMPRESSOR STATION, United States of America"
+      ]
+    },
+    "recommendedPromotion": true
+  },
+  {
+    "url": "https://interac.wd3.myworkdayjobs.com/interac",
+    "boardUrl": "https://interac.wd3.myworkdayjobs.com/interac",
+    "sourceKey": "workday:interac.wd3.myworkdayjobs.com|interac|interac",
+    "connectorName": "workday",
+    "token": "interac.wd3.myworkdayjobs.com|interac|interac",
+    "companyNames": [
+      "Interac"
+    ],
+    "discoveredFromQueries": [
+      "site:myworkdayjobs.com \"Interac\" careers"
+    ],
+    "searchResultUrls": [
+      "https://interac.wd3.myworkdayjobs.com/Interac"
+    ],
+    "matchedReasons": [
+      "company_name_direct"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "fetchedCount": 40,
+      "acceptedCount": 14,
+      "previewCreatedCount": 14,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 26,
+      "sampleTitles": [
+        "Product Business Management, Lead (Fixed-Term 12-months Contract)",
+        "Leader, Governance, Risk &amp; Compliance",
+        "Business Partner, Business Continuity Management and Insurance",
+        "Platform Engineering, Senior Specialist",
+        "Network Oversight Lead"
+      ],
+      "sampleLocations": [
+        "Interac Corp. Head Office, Canada",
+        "Interac Corp. Head Office, Canada",
+        "Interac Corp. Head Office, Canada",
+        "Interac Corp. Head Office, Canada",
+        "Interac Corp. Head Office, Canada"
+      ]
+    },
+    "recommendedPromotion": true
+  },
+  {
+    "url": "https://bdc.wd10.myworkdayjobs.com/bdc_careers",
+    "boardUrl": "https://bdc.wd10.myworkdayjobs.com/bdc_careers",
+    "sourceKey": "workday:bdc.wd10.myworkdayjobs.com|bdc|bdc_careers",
+    "connectorName": "workday",
+    "token": "bdc.wd10.myworkdayjobs.com|bdc|bdc_careers",
+    "companyNames": [
+      "BDC"
+    ],
+    "discoveredFromQueries": [
+      "site:myworkdayjobs.com \"BDC\" careers"
+    ],
+    "searchResultUrls": [
+      "https://bdc.wd10.myworkdayjobs.com/BDC_Careers"
+    ],
+    "matchedReasons": [
+      "company_name_direct"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "fetchedCount": 47,
+      "acceptedCount": 4,
+      "previewCreatedCount": 4,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 43,
+      "sampleTitles": [
+        "SENIOR BUSINESS ADVISOR, HUMAN RESOURCES, BDC ADVISORY SERVICES",
+        "LAW CLERK",
+        "SENIOR ACCOUNT MANAGER I, FINANCING - Val-d'Or",
+        "SENIOR BUSINESS ANALYST / BUSINESS ANALYST, FINANCIAL APPLICATIONS",
+        "TECHNOLOGY SPECIALIST"
+      ],
+      "sampleLocations": [
+        "Montreal, Canada",
+        "Montreal, Canada",
+        "Val d'Or, Canada",
+        "Montreal, Canada",
+        "Montreal, Canada"
+      ]
+    },
+    "recommendedPromotion": false
+  },
+  {
+    "url": "https://jobs.opg.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+    "boardUrl": "https://jobs.opg.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+    "sourceKey": "successfactors:jobs.opg.com",
+    "connectorName": "successfactors",
+    "token": "jobs.opg.com",
+    "companyNames": [
+      "Ontario Power Generation"
+    ],
+    "discoveredFromQueries": [
+      "https://jobs.opg.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc"
+    ],
+    "searchResultUrls": [
+      "https://jobs.opg.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc"
+    ],
+    "matchedReasons": [
+      "direct_seed_url"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "fetchedCount": 15,
+      "acceptedCount": 0,
+      "previewCreatedCount": 0,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 15,
+      "sampleTitles": [
+        "Senior Business Architect",
+        "Information Systems Technician",
+        "Senior Electrical Engineer - Hydroelectric Generation",
+        "Manager, Change & Talent",
+        "Finance Controller"
+      ],
+      "sampleLocations": [
+        "Oshawa, ON, CA, L1H 8W8",
+        "Bowmanville, ON, CA, L1C 3Z8",
+        "Timmins, ON, CA, P4N 7C6",
+        "Oshawa, ON, CA, L1H 8W8",
+        "Oshawa, ON, CA, L1H 8P7"
+      ]
+    },
+    "recommendedPromotion": false
+  },
+  {
+    "url": "https://myview.wd3.myworkdayjobs.com/loblaw_careers",
+    "boardUrl": "https://myview.wd3.myworkdayjobs.com/loblaw_careers",
+    "sourceKey": "workday:myview.wd3.myworkdayjobs.com|myview|loblaw_careers",
+    "connectorName": "workday",
+    "token": "myview.wd3.myworkdayjobs.com|myview|loblaw_careers",
+    "companyNames": [
+      "Loblaw"
+    ],
+    "discoveredFromQueries": [
+      "site:myworkdayjobs.com \"Loblaw\" jobs"
+    ],
+    "searchResultUrls": [
+      "https://myview.wd3.myworkdayjobs.com/loblaw_careers"
+    ],
+    "matchedReasons": [
+      "company_name_jobs"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "fetchedCount": 1,
+      "acceptedCount": 0,
+      "previewCreatedCount": 0,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 1,
+      "sampleTitles": [
+        "Pharmacy Assistant"
+      ],
+      "sampleLocations": [
+        "1130 De La Chaudiere, Quebec, QC, Canada"
+      ]
+    },
+    "recommendedPromotion": false
+  }
+]
