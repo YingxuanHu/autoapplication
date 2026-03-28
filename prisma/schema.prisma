@@ -1,0 +1,358 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─── Enums ──────────────────────────────────────────────
+
+enum WorkMode {
+  REMOTE
+  HYBRID
+  ONSITE
+  FLEXIBLE
+}
+
+enum EmploymentType {
+  FULL_TIME
+  PART_TIME
+  CONTRACT
+  INTERNSHIP
+}
+
+enum ExperienceLevel {
+  ENTRY
+  MID
+  SENIOR
+  LEAD
+  EXECUTIVE
+}
+
+enum Region {
+  US
+  CA
+}
+
+enum Industry {
+  TECH
+  FINANCE
+}
+
+enum SubmissionCategory {
+  AUTO_SUBMIT_READY
+  AUTO_FILL_REVIEW
+  MANUAL_ONLY
+}
+
+enum AutomationMode {
+  DISCOVERY_ONLY
+  ASSIST
+  REVIEW_BEFORE_SUBMIT
+  STRICT_AUTO_APPLY
+}
+
+enum ApplicationStatus {
+  DRAFT
+  READY
+  SUBMITTED
+  CONFIRMED
+  FAILED
+  WITHDRAWN
+}
+
+enum SavedJobStatus {
+  ACTIVE
+  APPLIED
+  EXPIRED
+  DISMISSED
+}
+
+enum SourceTier {
+  TIER_1
+  TIER_2
+  TIER_3
+}
+
+enum JobStatus {
+  LIVE
+  EXPIRED
+  REMOVED
+  STALE
+}
+
+enum UserAction {
+  APPLY
+  PASS
+  SAVE
+  VIEW_DETAILS
+}
+
+enum IngestionRunStatus {
+  RUNNING
+  SUCCESS
+  FAILED
+  SKIPPED
+}
+
+enum IngestionRunMode {
+  MANUAL
+  SCHEDULED
+  API
+}
+
+// ─── Models ─────────────────────────────────────────────
+
+model UserProfile {
+  id                String          @id @default(cuid())
+  email             String          @unique
+  name              String
+  linkedinUrl       String?
+  githubUrl         String?
+  portfolioUrl      String?
+  workAuthorization String?
+  salaryMin         Int?
+  salaryMax         Int?
+  salaryCurrency    String?         @default("USD")
+  preferredWorkMode WorkMode?
+  experienceLevel   ExperienceLevel?
+  automationMode    AutomationMode  @default(REVIEW_BEFORE_SUBMIT)
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+
+  resumeVariants         ResumeVariant[]
+  preferences            UserPreference[]
+  savedJobs              SavedJob[]
+  behaviorSignals        UserBehaviorSignal[]
+  applicationSubmissions ApplicationSubmission[]
+  applicationPackages    ApplicationPackage[]
+}
+
+model ResumeVariant {
+  id              String   @id @default(cuid())
+  userId          String
+  label           String
+  targetRoleFamily String?
+  fileUrl         String?
+  content         String?
+  isDefault       Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  user                UserProfile          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  applicationPackages ApplicationPackage[]
+}
+
+model JobRaw {
+  id         String     @id @default(cuid())
+  sourceId   String
+  sourceName String
+  sourceTier SourceTier
+  rawPayload Json
+  fetchedAt  DateTime
+  createdAt  DateTime   @default(now())
+
+  sourceMappings JobSourceMapping[]
+
+  @@unique([sourceName, sourceId])
+}
+
+model JobCanonical {
+  id                 String          @id @default(cuid())
+  title              String
+  company            String
+  companyKey         String          @default("")
+  titleKey           String          @default("")
+  titleCoreKey       String          @default("")
+  descriptionFingerprint String      @default("")
+  location           String
+  locationKey        String          @default("")
+  region             Region
+  workMode           WorkMode
+  salaryMin          Int?
+  salaryMax          Int?
+  salaryCurrency     String?         @default("USD")
+  employmentType     EmploymentType
+  experienceLevel    ExperienceLevel?
+  description        String
+  shortSummary       String
+  industry           Industry
+  roleFamily         String
+  applyUrl           String
+  applyUrlKey        String?
+  postedAt           DateTime
+  deadline           DateTime?
+  status             JobStatus       @default(LIVE)
+  duplicateClusterId String?
+  lastSeenAt         DateTime        @default(now())
+  staleAt            DateTime?
+  expiredAt          DateTime?
+  removedAt          DateTime?
+  createdAt          DateTime        @default(now())
+  updatedAt          DateTime        @updatedAt
+
+  eligibility            JobEligibility?
+  sourceMappings         JobSourceMapping[]
+  savedJobs              SavedJob[]
+  applicationSubmissions ApplicationSubmission[]
+  applicationPackages    ApplicationPackage[]
+  behaviorSignals        UserBehaviorSignal[]
+
+  @@index([status, lastSeenAt])
+  @@index([duplicateClusterId])
+  @@index([applyUrlKey])
+  @@index([companyKey, titleCoreKey, region])
+  @@index([companyKey, roleFamily, region])
+  @@index([companyKey, locationKey, region])
+  @@index([companyKey, descriptionFingerprint, region])
+}
+
+model JobSourceMapping {
+  id             String   @id @default(cuid())
+  canonicalJobId String
+  rawJobId       String
+  sourceName     String
+  sourceUrl      String?
+  isPrimary      Boolean  @default(false)
+  lastSeenAt     DateTime @default(now())
+  removedAt      DateTime?
+  createdAt      DateTime @default(now())
+
+  canonicalJob JobCanonical @relation(fields: [canonicalJobId], references: [id], onDelete: Cascade)
+  rawJob       JobRaw       @relation(fields: [rawJobId], references: [id], onDelete: Cascade)
+
+  @@index([sourceName, removedAt])
+  @@index([canonicalJobId, removedAt])
+}
+
+model JobEligibility {
+  id                           String             @id @default(cuid())
+  canonicalJobId               String             @unique
+  submissionCategory           SubmissionCategory
+  reasonCode                   String
+  reasonDescription            String
+  jobValidityConfidence        Float
+  formAutomationConfidence     Float
+  packageFitConfidence         Float
+  submissionQualityConfidence  Float
+  customizationLevel           Int
+  evaluatedAt                  DateTime
+  createdAt                    DateTime           @default(now())
+  updatedAt                    DateTime           @updatedAt
+
+  canonicalJob JobCanonical @relation(fields: [canonicalJobId], references: [id], onDelete: Cascade)
+}
+
+model ApplicationPackage {
+  id                String   @id @default(cuid())
+  userId            String
+  canonicalJobId    String
+  resumeVariantId   String
+  coverLetterContent String?
+  savedAnswers      Json?
+  attachedLinks     Json?
+  whyItMatches      String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  user          UserProfile   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  canonicalJob  JobCanonical  @relation(fields: [canonicalJobId], references: [id], onDelete: Cascade)
+  resumeVariant ResumeVariant @relation(fields: [resumeVariantId], references: [id], onDelete: Cascade)
+  submissions   ApplicationSubmission[]
+}
+
+model ApplicationSubmission {
+  id               String            @id @default(cuid())
+  userId           String
+  canonicalJobId   String
+  packageId        String?
+  status           ApplicationStatus
+  submittedAt      DateTime?
+  submissionMethod String?
+  notes            String?
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+
+  user         UserProfile         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  canonicalJob JobCanonical        @relation(fields: [canonicalJobId], references: [id], onDelete: Cascade)
+  package      ApplicationPackage? @relation(fields: [packageId], references: [id], onDelete: SetNull)
+}
+
+model SavedJob {
+  id             String        @id @default(cuid())
+  userId         String
+  canonicalJobId String
+  status         SavedJobStatus @default(ACTIVE)
+  notes          String?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  user         UserProfile  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  canonicalJob JobCanonical @relation(fields: [canonicalJobId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, canonicalJobId])
+}
+
+model UserPreference {
+  id           String   @id @default(cuid())
+  userId       String
+  key          String
+  value        String
+  isHardFilter Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  user UserProfile @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, key])
+}
+
+model UserBehaviorSignal {
+  id             String     @id @default(cuid())
+  userId         String
+  canonicalJobId String
+  action         UserAction
+  metadata       Json?
+  createdAt      DateTime   @default(now())
+
+  user         UserProfile  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  canonicalJob JobCanonical @relation(fields: [canonicalJobId], references: [id], onDelete: Cascade)
+}
+
+model IngestionRun {
+  id                        String             @id @default(cuid())
+  connectorKey              String
+  sourceName                String
+  sourceTier                SourceTier
+  runMode                   IngestionRunMode   @default(MANUAL)
+  status                    IngestionRunStatus
+  startedAt                 DateTime           @default(now())
+  endedAt                   DateTime?
+  fetchedCount              Int                @default(0)
+  acceptedCount             Int                @default(0)
+  rejectedCount             Int                @default(0)
+  rawCreatedCount           Int                @default(0)
+  rawUpdatedCount           Int                @default(0)
+  canonicalCreatedCount     Int                @default(0)
+  canonicalUpdatedCount     Int                @default(0)
+  dedupedCount              Int                @default(0)
+  sourceMappingCreatedCount Int                @default(0)
+  sourceMappingUpdatedCount Int                @default(0)
+  sourceMappingsRemovedCount Int               @default(0)
+  liveCount                 Int                @default(0)
+  staleCount                Int                @default(0)
+  expiredCount              Int                @default(0)
+  removedCount              Int                @default(0)
+  skippedReasons            Json?
+  runOptions                Json?
+  errorSummary              String?
+  createdAt                 DateTime           @default(now())
+  updatedAt                 DateTime           @updatedAt
+
+  @@index([startedAt(sort: Desc)])
+  @@index([sourceName, startedAt(sort: Desc)])
+  @@index([status, startedAt(sort: Desc)])
+  @@index([runMode, startedAt(sort: Desc)])
+}
