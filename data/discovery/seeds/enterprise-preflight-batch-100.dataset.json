@@ -1,0 +1,122 @@
+[
+  {
+    "url": "https://jobs.bosch-group.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+    "boardUrl": "https://jobs.bosch-group.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+    "sourceKey": "successfactors:jobs.bosch-group.com",
+    "connectorName": "successfactors",
+    "token": "jobs.bosch-group.com",
+    "companyNames": [
+      "Bosch"
+    ],
+    "discoveredFromQueries": [
+      "https://jobs.bosch-group.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc"
+    ],
+    "searchResultUrls": [
+      "https://jobs.bosch-group.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc"
+    ],
+    "matchedReasons": [
+      "direct_seed_url"
+    ],
+    "knownStatus": null
+  },
+  {
+    "url": "https://jobs.philips.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+    "boardUrl": "https://jobs.philips.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+    "sourceKey": "successfactors:jobs.philips.com",
+    "connectorName": "successfactors",
+    "token": "jobs.philips.com",
+    "companyNames": [
+      "Philips"
+    ],
+    "discoveredFromQueries": [
+      "https://jobs.philips.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc"
+    ],
+    "searchResultUrls": [
+      "https://jobs.philips.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc"
+    ],
+    "matchedReasons": [
+      "direct_seed_url"
+    ],
+    "knownStatus": null
+  },
+  {
+    "url": "https://jobs.siemens.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+    "boardUrl": "https://jobs.siemens.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+    "sourceKey": "successfactors:jobs.siemens.com",
+    "connectorName": "successfactors",
+    "token": "jobs.siemens.com",
+    "companyNames": [
+      "Siemens"
+    ],
+    "discoveredFromQueries": [
+      "https://jobs.siemens.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc"
+    ],
+    "searchResultUrls": [
+      "https://jobs.siemens.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc"
+    ],
+    "matchedReasons": [
+      "direct_seed_url"
+    ],
+    "knownStatus": null
+  },
+  {
+    "url": "https://jobs.smartrecruiters.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+    "boardUrl": "https://jobs.smartrecruiters.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+    "sourceKey": "successfactors:jobs.smartrecruiters.com",
+    "connectorName": "successfactors",
+    "token": "jobs.smartrecruiters.com",
+    "companyNames": [
+      "Bosch"
+    ],
+    "discoveredFromQueries": [
+      "https://jobs.smartrecruiters.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc"
+    ],
+    "searchResultUrls": [
+      "https://jobs.smartrecruiters.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc"
+    ],
+    "matchedReasons": [
+      "direct_seed_url"
+    ],
+    "knownStatus": null
+  },
+  {
+    "url": "https://allstate.wd5.myworkdayjobs.com/allstate_careers",
+    "boardUrl": "https://allstate.wd5.myworkdayjobs.com/allstate_careers",
+    "sourceKey": "workday:allstate.wd5.myworkdayjobs.com|allstate|allstate_careers",
+    "connectorName": "workday",
+    "token": "allstate.wd5.myworkdayjobs.com|allstate|allstate_careers",
+    "companyNames": [
+      "Allstate"
+    ],
+    "discoveredFromQueries": [
+      "site:myworkdayjobs.com \"Allstate\" careers"
+    ],
+    "searchResultUrls": [
+      "https://allstate.wd5.myworkdayjobs.com/allstate_careers"
+    ],
+    "matchedReasons": [
+      "company_name_direct"
+    ],
+    "knownStatus": null
+  },
+  {
+    "url": "https://philips.wd3.myworkdayjobs.com/jobs-and-careers",
+    "boardUrl": "https://philips.wd3.myworkdayjobs.com/jobs-and-careers",
+    "sourceKey": "workday:philips.wd3.myworkdayjobs.com|philips|jobs-and-careers",
+    "connectorName": "workday",
+    "token": "philips.wd3.myworkdayjobs.com|philips|jobs-and-careers",
+    "companyNames": [
+      "Philips"
+    ],
+    "discoveredFromQueries": [
+      "\"Philips\" careers"
+    ],
+    "searchResultUrls": [
+      "https://philips.wd3.myworkdayjobs.com/jobs-and-careers/"
+    ],
+    "matchedReasons": [
+      "company_careers_page"
+    ],
+    "knownStatus": null
+  }
+]

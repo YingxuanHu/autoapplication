@@ -1,0 +1,47 @@
+[
+  {
+    "url": "https://intactfc.wd3.myworkdayjobs.com/intactfc",
+    "boardUrl": "https://intactfc.wd3.myworkdayjobs.com/intactfc",
+    "sourceKey": "workday:intactfc.wd3.myworkdayjobs.com|intactfc|intactfc",
+    "connectorName": "workday",
+    "token": "intactfc.wd3.myworkdayjobs.com|intactfc|intactfc",
+    "companyNames": [
+      "Intact Financial"
+    ],
+    "discoveredFromQueries": [
+      "site:myworkdayjobs.com \"Intact Financial\" careers",
+      "site:myworkdayjobs.com \"intact\" careers"
+    ],
+    "searchResultUrls": [
+      "https://intactfc.wd3.myworkdayjobs.com/intactfc/"
+    ],
+    "matchedReasons": [
+      "company_name_direct",
+      "tenant_direct"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "fetchedCount": 20,
+      "acceptedCount": 6,
+      "previewCreatedCount": 6,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 14,
+      "sampleTitles": [
+        "Senior Security Technical Analyst, Intact Lab",
+        "Directeur(trice) d'unité, Transporteur, Maritime et Litige",
+        "Software asset management analyst",
+        "Senior Mobile Product Data Analyst - 12 month temporary assignment",
+        "Senior Senior Data Analyst - 14 month temporary position"
+      ],
+      "sampleLocations": [
+        "Montréal, 2020 Robert-Bourassa, Canada",
+        "St-Hyacinthe, 2450 Girouard GE, Canada",
+        "Montréal, 2020 Robert-Bourassa, Canada",
+        "Montréal, 2020 Robert-Bourassa, Canada",
+        "Montréal, 2020 Robert-Bourassa, Canada"
+      ]
+    },
+    "recommendedPromotion": true
+  }
+]

@@ -1,0 +1,625 @@
+{
+  "companiesSelected": [
+    "Aecon",
+    "Bell",
+    "Bell Canada",
+    "Scotiabank",
+    "Ontario Power Generation",
+    "Hydro One",
+    "SAP",
+    "Accenture",
+    "Ericsson",
+    "Nokia",
+    "Philips",
+    "Siemens",
+    "Bosch"
+  ],
+  "queryCount": 66,
+  "cacheHits": 66,
+  "cacheMisses": 0,
+  "resultUrlsFetched": 311,
+  "uniqueResultUrls": 330,
+  "directSeedUrls": 19,
+  "candidatesDiscovered": 11,
+  "newCandidates": 5,
+  "skippedKnownCandidates": 6,
+  "candidatesByFamily": {
+    "successfactors": 5
+  },
+  "queryReports": [
+    {
+      "companyName": "Nokia",
+      "family": "successfactors",
+      "query": "site:careers.nokia.com \"Nokia\" jobs",
+      "reason": "known_sf_host",
+      "fromCache": true,
+      "resultUrlsFetched": 8,
+      "errors": []
+    },
+    {
+      "companyName": "Aecon",
+      "family": "successfactors",
+      "query": "site:jobs.aecon.com \"Aecon\" jobs",
+      "reason": "known_sf_host",
+      "fromCache": true,
+      "resultUrlsFetched": 6,
+      "errors": []
+    },
+    {
+      "companyName": "Bell Canada",
+      "family": "successfactors",
+      "query": "site:jobs.bce.ca \"Bell Canada\" jobs",
+      "reason": "known_sf_host",
+      "fromCache": true,
+      "resultUrlsFetched": 8,
+      "errors": []
+    },
+    {
+      "companyName": "Bell",
+      "family": "successfactors",
+      "query": "site:jobs.bce.ca \"Bell\" jobs",
+      "reason": "known_sf_host",
+      "fromCache": true,
+      "resultUrlsFetched": 8,
+      "errors": []
+    },
+    {
+      "companyName": "Bosch",
+      "family": "successfactors",
+      "query": "site:jobs.bosch-group.com \"Bosch\" jobs",
+      "reason": "known_sf_host",
+      "fromCache": true,
+      "resultUrlsFetched": 8,
+      "errors": []
+    },
+    {
+      "companyName": "Ericsson",
+      "family": "successfactors",
+      "query": "site:jobs.ericsson.com \"Ericsson\" jobs",
+      "reason": "known_sf_host",
+      "fromCache": true,
+      "resultUrlsFetched": 8,
+      "errors": []
+    },
+    {
+      "companyName": "Hydro One",
+      "family": "successfactors",
+      "query": "site:jobs.hydroone.com \"Hydro One\" jobs",
+      "reason": "known_sf_host",
+      "fromCache": true,
+      "resultUrlsFetched": 6,
+      "errors": []
+    },
+    {
+      "companyName": "Ontario Power Generation",
+      "family": "successfactors",
+      "query": "site:jobs.opg.com \"Ontario Power Generation\" jobs",
+      "reason": "known_sf_host",
+      "fromCache": true,
+      "resultUrlsFetched": 6,
+      "errors": []
+    },
+    {
+      "companyName": "Philips",
+      "family": "successfactors",
+      "query": "site:jobs.philips.com \"Philips\" jobs",
+      "reason": "known_sf_host",
+      "fromCache": true,
+      "resultUrlsFetched": 8,
+      "errors": []
+    },
+    {
+      "companyName": "SAP",
+      "family": "successfactors",
+      "query": "site:jobs.sap.com \"SAP\" jobs",
+      "reason": "known_sf_host",
+      "fromCache": true,
+      "resultUrlsFetched": 8,
+      "errors": []
+    },
+    {
+      "companyName": "Scotiabank",
+      "family": "successfactors",
+      "query": "site:jobs.scotiabank.com \"Scotiabank\" jobs",
+      "reason": "known_sf_host",
+      "fromCache": true,
+      "resultUrlsFetched": 8,
+      "errors": []
+    },
+    {
+      "companyName": "Siemens",
+      "family": "successfactors",
+      "query": "site:jobs.siemens.com \"Siemens\" jobs",
+      "reason": "known_sf_host",
+      "fromCache": true,
+      "resultUrlsFetched": 8,
+      "errors": []
+    },
+    {
+      "companyName": "Accenture",
+      "family": "successfactors",
+      "query": "site:www.accenture.com \"Accenture\" jobs",
+      "reason": "known_sf_host",
+      "fromCache": true,
+      "resultUrlsFetched": 8,
+      "errors": []
+    },
+    {
+      "companyName": "Accenture",
+      "family": "successfactors",
+      "query": "\"Accenture\" \"createNewAlert=false\"",
+      "reason": "successfactors_listing_hint",
+      "fromCache": true,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Aecon",
+      "family": "successfactors",
+      "query": "\"Aecon\" \"createNewAlert=false\"",
+      "reason": "successfactors_listing_hint",
+      "fromCache": true,
+      "resultUrlsFetched": 6,
+      "errors": []
+    },
+    {
+      "companyName": "Bell Canada",
+      "family": "successfactors",
+      "query": "\"Bell Canada\" \"createNewAlert=false\"",
+      "reason": "successfactors_listing_hint",
+      "fromCache": true,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Bell",
+      "family": "successfactors",
+      "query": "\"Bell\" \"createNewAlert=false\"",
+      "reason": "successfactors_listing_hint",
+      "fromCache": true,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Bosch",
+      "family": "successfactors",
+      "query": "\"Bosch\" \"createNewAlert=false\"",
+      "reason": "successfactors_listing_hint",
+      "fromCache": true,
+      "resultUrlsFetched": 8,
+      "errors": []
+    },
+    {
+      "companyName": "Ericsson",
+      "family": "successfactors",
+      "query": "\"Ericsson\" \"createNewAlert=false\"",
+      "reason": "successfactors_listing_hint",
+      "fromCache": true,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Hydro One",
+      "family": "successfactors",
+      "query": "\"Hydro One\" \"createNewAlert=false\"",
+      "reason": "successfactors_listing_hint",
+      "fromCache": true,
+      "resultUrlsFetched": 6,
+      "errors": []
+    },
+    {
+      "companyName": "Nokia",
+      "family": "successfactors",
+      "query": "\"Nokia\" \"createNewAlert=false\"",
+      "reason": "successfactors_listing_hint",
+      "fromCache": true,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Ontario Power Generation",
+      "family": "successfactors",
+      "query": "\"Ontario Power Generation\" \"createNewAlert=false\"",
+      "reason": "successfactors_listing_hint",
+      "fromCache": true,
+      "resultUrlsFetched": 6,
+      "errors": []
+    },
+    {
+      "companyName": "Philips",
+      "family": "successfactors",
+      "query": "\"Philips\" \"createNewAlert=false\"",
+      "reason": "successfactors_listing_hint",
+      "fromCache": true,
+      "resultUrlsFetched": 8,
+      "errors": []
+    },
+    {
+      "companyName": "SAP",
+      "family": "successfactors",
+      "query": "\"SAP\" \"createNewAlert=false\"",
+      "reason": "successfactors_listing_hint",
+      "fromCache": true,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Scotiabank",
+      "family": "successfactors",
+      "query": "\"Scotiabank\" \"createNewAlert=false\"",
+      "reason": "successfactors_listing_hint",
+      "fromCache": true,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Siemens",
+      "family": "successfactors",
+      "query": "\"Siemens\" \"createNewAlert=false\"",
+      "reason": "successfactors_listing_hint",
+      "fromCache": true,
+      "resultUrlsFetched": 8,
+      "errors": []
+    },
+    {
+      "companyName": "Accenture",
+      "family": "successfactors",
+      "query": "\"Accenture\" \"talentcommunity/apply\"",
+      "reason": "successfactors_apply_hint",
+      "fromCache": true,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Aecon",
+      "family": "successfactors",
+      "query": "\"Aecon\" \"talentcommunity/apply\"",
+      "reason": "successfactors_apply_hint",
+      "fromCache": true,
+      "resultUrlsFetched": 6,
+      "errors": []
+    },
+    {
+      "companyName": "Bell Canada",
+      "family": "successfactors",
+      "query": "\"Bell Canada\" \"talentcommunity/apply\"",
+      "reason": "successfactors_apply_hint",
+      "fromCache": true,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Bell",
+      "family": "successfactors",
+      "query": "\"Bell\" \"talentcommunity/apply\"",
+      "reason": "successfactors_apply_hint",
+      "fromCache": true,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Bosch",
+      "family": "successfactors",
+      "query": "\"Bosch\" \"talentcommunity/apply\"",
+      "reason": "successfactors_apply_hint",
+      "fromCache": true,
+      "resultUrlsFetched": 8,
+      "errors": []
+    },
+    {
+      "companyName": "Ericsson",
+      "family": "successfactors",
+      "query": "\"Ericsson\" \"talentcommunity/apply\"",
+      "reason": "successfactors_apply_hint",
+      "fromCache": true,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Hydro One",
+      "family": "successfactors",
+      "query": "\"Hydro One\" \"talentcommunity/apply\"",
+      "reason": "successfactors_apply_hint",
+      "fromCache": true,
+      "resultUrlsFetched": 6,
+      "errors": []
+    },
+    {
+      "companyName": "Nokia",
+      "family": "successfactors",
+      "query": "\"Nokia\" \"talentcommunity/apply\"",
+      "reason": "successfactors_apply_hint",
+      "fromCache": true,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Ontario Power Generation",
+      "family": "successfactors",
+      "query": "\"Ontario Power Generation\" \"talentcommunity/apply\"",
+      "reason": "successfactors_apply_hint",
+      "fromCache": true,
+      "resultUrlsFetched": 6,
+      "errors": []
+    },
+    {
+      "companyName": "Philips",
+      "family": "successfactors",
+      "query": "\"Philips\" \"talentcommunity/apply\"",
+      "reason": "successfactors_apply_hint",
+      "fromCache": true,
+      "resultUrlsFetched": 8,
+      "errors": []
+    },
+    {
+      "companyName": "SAP",
+      "family": "successfactors",
+      "query": "\"SAP\" \"talentcommunity/apply\"",
+      "reason": "successfactors_apply_hint",
+      "fromCache": true,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Scotiabank",
+      "family": "successfactors",
+      "query": "\"Scotiabank\" \"talentcommunity/apply\"",
+      "reason": "successfactors_apply_hint",
+      "fromCache": true,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Siemens",
+      "family": "successfactors",
+      "query": "\"Siemens\" \"talentcommunity/apply\"",
+      "reason": "successfactors_apply_hint",
+      "fromCache": true,
+      "resultUrlsFetched": 8,
+      "errors": []
+    },
+    {
+      "companyName": "Accenture",
+      "family": "successfactors",
+      "query": "\"Accenture\" careers",
+      "reason": "company_careers_page",
+      "fromCache": true,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Aecon",
+      "family": "successfactors",
+      "query": "\"Aecon\" careers",
+      "reason": "company_careers_page",
+      "fromCache": true,
+      "resultUrlsFetched": 6,
+      "errors": []
+    },
+    {
+      "companyName": "Bell Canada",
+      "family": "successfactors",
+      "query": "\"Bell Canada\" careers",
+      "reason": "company_careers_page",
+      "fromCache": true,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Bell",
+      "family": "successfactors",
+      "query": "\"Bell\" careers",
+      "reason": "company_careers_page",
+      "fromCache": true,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Bosch",
+      "family": "successfactors",
+      "query": "\"Bosch\" careers",
+      "reason": "company_careers_page",
+      "fromCache": true,
+      "resultUrlsFetched": 8,
+      "errors": []
+    },
+    {
+      "companyName": "Ericsson",
+      "family": "successfactors",
+      "query": "\"Ericsson\" careers",
+      "reason": "company_careers_page",
+      "fromCache": true,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Hydro One",
+      "family": "successfactors",
+      "query": "\"Hydro One\" careers",
+      "reason": "company_careers_page",
+      "fromCache": true,
+      "resultUrlsFetched": 6,
+      "errors": []
+    },
+    {
+      "companyName": "Nokia",
+      "family": "successfactors",
+      "query": "\"Nokia\" careers",
+      "reason": "company_careers_page",
+      "fromCache": true,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Ontario Power Generation",
+      "family": "successfactors",
+      "query": "\"Ontario Power Generation\" careers",
+      "reason": "company_careers_page",
+      "fromCache": true,
+      "resultUrlsFetched": 6,
+      "errors": []
+    },
+    {
+      "companyName": "Philips",
+      "family": "successfactors",
+      "query": "\"Philips\" careers",
+      "reason": "company_careers_page",
+      "fromCache": true,
+      "resultUrlsFetched": 8,
+      "errors": []
+    },
+    {
+      "companyName": "SAP",
+      "family": "successfactors",
+      "query": "\"SAP\" careers",
+      "reason": "company_careers_page",
+      "fromCache": true,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Scotiabank",
+      "family": "successfactors",
+      "query": "\"Scotiabank\" careers",
+      "reason": "company_careers_page",
+      "fromCache": true,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Siemens",
+      "family": "successfactors",
+      "query": "\"Siemens\" careers",
+      "reason": "company_careers_page",
+      "fromCache": true,
+      "resultUrlsFetched": 8,
+      "errors": []
+    },
+    {
+      "companyName": "Canada:Calgary",
+      "family": "successfactors",
+      "query": "\"createNewAlert=false\" \"Calgary\" careers",
+      "reason": "generic_sf_city",
+      "fromCache": true,
+      "resultUrlsFetched": 8,
+      "errors": []
+    },
+    {
+      "companyName": "Canada:Montreal",
+      "family": "successfactors",
+      "query": "\"createNewAlert=false\" \"Montreal\" careers",
+      "reason": "generic_sf_city",
+      "fromCache": true,
+      "resultUrlsFetched": 8,
+      "errors": []
+    },
+    {
+      "companyName": "Canada:Ottawa",
+      "family": "successfactors",
+      "query": "\"createNewAlert=false\" \"Ottawa\" careers",
+      "reason": "generic_sf_city",
+      "fromCache": true,
+      "resultUrlsFetched": 8,
+      "errors": []
+    },
+    {
+      "companyName": "Canada:Toronto",
+      "family": "successfactors",
+      "query": "\"createNewAlert=false\" \"Toronto\" careers",
+      "reason": "generic_sf_city",
+      "fromCache": true,
+      "resultUrlsFetched": 8,
+      "errors": []
+    },
+    {
+      "companyName": "Canada:Vancouver",
+      "family": "successfactors",
+      "query": "\"createNewAlert=false\" \"Vancouver\" careers",
+      "reason": "generic_sf_city",
+      "fromCache": true,
+      "resultUrlsFetched": 8,
+      "errors": []
+    },
+    {
+      "companyName": "Canada:enterprise software",
+      "family": "successfactors",
+      "query": "\"createNewAlert=false\" Canada \"enterprise software\"",
+      "reason": "generic_sf_sector",
+      "fromCache": true,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Canada:fintech",
+      "family": "successfactors",
+      "query": "\"createNewAlert=false\" Canada \"fintech\"",
+      "reason": "generic_sf_sector",
+      "fromCache": true,
+      "resultUrlsFetched": 8,
+      "errors": []
+    },
+    {
+      "companyName": "Canada:healthcare",
+      "family": "successfactors",
+      "query": "\"createNewAlert=false\" Canada \"healthcare\"",
+      "reason": "generic_sf_sector",
+      "fromCache": true,
+      "resultUrlsFetched": 8,
+      "errors": []
+    },
+    {
+      "companyName": "Canada:telecom",
+      "family": "successfactors",
+      "query": "\"createNewAlert=false\" Canada \"telecom\"",
+      "reason": "generic_sf_sector",
+      "fromCache": true,
+      "resultUrlsFetched": 8,
+      "errors": []
+    },
+    {
+      "companyName": "Canada:Calgary",
+      "family": "successfactors",
+      "query": "\"talentcommunity/apply\" \"Calgary\"",
+      "reason": "generic_sf_apply_city",
+      "fromCache": true,
+      "resultUrlsFetched": 8,
+      "errors": []
+    },
+    {
+      "companyName": "Canada:Montreal",
+      "family": "successfactors",
+      "query": "\"talentcommunity/apply\" \"Montreal\"",
+      "reason": "generic_sf_apply_city",
+      "fromCache": true,
+      "resultUrlsFetched": 8,
+      "errors": []
+    },
+    {
+      "companyName": "Canada:Ottawa",
+      "family": "successfactors",
+      "query": "\"talentcommunity/apply\" \"Ottawa\"",
+      "reason": "generic_sf_apply_city",
+      "fromCache": true,
+      "resultUrlsFetched": 8,
+      "errors": []
+    },
+    {
+      "companyName": "Canada:Toronto",
+      "family": "successfactors",
+      "query": "\"talentcommunity/apply\" \"Toronto\"",
+      "reason": "generic_sf_apply_city",
+      "fromCache": true,
+      "resultUrlsFetched": 6,
+      "errors": []
+    },
+    {
+      "companyName": "Canada:Vancouver",
+      "family": "successfactors",
+      "query": "\"talentcommunity/apply\" \"Vancouver\"",
+      "reason": "generic_sf_apply_city",
+      "fromCache": true,
+      "resultUrlsFetched": 8,
+      "errors": []
+    }
+  ]
+}

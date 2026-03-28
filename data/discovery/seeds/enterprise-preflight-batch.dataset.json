@@ -1,0 +1,228 @@
+[
+  {
+    "url": "https://intactfc.wd3.myworkdayjobs.com/intactfc",
+    "boardUrl": "https://intactfc.wd3.myworkdayjobs.com/intactfc",
+    "sourceKey": "workday:intactfc.wd3.myworkdayjobs.com|intactfc|intactfc",
+    "connectorName": "workday",
+    "token": "intactfc.wd3.myworkdayjobs.com|intactfc|intactfc",
+    "companyNames": [
+      "Intact Financial"
+    ],
+    "discoveredFromQueries": [
+      "site:myworkdayjobs.com \"Intact Financial\" careers",
+      "site:myworkdayjobs.com \"intact\" careers"
+    ],
+    "searchResultUrls": [
+      "https://intactfc.wd3.myworkdayjobs.com/intactfc/"
+    ],
+    "matchedReasons": [
+      "company_name_direct",
+      "tenant_direct"
+    ],
+    "knownStatus": null
+  },
+  {
+    "url": "https://rbc.wd3.myworkdayjobs.com/rbcearlytalent1",
+    "boardUrl": "https://rbc.wd3.myworkdayjobs.com/rbcearlytalent1",
+    "sourceKey": "workday:rbc.wd3.myworkdayjobs.com|rbc|rbcearlytalent1",
+    "connectorName": "workday",
+    "token": "rbc.wd3.myworkdayjobs.com|rbc|rbcearlytalent1",
+    "companyNames": [
+      "RBC"
+    ],
+    "discoveredFromQueries": [
+      "site:myworkdayjobs.com \"RBC\" careers",
+      "site:myworkdayjobs.com \"RBC\" jobs"
+    ],
+    "searchResultUrls": [
+      "https://rbc.wd3.myworkdayjobs.com/RBCEARLYTALENT1"
+    ],
+    "matchedReasons": [
+      "company_name_direct",
+      "company_name_jobs"
+    ],
+    "knownStatus": null
+  },
+  {
+    "url": "https://td.wd3.myworkdayjobs.com/td_bank_careers",
+    "boardUrl": "https://td.wd3.myworkdayjobs.com/td_bank_careers",
+    "sourceKey": "workday:td.wd3.myworkdayjobs.com|td|td_bank_careers",
+    "connectorName": "workday",
+    "token": "td.wd3.myworkdayjobs.com|td|td_bank_careers",
+    "companyNames": [
+      "TD Bank"
+    ],
+    "discoveredFromQueries": [
+      "site:myworkdayjobs.com \"TD Bank\" careers",
+      "site:myworkdayjobs.com \"td\" careers"
+    ],
+    "searchResultUrls": [
+      "https://td.wd3.myworkdayjobs.com/TD_Bank_Careers"
+    ],
+    "matchedReasons": [
+      "company_name_direct",
+      "tenant_direct"
+    ],
+    "knownStatus": null
+  },
+  {
+    "url": "https://careers.nokia.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+    "boardUrl": "https://careers.nokia.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+    "sourceKey": "successfactors:careers.nokia.com",
+    "connectorName": "successfactors",
+    "token": "careers.nokia.com",
+    "companyNames": [
+      "Nokia"
+    ],
+    "discoveredFromQueries": [
+      "https://careers.nokia.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc"
+    ],
+    "searchResultUrls": [
+      "https://careers.nokia.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc"
+    ],
+    "matchedReasons": [
+      "direct_seed_url"
+    ],
+    "knownStatus": null
+  },
+  {
+    "url": "https://jobs.ericsson.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+    "boardUrl": "https://jobs.ericsson.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+    "sourceKey": "successfactors:jobs.ericsson.com",
+    "connectorName": "successfactors",
+    "token": "jobs.ericsson.com",
+    "companyNames": [
+      "Ericsson"
+    ],
+    "discoveredFromQueries": [
+      "https://jobs.ericsson.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc"
+    ],
+    "searchResultUrls": [
+      "https://jobs.ericsson.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc"
+    ],
+    "matchedReasons": [
+      "direct_seed_url"
+    ],
+    "knownStatus": null
+  },
+  {
+    "url": "https://accenture.wd103.myworkdayjobs.com/accenturecareers",
+    "boardUrl": "https://accenture.wd103.myworkdayjobs.com/accenturecareers",
+    "sourceKey": "workday:accenture.wd103.myworkdayjobs.com|accenture|accenturecareers",
+    "connectorName": "workday",
+    "token": "accenture.wd103.myworkdayjobs.com|accenture|accenturecareers",
+    "companyNames": [
+      "Accenture"
+    ],
+    "discoveredFromQueries": [
+      "\"Accenture\" careers"
+    ],
+    "searchResultUrls": [
+      "https://accenture.wd103.myworkdayjobs.com/AccentureCareers"
+    ],
+    "matchedReasons": [
+      "company_careers_page"
+    ],
+    "knownStatus": null
+  },
+  {
+    "url": "https://clio.wd3.myworkdayjobs.com/cliocareersite",
+    "boardUrl": "https://clio.wd3.myworkdayjobs.com/cliocareersite",
+    "sourceKey": "workday:clio.wd3.myworkdayjobs.com|clio|cliocareersite",
+    "connectorName": "workday",
+    "token": "clio.wd3.myworkdayjobs.com|clio|cliocareersite",
+    "companyNames": [
+      "Clio"
+    ],
+    "discoveredFromQueries": [
+      "site:myworkdayjobs.com \"Clio\" careers"
+    ],
+    "searchResultUrls": [
+      "https://clio.wd3.myworkdayjobs.com/ClioCareerSite"
+    ],
+    "matchedReasons": [
+      "company_name_direct"
+    ],
+    "knownStatus": null
+  },
+  {
+    "url": "https://desjardins.wd10.myworkdayjobs.com/desjardins",
+    "boardUrl": "https://desjardins.wd10.myworkdayjobs.com/desjardins",
+    "sourceKey": "workday:desjardins.wd10.myworkdayjobs.com|desjardins|desjardins",
+    "connectorName": "workday",
+    "token": "desjardins.wd10.myworkdayjobs.com|desjardins|desjardins",
+    "companyNames": [
+      "Desjardins"
+    ],
+    "discoveredFromQueries": [
+      "site:myworkdayjobs.com \"Desjardins\" careers"
+    ],
+    "searchResultUrls": [
+      "https://desjardins.wd10.myworkdayjobs.com/Desjardins"
+    ],
+    "matchedReasons": [
+      "company_name_direct"
+    ],
+    "knownStatus": null
+  },
+  {
+    "url": "https://omers.wd3.myworkdayjobs.com/omers_external",
+    "boardUrl": "https://omers.wd3.myworkdayjobs.com/omers_external",
+    "sourceKey": "workday:omers.wd3.myworkdayjobs.com|omers|omers_external",
+    "connectorName": "workday",
+    "token": "omers.wd3.myworkdayjobs.com|omers|omers_external",
+    "companyNames": [
+      "OMERS"
+    ],
+    "discoveredFromQueries": [
+      "site:myworkdayjobs.com \"OMERS\" careers"
+    ],
+    "searchResultUrls": [
+      "https://omers.wd3.myworkdayjobs.com/OMERS_External"
+    ],
+    "matchedReasons": [
+      "company_name_direct"
+    ],
+    "knownStatus": null
+  },
+  {
+    "url": "https://salesforce.wd12.myworkdayjobs.com/external_career_site",
+    "boardUrl": "https://salesforce.wd12.myworkdayjobs.com/external_career_site",
+    "sourceKey": "workday:salesforce.wd12.myworkdayjobs.com|salesforce|external_career_site",
+    "connectorName": "workday",
+    "token": "salesforce.wd12.myworkdayjobs.com|salesforce|external_career_site",
+    "companyNames": [
+      "Salesforce"
+    ],
+    "discoveredFromQueries": [
+      "site:myworkdayjobs.com \"Salesforce\" careers"
+    ],
+    "searchResultUrls": [
+      "https://salesforce.wd12.myworkdayjobs.com/External_Career_Site"
+    ],
+    "matchedReasons": [
+      "company_name_direct"
+    ],
+    "knownStatus": null
+  },
+  {
+    "url": "https://tencent.wd1.myworkdayjobs.com/lightspeed",
+    "boardUrl": "https://tencent.wd1.myworkdayjobs.com/lightspeed",
+    "sourceKey": "workday:tencent.wd1.myworkdayjobs.com|tencent|lightspeed",
+    "connectorName": "workday",
+    "token": "tencent.wd1.myworkdayjobs.com|tencent|lightspeed",
+    "companyNames": [
+      "Lightspeed"
+    ],
+    "discoveredFromQueries": [
+      "site:myworkdayjobs.com \"Lightspeed\" careers"
+    ],
+    "searchResultUrls": [
+      "https://tencent.wd1.myworkdayjobs.com/Lightspeed"
+    ],
+    "matchedReasons": [
+      "company_name_direct"
+    ],
+    "knownStatus": null
+  }
+]

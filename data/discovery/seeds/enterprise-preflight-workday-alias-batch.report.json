@@ -1,0 +1,1232 @@
+{
+  "generatedAt": "2026-03-28T03:23:22.060Z",
+  "families": [
+    "workday"
+  ],
+  "limitCompanies": 50,
+  "previewLimit": 100,
+  "threshold": 5,
+  "discoverySummary": {
+    "companiesSelected": [
+      "BDO Canada",
+      "AtkinsRéalis",
+      "Export Development Canada",
+      "iA Financial Group",
+      "Lifeworks / TELUS Health",
+      "Bank of Canada",
+      "CPP Investments",
+      "Ontario Teachers",
+      "Thomson Reuters",
+      "TMX Group",
+      "CAE",
+      "Telus International",
+      "NAV CANADA"
+    ],
+    "queryCount": 131,
+    "cacheHits": 0,
+    "cacheMisses": 131,
+    "resultUrlsFetched": 515,
+    "uniqueResultUrls": 518,
+    "directSeedUrls": 4,
+    "candidatesDiscovered": 7,
+    "newCandidates": 1,
+    "skippedKnownCandidates": 6,
+    "candidatesByFamily": {
+      "workday": 1
+    },
+    "queryReports": [
+      {
+        "companyName": "AtkinsRéalis",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"AtkinsRéalis\" \"Montreal\" careers",
+        "reason": "canada_city_direct",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Bank of Canada",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"Bank of Canada\" \"Ottawa\" careers",
+        "reason": "canada_city_direct",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "BDO Canada",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"BDO Canada\" \"Toronto\" careers",
+        "reason": "canada_city_direct",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "CAE",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"CAE\" \"Montreal\" careers",
+        "reason": "canada_city_direct",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "CPP Investments",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"CPP Investments\" \"Toronto\" careers",
+        "reason": "canada_city_direct",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Export Development Canada",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"Export Development Canada\" \"Ottawa\" careers",
+        "reason": "canada_city_direct",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "iA Financial Group",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"iA Financial Group\" \"Quebec City\" careers",
+        "reason": "canada_city_direct",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Lifeworks / TELUS Health",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"Lifeworks / TELUS Health\" \"Toronto\" careers",
+        "reason": "canada_city_direct",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "NAV CANADA",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"NAV CANADA\" \"Ottawa\" careers",
+        "reason": "canada_city_direct",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Ontario Teachers",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"Ontario Teachers\" \"Toronto\" careers",
+        "reason": "canada_city_direct",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Telus International",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"Telus International\" \"Vancouver\" careers",
+        "reason": "canada_city_direct",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Thomson Reuters",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"Thomson Reuters\" \"Toronto\" careers",
+        "reason": "canada_city_direct",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "TMX Group",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"TMX Group\" \"Toronto\" careers",
+        "reason": "canada_city_direct",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "AtkinsRéalis",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"AtkinsRéalis\" careers",
+        "reason": "company_name_direct",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Bank of Canada",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"Bank of Canada\" careers",
+        "reason": "company_name_direct",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Bank of Canada",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"Banque du Canada\" \"Ottawa\" careers",
+        "reason": "company_alias_canada_city",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "BDO Canada",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"BDO Canada\" careers",
+        "reason": "company_name_direct",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "BDO Canada",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"BDO\" \"Toronto\" careers",
+        "reason": "company_alias_canada_city",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "CAE",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"CAE Inc\" \"Montreal\" careers",
+        "reason": "company_alias_canada_city",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "CAE",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"CAE\" careers",
+        "reason": "company_name_direct",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "CPP Investments",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"CPP Investments\" careers",
+        "reason": "company_name_direct",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "CPP Investments",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"CPPIB\" \"Toronto\" careers",
+        "reason": "company_alias_canada_city",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Export Development Canada",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"EDC\" \"Ottawa\" careers",
+        "reason": "company_alias_canada_city",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Export Development Canada",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"Export Development Canada\" careers",
+        "reason": "company_name_direct",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "iA Financial Group",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"iA Financial Group\" careers",
+        "reason": "company_name_direct",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "iA Financial Group",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"iA\" \"Quebec City\" careers",
+        "reason": "company_alias_canada_city",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "iA Financial Group",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"Industrial Alliance\" \"Quebec City\" careers",
+        "reason": "company_alias_canada_city",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Lifeworks / TELUS Health",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"Lifeworks / TELUS Health\" careers",
+        "reason": "company_name_direct",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Lifeworks / TELUS Health",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"LifeWorks\" \"Toronto\" careers",
+        "reason": "company_alias_canada_city",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "NAV CANADA",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"NAV CANADA\" careers",
+        "reason": "company_name_direct",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "NAV CANADA",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"NavCanada\" \"Ottawa\" careers",
+        "reason": "company_alias_canada_city",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Ontario Teachers",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"Ontario Teachers' Pension Plan\" \"Toronto\" careers",
+        "reason": "company_alias_canada_city",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Ontario Teachers",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"Ontario Teachers\" careers",
+        "reason": "company_name_direct",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Ontario Teachers",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"OTPP\" \"Toronto\" careers",
+        "reason": "company_alias_canada_city",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "AtkinsRéalis",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"SNC-Lavalin\" \"Montreal\" careers",
+        "reason": "company_alias_canada_city",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Lifeworks / TELUS Health",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"TELUS Health\" \"Toronto\" careers",
+        "reason": "company_alias_canada_city",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Telus International",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"Telus International\" careers",
+        "reason": "company_name_direct",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Thomson Reuters",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"Thomson Reuters\" careers",
+        "reason": "company_name_direct",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "TMX Group",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"TMX Group\" careers",
+        "reason": "company_name_direct",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "TMX Group",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"TMX\" \"Toronto\" careers",
+        "reason": "company_alias_canada_city",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Thomson Reuters",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"TR\" \"Toronto\" careers",
+        "reason": "company_alias_canada_city",
+        "fromCache": false,
+        "resultUrlsFetched": 2,
+        "errors": []
+      },
+      {
+        "companyName": "AtkinsRéalis",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"AtkinsRéalis\" jobs",
+        "reason": "company_name_jobs",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Bank of Canada",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"Bank of Canada\" jobs",
+        "reason": "company_name_jobs",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Bank of Canada",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"Banque du Canada\" careers",
+        "reason": "company_alias_direct",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "BDO Canada",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"BDO Canada\" jobs",
+        "reason": "company_name_jobs",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "BDO Canada",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"BDO\" careers",
+        "reason": "company_alias_direct",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "CAE",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"CAE Inc\" careers",
+        "reason": "company_alias_direct",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "CAE",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"CAE\" jobs",
+        "reason": "company_name_jobs",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "CPP Investments",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"CPP Investments\" jobs",
+        "reason": "company_name_jobs",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "CPP Investments",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"CPPIB\" careers",
+        "reason": "company_alias_direct",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Export Development Canada",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"EDC\" careers",
+        "reason": "company_alias_direct",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Export Development Canada",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"Export Development Canada\" jobs",
+        "reason": "company_name_jobs",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "iA Financial Group",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"iA Financial Group\" jobs",
+        "reason": "company_name_jobs",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "iA Financial Group",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"iA\" careers",
+        "reason": "company_alias_direct",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "iA Financial Group",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"Industrial Alliance\" careers",
+        "reason": "company_alias_direct",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Lifeworks / TELUS Health",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"Lifeworks / TELUS Health\" jobs",
+        "reason": "company_name_jobs",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Lifeworks / TELUS Health",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"LifeWorks\" careers",
+        "reason": "company_alias_direct",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "NAV CANADA",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"NAV CANADA\" jobs",
+        "reason": "company_name_jobs",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "NAV CANADA",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"NavCanada\" careers",
+        "reason": "company_alias_direct",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Ontario Teachers",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"Ontario Teachers' Pension Plan\" careers",
+        "reason": "company_alias_direct",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Ontario Teachers",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"Ontario Teachers\" jobs",
+        "reason": "company_name_jobs",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Ontario Teachers",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"OTPP\" careers",
+        "reason": "company_alias_direct",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "AtkinsRéalis",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"SNC-Lavalin\" careers",
+        "reason": "company_alias_direct",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Lifeworks / TELUS Health",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"TELUS Health\" careers",
+        "reason": "company_alias_direct",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Telus International",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"Telus International\" jobs",
+        "reason": "company_name_jobs",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Thomson Reuters",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"Thomson Reuters\" jobs",
+        "reason": "company_name_jobs",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "TMX Group",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"TMX Group\" jobs",
+        "reason": "company_name_jobs",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "TMX Group",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"TMX\" careers",
+        "reason": "company_alias_direct",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Thomson Reuters",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"TR\" careers",
+        "reason": "company_alias_direct",
+        "fromCache": false,
+        "resultUrlsFetched": 2,
+        "errors": []
+      },
+      {
+        "companyName": "AtkinsRéalis",
+        "family": "workday",
+        "query": "\"AtkinsRéalis\" \"myworkdayjobs.com\"",
+        "reason": "company_name_host_hint",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Bank of Canada",
+        "family": "workday",
+        "query": "\"Bank of Canada\" \"myworkdayjobs.com\"",
+        "reason": "company_name_host_hint",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "BDO Canada",
+        "family": "workday",
+        "query": "\"BDO Canada\" \"myworkdayjobs.com\"",
+        "reason": "company_name_host_hint",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "CAE",
+        "family": "workday",
+        "query": "\"CAE\" \"myworkdayjobs.com\"",
+        "reason": "company_name_host_hint",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "CPP Investments",
+        "family": "workday",
+        "query": "\"CPP Investments\" \"myworkdayjobs.com\"",
+        "reason": "company_name_host_hint",
+        "fromCache": false,
+        "resultUrlsFetched": 5,
+        "errors": []
+      },
+      {
+        "companyName": "Export Development Canada",
+        "family": "workday",
+        "query": "\"Export Development Canada\" \"myworkdayjobs.com\"",
+        "reason": "company_name_host_hint",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "iA Financial Group",
+        "family": "workday",
+        "query": "\"iA Financial Group\" \"myworkdayjobs.com\"",
+        "reason": "company_name_host_hint",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Lifeworks / TELUS Health",
+        "family": "workday",
+        "query": "\"Lifeworks / TELUS Health\" \"myworkdayjobs.com\"",
+        "reason": "company_name_host_hint",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "NAV CANADA",
+        "family": "workday",
+        "query": "\"NAV CANADA\" \"myworkdayjobs.com\"",
+        "reason": "company_name_host_hint",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Ontario Teachers",
+        "family": "workday",
+        "query": "\"Ontario Teachers\" \"myworkdayjobs.com\"",
+        "reason": "company_name_host_hint",
+        "fromCache": false,
+        "resultUrlsFetched": 6,
+        "errors": []
+      },
+      {
+        "companyName": "Telus International",
+        "family": "workday",
+        "query": "\"Telus International\" \"myworkdayjobs.com\"",
+        "reason": "company_name_host_hint",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Thomson Reuters",
+        "family": "workday",
+        "query": "\"Thomson Reuters\" \"myworkdayjobs.com\"",
+        "reason": "company_name_host_hint",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "TMX Group",
+        "family": "workday",
+        "query": "\"TMX Group\" \"myworkdayjobs.com\"",
+        "reason": "company_name_host_hint",
+        "fromCache": false,
+        "resultUrlsFetched": 3,
+        "errors": []
+      },
+      {
+        "companyName": "Bank of Canada",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"bankofcanada\" careers",
+        "reason": "tenant_direct",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Bank of Canada",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"Banque du Canada\" jobs",
+        "reason": "company_alias_jobs",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "BDO Canada",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"BDO\" jobs",
+        "reason": "company_alias_jobs",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "CAE",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"CAE Inc\" jobs",
+        "reason": "company_alias_jobs",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "CPP Investments",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"CPPIB\" jobs",
+        "reason": "company_alias_jobs",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "CPP Investments",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"cppinvestments\" careers",
+        "reason": "tenant_direct",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Export Development Canada",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"EDC\" jobs",
+        "reason": "company_alias_jobs",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "iA Financial Group",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"iA\" jobs",
+        "reason": "company_alias_jobs",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "iA Financial Group",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"iafinancial\" careers",
+        "reason": "tenant_direct",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "iA Financial Group",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"Industrial Alliance\" jobs",
+        "reason": "company_alias_jobs",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Lifeworks / TELUS Health",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"LifeWorks\" jobs",
+        "reason": "company_alias_jobs",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "NAV CANADA",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"NavCanada\" jobs",
+        "reason": "company_alias_jobs",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Ontario Teachers",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"Ontario Teachers' Pension Plan\" jobs",
+        "reason": "company_alias_jobs",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Ontario Teachers",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"OTPP\" jobs",
+        "reason": "company_alias_jobs",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Ontario Teachers",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"otppb\" careers",
+        "reason": "tenant_direct",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "AtkinsRéalis",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"slihrms\" careers",
+        "reason": "tenant_direct",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "AtkinsRéalis",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"SNC-Lavalin\" jobs",
+        "reason": "company_alias_jobs",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Lifeworks / TELUS Health",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"TELUS Health\" jobs",
+        "reason": "company_alias_jobs",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Telus International",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"telusinternational\" careers",
+        "reason": "tenant_direct",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Thomson Reuters",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"thomsonreuters\" careers",
+        "reason": "tenant_direct",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "TMX Group",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"TMX\" jobs",
+        "reason": "company_alias_jobs",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "TMX Group",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"tmxgroup\" careers",
+        "reason": "tenant_direct",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Thomson Reuters",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"TR\" jobs",
+        "reason": "company_alias_jobs",
+        "fromCache": false,
+        "resultUrlsFetched": 2,
+        "errors": []
+      },
+      {
+        "companyName": "Bank of Canada",
+        "family": "workday",
+        "query": "\"Banque du Canada\" \"myworkdayjobs.com\"",
+        "reason": "company_alias_host_hint",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "BDO Canada",
+        "family": "workday",
+        "query": "\"BDO\" \"myworkdayjobs.com\"",
+        "reason": "company_alias_host_hint",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "CAE",
+        "family": "workday",
+        "query": "\"CAE Inc\" \"myworkdayjobs.com\"",
+        "reason": "company_alias_host_hint",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "CPP Investments",
+        "family": "workday",
+        "query": "\"CPPIB\" \"myworkdayjobs.com\"",
+        "reason": "company_alias_host_hint",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Export Development Canada",
+        "family": "workday",
+        "query": "\"EDC\" \"myworkdayjobs.com\"",
+        "reason": "company_alias_host_hint",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "iA Financial Group",
+        "family": "workday",
+        "query": "\"iA\" \"myworkdayjobs.com\"",
+        "reason": "company_alias_host_hint",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "iA Financial Group",
+        "family": "workday",
+        "query": "\"Industrial Alliance\" \"myworkdayjobs.com\"",
+        "reason": "company_alias_host_hint",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Lifeworks / TELUS Health",
+        "family": "workday",
+        "query": "\"LifeWorks\" \"myworkdayjobs.com\"",
+        "reason": "company_alias_host_hint",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "NAV CANADA",
+        "family": "workday",
+        "query": "\"NavCanada\" \"myworkdayjobs.com\"",
+        "reason": "company_alias_host_hint",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Ontario Teachers",
+        "family": "workday",
+        "query": "\"Ontario Teachers' Pension Plan\" \"myworkdayjobs.com\"",
+        "reason": "company_alias_host_hint",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Ontario Teachers",
+        "family": "workday",
+        "query": "\"OTPP\" \"myworkdayjobs.com\"",
+        "reason": "company_alias_host_hint",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "AtkinsRéalis",
+        "family": "workday",
+        "query": "\"SNC-Lavalin\" \"myworkdayjobs.com\"",
+        "reason": "company_alias_host_hint",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Lifeworks / TELUS Health",
+        "family": "workday",
+        "query": "\"TELUS Health\" \"myworkdayjobs.com\"",
+        "reason": "company_alias_host_hint",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "TMX Group",
+        "family": "workday",
+        "query": "\"TMX\" \"myworkdayjobs.com\"",
+        "reason": "company_alias_host_hint",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Thomson Reuters",
+        "family": "workday",
+        "query": "\"TR\" \"myworkdayjobs.com\"",
+        "reason": "company_alias_host_hint",
+        "fromCache": false,
+        "resultUrlsFetched": 2,
+        "errors": []
+      },
+      {
+        "companyName": "Canada:Calgary",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"Calgary\" Canada careers",
+        "reason": "generic_canada_city",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Canada:Montreal",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"Montreal\" Canada careers",
+        "reason": "generic_canada_city",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Canada:Ottawa",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"Ottawa\" Canada careers",
+        "reason": "generic_canada_city",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Canada:Toronto",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"Toronto\" Canada careers",
+        "reason": "generic_canada_city",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Canada:Vancouver",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"Vancouver\" Canada careers",
+        "reason": "generic_canada_city",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Canada:Waterloo",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com \"Waterloo\" Canada careers",
+        "reason": "generic_canada_city",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Canada:cloud",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com Canada \"cloud\" careers",
+        "reason": "generic_canada_sector",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Canada:enterprise software",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com Canada \"enterprise software\" careers",
+        "reason": "generic_canada_sector",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Canada:fintech",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com Canada \"fintech\" careers",
+        "reason": "generic_canada_sector",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Canada:healthcare",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com Canada \"healthcare\" careers",
+        "reason": "generic_canada_sector",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      },
+      {
+        "companyName": "Canada:telecom",
+        "family": "workday",
+        "query": "site:myworkdayjobs.com Canada \"telecom\" careers",
+        "reason": "generic_canada_sector",
+        "fromCache": false,
+        "resultUrlsFetched": 8,
+        "errors": []
+      }
+    ]
+  },
+  "previewedCount": 1,
+  "recommendedPromotions": [
+    {
+      "sourceKey": "workday:ia.wd3.myworkdayjobs.com|ia|professional",
+      "companyNames": [
+        "iA Financial Group"
+      ],
+      "connectorName": "workday",
+      "previewCreatedCount": 12,
+      "acceptedCount": 12,
+      "boardUrl": "https://ia.wd3.myworkdayjobs.com/professional"
+    }
+  ]
+}

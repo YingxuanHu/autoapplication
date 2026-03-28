@@ -1,0 +1,22 @@
+[
+  {
+    "url": "https://ia.wd3.myworkdayjobs.com/professional",
+    "boardUrl": "https://ia.wd3.myworkdayjobs.com/professional",
+    "sourceKey": "workday:ia.wd3.myworkdayjobs.com|ia|professional",
+    "connectorName": "workday",
+    "token": "ia.wd3.myworkdayjobs.com|ia|professional",
+    "companyNames": [
+      "iA Financial Group"
+    ],
+    "discoveredFromQueries": [
+      "site:myworkdayjobs.com \"iA\" careers"
+    ],
+    "searchResultUrls": [
+      "https://ia.wd3.myworkdayjobs.com/Professional"
+    ],
+    "matchedReasons": [
+      "company_alias_direct"
+    ],
+    "knownStatus": null
+  }
+]

@@ -1,0 +1,457 @@
+[
+  {
+    "url": "https://clio.wd3.myworkdayjobs.com/cliocareersite",
+    "boardUrl": "https://clio.wd3.myworkdayjobs.com/cliocareersite",
+    "sourceKey": "workday:clio.wd3.myworkdayjobs.com|clio|cliocareersite",
+    "connectorName": "workday",
+    "token": "clio.wd3.myworkdayjobs.com|clio|cliocareersite",
+    "companyNames": [
+      "Clio"
+    ],
+    "discoveredFromQueries": [
+      "site:myworkdayjobs.com \"Clio\" careers"
+    ],
+    "searchResultUrls": [
+      "https://clio.wd3.myworkdayjobs.com/ClioCareerSite"
+    ],
+    "matchedReasons": [
+      "company_name_direct"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "fetchedCount": 100,
+      "acceptedCount": 26,
+      "previewCreatedCount": 26,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 74,
+      "sampleTitles": [
+        "Senior Program Manager, Talent Management",
+        "Senior AI Research Engineer",
+        "Director, Enterprise Partners",
+        "Director, Revenue Operations, Enterprise",
+        "Senior NLP Research Engineer"
+      ],
+      "sampleLocations": [
+        "Burnaby, Canada",
+        "London, United Kingdom",
+        "Remote - USA, United States of America",
+        "Remote - NY, USA, United States of America",
+        "Toronto, Canada"
+      ]
+    },
+    "recommendedPromotion": true
+  },
+  {
+    "url": "https://intactfc.wd3.myworkdayjobs.com/intactfc",
+    "boardUrl": "https://intactfc.wd3.myworkdayjobs.com/intactfc",
+    "sourceKey": "workday:intactfc.wd3.myworkdayjobs.com|intactfc|intactfc",
+    "connectorName": "workday",
+    "token": "intactfc.wd3.myworkdayjobs.com|intactfc|intactfc",
+    "companyNames": [
+      "Intact Financial"
+    ],
+    "discoveredFromQueries": [
+      "site:myworkdayjobs.com \"Intact Financial\" careers",
+      "site:myworkdayjobs.com \"intact\" careers"
+    ],
+    "searchResultUrls": [
+      "https://intactfc.wd3.myworkdayjobs.com/intactfc/"
+    ],
+    "matchedReasons": [
+      "company_name_direct",
+      "tenant_direct"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "fetchedCount": 100,
+      "acceptedCount": 24,
+      "previewCreatedCount": 24,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 76,
+      "sampleTitles": [
+        "Senior Security Technical Analyst, Intact Lab",
+        "Directeur(trice) d'unité, Transporteur, Maritime et Litige",
+        "Software asset management analyst",
+        "Senior Mobile Product Data Analyst - 12 month temporary assignment",
+        "Senior Senior Data Analyst - 14 month temporary position"
+      ],
+      "sampleLocations": [
+        "Montréal, 2020 Robert-Bourassa, Canada",
+        "St-Hyacinthe, 2450 Girouard GE, Canada",
+        "Montréal, 2020 Robert-Bourassa, Canada",
+        "Montréal, 2020 Robert-Bourassa, Canada",
+        "Montréal, 2020 Robert-Bourassa, Canada"
+      ]
+    },
+    "recommendedPromotion": true
+  },
+  {
+    "url": "https://omers.wd3.myworkdayjobs.com/omers_external",
+    "boardUrl": "https://omers.wd3.myworkdayjobs.com/omers_external",
+    "sourceKey": "workday:omers.wd3.myworkdayjobs.com|omers|omers_external",
+    "connectorName": "workday",
+    "token": "omers.wd3.myworkdayjobs.com|omers|omers_external",
+    "companyNames": [
+      "OMERS"
+    ],
+    "discoveredFromQueries": [
+      "site:myworkdayjobs.com \"OMERS\" careers"
+    ],
+    "searchResultUrls": [
+      "https://omers.wd3.myworkdayjobs.com/OMERS_External"
+    ],
+    "matchedReasons": [
+      "company_name_direct"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "fetchedCount": 67,
+      "acceptedCount": 21,
+      "previewCreatedCount": 21,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 46,
+      "sampleTitles": [
+        "Senior Network Security Engineer (15 Months Contract)",
+        "Analyst, Investment Finance (12 Month Contract)",
+        "Supervisor, Guest Experience",
+        "Building Operator",
+        "Maintenance Worker - Yorkdale"
+      ],
+      "sampleLocations": [
+        "Head Office Toronto, Canada",
+        "Head Office Toronto, Canada",
+        "Southcentre, Canada",
+        "Canada Square, Canada",
+        "Yorkdale, Canada"
+      ]
+    },
+    "recommendedPromotion": true
+  },
+  {
+    "url": "https://rbc.wd3.myworkdayjobs.com/rbcearlytalent1",
+    "boardUrl": "https://rbc.wd3.myworkdayjobs.com/rbcearlytalent1",
+    "sourceKey": "workday:rbc.wd3.myworkdayjobs.com|rbc|rbcearlytalent1",
+    "connectorName": "workday",
+    "token": "rbc.wd3.myworkdayjobs.com|rbc|rbcearlytalent1",
+    "companyNames": [
+      "RBC"
+    ],
+    "discoveredFromQueries": [
+      "site:myworkdayjobs.com \"RBC\" careers",
+      "site:myworkdayjobs.com \"RBC\" jobs"
+    ],
+    "searchResultUrls": [
+      "https://rbc.wd3.myworkdayjobs.com/RBCEARLYTALENT1"
+    ],
+    "matchedReasons": [
+      "company_name_direct",
+      "company_name_jobs"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "fetchedCount": 29,
+      "acceptedCount": 5,
+      "previewCreatedCount": 5,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 24,
+      "sampleTitles": [
+        "Senior Administrator, Entitlements",
+        "Financial Engineer",
+        "GRM Rotational Associate, Credit Adjudication",
+        "GRM Rotational Associate - MCCR",
+        "Senior Financial Analyst, Accounts Payable"
+      ],
+      "sampleLocations": [
+        "PERSIARAN IRC 2, IOI RESORT CITY IOI CITY TOWER ONE:PUTRAJAYA, Malaysia",
+        "PERSIARAN IRC 2, IOI RESORT CITY IOI CITY TOWER ONE:PUTRAJAYA, Malaysia",
+        "RBC CENTRE, 155 WELLINGTON ST W:TORONTO, Canada",
+        "20 KING ST W:TORONTO, Canada",
+        "PERSIARAN IRC 2, IOI RESORT CITY IOI CITY TOWER ONE:PUTRAJAYA, Malaysia"
+      ]
+    },
+    "recommendedPromotion": true
+  },
+  {
+    "url": "https://tencent.wd1.myworkdayjobs.com/lightspeed",
+    "boardUrl": "https://tencent.wd1.myworkdayjobs.com/lightspeed",
+    "sourceKey": "workday:tencent.wd1.myworkdayjobs.com|tencent|lightspeed",
+    "connectorName": "workday",
+    "token": "tencent.wd1.myworkdayjobs.com|tencent|lightspeed",
+    "companyNames": [
+      "Lightspeed"
+    ],
+    "discoveredFromQueries": [
+      "site:myworkdayjobs.com \"Lightspeed\" careers"
+    ],
+    "searchResultUrls": [
+      "https://tencent.wd1.myworkdayjobs.com/Lightspeed"
+    ],
+    "matchedReasons": [
+      "company_name_direct"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "fetchedCount": 42,
+      "acceptedCount": 5,
+      "previewCreatedCount": 5,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 37,
+      "sampleTitles": [
+        "シニアゲームエンジン開発エンジニア｜Senior Engine Engineer",
+        "Game Design Intern (R&amp;D Focus)",
+        "Project Managment Intern",
+        "Business Development Manager (AI &amp; Game Tech)",
+        "Game Research &amp; Development Intern, Engine Research"
+      ],
+      "sampleLocations": [
+        "Japan",
+        "New Zealand",
+        "New Zealand",
+        "United States of America",
+        "United States of America"
+      ]
+    },
+    "recommendedPromotion": true
+  },
+  {
+    "url": "https://td.wd3.myworkdayjobs.com/td_bank_careers",
+    "boardUrl": "https://td.wd3.myworkdayjobs.com/td_bank_careers",
+    "sourceKey": "workday:td.wd3.myworkdayjobs.com|td|td_bank_careers",
+    "connectorName": "workday",
+    "token": "td.wd3.myworkdayjobs.com|td|td_bank_careers",
+    "companyNames": [
+      "TD Bank"
+    ],
+    "discoveredFromQueries": [
+      "site:myworkdayjobs.com \"TD Bank\" careers",
+      "site:myworkdayjobs.com \"td\" careers"
+    ],
+    "searchResultUrls": [
+      "https://td.wd3.myworkdayjobs.com/TD_Bank_Careers"
+    ],
+    "matchedReasons": [
+      "company_name_direct",
+      "tenant_direct"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "fetchedCount": 100,
+      "acceptedCount": 26,
+      "previewCreatedCount": 2,
+      "previewUpdatedCount": 24,
+      "dedupedCount": 0,
+      "rejectedCount": 74,
+      "sampleTitles": [
+        "Head of Business Development, US Credit Cards &amp; Unsecured Lending (US)",
+        "Financial Advisor - Delray Beach, Florida",
+        "Bilingual Contact Center Rep III, Direct Investing",
+        "Financial Advisor - Kings Highway/Brooklyn",
+        "Retail Market Manager - Upstate Carolinas"
+      ],
+      "sampleLocations": [
+        "United States of America",
+        "United States of America",
+        "Canada",
+        "United States of America",
+        "United States of America"
+      ]
+    },
+    "recommendedPromotion": false
+  },
+  {
+    "url": "https://salesforce.wd12.myworkdayjobs.com/external_career_site",
+    "boardUrl": "https://salesforce.wd12.myworkdayjobs.com/external_career_site",
+    "sourceKey": "workday:salesforce.wd12.myworkdayjobs.com|salesforce|external_career_site",
+    "connectorName": "workday",
+    "token": "salesforce.wd12.myworkdayjobs.com|salesforce|external_career_site",
+    "companyNames": [
+      "Salesforce"
+    ],
+    "discoveredFromQueries": [
+      "site:myworkdayjobs.com \"Salesforce\" careers"
+    ],
+    "searchResultUrls": [
+      "https://salesforce.wd12.myworkdayjobs.com/External_Career_Site"
+    ],
+    "matchedReasons": [
+      "company_name_direct"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "fetchedCount": 100,
+      "acceptedCount": 10,
+      "previewCreatedCount": 2,
+      "previewUpdatedCount": 8,
+      "dedupedCount": 1,
+      "rejectedCount": 90,
+      "sampleTitles": [
+        "Account Executive - Small, Medium and Growth Business - UKI",
+        "Product Strategy Lead, Missionforce",
+        "Technical Architect",
+        "Lead Employee Success People Consultant",
+        "Financial Planning &amp; Analysis Senior Manager"
+      ],
+      "sampleLocations": [
+        "Ireland",
+        "India",
+        "Spain",
+        "Mexico",
+        "United States of America"
+      ]
+    },
+    "recommendedPromotion": false
+  },
+  {
+    "url": "https://desjardins.wd10.myworkdayjobs.com/desjardins",
+    "boardUrl": "https://desjardins.wd10.myworkdayjobs.com/desjardins",
+    "sourceKey": "workday:desjardins.wd10.myworkdayjobs.com|desjardins|desjardins",
+    "connectorName": "workday",
+    "token": "desjardins.wd10.myworkdayjobs.com|desjardins|desjardins",
+    "companyNames": [
+      "Desjardins"
+    ],
+    "discoveredFromQueries": [
+      "site:myworkdayjobs.com \"Desjardins\" careers"
+    ],
+    "searchResultUrls": [
+      "https://desjardins.wd10.myworkdayjobs.com/Desjardins"
+    ],
+    "matchedReasons": [
+      "company_name_direct"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "fetchedCount": 100,
+      "acceptedCount": 22,
+      "previewCreatedCount": 0,
+      "previewUpdatedCount": 22,
+      "dedupedCount": 0,
+      "rejectedCount": 78,
+      "sampleTitles": [
+        "Advisor, Investment and Financing",
+        "Product Leader, Product management",
+        "Advisor, Business strategies",
+        "Senior Advisor, IT architecture",
+        "Personal Finance Advisor"
+      ],
+      "sampleLocations": [
+        "Canada",
+        "Canada",
+        "Canada",
+        "Canada",
+        "Canada"
+      ]
+    },
+    "recommendedPromotion": false
+  },
+  {
+    "url": "https://careers.nokia.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+    "boardUrl": "https://careers.nokia.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+    "sourceKey": "successfactors:careers.nokia.com",
+    "connectorName": "successfactors",
+    "token": "careers.nokia.com",
+    "companyNames": [
+      "Nokia"
+    ],
+    "discoveredFromQueries": [
+      "https://careers.nokia.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc"
+    ],
+    "searchResultUrls": [
+      "https://careers.nokia.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc"
+    ],
+    "matchedReasons": [
+      "direct_seed_url"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "fetchedCount": 0,
+      "acceptedCount": 0,
+      "previewCreatedCount": 0,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 0,
+      "sampleTitles": [],
+      "sampleLocations": []
+    },
+    "recommendedPromotion": false
+  },
+  {
+    "url": "https://jobs.ericsson.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+    "boardUrl": "https://jobs.ericsson.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+    "sourceKey": "successfactors:jobs.ericsson.com",
+    "connectorName": "successfactors",
+    "token": "jobs.ericsson.com",
+    "companyNames": [
+      "Ericsson"
+    ],
+    "discoveredFromQueries": [
+      "https://jobs.ericsson.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc"
+    ],
+    "searchResultUrls": [
+      "https://jobs.ericsson.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc"
+    ],
+    "matchedReasons": [
+      "direct_seed_url"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "fetchedCount": 0,
+      "acceptedCount": 0,
+      "previewCreatedCount": 0,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 0,
+      "sampleTitles": [],
+      "sampleLocations": []
+    },
+    "recommendedPromotion": false
+  },
+  {
+    "url": "https://accenture.wd103.myworkdayjobs.com/accenturecareers",
+    "boardUrl": "https://accenture.wd103.myworkdayjobs.com/accenturecareers",
+    "sourceKey": "workday:accenture.wd103.myworkdayjobs.com|accenture|accenturecareers",
+    "connectorName": "workday",
+    "token": "accenture.wd103.myworkdayjobs.com|accenture|accenturecareers",
+    "companyNames": [
+      "Accenture"
+    ],
+    "discoveredFromQueries": [
+      "\"Accenture\" careers"
+    ],
+    "searchResultUrls": [
+      "https://accenture.wd103.myworkdayjobs.com/AccentureCareers"
+    ],
+    "matchedReasons": [
+      "company_careers_page"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "fetchedCount": 38,
+      "acceptedCount": 0,
+      "previewCreatedCount": 0,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 38,
+      "sampleTitles": [
+        "Agentic Commerce Senior Manager | GEO &amp; Search",
+        "Assistente de Contas a Pagar",
+        "Analistas e Consultores SAP FieldGlass",
+        "Consultores SAP BTP",
+        "Consultores SAP PS/PP/PM/QM/APM/PLM"
+      ],
+      "sampleLocations": [
+        "Chicago, Accenture Tower, Corp, United States of America",
+        "Brazil",
+        "Sao Paulo, Torre Paineira, Brazil",
+        "Brazil",
+        "Brazil"
+      ]
+    },
+    "recommendedPromotion": false
+  }
+]
