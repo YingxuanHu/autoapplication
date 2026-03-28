@@ -1,11 +1,11 @@
 import { prisma } from "@/lib/db";
 import { DEMO_USER_ID } from "@/lib/constants";
-import type { UserAction } from "@/generated/prisma";
+import type { Prisma, UserAction } from "@/generated/prisma/client";
 
 export async function recordAction(
   canonicalJobId: string,
   action: UserAction,
-  metadata?: Record<string, unknown>
+  metadata?: Prisma.InputJsonValue
 ) {
   return prisma.userBehaviorSignal.create({
     data: {

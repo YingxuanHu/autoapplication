@@ -15,6 +15,7 @@ export async function getSavedJobs(status?: string) {
       canonicalJob: {
         include: {
           eligibility: true,
+          sourceMappings: true,
         },
       },
     },
@@ -50,6 +51,32 @@ export async function unsaveJob(canonicalJobId: string) {
         userId: DEMO_USER_ID,
         canonicalJobId,
       },
+    },
+  });
+}
+
+export async function dismissSavedJob(canonicalJobId: string) {
+  const existing = await prisma.savedJob.findUnique({
+    where: {
+      userId_canonicalJobId: {
+        userId: DEMO_USER_ID,
+        canonicalJobId,
+      },
+    },
+    select: { id: true },
+  });
+
+  if (!existing) return null;
+
+  return prisma.savedJob.update({
+    where: {
+      userId_canonicalJobId: {
+        userId: DEMO_USER_ID,
+        canonicalJobId,
+      },
+    },
+    data: {
+      status: "DISMISSED",
     },
   });
 }
