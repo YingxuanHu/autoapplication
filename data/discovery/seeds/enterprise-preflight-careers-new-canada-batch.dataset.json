@@ -1,0 +1,122 @@
+[
+  {
+    "boardUrl": "https://jobs.ashbyhq.com/1password",
+    "sourceKey": "ashby:1password",
+    "connectorName": "ashby",
+    "token": "1password",
+    "companyNames": [
+      "1Password"
+    ],
+    "discoveredFromQueries": [],
+    "searchResultUrls": [],
+    "careerPageUrls": [],
+    "directAtsUrls": [
+      "https://jobs.ashbyhq.com/1password"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link"
+    ],
+    "knownStatus": null,
+    "url": "https://jobs.ashbyhq.com/1password"
+  },
+  {
+    "boardUrl": "https://jobs.ashbyhq.com/koho",
+    "sourceKey": "ashby:koho",
+    "connectorName": "ashby",
+    "token": "koho",
+    "companyNames": [
+      "KOHO"
+    ],
+    "discoveredFromQueries": [],
+    "searchResultUrls": [],
+    "careerPageUrls": [],
+    "directAtsUrls": [
+      "https://jobs.ashbyhq.com/koho"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link"
+    ],
+    "knownStatus": null,
+    "url": "https://jobs.ashbyhq.com/koho"
+  },
+  {
+    "boardUrl": "https://jobs.ashbyhq.com/relayfi",
+    "sourceKey": "ashby:relayfi",
+    "connectorName": "ashby",
+    "token": "relayfi",
+    "companyNames": [
+      "Relay Financial"
+    ],
+    "discoveredFromQueries": [],
+    "searchResultUrls": [],
+    "careerPageUrls": [],
+    "directAtsUrls": [
+      "https://jobs.ashbyhq.com/relayfi"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link"
+    ],
+    "knownStatus": null,
+    "url": "https://jobs.ashbyhq.com/relayfi"
+  },
+  {
+    "boardUrl": "https://job-boards.greenhouse.io/leagueinc",
+    "sourceKey": "greenhouse:leagueinc",
+    "connectorName": "greenhouse",
+    "token": "leagueinc",
+    "companyNames": [
+      "League"
+    ],
+    "discoveredFromQueries": [],
+    "searchResultUrls": [],
+    "careerPageUrls": [],
+    "directAtsUrls": [
+      "https://job-boards.greenhouse.io/leagueinc"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link"
+    ],
+    "knownStatus": null,
+    "url": "https://job-boards.greenhouse.io/leagueinc"
+  },
+  {
+    "boardUrl": "https://careers.definityfinancial.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+    "sourceKey": "successfactors:careers.definityfinancial.com",
+    "connectorName": "successfactors",
+    "token": "careers.definityfinancial.com",
+    "companyNames": [
+      "Definity Financial"
+    ],
+    "discoveredFromQueries": [],
+    "searchResultUrls": [],
+    "careerPageUrls": [],
+    "directAtsUrls": [
+      "https://careers.definityfinancial.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link"
+    ],
+    "knownStatus": null,
+    "url": "https://careers.definityfinancial.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc"
+  },
+  {
+    "boardUrl": "https://applyboard.wd3.myworkdayjobs.com/applyboardnh",
+    "sourceKey": "workday:applyboard.wd3.myworkdayjobs.com|applyboard|applyboardnh",
+    "connectorName": "workday",
+    "token": "applyboard.wd3.myworkdayjobs.com|applyboard|applyboardnh",
+    "companyNames": [
+      "ApplyBoard"
+    ],
+    "discoveredFromQueries": [],
+    "searchResultUrls": [],
+    "careerPageUrls": [],
+    "directAtsUrls": [
+      "https://applyboard.wd3.myworkdayjobs.com/applyboardnh"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link"
+    ],
+    "knownStatus": null,
+    "url": "https://applyboard.wd3.myworkdayjobs.com/applyboardnh"
+  }
+]

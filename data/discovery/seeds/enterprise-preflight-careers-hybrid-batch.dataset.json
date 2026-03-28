@@ -1,0 +1,425 @@
+[
+  {
+    "boardUrl": "https://icon.wd3.myworkdayjobs.com/broadbean_external",
+    "sourceKey": "workday:icon.wd3.myworkdayjobs.com|icon|broadbean_external",
+    "connectorName": "workday",
+    "token": "icon.wd3.myworkdayjobs.com|icon|broadbean_external",
+    "companyNames": [
+      "Lifeworks / TELUS Health",
+      "Telus"
+    ],
+    "discoveredFromQueries": [
+      "\"TELUS Health\" \"myworkdayjobs.com\"",
+      "\"Telus\" \"myworkdayjobs.com\""
+    ],
+    "searchResultUrls": [
+      "https://icon.wd3.myworkdayjobs.com/en-US/broadbean_external/job/Senior-CRA_JR145071"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [],
+    "matchedReasons": [
+      "workday_company_name_host_hint",
+      "workday_search_term_host_hint"
+    ],
+    "knownStatus": null,
+    "url": "https://icon.wd3.myworkdayjobs.com/broadbean_external"
+  },
+  {
+    "boardUrl": "https://rogersbh.wd1.myworkdayjobs.com/rbhcareer",
+    "sourceKey": "workday:rogersbh.wd1.myworkdayjobs.com|rogersbh|rbhcareer",
+    "connectorName": "workday",
+    "token": "rogersbh.wd1.myworkdayjobs.com|rogersbh|rbhcareer",
+    "companyNames": [
+      "Rogers"
+    ],
+    "discoveredFromQueries": [
+      "\"Rogers\" \"myworkdayjobs.com\"",
+      "\"Rogers\" careers workday"
+    ],
+    "searchResultUrls": [
+      "https://rogersbh.wd1.myworkdayjobs.com/RBHCareer",
+      "https://rogersbh.wd1.myworkdayjobs.com/en-US/RBHCareer/job/Patient-Care-Trainer---PRN_R5773"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [],
+    "matchedReasons": [
+      "workday_company_name_careers_page",
+      "workday_company_name_host_hint"
+    ],
+    "knownStatus": null,
+    "url": "https://rogersbh.wd1.myworkdayjobs.com/rbhcareer"
+  },
+  {
+    "boardUrl": "https://abbott.wd5.myworkdayjobs.com/abbottcareers",
+    "sourceKey": "workday:abbott.wd5.myworkdayjobs.com|abbott|abbottcareers",
+    "connectorName": "workday",
+    "token": "abbott.wd5.myworkdayjobs.com|abbott|abbottcareers",
+    "companyNames": [
+      "Power Corp"
+    ],
+    "discoveredFromQueries": [
+      "\"Power\" \"myworkdayjobs.com\""
+    ],
+    "searchResultUrls": [
+      "https://abbott.wd5.myworkdayjobs.com/abbottcareers"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [],
+    "matchedReasons": [
+      "workday_name_segment_host_hint"
+    ],
+    "knownStatus": null,
+    "url": "https://abbott.wd5.myworkdayjobs.com/abbottcareers"
+  },
+  {
+    "boardUrl": "https://cadence.wd1.myworkdayjobs.com/external_careers",
+    "sourceKey": "workday:cadence.wd1.myworkdayjobs.com|cadence|external_careers",
+    "connectorName": "workday",
+    "token": "cadence.wd1.myworkdayjobs.com|cadence|external_careers",
+    "companyNames": [
+      "CAE"
+    ],
+    "discoveredFromQueries": [
+      "\"CAE\" \"myworkdayjobs.com\""
+    ],
+    "searchResultUrls": [
+      "https://cadence.wd1.myworkdayjobs.com/External_Careers"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [],
+    "matchedReasons": [
+      "workday_company_name_host_hint"
+    ],
+    "knownStatus": null,
+    "url": "https://cadence.wd1.myworkdayjobs.com/external_careers"
+  },
+  {
+    "boardUrl": "https://cncbinternational.wd3.myworkdayjobs.com/cncbiexternalcareersite",
+    "sourceKey": "workday:cncbinternational.wd3.myworkdayjobs.com|cncbinternational|cncbiexternalcareersite",
+    "connectorName": "workday",
+    "token": "cncbinternational.wd3.myworkdayjobs.com|cncbinternational|cncbiexternalcareersite",
+    "companyNames": [
+      "CN Rail"
+    ],
+    "discoveredFromQueries": [
+      "\"CN\" careers workday"
+    ],
+    "searchResultUrls": [
+      "https://cncbinternational.wd3.myworkdayjobs.com/zh-CN/CNCBIExternalCareerSite"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [],
+    "matchedReasons": [
+      "workday_search_term_careers_page"
+    ],
+    "knownStatus": null,
+    "url": "https://cncbinternational.wd3.myworkdayjobs.com/cncbiexternalcareersite"
+  },
+  {
+    "boardUrl": "https://firstrand.wd3.myworkdayjobs.com/frb",
+    "sourceKey": "workday:firstrand.wd3.myworkdayjobs.com|firstrand|frb",
+    "connectorName": "workday",
+    "token": "firstrand.wd3.myworkdayjobs.com|firstrand|frb",
+    "companyNames": [
+      "National Bank"
+    ],
+    "discoveredFromQueries": [
+      "\"National Bank\" \"myworkdayjobs.com\""
+    ],
+    "searchResultUrls": [
+      "https://firstrand.wd3.myworkdayjobs.com/FRB"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [],
+    "matchedReasons": [
+      "workday_company_name_host_hint"
+    ],
+    "knownStatus": null,
+    "url": "https://firstrand.wd3.myworkdayjobs.com/frb"
+  },
+  {
+    "boardUrl": "https://fnbcorp.wd501.myworkdayjobs.com/fnbcorp",
+    "sourceKey": "workday:fnbcorp.wd501.myworkdayjobs.com|fnbcorp|fnbcorp",
+    "connectorName": "workday",
+    "token": "fnbcorp.wd501.myworkdayjobs.com|fnbcorp|fnbcorp",
+    "companyNames": [
+      "National Bank"
+    ],
+    "discoveredFromQueries": [
+      "\"National Bank\" \"myworkdayjobs.com\""
+    ],
+    "searchResultUrls": [
+      "https://fnbcorp.wd501.myworkdayjobs.com/FNBCORP"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [],
+    "matchedReasons": [
+      "workday_company_name_host_hint"
+    ],
+    "knownStatus": null,
+    "url": "https://fnbcorp.wd501.myworkdayjobs.com/fnbcorp"
+  },
+  {
+    "boardUrl": "https://fph.wd3.myworkdayjobs.com/edc_careers",
+    "sourceKey": "workday:fph.wd3.myworkdayjobs.com|fph|edc_careers",
+    "connectorName": "workday",
+    "token": "fph.wd3.myworkdayjobs.com|fph|edc_careers",
+    "companyNames": [
+      "Export Development Canada"
+    ],
+    "discoveredFromQueries": [
+      "\"EDC\" careers workday"
+    ],
+    "searchResultUrls": [
+      "https://fph.wd3.myworkdayjobs.com/EDC_Careers",
+      "https://fph.wd3.myworkdayjobs.com/en-US/EDC_Careers/job/Engineer-Electrical---I-C-Design_JR00003797"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [],
+    "matchedReasons": [
+      "workday_search_term_careers_page"
+    ],
+    "knownStatus": null,
+    "url": "https://fph.wd3.myworkdayjobs.com/edc_careers"
+  },
+  {
+    "boardUrl": "https://hyvee.wd1.myworkdayjobs.com/hyveecareers",
+    "sourceKey": "workday:hyvee.wd1.myworkdayjobs.com|hyvee|hyveecareers",
+    "connectorName": "workday",
+    "token": "hyvee.wd1.myworkdayjobs.com|hyvee|hyveecareers",
+    "companyNames": [
+      "iA Financial Group"
+    ],
+    "discoveredFromQueries": [
+      "\"iA\" \"myworkdayjobs.com\""
+    ],
+    "searchResultUrls": [
+      "https://hyvee.wd1.myworkdayjobs.com/HyVeeCareers"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [],
+    "matchedReasons": [
+      "workday_search_term_host_hint"
+    ],
+    "knownStatus": null,
+    "url": "https://hyvee.wd1.myworkdayjobs.com/hyveecareers"
+  },
+  {
+    "boardUrl": "https://jll.wd1.myworkdayjobs.com/jllcareers",
+    "sourceKey": "workday:jll.wd1.myworkdayjobs.com|jll|jllcareers",
+    "connectorName": "workday",
+    "token": "jll.wd1.myworkdayjobs.com|jll|jllcareers",
+    "companyNames": [
+      "Power Corp"
+    ],
+    "discoveredFromQueries": [
+      "\"Power\" \"myworkdayjobs.com\""
+    ],
+    "searchResultUrls": [
+      "https://jll.wd1.myworkdayjobs.com/jllcareers"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [],
+    "matchedReasons": [
+      "workday_name_segment_host_hint"
+    ],
+    "knownStatus": null,
+    "url": "https://jll.wd1.myworkdayjobs.com/jllcareers"
+  },
+  {
+    "boardUrl": "https://medline.wd5.myworkdayjobs.com/medline",
+    "sourceKey": "workday:medline.wd5.myworkdayjobs.com|medline|medline",
+    "connectorName": "workday",
+    "token": "medline.wd5.myworkdayjobs.com|medline|medline",
+    "companyNames": [
+      "Lifeworks / TELUS Health"
+    ],
+    "discoveredFromQueries": [
+      "\"LifeWorks\" \"myworkdayjobs.com\""
+    ],
+    "searchResultUrls": [
+      "https://medline.wd5.myworkdayjobs.com/Medline/job/Mississauga-Ontario/Sales-Rep--Primary-Care--PC-_R2605770"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [],
+    "matchedReasons": [
+      "workday_search_term_host_hint"
+    ],
+    "knownStatus": null,
+    "url": "https://medline.wd5.myworkdayjobs.com/medline"
+  },
+  {
+    "boardUrl": "https://ms.wd5.myworkdayjobs.com/external",
+    "sourceKey": "workday:ms.wd5.myworkdayjobs.com|ms|external",
+    "connectorName": "workday",
+    "token": "ms.wd5.myworkdayjobs.com|ms|external",
+    "companyNames": [
+      "Power Corp"
+    ],
+    "discoveredFromQueries": [
+      "\"Power\" \"myworkdayjobs.com\""
+    ],
+    "searchResultUrls": [
+      "https://ms.wd5.myworkdayjobs.com/External"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [],
+    "matchedReasons": [
+      "workday_name_segment_host_hint"
+    ],
+    "knownStatus": null,
+    "url": "https://ms.wd5.myworkdayjobs.com/external"
+  },
+  {
+    "boardUrl": "https://navcanada.wd10.myworkdayjobs.com/ats_career",
+    "sourceKey": "workday:navcanada.wd10.myworkdayjobs.com|navcanada|ats_career",
+    "connectorName": "workday",
+    "token": "navcanada.wd10.myworkdayjobs.com|navcanada|ats_career",
+    "companyNames": [
+      "NAV CANADA"
+    ],
+    "discoveredFromQueries": [
+      "\"NAV CANADA\" careers workday"
+    ],
+    "searchResultUrls": [
+      "https://navcanada.wd10.myworkdayjobs.com/ATS_Career"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [],
+    "matchedReasons": [
+      "workday_company_name_careers_page"
+    ],
+    "knownStatus": null,
+    "url": "https://navcanada.wd10.myworkdayjobs.com/ats_career"
+  },
+  {
+    "boardUrl": "https://philips.wd3.myworkdayjobs.com/jobs-and-careers",
+    "sourceKey": "workday:philips.wd3.myworkdayjobs.com|philips|jobs-and-careers",
+    "connectorName": "workday",
+    "token": "philips.wd3.myworkdayjobs.com|philips|jobs-and-careers",
+    "companyNames": [
+      "Philips"
+    ],
+    "discoveredFromQueries": [
+      "\"Philips\" careers"
+    ],
+    "searchResultUrls": [
+      "https://philips.wd3.myworkdayjobs.com/jobs-and-careers/"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [],
+    "matchedReasons": [
+      "successfactors_company_name_careers_page"
+    ],
+    "knownStatus": null,
+    "url": "https://philips.wd3.myworkdayjobs.com/jobs-and-careers"
+  },
+  {
+    "boardUrl": "https://prologis.wd5.myworkdayjobs.com/prologis_external_careers",
+    "sourceKey": "workday:prologis.wd5.myworkdayjobs.com|prologis|prologis_external_careers",
+    "connectorName": "workday",
+    "token": "prologis.wd5.myworkdayjobs.com|prologis|prologis_external_careers",
+    "companyNames": [
+      "Power Corp"
+    ],
+    "discoveredFromQueries": [
+      "\"Power\" \"myworkdayjobs.com\""
+    ],
+    "searchResultUrls": [
+      "https://prologis.wd5.myworkdayjobs.com/Prologis_External_Careers"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [],
+    "matchedReasons": [
+      "workday_name_segment_host_hint"
+    ],
+    "knownStatus": null,
+    "url": "https://prologis.wd5.myworkdayjobs.com/prologis_external_careers"
+  },
+  {
+    "boardUrl": "https://solvenergy.wd1.myworkdayjobs.com/solv_external_career",
+    "sourceKey": "workday:solvenergy.wd1.myworkdayjobs.com|solvenergy|solv_external_career",
+    "connectorName": "workday",
+    "token": "solvenergy.wd1.myworkdayjobs.com|solvenergy|solv_external_career",
+    "companyNames": [
+      "Power Corp"
+    ],
+    "discoveredFromQueries": [
+      "\"Power\" \"myworkdayjobs.com\""
+    ],
+    "searchResultUrls": [
+      "https://solvenergy.wd1.myworkdayjobs.com/SOLV_External_Career"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [],
+    "matchedReasons": [
+      "workday_name_segment_host_hint"
+    ],
+    "knownStatus": null,
+    "url": "https://solvenergy.wd1.myworkdayjobs.com/solv_external_career"
+  },
+  {
+    "boardUrl": "https://tencent.wd1.myworkdayjobs.com/tencent_careers",
+    "sourceKey": "workday:tencent.wd1.myworkdayjobs.com|tencent|tencent_careers",
+    "connectorName": "workday",
+    "token": "tencent.wd1.myworkdayjobs.com|tencent|tencent_careers",
+    "companyNames": [
+      "CN Rail"
+    ],
+    "discoveredFromQueries": [
+      "\"CN\" \"myworkdayjobs.com\""
+    ],
+    "searchResultUrls": [
+      "https://tencent.wd1.myworkdayjobs.com/zh-CN/Tencent_Careers"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [],
+    "matchedReasons": [
+      "workday_search_term_host_hint"
+    ],
+    "knownStatus": null,
+    "url": "https://tencent.wd1.myworkdayjobs.com/tencent_careers"
+  },
+  {
+    "boardUrl": "https://vrtx.wd501.myworkdayjobs.com/vertex_careers",
+    "sourceKey": "workday:vrtx.wd501.myworkdayjobs.com|vrtx|vertex_careers",
+    "connectorName": "workday",
+    "token": "vrtx.wd501.myworkdayjobs.com|vrtx|vertex_careers",
+    "companyNames": [
+      "Kinaxis"
+    ],
+    "discoveredFromQueries": [
+      "\"Kinaxis\" \"myworkdayjobs.com\""
+    ],
+    "searchResultUrls": [
+      "https://vrtx.wd501.myworkdayjobs.com/en-US/Vertex_Careers/job/Supply-Chain-Standards--Reporting---Analytics-Manager_REQ-28362"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [],
+    "matchedReasons": [
+      "workday_company_name_host_hint"
+    ],
+    "knownStatus": null,
+    "url": "https://vrtx.wd501.myworkdayjobs.com/vertex_careers"
+  },
+  {
+    "boardUrl": "https://careers.telusdigital.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+    "sourceKey": "successfactors:careers.telusdigital.com",
+    "connectorName": "successfactors",
+    "token": "careers.telusdigital.com",
+    "companyNames": [
+      "Telus International"
+    ],
+    "discoveredFromQueries": [],
+    "searchResultUrls": [],
+    "careerPageUrls": [],
+    "directAtsUrls": [
+      "https://careers.telusdigital.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link"
+    ],
+    "knownStatus": null,
+    "url": "https://careers.telusdigital.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc"
+  }
+]

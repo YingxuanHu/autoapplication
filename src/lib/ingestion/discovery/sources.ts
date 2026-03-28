@@ -1,11 +1,17 @@
 import { readFile } from "node:fs/promises";
 import { prisma } from "@/lib/db";
 import {
+  createAdzunaConnector,
   createAshbyConnector,
   createGreenhouseConnector,
+  createHimalayasConnector,
   createIcimsConnector,
+  createJobicyConnector,
   createLeverConnector,
+  createMuseConnector,
+  createRemoteOkConnector,
   createTaleoConnector,
+  createUsaJobsConnector,
   createRecruiteeConnector,
   createRipplingConnector,
   createSuccessFactorsConnector,
@@ -200,6 +206,12 @@ export function buildDiscoveredSourceName(
         ? "iCIMS"
       : connectorName === "taleo"
         ? "Taleo"
+      : connectorName === "himalayas"
+        ? "Himalayas"
+      : connectorName === "jobicy"
+        ? "Jobicy"
+      : connectorName === "themuse"
+        ? "TheMuse"
       : connectorName.charAt(0).toUpperCase() + connectorName.slice(1);
   return `${prefix}:${token}`;
 }
@@ -237,6 +249,18 @@ export function buildDiscoveredSourceUrl(
       const section = sepIndex > 0 ? normalizedToken.slice(sepIndex + 1) : "1";
       return `https://${tenant}.taleo.net/careersection/${section}/jobsearch.ftl?lang=en`;
     }
+    case "adzuna":
+      return `https://www.adzuna.${normalizedToken === "us" ? "com" : normalizedToken === "ca" ? "ca" : "com"}/search?q=`;
+    case "remoteok":
+      return "https://remoteok.com/remote-jobs";
+    case "usajobs":
+      return "https://www.usajobs.gov/Search/Results";
+    case "himalayas":
+      return "https://himalayas.app/jobs";
+    case "jobicy":
+      return "https://jobicy.com/remote-jobs";
+    case "themuse":
+      return "https://www.themuse.com/jobs";
   }
 }
 
@@ -1184,6 +1208,18 @@ function createConnectorForCandidate(candidate: DiscoveredSourceCandidate) {
       return createIcimsConnector({ portalSubdomain: candidate.token });
     case "taleo":
       return createTaleoConnector({ sourceToken: candidate.token });
+    case "adzuna":
+      return createAdzunaConnector({ country: candidate.token });
+    case "remoteok":
+      return createRemoteOkConnector();
+    case "usajobs":
+      return createUsaJobsConnector({ keyword: candidate.token });
+    case "himalayas":
+      return createHimalayasConnector();
+    case "jobicy":
+      return createJobicyConnector();
+    case "themuse":
+      return createMuseConnector();
   }
 }
 

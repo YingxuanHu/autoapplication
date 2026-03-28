@@ -1,15 +1,21 @@
 import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import {
+  createAdzunaConnector,
   createAshbyConnector,
   createGreenhouseConnector,
+  createHimalayasConnector,
   createIcimsConnector,
+  createJobicyConnector,
   createLeverConnector,
+  createMuseConnector,
   createRecruiteeConnector,
+  createRemoteOkConnector,
   createRipplingConnector,
   createSuccessFactorsConnector,
   createSmartRecruitersConnector,
   createTaleoConnector,
+  createUsaJobsConnector,
   createWorkdayConnector,
   createWorkableConnector,
 } from "@/lib/ingestion/connectors";
@@ -24,15 +30,21 @@ import {
 import type { SourceConnector } from "@/lib/ingestion/types";
 
 export type SupportedConnectorName =
+  | "adzuna"
   | "ashby"
   | "greenhouse"
+  | "himalayas"
   | "icims"
+  | "jobicy"
   | "lever"
+  | "themuse"
   | "recruitee"
+  | "remoteok"
   | "rippling"
   | "successfactors"
   | "smartrecruiters"
   | "taleo"
+  | "usajobs"
   | "workday"
   | "workable";
 
@@ -92,6 +104,40 @@ export function resolveConnectors(
   connectorName: SupportedConnectorName,
   args: ConnectorResolutionArgs
 ): SourceConnector[] {
+  if (connectorName === "adzuna") {
+    const countries = resolveTokens(
+      args.sources ?? args.source ?? process.env.ADZUNA_COUNTRIES ?? "ca,us"
+    );
+    return countries.map((country) => createAdzunaConnector({ country }));
+  }
+
+  if (connectorName === "himalayas") {
+    return [createHimalayasConnector()];
+  }
+
+  if (connectorName === "jobicy") {
+    return [createJobicyConnector()];
+  }
+
+  if (connectorName === "themuse") {
+    return [createMuseConnector()];
+  }
+
+  if (connectorName === "remoteok") {
+    return [createRemoteOkConnector()];
+  }
+
+  if (connectorName === "usajobs") {
+    const keywords = resolveTokens(
+      args.sources ?? args.source ?? process.env.USAJOBS_KEYWORDS ?? ""
+    );
+    if (keywords.length === 0) {
+      // Single broad connector
+      return [createUsaJobsConnector()];
+    }
+    return keywords.map((keyword) => createUsaJobsConnector({ keyword }));
+  }
+
   if (connectorName === "ashby") {
     const orgTokens = resolveTokens(
       args.orgs ?? args.org ?? process.env.ASHBY_ORG_TOKENS ?? DEFAULT_ASHBY_ORGS
@@ -366,6 +412,12 @@ export function getScheduledConnectors(): ScheduledConnectorDefinition[] {
       promotedDiscoveryTargets.workable
     ),
     ...resolveOptionalWorkdayScheduledConnectors(promotedDiscoveryTargets.workday),
+    ...resolveOptionalAdzunaScheduledConnectors(),
+    ...resolveOptionalHimalayasScheduledConnectors(),
+    ...resolveOptionalJobicyScheduledConnectors(),
+    ...resolveOptionalMuseScheduledConnectors(),
+    ...resolveOptionalRemoteOkScheduledConnectors(),
+    ...resolveOptionalUsaJobsScheduledConnectors(),
     ...resolveOptionalTaleoScheduledConnectors(promotedDiscoveryTargets.taleo),
     ...resolveOptionalIcimsScheduledConnectors(promotedDiscoveryTargets.icims),
   ];
@@ -443,6 +495,85 @@ function resolveOptionalIcimsScheduledConnectors(promotedTokens: string[]) {
   }));
 }
 
+function resolveOptionalHimalayasScheduledConnectors() {
+  return [
+    {
+      connector: createHimalayasConnector(),
+      cadenceMinutes: resolveCadenceMinutes(
+        process.env.HIMALAYAS_SCHEDULE_MINUTES,
+        720
+      ),
+    },
+  ];
+}
+
+function resolveOptionalJobicyScheduledConnectors() {
+  return [
+    {
+      connector: createJobicyConnector(),
+      cadenceMinutes: resolveCadenceMinutes(
+        process.env.JOBICY_SCHEDULE_MINUTES,
+        720
+      ),
+    },
+  ];
+}
+
+function resolveOptionalMuseScheduledConnectors() {
+  return [
+    {
+      connector: createMuseConnector(),
+      cadenceMinutes: resolveCadenceMinutes(
+        process.env.THEMUSE_SCHEDULE_MINUTES,
+        720
+      ),
+    },
+  ];
+}
+
+function resolveOptionalAdzunaScheduledConnectors() {
+  const appId = process.env.ADZUNA_APP_ID ?? "";
+  const appKey = process.env.ADZUNA_APP_KEY ?? "";
+  if (!appId || !appKey) return [];
+
+  const countries = resolveTokens(process.env.ADZUNA_COUNTRIES ?? "ca,us");
+  return countries.map((country) => ({
+    connector: createAdzunaConnector({ country, appId, appKey }),
+    cadenceMinutes: resolveCadenceMinutes(
+      process.env.ADZUNA_SCHEDULE_MINUTES,
+      360
+    ),
+  }));
+}
+
+function resolveOptionalRemoteOkScheduledConnectors() {
+  return [
+    {
+      connector: createRemoteOkConnector(),
+      cadenceMinutes: resolveCadenceMinutes(
+        process.env.REMOTEOK_SCHEDULE_MINUTES,
+        720
+      ),
+    },
+  ];
+}
+
+function resolveOptionalUsaJobsScheduledConnectors() {
+  const apiKey = process.env.USAJOBS_API_KEY ?? "";
+  const email = process.env.USAJOBS_EMAIL ?? "";
+  if (!apiKey || !email) return [];
+
+  return [
+    {
+      connector: createUsaJobsConnector({ apiKey, email }),
+      cadenceMinutes: resolveCadenceMinutes(
+        process.env.USAJOBS_SCHEDULE_MINUTES,
+        720
+      ),
+    },
+  ];
+}
+
 function resolveOptionalTaleoScheduledConnectors(promotedTokens: string[]) {
   const tokens = resolveTokens(
     mergeTokenValues(process.env.TALEO_SOURCE_TOKENS ?? DEFAULT_TALEO_SOURCES, promotedTokens)
@@ -497,15 +628,21 @@ function mergeTokenValues(baseValue: string, promotedTokens: string[]) {
 
 function loadPromotedDiscoveryTargets() {
   const emptyTargets: Record<SupportedConnectorName, string[]> = {
+    adzuna: [],
     ashby: [],
     greenhouse: [],
+    himalayas: [],
     icims: [],
+    jobicy: [],
     lever: [],
+    themuse: [],
     recruitee: [],
+    remoteok: [],
     rippling: [],
     successfactors: [],
     smartrecruiters: [],
     taleo: [],
+    usajobs: [],
     workday: [],
     workable: [],
   };

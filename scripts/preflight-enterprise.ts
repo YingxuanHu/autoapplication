@@ -26,7 +26,7 @@ import type { SupportedConnectorName } from "../src/lib/ingestion/registry";
 
 type CliArgs = {
   family?: "workday" | "successfactors" | "all";
-  discovery?: "search" | "careers" | "all";
+  discovery?: "search" | "careers" | "all" | "careers-fallback-search";
   companies?: string;
   out?: string;
   limit: number;
@@ -59,28 +59,40 @@ async function main() {
     canadaWeighted: rawArgs["no-canada-weight"] !== true,
   });
   const knownStatuses = await loadKnownSourceStatuses();
+  const runCareerDiscovery =
+    discoveryMode === "careers" ||
+    discoveryMode === "all" ||
+    discoveryMode === "careers-fallback-search";
+  const runSearchDiscovery =
+    discoveryMode === "search" ||
+    discoveryMode === "all" ||
+    discoveryMode === "careers-fallback-search";
+
+  const careerDiscovery = runCareerDiscovery
+    ? await discoverEnterpriseCareerPageCandidates({
+        companies,
+        knownStatuses,
+      })
+    : null;
+
+  const searchCompanies =
+    discoveryMode === "careers-fallback-search" && careerDiscovery
+      ? buildFallbackSearchCompanies(companies, careerDiscovery.records)
+      : companies.map((company) => company.name);
 
   const searchDiscovery =
-    discoveryMode === "careers"
-      ? null
-      : await discoverEnterpriseSearchCandidates({
-          companies: companies.map((company) => company.name),
+    runSearchDiscovery && searchCompanies.length > 0
+      ? await discoverEnterpriseSearchCandidates({
+          companies: searchCompanies,
           families: [...families],
-          limitCompanies: rawArgs.limit,
+          limitCompanies: Math.max(rawArgs.limit, searchCompanies.length),
           maxSearchResults: rawArgs["max-search-results"],
           canadaWeighted: rawArgs["no-canada-weight"] !== true,
           includeKnown: rawArgs["include-known"] === true,
           retestSearch: rawArgs["retest-search"] === true,
           cachePath: rawArgs["cache"],
-        });
-
-  const careerDiscovery =
-    discoveryMode === "search"
-      ? null
-      : await discoverEnterpriseCareerPageCandidates({
-          companies,
-          knownStatuses,
-        });
+        })
+      : null;
 
   const mergedRecords = mergeRecords(
     searchDiscovery?.records ?? [],
@@ -154,6 +166,8 @@ async function main() {
         limitCompanies: rawArgs.limit,
         previewLimit: rawArgs["preview-limit"] ?? 100,
         threshold,
+        fallbackSearchCompanyCount:
+          discoveryMode === "careers-fallback-search" ? searchCompanies.length : 0,
         searchSummary: searchDiscovery?.summary ?? null,
         careerPageSummary: careerDiscovery?.summary ?? null,
         previewedCount: previewResults.length,
@@ -227,6 +241,8 @@ async function main() {
         families,
         discoveryMode,
         companyCount: companies.length,
+        fallbackSearchCompanyCount:
+          discoveryMode === "careers-fallback-search" ? searchCompanies.length : 0,
         queryCount: searchDiscovery?.summary.queryCount ?? 0,
         cacheHits: searchDiscovery?.summary.cacheHits ?? 0,
         cacheMisses: searchDiscovery?.summary.cacheMisses ?? 0,
@@ -253,6 +269,22 @@ async function main() {
       2
     )
   );
+}
+
+function buildFallbackSearchCompanies(
+  companies: Array<{ name: string }>,
+  careerRecords: CareerPageDiscoveryRecord[]
+) {
+  const matchedCompanies = new Set<string>();
+  for (const record of careerRecords) {
+    for (const companyName of record.companyNames) {
+      matchedCompanies.add(companyName);
+    }
+  }
+
+  return companies
+    .map((company) => company.name)
+    .filter((companyName) => !matchedCompanies.has(companyName));
 }
 
 function parseArgs(args: string[]) {

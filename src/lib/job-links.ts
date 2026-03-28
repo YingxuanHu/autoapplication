@@ -6,15 +6,21 @@ export const DEMO_SOURCE_NAMES = [
 
 const DEMO_SOURCE_NAME_SET = new Set<string>(DEMO_SOURCE_NAMES);
 const TRUSTED_SOURCE_PREFIXES = [
+  "Adzuna:",
   "Ashby:",
   "Greenhouse:",
+  "Himalayas:",
   "iCIMS:",
+  "Jobicy:",
   "Lever:",
+  "TheMuse:",
   "Recruitee:",
+  "RemoteOK:",
   "Rippling:",
   "SuccessFactors:",
   "SmartRecruiters:",
   "Taleo:",
+  "USAJobs:",
   "Workday:",
 ];
 const TRUSTED_HOST_SUFFIXES = [
@@ -22,6 +28,8 @@ const TRUSTED_HOST_SUFFIXES = [
   "jobs.ashbyhq.com",
   "boards.greenhouse.io",
   "job-boards.greenhouse.io",
+  "himalayas.app",
+  "jobicy.com",
   "jobs.lever.co",
   "recruitee.com",
   "ats.rippling.com",
@@ -30,6 +38,11 @@ const TRUSTED_HOST_SUFFIXES = [
   "jobs.smartrecruiters.com",
   "myworkdayjobs.com",
   "taleo.net",
+  "remoteok.com",
+  "themuse.com",
+  "www.themuse.com",
+  "usajobs.gov",
+  "adzuna.com",
 ];
 const BLOCKED_HOST_SUFFIXES = [
   "boardaggregator-x.com",

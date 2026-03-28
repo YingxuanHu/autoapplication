@@ -2,6 +2,7 @@ import type { EnterpriseCompanyRecord } from "@/lib/ingestion/discovery/enterpri
 import {
   discoverSourceCandidatesFromPageUrls,
   discoverSourceCandidatesFromUrls,
+  extractKnownAtsUrlsFromText,
   extractSourceCandidateFromUrl,
 } from "@/lib/ingestion/discovery/sources";
 
@@ -238,6 +239,12 @@ async function crawlCompanyCareerPages(company: EnterpriseCompanyRecord) {
         continue;
       }
 
+      for (const embeddedUrl of extractKnownAtsUrlsFromText(page.html)) {
+        const embeddedCandidate = extractSourceCandidateFromUrl(embeddedUrl);
+        if (!embeddedCandidate) continue;
+        directAtsUrls.add(embeddedCandidate.boardUrl);
+      }
+
       for (const link of extractCareerLinks(page.html, page.finalUrl, domains)) {
         if (link.kind === "ats") {
           directAtsUrls.add(link.url);
@@ -372,8 +379,40 @@ function extractCareerLinks(
   domains: string[]
 ): Array<{ kind: "career" | "ats"; url: string }> {
   const discovered = new Map<string, "career" | "ats">();
+  const anchorRe =
+    /<a\b[^>]*href\s*=\s*(?:"([^"]+)"|'([^']+)'|([^\s>]+))[^>]*>([\s\S]*?)<\/a>/gi;
   const hrefRe = /href\s*=\s*(?:"([^"]+)"|'([^']+)'|([^\s>]+))/gi;
   let match: RegExpExecArray | null;
+
+  while ((match = anchorRe.exec(html)) !== null) {
+    const rawHref = (match[1] ?? match[2] ?? match[3] ?? "").trim();
+    if (!rawHref || rawHref.startsWith("#")) continue;
+    if (/^(?:mailto:|tel:|javascript:)/i.test(rawHref)) continue;
+    const anchorText = stripHtml(match[4] ?? "");
+
+    let resolved: URL;
+    try {
+      resolved = new URL(rawHref, baseUrl);
+    } catch {
+      continue;
+    }
+
+    if (!/^https?:$/i.test(resolved.protocol)) continue;
+    if (SKIP_EXTENSIONS_RE.test(resolved.pathname)) continue;
+
+    const resolvedUrl = resolved.toString();
+    const directCandidate = extractSourceCandidateFromUrl(resolvedUrl);
+    if (directCandidate) {
+      discovered.set(directCandidate.boardUrl, "ats");
+      continue;
+    }
+
+    if (!shouldFollowCareerUrl(resolved, domains, anchorText)) continue;
+    if (!discovered.has(resolvedUrl)) {
+      discovered.set(resolvedUrl, "career");
+    }
+    if (discovered.size >= MAX_LINKS_PER_PAGE) break;
+  }
 
   while ((match = hrefRe.exec(html)) !== null) {
     const rawHref = (match[1] ?? match[2] ?? match[3] ?? "").trim();
@@ -407,7 +446,7 @@ function extractCareerLinks(
   return [...discovered.entries()].map(([url, kind]) => ({ url, kind }));
 }
 
-function shouldFollowCareerUrl(url: URL, domains: string[]) {
+function shouldFollowCareerUrl(url: URL, domains: string[], anchorText?: string) {
   const hostname = url.hostname.toLowerCase().replace(/^www\./, "");
   const combined = `${hostname}${url.pathname.toLowerCase()}`;
   const sameDomain = domains.some(
@@ -416,9 +455,14 @@ function shouldFollowCareerUrl(url: URL, domains: string[]) {
   const careerish =
     hostname.startsWith("careers.") ||
     hostname.startsWith("jobs.") ||
-    CAREER_KEYWORD_RE.test(combined);
+    CAREER_KEYWORD_RE.test(combined) ||
+    CAREER_KEYWORD_RE.test(anchorText ?? "");
 
   return careerish && (sameDomain || hostname.startsWith("careers.") || hostname.startsWith("jobs."));
+}
+
+function stripHtml(value: string) {
+  return value.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
 }
 
 function getOrCreateMetadata(
