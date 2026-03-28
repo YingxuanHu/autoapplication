@@ -898,7 +898,16 @@ function tryParseJsonUrls(content: string): string[] | null {
       return parsed
         .map((item: Record<string, unknown>) =>
           typeof item === "object" && item !== null
-            ? String(item.url ?? item.href ?? item.link ?? item.career_url ?? "")
+            ? String(
+                item.url ??
+                  item.href ??
+                  item.link ??
+                  item.career_url ??
+                  item.boardUrl ??
+                  item.sourceUrl ??
+                  item.source_url ??
+                  ""
+              )
             : ""
         )
         .filter(Boolean);

@@ -1,0 +1,27 @@
+{
+  "companiesSelected": [
+    "BMO",
+    "Desjardins",
+    "RBC",
+    "CIBC",
+    "National Bank",
+    "TD Bank",
+    "Deloitte",
+    "IBM",
+    "Canadian Tire"
+  ],
+  "queryCount": 0,
+  "cacheHits": 0,
+  "cacheMisses": 0,
+  "resultUrlsFetched": 0,
+  "uniqueResultUrls": 422,
+  "pageUrlsScanned": 72,
+  "directSeedUrls": 0,
+  "candidatesDiscovered": 3,
+  "newCandidates": 1,
+  "skippedKnownCandidates": 2,
+  "candidatesByFamily": {
+    "workday": 1
+  },
+  "queryReports": []
+}

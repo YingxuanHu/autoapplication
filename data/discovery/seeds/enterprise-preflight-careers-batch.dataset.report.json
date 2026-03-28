@@ -1,0 +1,42 @@
+{
+  "companiesSelected": [
+    "BDO Canada",
+    "CGI",
+    "Stantec",
+    "Telus",
+    "WSP",
+    "AtkinsRéalis",
+    "Export Development Canada",
+    "iA Financial Group",
+    "OpenText",
+    "Shopify",
+    "Air Canada",
+    "Bank of Canada",
+    "Rogers",
+    "TMX Group",
+    "CAE",
+    "CN Rail",
+    "CPKC (CP Rail)",
+    "Nutrien",
+    "Cameco",
+    "FortisBC",
+    "NAV CANADA",
+    "Questrade",
+    "Teck",
+    "Toronto Hydro"
+  ],
+  "queryCount": 0,
+  "cacheHits": 0,
+  "cacheMisses": 0,
+  "resultUrlsFetched": 0,
+  "uniqueResultUrls": 229,
+  "pageUrlsScanned": 192,
+  "directSeedUrls": 0,
+  "candidatesDiscovered": 11,
+  "newCandidates": 6,
+  "skippedKnownCandidates": 5,
+  "candidatesByFamily": {
+    "successfactors": 6
+  },
+  "queryReports": []
+}

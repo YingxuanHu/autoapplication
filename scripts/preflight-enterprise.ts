@@ -1,25 +1,32 @@
 /**
  * preflight-enterprise.ts
  *
- * Search-first enterprise source discovery for Workday and SuccessFactors.
+ * Enterprise source preflight with two discovery channels:
+ * 1. Search-first ATS discovery
+ * 2. Company-domain career-page ATS extraction
  *
  * Usage:
  *   npx tsx scripts/preflight-enterprise.ts --limit=50
  *   npx tsx scripts/preflight-enterprise.ts --family=workday --limit=50
  *   npx tsx scripts/preflight-enterprise.ts --family=successfactors --limit=25
  *   npx tsx scripts/preflight-enterprise.ts --companies=manulife,scotiabank
+ *   npx tsx scripts/preflight-enterprise.ts --discovery=careers
  */
 
-import { mkdir, writeFile } from "node:fs/promises";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { previewSourceCandidates } from "../src/lib/ingestion/discovery/sources";
+import { discoverEnterpriseSearchCandidates } from "../src/lib/ingestion/discovery/enterprise-search";
 import {
-  discoverEnterpriseSearchCandidates,
-  writeEnterpriseDiscoveryDataset,
-} from "../src/lib/ingestion/discovery/enterprise-search";
+  discoverEnterpriseCareerPageCandidates,
+  type CareerPageDiscoveryRecord,
+} from "../src/lib/ingestion/discovery/career-pages";
+import { selectEnterpriseCompanies } from "../src/lib/ingestion/discovery/enterprise-catalog";
+import type { SupportedConnectorName } from "../src/lib/ingestion/registry";
 
 type CliArgs = {
   family?: "workday" | "successfactors" | "all";
+  discovery?: "search" | "careers" | "all";
   companies?: string;
   out?: string;
   limit: number;
@@ -32,6 +39,8 @@ type CliArgs = {
   cache?: string;
 };
 
+type KnownStatus = "pending" | "rejected" | "promoted";
+
 const rawArgs = parseArgs(process.argv.slice(2));
 
 async function main() {
@@ -42,27 +51,49 @@ async function main() {
         ? ["successfactors"] as const
         : (["workday", "successfactors"] as const);
 
-  const discovery = await discoverEnterpriseSearchCandidates({
+  const discoveryMode = rawArgs.discovery ?? "all";
+  const companies = selectEnterpriseCompanies({
     companies: splitArg(rawArgs.companies),
     families: [...families],
-    limitCompanies: rawArgs.limit,
-    maxSearchResults: rawArgs["max-search-results"],
+    limit: rawArgs.limit,
     canadaWeighted: rawArgs["no-canada-weight"] !== true,
-    includeKnown: rawArgs["include-known"] === true,
-    retestSearch: rawArgs["retest-search"] === true,
-    cachePath: rawArgs["cache"],
   });
+  const knownStatuses = await loadKnownSourceStatuses();
+
+  const searchDiscovery =
+    discoveryMode === "careers"
+      ? null
+      : await discoverEnterpriseSearchCandidates({
+          companies: companies.map((company) => company.name),
+          families: [...families],
+          limitCompanies: rawArgs.limit,
+          maxSearchResults: rawArgs["max-search-results"],
+          canadaWeighted: rawArgs["no-canada-weight"] !== true,
+          includeKnown: rawArgs["include-known"] === true,
+          retestSearch: rawArgs["retest-search"] === true,
+          cachePath: rawArgs["cache"],
+        });
+
+  const careerDiscovery =
+    discoveryMode === "search"
+      ? null
+      : await discoverEnterpriseCareerPageCandidates({
+          companies,
+          knownStatuses,
+        });
+
+  const mergedRecords = mergeRecords(
+    searchDiscovery?.records ?? [],
+    careerDiscovery?.records ?? []
+  );
 
   const previewResults = await previewSourceCandidates(
-    discovery.records.map((record) => ({
+    mergedRecords.map((record) => ({
       input: record.boardUrl,
       connectorName: record.connectorName,
       token: record.token,
       sourceKey: record.sourceKey,
-      sourceName:
-        record.connectorName === "successfactors"
-          ? `SuccessFactors:${record.token}`
-          : `Workday:${record.token}`,
+      sourceName: buildSourceName(record.connectorName, record.token),
       boardUrl: record.boardUrl,
       source: "token",
     })),
@@ -73,7 +104,7 @@ async function main() {
     previewResults.map((result) => [result.sourceKey, result])
   );
   const threshold = rawArgs.threshold ?? 5;
-  const enrichedRecords = discovery.records
+  const enrichedRecords = mergedRecords
     .map((record) => {
       const preview = previewBySourceKey.get(record.sourceKey);
       const recommended =
@@ -119,10 +150,12 @@ async function main() {
       {
         generatedAt: new Date().toISOString(),
         families,
+        discoveryMode,
         limitCompanies: rawArgs.limit,
         previewLimit: rawArgs["preview-limit"] ?? 100,
         threshold,
-        discoverySummary: discovery.summary,
+        searchSummary: searchDiscovery?.summary ?? null,
+        careerPageSummary: careerDiscovery?.summary ?? null,
         previewedCount: previewResults.length,
         recommendedPromotions: enrichedRecords
           .filter((record) => record.recommendedPromotion)
@@ -133,6 +166,7 @@ async function main() {
             previewCreatedCount: record.preview?.previewCreatedCount ?? 0,
             acceptedCount: record.preview?.acceptedCount ?? 0,
             boardUrl: record.boardUrl,
+            matchedReasons: record.matchedReasons,
           })),
       },
       null,
@@ -141,32 +175,79 @@ async function main() {
     "utf8"
   );
 
-  await writeEnterpriseDiscoveryDataset({
-    outputPath: outputFile.replace(/\.json$/i, ".dataset.json"),
-    records: discovery.records,
-    summary: discovery.summary,
-  });
+  const datasetPath = outputFile.replace(/\.json$/i, ".dataset.json");
+  const datasetReportPath = datasetPath.replace(/\.json$/i, ".report.json");
+  const datasetSummary = {
+    companiesSelected: companies.map((company) => company.name),
+    queryCount: searchDiscovery?.summary.queryCount ?? 0,
+    cacheHits: searchDiscovery?.summary.cacheHits ?? 0,
+    cacheMisses: searchDiscovery?.summary.cacheMisses ?? 0,
+    resultUrlsFetched: searchDiscovery?.summary.resultUrlsFetched ?? 0,
+    uniqueResultUrls:
+      (searchDiscovery?.summary.uniqueResultUrls ?? 0) +
+      (careerDiscovery?.summary.initialUrls ?? 0),
+    pageUrlsScanned:
+      (searchDiscovery?.summary.pageUrlsScanned ?? 0) +
+      (careerDiscovery?.summary.pagesFetched ?? 0),
+    directSeedUrls: searchDiscovery?.summary.directSeedUrls ?? 0,
+    candidatesDiscovered:
+      (searchDiscovery?.summary.candidatesDiscovered ?? 0) +
+      (careerDiscovery?.summary.candidatesDiscovered ?? 0),
+    newCandidates: mergedRecords.length,
+    skippedKnownCandidates:
+      (searchDiscovery?.summary.skippedKnownCandidates ?? 0) +
+      (careerDiscovery?.summary.skippedKnownCandidates ?? 0),
+    candidatesByFamily: mergedRecords.reduce<Record<string, number>>((counts, record) => {
+      counts[record.connectorName] = (counts[record.connectorName] ?? 0) + 1;
+      return counts;
+    }, {}),
+    queryReports: searchDiscovery?.summary.queryReports ?? [],
+  };
+  await writeFile(
+    datasetPath,
+    `${JSON.stringify(
+      mergedRecords.map((record) => ({
+        ...record,
+        url: record.boardUrl,
+      })),
+      null,
+      2
+    )}\n`,
+    "utf8"
+  );
+  await writeFile(
+    datasetReportPath,
+    `${JSON.stringify(datasetSummary, null, 2)}\n`,
+    "utf8"
+  );
 
   console.log(
     JSON.stringify(
       {
         families,
-        companyCount: discovery.summary.companiesSelected.length,
-        queryCount: discovery.summary.queryCount,
-        cacheHits: discovery.summary.cacheHits,
-        cacheMisses: discovery.summary.cacheMisses,
-        resultUrlsFetched: discovery.summary.resultUrlsFetched,
-        uniqueResultUrls: discovery.summary.uniqueResultUrls,
-        candidatesDiscovered: discovery.summary.candidatesDiscovered,
-        newCandidates: discovery.summary.newCandidates,
-        skippedKnownCandidates: discovery.summary.skippedKnownCandidates,
+        discoveryMode,
+        companyCount: companies.length,
+        queryCount: searchDiscovery?.summary.queryCount ?? 0,
+        cacheHits: searchDiscovery?.summary.cacheHits ?? 0,
+        cacheMisses: searchDiscovery?.summary.cacheMisses ?? 0,
+        resultUrlsFetched: searchDiscovery?.summary.resultUrlsFetched ?? 0,
+        careerPagesFetched: careerDiscovery?.summary.pagesFetched ?? 0,
+        careerPageDirectAtsUrls:
+          careerDiscovery?.summary.directAtsUrlsDetected ?? 0,
+        candidatesDiscovered:
+          (searchDiscovery?.summary.candidatesDiscovered ?? 0) +
+          (careerDiscovery?.summary.candidatesDiscovered ?? 0),
+        newCandidates: mergedRecords.length,
+        skippedKnownCandidates:
+          (searchDiscovery?.summary.skippedKnownCandidates ?? 0) +
+          (careerDiscovery?.summary.skippedKnownCandidates ?? 0),
         previewedCount: previewResults.length,
         recommendedPromotions: enrichedRecords
           .filter((record) => record.recommendedPromotion)
           .slice(0, 20),
         outputFile,
         reportPath,
-        datasetPath: outputFile.replace(/\.json$/i, ".dataset.json"),
+        datasetPath,
       },
       null,
       2
@@ -181,6 +262,7 @@ function parseArgs(args: string[]) {
     "preview-limit": 100,
     "max-search-results": 5,
     family: "all",
+    discovery: "all",
   };
 
   for (const rawArg of args) {
@@ -215,6 +297,141 @@ function parseArgs(args: string[]) {
 function splitArg(value: string | number | boolean | undefined) {
   if (typeof value !== "string") return [];
   return value.split(",").map((entry) => entry.trim()).filter(Boolean);
+}
+
+function buildSourceName(connectorName: SupportedConnectorName, token: string) {
+  switch (connectorName) {
+    case "successfactors":
+      return `SuccessFactors:${token}`;
+    case "workday":
+      return `Workday:${token}`;
+    case "icims":
+      return `iCIMS:${token}`;
+    case "smartrecruiters":
+      return `SmartRecruiters:${token}`;
+    default:
+      return `${connectorName.charAt(0).toUpperCase()}${connectorName.slice(1)}:${token}`;
+  }
+}
+
+async function loadKnownSourceStatuses() {
+  const storePath = path.resolve("data/discovery/source-candidates.json");
+  try {
+    const store = JSON.parse(await readFile(storePath, "utf8")) as {
+      entries?: Array<{ sourceKey: string; status: KnownStatus }>;
+    };
+    return new Map(
+      (store.entries ?? []).map((entry) => [entry.sourceKey, entry.status])
+    );
+  } catch {
+    return new Map<string, KnownStatus>();
+  }
+}
+
+function mergeRecords(
+  searchRecords: Array<{
+    boardUrl: string;
+    sourceKey: string;
+    connectorName: SupportedConnectorName;
+    token: string;
+    companyNames: string[];
+    discoveredFromQueries: string[];
+    searchResultUrls: string[];
+    matchedReasons: string[];
+    knownStatus: KnownStatus | null;
+  }>,
+  careerRecords: CareerPageDiscoveryRecord[]
+) {
+  const merged = new Map<
+    string,
+    {
+      boardUrl: string;
+      sourceKey: string;
+      connectorName: SupportedConnectorName;
+      token: string;
+      companyNames: Set<string>;
+      discoveredFromQueries: Set<string>;
+      searchResultUrls: Set<string>;
+      careerPageUrls: Set<string>;
+      directAtsUrls: Set<string>;
+      matchedReasons: Set<string>;
+      knownStatus: KnownStatus | null;
+    }
+  >();
+
+  for (const record of searchRecords) {
+    const entry = merged.get(record.sourceKey) ?? {
+      boardUrl: record.boardUrl,
+      sourceKey: record.sourceKey,
+      connectorName: record.connectorName,
+      token: record.token,
+      companyNames: new Set<string>(),
+      discoveredFromQueries: new Set<string>(),
+      searchResultUrls: new Set<string>(),
+      careerPageUrls: new Set<string>(),
+      directAtsUrls: new Set<string>(),
+      matchedReasons: new Set<string>(),
+      knownStatus: record.knownStatus,
+    };
+
+    for (const value of record.companyNames) entry.companyNames.add(value);
+    for (const value of record.discoveredFromQueries) {
+      entry.discoveredFromQueries.add(value);
+    }
+    for (const value of record.searchResultUrls) entry.searchResultUrls.add(value);
+    for (const value of record.matchedReasons) entry.matchedReasons.add(value);
+    merged.set(record.sourceKey, entry);
+  }
+
+  for (const record of careerRecords) {
+    const entry = merged.get(record.sourceKey) ?? {
+      boardUrl: record.boardUrl,
+      sourceKey: record.sourceKey,
+      connectorName: record.connectorName as SupportedConnectorName,
+      token: record.token,
+      companyNames: new Set<string>(),
+      discoveredFromQueries: new Set<string>(),
+      searchResultUrls: new Set<string>(),
+      careerPageUrls: new Set<string>(),
+      directAtsUrls: new Set<string>(),
+      matchedReasons: new Set<string>(),
+      knownStatus: record.knownStatus,
+    };
+
+    for (const value of record.companyNames) entry.companyNames.add(value);
+    for (const value of record.careerPageUrls) entry.careerPageUrls.add(value);
+    for (const value of record.directAtsUrls) entry.directAtsUrls.add(value);
+    for (const value of record.matchedReasons) entry.matchedReasons.add(value);
+    merged.set(record.sourceKey, entry);
+  }
+
+  return [...merged.values()]
+    .filter((record) => rawArgs["include-known"] === true || record.knownStatus === null)
+    .map((record) => ({
+      boardUrl: record.boardUrl,
+      sourceKey: record.sourceKey,
+      connectorName: record.connectorName,
+      token: record.token,
+      companyNames: [...record.companyNames].sort(),
+      discoveredFromQueries: [...record.discoveredFromQueries].sort(),
+      searchResultUrls: [...record.searchResultUrls].sort(),
+      careerPageUrls: [...record.careerPageUrls].sort(),
+      directAtsUrls: [...record.directAtsUrls].sort(),
+      matchedReasons: [...record.matchedReasons].sort(),
+      knownStatus: record.knownStatus,
+    }))
+    .sort((left, right) => {
+      const leftStrength =
+        left.companyNames.length +
+        left.discoveredFromQueries.length +
+        left.careerPageUrls.length;
+      const rightStrength =
+        right.companyNames.length +
+        right.discoveredFromQueries.length +
+        right.careerPageUrls.length;
+      if (rightStrength !== leftStrength) return rightStrength - leftStrength;
+      return left.sourceKey.localeCompare(right.sourceKey);
+    });
 }
 
 main().catch((error) => {

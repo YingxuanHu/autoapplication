@@ -106,6 +106,17 @@ const CA_CITY_MARKERS = [
   "calgary",
   "ottawa",
   "waterloo",
+  "mississauga",
+  "markham",
+  "quebec city",
+  "saskatoon",
+  "winnipeg",
+  "hamilton",
+  "burnaby",
+  "surrey",
+  "halifax",
+  "edmonton",
+  "regina",
 ];
 
 const ROLE_PATTERNS: Array<{
@@ -403,6 +414,14 @@ function inferRegion(location: string): Region | null {
     .map((segment) => segment.trim().toUpperCase())
     .filter(Boolean);
   const trailingPart = parts[parts.length - 1] ?? "";
+  const secondTrailingPart = parts[parts.length - 2] ?? "";
+
+  // Structured ATS feeds often emit Canadian locations as "City, BC, CA".
+  // Treat the province + trailing country pair as Canada before the lone "CA"
+  // token can be misread as California.
+  if (trailingPart === "CA" && CA_PROVINCE_CODES.has(secondTrailingPart)) {
+    return "CA";
+  }
 
   if (US_STATE_CODES.has(trailingPart)) return "US";
   if (CA_PROVINCE_CODES.has(trailingPart)) return "CA";

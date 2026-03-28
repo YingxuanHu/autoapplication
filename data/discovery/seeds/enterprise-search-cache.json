@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-03-28T04:02:35.091Z",
+  "updatedAt": "2026-03-28T04:33:36.357Z",
   "entries": [
     {
       "query": "site:myworkdayjobs.com \"Bell\" \"Montreal\" careers",
@@ -11079,6 +11079,150 @@
         "https://mycolorado.gov/app-services/vehicle-services",
         "https://dmv.colorado.gov/license-plates",
         "https://cdor.colorado.gov/"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"SLIHRMS\" careers",
+      "fetchedAt": "2026-03-28T04:33:36.244Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22SLIHRMS%22+careers",
+        "https://www.scti.com.au/",
+        "https://www.scti.co.nz/",
+        "https://www.finder.com.au/travel-insurance/southern-cross-travel-insurance",
+        "https://www.southerncross.co.nz/society/buying-health-insurance/member-discounts-and-offers/southern-cross-travel-insurance"
+      ],
+      "errors": []
+    },
+    {
+      "query": "\"atkinsrealis\" careers workday",
+      "fetchedAt": "2026-03-28T04:33:36.248Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=%22atkinsrealis%22+careers+workday",
+        "https://www.atkinsrealis.com/",
+        "https://www.atkinsrealis.com/fr-fr",
+        "https://careers.atkinsrealis.com/en",
+        "https://www.atkinsrealis.com/en/about"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"snclavalin\" careers",
+      "fetchedAt": "2026-03-28T04:33:36.249Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22snclavalin%22+careers",
+        "https://www.kayak.com/flights",
+        "https://www.ca.kayak.com/flights",
+        "https://www.kayak.com/",
+        "https://www.kayak.com/Last-Minute-Flights.lm-fd.ksp"
+      ],
+      "errors": []
+    },
+    {
+      "query": "\"SLIHRMS\" careers workday",
+      "fetchedAt": "2026-03-28T04:33:36.255Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=%22SLIHRMS%22+careers+workday",
+        "https://www.delta.com/",
+        "https://www.delta.com/flightsearch/book-a-flight",
+        "http://content.delta.com/content/www/en_US.html/",
+        "https://www.delta.com/flightstatus/search"
+      ],
+      "errors": []
+    },
+    {
+      "query": "\"AtkinsRéalis\" careers workday",
+      "fetchedAt": "2026-03-28T04:33:36.256Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=%22AtkinsR%c3%a9alis%22+careers+workday",
+        "https://www.atkinsrealis.com/",
+        "https://en.wikipedia.org/wiki/AtkinsR%C3%A9alis",
+        "https://atkinsrealis.ie/news/snc-lavalin-atkins-and-faithfulgould-changing-name-to-atkinsrealis/",
+        "https://www.newswire.ca/news-releases/atkinsrealis-announces-private-offering-of-700-million-of-unsecured-debentures-and-its-intention-to-redeem-300-million-series-7-debentures-and-400-million-series-8-debentures-837730561.html"
+      ],
+      "errors": []
+    },
+    {
+      "query": "\"snclavalin\" careers workday",
+      "fetchedAt": "2026-03-28T04:33:36.273Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=%22snclavalin%22+careers+workday",
+        "https://www.reddit.com/r/MexicoFinanciero/comments/12sgpya/cuanto_se_tarda_en_generar_contrase%C3%B1a_en_sat_id/",
+        "https://www.reddit.com/r/MexicoFinanciero/comments/vg00b3/cu%C3%A1nto_tarda_el_sat_en_verificar_el_video_para/",
+        "https://www.reddit.com/r/Sat/comments/qmv1g3/what_id_do_i_bring/",
+        "https://www.reddit.com/r/MexicoFinanciero/comments/18zl91o/c%C3%B3mo_creo_una_contrase%C3%B1a_en_el_sat_en_l%C3%ADnea/"
+      ],
+      "errors": []
+    },
+    {
+      "query": "\"atkinsrealis\" \"myworkdayjobs.com\"",
+      "fetchedAt": "2026-03-28T04:33:36.334Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=%22atkinsrealis%22+%22myworkdayjobs.com%22",
+        "https://www.atkinsrealis.com/",
+        "https://www.atkinsrealis.com/fr-fr",
+        "https://careers.atkinsrealis.com/en",
+        "https://www.atkinsrealis.com/en/about"
+      ],
+      "errors": []
+    },
+    {
+      "query": "\"SLIHRMS\" \"myworkdayjobs.com\"",
+      "fetchedAt": "2026-03-28T04:33:36.335Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=%22SLIHRMS%22+%22myworkdayjobs.com%22",
+        "https://solitaired.com/freecell",
+        "https://www.free-freecell-solitaire.com/",
+        "https://cardgames.io/freecell/",
+        "https://greenfelt.net/freecell"
+      ],
+      "errors": []
+    },
+    {
+      "query": "\"snclavalin\" \"myworkdayjobs.com\"",
+      "fetchedAt": "2026-03-28T04:33:36.342Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=%22snclavalin%22+%22myworkdayjobs.com%22",
+        "https://www.wikihow.com/Take-a-Screen-Shot-(Screen-Capture)",
+        "https://www.microsoft.com/en-us/windows/learning-center/how-to-screenshot-windows-11",
+        "https://support.apple.com/guide/iphone/take-a-screenshot-iphc872c0115/ios",
+        "https://screenshot.guide/"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"SLIHRMS\" jobs",
+      "fetchedAt": "2026-03-28T04:33:36.344Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22SLIHRMS%22+jobs",
+        "https://www.alsok.co.jp/corporate/access_control_gtacs/",
+        "https://www.army.mil/article/165661/GTACS_II_contract_to_support_one_tactical_network/",
+        "https://www.gdit.com/about-gdit/contract-vehicles/agency-contracts/gtacs-ii/",
+        "https://www.fairwinds-tech.com/contract-vehicles/gtacs-ii/"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"snclavalin\" jobs",
+      "fetchedAt": "2026-03-28T04:33:36.351Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22snclavalin%22+jobs",
+        "https://www.microsoft.com/en-us",
+        "https://www.office.com/",
+        "https://en.wikipedia.org/wiki/Microsoft",
+        "https://signup.live.com/"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"atkinsrealis\" jobs",
+      "fetchedAt": "2026-03-28T04:33:36.357Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22atkinsrealis%22+jobs",
+        "https://careers.atkinsrealis.com/en",
+        "https://ca.linkedin.com/jobs/atkinsrealis-jobs",
+        "https://ca.indeed.com/cmp/Atkinsr%C3%A9alis/jobs",
+        "https://www.glassdoor.ca/Job/canada-atkinsr%C3%A9alis-jobs-SRCH_IL.0,6_IN3_KO7,19.htm"
       ],
       "errors": []
     }

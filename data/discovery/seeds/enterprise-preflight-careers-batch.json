@@ -1,0 +1,228 @@
+[
+  {
+    "boardUrl": "https://careers.telus.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+    "sourceKey": "successfactors:careers.telus.com",
+    "connectorName": "successfactors",
+    "token": "careers.telus.com",
+    "companyNames": [],
+    "discoveredFromQueries": [],
+    "searchResultUrls": [],
+    "careerPageUrls": [],
+    "directAtsUrls": [
+      "https://careers.telus.com/search/?jobAlerts=true&rcmLoggedIn=true&locale=en_US&micrositeid=",
+      "https://careers.telus.com/search/?jobAlerts=true&rcmLoggedIn=true&locale=en_US&micrositeid=?linktype=subnav",
+      "https://careers.telus.com/search?locale=en_US&utm_source=careersite&utm_campaign=TELUS.COM/CAREERS_LowerCTA",
+      "https://careers.telus.com/search?locale=en_US&utm_source=careersite&utm_campaign=TELUS.COM/CAREERS_TopCTA"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "fetchedCount": 100,
+      "acceptedCount": 25,
+      "previewCreatedCount": 25,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 75,
+      "sampleTitles": [
+        "Account Specialist - Small Medium Business - Hybrid",
+        "L4 Senior Data Scientist",
+        "Senior Marketing Manager, Special Bases - Consumer Base Management",
+        "Design Specialist II - Wireless Packet Core Team",
+        "AI Innovation Associate (Vibe Coder)"
+      ],
+      "sampleLocations": [
+        "Toronto, ON, CA",
+        "Calgary, AB, CA",
+        "Vancouver, BC, CA",
+        "Edmonton, AB, CA",
+        "Toronto, ON, CA"
+      ]
+    },
+    "recommendedPromotion": true
+  },
+  {
+    "boardUrl": "https://careers.fortisbc.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+    "sourceKey": "successfactors:careers.fortisbc.com",
+    "connectorName": "successfactors",
+    "token": "careers.fortisbc.com",
+    "companyNames": [
+      "FortisBC"
+    ],
+    "discoveredFromQueries": [],
+    "searchResultUrls": [],
+    "careerPageUrls": [],
+    "directAtsUrls": [
+      "https://careers.fortisbc.com/search"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "fetchedCount": 77,
+      "acceptedCount": 18,
+      "previewCreatedCount": 18,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 59,
+      "sampleTitles": [
+        "Technical Analyst 4 - Ansible/Linux",
+        "Energy Conservation Advisor",
+        "Technical Energy Solutions Co-op Student",
+        "Program Coordinator",
+        "Project Manager"
+      ],
+      "sampleLocations": [
+        "Trail, BC, CA",
+        "Trail, BC, CA",
+        "Surrey, BC, CA",
+        "Surrey, BC, CA",
+        "Kamloops, BC, CA"
+      ]
+    },
+    "recommendedPromotion": true
+  },
+  {
+    "boardUrl": "https://careers.bankofcanada.ca/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+    "sourceKey": "successfactors:careers.bankofcanada.ca",
+    "connectorName": "successfactors",
+    "token": "careers.bankofcanada.ca",
+    "companyNames": [
+      "Bank of Canada"
+    ],
+    "discoveredFromQueries": [],
+    "searchResultUrls": [],
+    "careerPageUrls": [],
+    "directAtsUrls": [
+      "https://careers.bankofcanada.ca/talentcommunity/subscribe/?locale=en_US"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "fetchedCount": 15,
+      "acceptedCount": 6,
+      "previewCreatedCount": 6,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 9,
+      "sampleTitles": [
+        "Analyst, Cyber Security (Recent Graduates) Job Details | Bank of Canada",
+        "Scientific Software Engineer Job Details | Bank of Canada",
+        "PhD Internship Job Details | Bank of Canada",
+        "Master's Internship Job Details | Bank of Canada",
+        "Senior Business Analyst, Cyber AI Initiatives Job Details | Bank of Canada"
+      ],
+      "sampleLocations": [
+        "Ottawa (Downtown), ON, CA",
+        "Ottawa (Downtown), ON, CA",
+        "Ottawa (Downtown), ON, CA",
+        "Ottawa (Downtown), ON, CA",
+        "Ottawa (Downtown), ON, CA"
+      ]
+    },
+    "recommendedPromotion": true
+  },
+  {
+    "boardUrl": "https://jobs.torontohydro.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+    "sourceKey": "successfactors:jobs.torontohydro.com",
+    "connectorName": "successfactors",
+    "token": "jobs.torontohydro.com",
+    "companyNames": [],
+    "discoveredFromQueries": [],
+    "searchResultUrls": [],
+    "careerPageUrls": [],
+    "directAtsUrls": [
+      "https://jobs.torontohydro.com/search/?q=&optionsFacetsDD_departmenta"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "fetchedCount": 10,
+      "acceptedCount": 1,
+      "previewCreatedCount": 1,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 9,
+      "sampleTitles": [
+        "Contract, Senior Commercial Services Counsel (12-months)",
+        "Manager, Total Rewards",
+        "Contract, Capital & Maintenance Program Analyst (10-months)",
+        "Manager, Project Planning & Execution",
+        "Manager, Project Execution"
+      ],
+      "sampleLocations": [
+        "Toronto, ON, CA",
+        "Toronto, ON, CA",
+        "Toronto, ON, CA",
+        "Toronto, ON, CA",
+        "Toronto, ON, CA"
+      ]
+    },
+    "recommendedPromotion": false
+  },
+  {
+    "boardUrl": "https://jobs.nutrien.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+    "sourceKey": "successfactors:jobs.nutrien.com",
+    "connectorName": "successfactors",
+    "token": "jobs.nutrien.com",
+    "companyNames": [
+      "Nutrien"
+    ],
+    "discoveredFromQueries": [],
+    "searchResultUrls": [],
+    "careerPageUrls": [],
+    "directAtsUrls": [
+      "https://jobs.nutrien.com/search/?"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "fetchedCount": 0,
+      "acceptedCount": 0,
+      "previewCreatedCount": 0,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 0,
+      "sampleTitles": [],
+      "sampleLocations": []
+    },
+    "recommendedPromotion": false
+  },
+  {
+    "boardUrl": "https://jobs.teck.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+    "sourceKey": "successfactors:jobs.teck.com",
+    "connectorName": "successfactors",
+    "token": "jobs.teck.com",
+    "companyNames": [],
+    "discoveredFromQueries": [],
+    "searchResultUrls": [],
+    "careerPageUrls": [],
+    "directAtsUrls": [
+      "https://jobs.teck.com/search/?q=&locationsearch=",
+      "https://jobs.teck.com/search/?utm_source=careersite&utm_campaign=AllJobsButton_TeckCareers"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "fetchedCount": 0,
+      "acceptedCount": 0,
+      "previewCreatedCount": 0,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 0,
+      "sampleTitles": [],
+      "sampleLocations": []
+    },
+    "recommendedPromotion": false
+  }
+]

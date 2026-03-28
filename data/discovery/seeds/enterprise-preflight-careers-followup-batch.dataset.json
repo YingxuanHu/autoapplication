@@ -1,0 +1,22 @@
+[
+  {
+    "boardUrl": "https://cibc.wd3.myworkdayjobs.com/campus",
+    "sourceKey": "workday:cibc.wd3.myworkdayjobs.com|cibc|campus",
+    "connectorName": "workday",
+    "token": "cibc.wd3.myworkdayjobs.com|cibc|campus",
+    "companyNames": [
+      "CIBC"
+    ],
+    "discoveredFromQueries": [],
+    "searchResultUrls": [],
+    "careerPageUrls": [],
+    "directAtsUrls": [
+      "https://cibc.wd3.myworkdayjobs.com/campus"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link"
+    ],
+    "knownStatus": null,
+    "url": "https://cibc.wd3.myworkdayjobs.com/campus"
+  }
+]

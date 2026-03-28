@@ -1,0 +1,44 @@
+[
+  {
+    "boardUrl": "https://cibc.wd3.myworkdayjobs.com/campus",
+    "sourceKey": "workday:cibc.wd3.myworkdayjobs.com|cibc|campus",
+    "connectorName": "workday",
+    "token": "cibc.wd3.myworkdayjobs.com|cibc|campus",
+    "companyNames": [
+      "CIBC"
+    ],
+    "discoveredFromQueries": [],
+    "searchResultUrls": [],
+    "careerPageUrls": [],
+    "directAtsUrls": [
+      "https://cibc.wd3.myworkdayjobs.com/campus"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "fetchedCount": 9,
+      "acceptedCount": 2,
+      "previewCreatedCount": 0,
+      "previewUpdatedCount": 2,
+      "dedupedCount": 2,
+      "rejectedCount": 7,
+      "sampleTitles": [
+        "2026 Summer Intern - Software Engineer",
+        "2026 Summer Intern - Payment Operations",
+        "2026 Global Leveraged Finance Summer Analyst (Houston)",
+        "Direct Applicant Portal - Summer 2026",
+        "2027 Corporate Banking Summer Analyst"
+      ],
+      "sampleLocations": [
+        "IL-70 W Madison St, 8th Fl, United States of America",
+        "IL-70 W Madison St, 9th Fl, United States of America",
+        "TX-1001 Fannin St, United States of America",
+        "Toronto-81 Bay, 33rd Floor, Canada",
+        "NY-300 Madison Ave., 8th Floor, United States of America"
+      ]
+    },
+    "recommendedPromotion": false
+  }
+]
