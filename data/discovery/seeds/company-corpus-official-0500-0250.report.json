@@ -1,0 +1,310 @@
+{
+  "generatedAt": "2026-03-30T05:43:45.640Z",
+  "corpusCount": 1070,
+  "batchOffset": 500,
+  "batchLimit": 250,
+  "companiesProcessed": 250,
+  "companiesResolved": 250,
+  "companiesUnresolved": 0,
+  "domainsSeeded": 252,
+  "careerPagesDetected": 498,
+  "directAtsUrlsDetected": 20,
+  "candidatesDiscovered": 18,
+  "newCandidates": 14,
+  "skippedKnownCandidates": 4,
+  "promotedSources": [
+    {
+      "sourceKey": "lever:achievers",
+      "connectorName": "lever",
+      "companyNames": [
+        "Achievers"
+      ],
+      "previewCreatedCount": 10,
+      "previewCreatedCanadaCount": 10,
+      "acceptedCount": 11,
+      "acceptedCanadaCount": 11,
+      "boardUrl": "https://jobs.lever.co/achievers",
+      "promotionReason": "canada_heavy_created_volume"
+    },
+    {
+      "sourceKey": "greenhouse:bitgo",
+      "connectorName": "greenhouse",
+      "companyNames": [
+        "BitGo"
+      ],
+      "previewCreatedCount": 28,
+      "previewCreatedCanadaCount": 8,
+      "acceptedCount": 28,
+      "acceptedCanadaCount": 8,
+      "boardUrl": "https://job-boards.greenhouse.io/bitgo",
+      "promotionReason": "canada_heavy_created_volume"
+    },
+    {
+      "sourceKey": "ashby:hiive",
+      "connectorName": "ashby",
+      "companyNames": [
+        "Hiive"
+      ],
+      "previewCreatedCount": 10,
+      "previewCreatedCanadaCount": 8,
+      "acceptedCount": 11,
+      "acceptedCanadaCount": 9,
+      "boardUrl": "https://jobs.ashbyhq.com/hiive",
+      "promotionReason": "canada_heavy_created_volume"
+    },
+    {
+      "sourceKey": "lever:arcteryx.com",
+      "connectorName": "lever",
+      "companyNames": [
+        "Arc'Teryx"
+      ],
+      "previewCreatedCount": 6,
+      "previewCreatedCanadaCount": 5,
+      "acceptedCount": 6,
+      "acceptedCanadaCount": 5,
+      "boardUrl": "https://jobs.lever.co/arcteryx.com",
+      "promotionReason": "canada_heavy_created_volume"
+    },
+    {
+      "sourceKey": "workday:genesys.wd1.myworkdayjobs.com|genesys|genesys",
+      "connectorName": "workday",
+      "companyNames": [
+        "Genesys"
+      ],
+      "previewCreatedCount": 10,
+      "previewCreatedCanadaCount": 3,
+      "acceptedCount": 10,
+      "acceptedCanadaCount": 3,
+      "boardUrl": "https://genesys.wd1.myworkdayjobs.com/genesys",
+      "promotionReason": "canada_heavy_created_volume"
+    },
+    {
+      "sourceKey": "smartrecruiters:flintcorp1",
+      "connectorName": "smartrecruiters",
+      "companyNames": [
+        "FLINT"
+      ],
+      "previewCreatedCount": 3,
+      "previewCreatedCanadaCount": 3,
+      "acceptedCount": 4,
+      "acceptedCanadaCount": 4,
+      "boardUrl": "https://jobs.smartrecruiters.com/flintcorp1",
+      "promotionReason": "canada_heavy_created_volume"
+    },
+    {
+      "sourceKey": "workday:finning.wd3.myworkdayjobs.com|finning|external",
+      "connectorName": "workday",
+      "companyNames": [
+        "Finning"
+      ],
+      "previewCreatedCount": 2,
+      "previewCreatedCanadaCount": 2,
+      "acceptedCount": 3,
+      "acceptedCanadaCount": 3,
+      "boardUrl": "https://finning.wd3.myworkdayjobs.com/external",
+      "promotionReason": "canada_dense_small_board"
+    },
+    {
+      "sourceKey": "workday:galderma.wd3.myworkdayjobs.com|galderma|external",
+      "connectorName": "workday",
+      "companyNames": [
+        "Galderma"
+      ],
+      "previewCreatedCount": 2,
+      "previewCreatedCanadaCount": 2,
+      "acceptedCount": 2,
+      "acceptedCanadaCount": 2,
+      "boardUrl": "https://galderma.wd3.myworkdayjobs.com/external",
+      "promotionReason": "canada_dense_small_board"
+    },
+    {
+      "sourceKey": "greenhouse:elationhealth",
+      "connectorName": "greenhouse",
+      "companyNames": [
+        "Elation Health"
+      ],
+      "previewCreatedCount": 2,
+      "previewCreatedCanadaCount": 1,
+      "acceptedCount": 3,
+      "acceptedCanadaCount": 2,
+      "boardUrl": "https://job-boards.greenhouse.io/elationhealth",
+      "promotionReason": "canada_dense_small_board"
+    },
+    {
+      "sourceKey": "workday:bci.wd10.myworkdayjobs.com|bci|bci_careers",
+      "connectorName": "workday",
+      "companyNames": [
+        "BCI"
+      ],
+      "previewCreatedCount": 1,
+      "previewCreatedCanadaCount": 1,
+      "acceptedCount": 2,
+      "acceptedCanadaCount": 2,
+      "boardUrl": "https://bci.wd10.myworkdayjobs.com/bci_careers",
+      "promotionReason": "canada_dense_small_board"
+    }
+  ],
+  "rejectedSources": [
+    {
+      "sourceKey": "ashby:customuse",
+      "connectorName": "ashby",
+      "companyNames": [
+        "Custom Decorators"
+      ],
+      "boardUrl": "https://jobs.ashbyhq.com/customuse",
+      "error": null,
+      "previewCreatedCount": 0,
+      "acceptedCanadaCount": 0
+    },
+    {
+      "sourceKey": "smartrecruiters:my-applications",
+      "connectorName": "smartrecruiters",
+      "companyNames": [
+        "Egis Group"
+      ],
+      "boardUrl": "https://jobs.smartrecruiters.com/my-applications",
+      "error": null,
+      "previewCreatedCount": 0,
+      "acceptedCanadaCount": 0
+    },
+    {
+      "sourceKey": "successfactors:jobs.egis-group.com",
+      "connectorName": "successfactors",
+      "companyNames": [
+        "Egis Group"
+      ],
+      "boardUrl": "https://jobs.egis-group.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+      "error": "SuccessFactors fetch failed for https://jobs.egis-group.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc: 404 Not Found",
+      "previewCreatedCount": 0,
+      "acceptedCanadaCount": 0
+    }
+  ],
+  "ingestSummaries": [
+    {
+      "sourceKey": "lever:achievers",
+      "connectorKey": "lever:achievers",
+      "sourceName": "Lever:achievers",
+      "fetchedCount": 23,
+      "acceptedCount": 11,
+      "canonicalCreatedCount": 10,
+      "canonicalUpdatedCount": 1,
+      "dedupedCount": 1,
+      "canonicalCreatedCanadaCount": 10,
+      "canonicalCreatedCanadaRemoteCount": 0
+    },
+    {
+      "sourceKey": "greenhouse:bitgo",
+      "connectorKey": "greenhouse:bitgo",
+      "sourceName": "Greenhouse:bitgo",
+      "fetchedCount": 67,
+      "acceptedCount": 28,
+      "canonicalCreatedCount": 8,
+      "canonicalUpdatedCount": 20,
+      "dedupedCount": 20,
+      "canonicalCreatedCanadaCount": 3,
+      "canonicalCreatedCanadaRemoteCount": 0
+    },
+    {
+      "sourceKey": "ashby:hiive",
+      "connectorKey": "ashby:hiive",
+      "sourceName": "Ashby:hiive",
+      "fetchedCount": 21,
+      "acceptedCount": 11,
+      "canonicalCreatedCount": 9,
+      "canonicalUpdatedCount": 2,
+      "dedupedCount": 2,
+      "canonicalCreatedCanadaCount": 7,
+      "canonicalCreatedCanadaRemoteCount": 3
+    },
+    {
+      "sourceKey": "lever:arcteryx.com",
+      "connectorKey": "lever:arcteryx.com",
+      "sourceName": "Lever:arcteryx.com",
+      "fetchedCount": 139,
+      "acceptedCount": 14,
+      "canonicalCreatedCount": 13,
+      "canonicalUpdatedCount": 1,
+      "dedupedCount": 1,
+      "canonicalCreatedCanadaCount": 11,
+      "canonicalCreatedCanadaRemoteCount": 1
+    },
+    {
+      "sourceKey": "workday:genesys.wd1.myworkdayjobs.com|genesys|genesys",
+      "connectorKey": "workday:genesys.wd1.myworkdayjobs.com|genesys|genesys",
+      "sourceName": "Workday:genesys.wd1.myworkdayjobs.com|genesys|genesys",
+      "fetchedCount": 200,
+      "acceptedCount": 16,
+      "canonicalCreatedCount": 14,
+      "canonicalUpdatedCount": 2,
+      "dedupedCount": 2,
+      "canonicalCreatedCanadaCount": 5,
+      "canonicalCreatedCanadaRemoteCount": 0
+    },
+    {
+      "sourceKey": "smartrecruiters:flintcorp1",
+      "connectorKey": "smartrecruiters:flintcorp1",
+      "sourceName": "SmartRecruiters:flintcorp1",
+      "fetchedCount": 83,
+      "acceptedCount": 4,
+      "canonicalCreatedCount": 2,
+      "canonicalUpdatedCount": 2,
+      "dedupedCount": 2,
+      "canonicalCreatedCanadaCount": 2,
+      "canonicalCreatedCanadaRemoteCount": 1
+    },
+    {
+      "sourceKey": "workday:finning.wd3.myworkdayjobs.com|finning|external",
+      "connectorKey": "workday:finning.wd3.myworkdayjobs.com|finning|external",
+      "sourceName": "Workday:finning.wd3.myworkdayjobs.com|finning|external",
+      "fetchedCount": 200,
+      "acceptedCount": 8,
+      "canonicalCreatedCount": 7,
+      "canonicalUpdatedCount": 1,
+      "dedupedCount": 1,
+      "canonicalCreatedCanadaCount": 7,
+      "canonicalCreatedCanadaRemoteCount": 3
+    },
+    {
+      "sourceKey": "workday:galderma.wd3.myworkdayjobs.com|galderma|external",
+      "connectorKey": "workday:galderma.wd3.myworkdayjobs.com|galderma|external",
+      "sourceName": "Workday:galderma.wd3.myworkdayjobs.com|galderma|external",
+      "fetchedCount": 200,
+      "acceptedCount": 4,
+      "canonicalCreatedCount": 4,
+      "canonicalUpdatedCount": 0,
+      "dedupedCount": 0,
+      "canonicalCreatedCanadaCount": 2,
+      "canonicalCreatedCanadaRemoteCount": 0
+    },
+    {
+      "sourceKey": "greenhouse:elationhealth",
+      "connectorKey": "greenhouse:elationhealth",
+      "sourceName": "Greenhouse:elationhealth",
+      "fetchedCount": 8,
+      "acceptedCount": 3,
+      "canonicalCreatedCount": 1,
+      "canonicalUpdatedCount": 2,
+      "dedupedCount": 2,
+      "canonicalCreatedCanadaCount": 1,
+      "canonicalCreatedCanadaRemoteCount": 1
+    },
+    {
+      "sourceKey": "workday:bci.wd10.myworkdayjobs.com|bci|bci_careers",
+      "connectorKey": "workday:bci.wd10.myworkdayjobs.com|bci|bci_careers",
+      "sourceName": "Workday:bci.wd10.myworkdayjobs.com|bci|bci_careers",
+      "fetchedCount": 7,
+      "acceptedCount": 2,
+      "canonicalCreatedCount": 1,
+      "canonicalUpdatedCount": 1,
+      "dedupedCount": 1,
+      "canonicalCreatedCanadaCount": 1,
+      "canonicalCreatedCanadaRemoteCount": 0
+    }
+  ],
+  "resolutionSummary": {
+    "catalog": 0,
+    "cache": 6,
+    "search": 244,
+    "unresolved": 0
+  }
+}

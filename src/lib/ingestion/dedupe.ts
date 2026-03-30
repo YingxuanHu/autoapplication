@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { prisma } from "@/lib/db";
 import type { NormalizedJobInput } from "@/lib/ingestion/types";
 import type { Region, WorkMode } from "@/generated/prisma/client";
@@ -125,12 +126,12 @@ export function buildCanonicalDedupeFields(input: {
     descriptionFingerprint,
     locationKey,
     applyUrlKey,
-    duplicateClusterId: [
+    duplicateClusterId: hashDuplicateCluster([
       companyKey,
       titleKey,
       locationKey,
       input.region.toLowerCase(),
-    ].join(":"),
+    ]),
   };
 }
 
@@ -235,6 +236,10 @@ export async function findCrossSourceCanonicalMatch(
   }
 
   return bestCandidate;
+}
+
+function hashDuplicateCluster(parts: string[]) {
+  return createHash("md5").update(parts.join(":")).digest("hex");
 }
 
 const canonicalMatchSelect = {

@@ -3,7 +3,7 @@
  *
  * Himalayas provides a free, no-auth JSON API for remote job listings.
  * API: https://himalayas.app/jobs/api?limit=20&offset=0
- * Search: https://himalayas.app/jobs/api/search (POST with filters)
+ * Search: https://himalayas.app/jobs/api/search
  *
  * Volume: 100K+ remote jobs.
  * Canada: Yes (locationRestrictions filter).
@@ -23,8 +23,9 @@ import type {
 } from "@/lib/ingestion/types";
 
 const HIMALAYAS_API_BASE = "https://himalayas.app/jobs/api";
+const HIMALAYAS_SEARCH_API_BASE = "https://himalayas.app/jobs/api/search";
 const HIMALAYAS_PAGE_SIZE = 20; // API max per request
-const HIMALAYAS_MAX_PAGES = 160; // 160 * 20 = 3,200 jobs max per run
+const HIMALAYAS_MAX_PAGES = 600; // 600 * 20 = 12,000 jobs max per run
 const HIMALAYAS_RATE_DELAY_MS = 1200; // Be respectful, avoid 429
 
 type HimalayasJob = {
@@ -53,19 +54,91 @@ type HimalayasResponse = {
 };
 
 type HimalayasCheckpoint = {
-  offset: number;
+  segmentIndex: number;
+  cursor: number;
 };
 
-type HimalayasProfile = "global" | "canada_friendly" | "canada_strict";
+type HimalayasProfile =
+  | "global"
+  | "canada_friendly"
+  | "canada_strict"
+  | "na_scale"
+  | "us_strict";
 
 type HimalayasConnectorOptions = {
   profile?: string;
 };
 
-const HIMALAYAS_PROFILE_CONFIGS: Record<HimalayasProfile, { labelSuffix: string }> = {
-  global: { labelSuffix: "feed" },
-  canada_friendly: { labelSuffix: "canada_friendly" },
-  canada_strict: { labelSuffix: "canada_strict" },
+type HimalayasFetchMode = "browse" | "search";
+type HimalayasFilterMode = "global" | "canada_friendly" | "canada_strict";
+
+type HimalayasFetchSegment = {
+  label: string;
+  mode: HimalayasFetchMode;
+  filterMode: HimalayasFilterMode;
+  params?: Record<string, string>;
+};
+
+type HimalayasProfileConfig = {
+  labelSuffix: string;
+  segments: HimalayasFetchSegment[];
+};
+
+const HIMALAYAS_PROFILE_CONFIGS: Record<HimalayasProfile, HimalayasProfileConfig> = {
+  global: {
+    labelSuffix: "feed",
+    segments: [{ label: "browse", mode: "browse", filterMode: "global" }],
+  },
+  canada_friendly: {
+    labelSuffix: "canada_friendly",
+    segments: [
+      {
+        label: "country_ca",
+        mode: "search",
+        filterMode: "global",
+        params: { country: "CA" },
+      },
+    ],
+  },
+  canada_strict: {
+    labelSuffix: "canada_strict",
+    segments: [
+      {
+        label: "country_ca_strict",
+        mode: "search",
+        filterMode: "global",
+        params: { country: "CA", exclude_worldwide: "true" },
+      },
+    ],
+  },
+  us_strict: {
+    labelSuffix: "us_strict",
+    segments: [
+      {
+        label: "country_us_strict",
+        mode: "search",
+        filterMode: "global",
+        params: { country: "US", exclude_worldwide: "true" },
+      },
+    ],
+  },
+  na_scale: {
+    labelSuffix: "na_scale",
+    segments: [
+      {
+        label: "country_ca",
+        mode: "search",
+        filterMode: "global",
+        params: { country: "CA" },
+      },
+      {
+        label: "country_us_strict",
+        mode: "search",
+        filterMode: "global",
+        params: { country: "US", exclude_worldwide: "true" },
+      },
+    ],
+  },
 };
 
 const CA_RESTRICTION_MARKERS = [
@@ -175,24 +248,32 @@ async function fetchHimalayasJobs({
   checkpoint?: HimalayasCheckpoint | null;
   onCheckpoint?: (checkpoint: Prisma.InputJsonValue | null) => Promise<void> | void;
 }): Promise<SourceConnectorFetchResult> {
+  const profileConfig = HIMALAYAS_PROFILE_CONFIGS[profile];
   const allJobs: SourceConnectorJob[] = [];
   const seenIds = new Set<string>();
-  let offset = checkpoint?.offset ?? 0;
+  let segmentIndex = checkpoint?.segmentIndex ?? 0;
+  let cursor =
+    checkpoint?.cursor ??
+    getInitialCursor(profileConfig.segments[segmentIndex] ?? profileConfig.segments[0]);
   let totalFetched = 0;
   let pagesFetched = 0;
-  let totalAvailable: number | null = null;
+  let totalAvailable = 0;
+  const visitedSegments = new Set<string>();
   const requestedPages =
     typeof limit === "number"
       ? Math.max(1, Math.ceil(limit / HIMALAYAS_PAGE_SIZE))
       : HIMALAYAS_MAX_PAGES;
   const maxPages = Math.min(HIMALAYAS_MAX_PAGES, requestedPages + 8);
 
-  for (let page = 0; page < maxPages; page++) {
+  while (segmentIndex < profileConfig.segments.length && pagesFetched < maxPages) {
     throwIfAborted(signal);
     if (typeof limit === "number" && allJobs.length >= limit) break;
 
+    const segment = profileConfig.segments[segmentIndex];
+    visitedSegments.add(segment.label);
+
     try {
-      const url = `${HIMALAYAS_API_BASE}?limit=${HIMALAYAS_PAGE_SIZE}&offset=${offset}`;
+      const url = buildSegmentUrl(segment, cursor);
       const response = await fetch(url, {
         headers: {
           Accept: "application/json",
@@ -212,16 +293,24 @@ async function fetchHimalayasJobs({
 
       const payload = (await response.json()) as HimalayasResponse;
       const entries = payload.jobs ?? [];
-      totalAvailable = payload.totalCount ?? totalAvailable;
+      if (typeof payload.totalCount === "number") {
+        totalAvailable += payload.totalCount;
+      }
 
       if (entries.length === 0) {
-        await onCheckpoint?.(null);
-        break;
+        segmentIndex += 1;
+        cursor = getInitialCursor(profileConfig.segments[segmentIndex] ?? null);
+        await onCheckpoint?.(
+          segmentIndex >= profileConfig.segments.length
+            ? null
+            : ({ segmentIndex, cursor } satisfies HimalayasCheckpoint)
+        );
+        continue;
       }
 
       for (const entry of entries) {
         if (!entry.title) continue;
-        if (!matchesHimalayasProfile(entry, profile)) continue;
+        if (!matchesHimalayasFilter(entry, segment.filterMode)) continue;
         const sourceId = `himalayas:${entry.guid ?? entry.id ?? entry.title}`;
         if (seenIds.has(sourceId)) continue;
         seenIds.add(sourceId);
@@ -229,17 +318,26 @@ async function fetchHimalayasJobs({
       }
 
       totalFetched += entries.length;
-      offset += HIMALAYAS_PAGE_SIZE;
       pagesFetched++;
+      cursor = getNextCursor(segment, cursor);
 
-      const exhausted = entries.length < HIMALAYAS_PAGE_SIZE;
+      const exhausted = didExhaustSegment(segment, payload, entries.length, cursor);
+
       await onCheckpoint?.(
-        exhausted ? null : ({ offset } satisfies HimalayasCheckpoint)
+        exhausted
+          ? segmentIndex + 1 >= profileConfig.segments.length
+            ? null
+            : ({
+                segmentIndex: segmentIndex + 1,
+                cursor: getInitialCursor(profileConfig.segments[segmentIndex + 1] ?? null),
+              } satisfies HimalayasCheckpoint)
+          : ({ segmentIndex, cursor } satisfies HimalayasCheckpoint)
       );
 
       if (exhausted) {
-        offset = 0;
-        break;
+        segmentIndex += 1;
+        cursor = getInitialCursor(profileConfig.segments[segmentIndex] ?? null);
+        continue;
       }
     } catch (error) {
       if (signal?.aborted) {
@@ -253,12 +351,16 @@ async function fetchHimalayasJobs({
 
   const finalJobs =
     typeof limit === "number" ? allJobs.slice(0, limit) : allJobs;
-  const exhausted =
-    totalAvailable !== null ? offset >= totalAvailable : totalFetched < HIMALAYAS_PAGE_SIZE;
+  const exhausted = segmentIndex >= profileConfig.segments.length;
 
   return {
     jobs: finalJobs,
-    checkpoint: exhausted ? null : ({ offset } satisfies HimalayasCheckpoint),
+    checkpoint:
+      exhausted || typeof limit === "number" && finalJobs.length >= limit
+        ? exhausted
+          ? null
+          : ({ segmentIndex, cursor } satisfies HimalayasCheckpoint)
+        : ({ segmentIndex, cursor } satisfies HimalayasCheckpoint),
     exhausted,
     metadata: {
       apiUrl: HIMALAYAS_API_BASE,
@@ -268,6 +370,7 @@ async function fetchHimalayasJobs({
       uniqueJobs: finalJobs.length,
       totalAvailable,
       profile,
+      segments: [...visitedSegments],
       resumedFromCheckpoint: checkpoint ?? null,
     } as Prisma.InputJsonValue,
   };
@@ -364,26 +467,39 @@ function parseHimalayasCheckpoint(
     return null;
   }
 
-  const offset = (checkpoint as Record<string, unknown>).offset;
-  if (typeof offset !== "number" || !Number.isFinite(offset) || offset < 0) {
+  const segmentIndex = (checkpoint as Record<string, unknown>).segmentIndex;
+  const cursor = (checkpoint as Record<string, unknown>).cursor;
+  if (
+    typeof segmentIndex !== "number" ||
+    !Number.isFinite(segmentIndex) ||
+    segmentIndex < 0 ||
+    typeof cursor !== "number" ||
+    !Number.isFinite(cursor) ||
+    cursor < 0
+  ) {
     return null;
   }
 
-  return { offset };
+  return { segmentIndex, cursor };
 }
 
 function parseHimalayasProfile(rawProfile: string | undefined): HimalayasProfile {
-  if (rawProfile === "canada_friendly" || rawProfile === "canada_strict") {
+  if (
+    rawProfile === "canada_friendly" ||
+    rawProfile === "canada_strict" ||
+    rawProfile === "na_scale" ||
+    rawProfile === "us_strict"
+  ) {
     return rawProfile;
   }
   return "global";
 }
 
-function matchesHimalayasProfile(
+function matchesHimalayasFilter(
   entry: HimalayasJob,
-  profile: HimalayasProfile
+  filterMode: HimalayasFilterMode
 ) {
-  if (profile === "global") return true;
+  if (filterMode === "global") return true;
 
   const restrictions = (entry.locationRestrictions ?? [])
     .map((value) => value.trim().toLowerCase())
@@ -398,7 +514,7 @@ function matchesHimalayasProfile(
     text.includes(marker)
   );
 
-  if (profile === "canada_strict") {
+  if (filterMode === "canada_strict") {
     return explicitCanada;
   }
 
@@ -415,4 +531,66 @@ function matchesHimalayasProfile(
     !text.includes("americas");
 
   return canadaFriendly && !explicitNonNAOnly && !explicitUsOnly;
+}
+
+function getInitialCursor(segment: HimalayasFetchSegment | null) {
+  if (!segment) return 0;
+  return segment.mode === "browse" ? 0 : 1;
+}
+
+function getNextCursor(segment: HimalayasFetchSegment, cursor: number) {
+  return segment.mode === "browse" ? cursor + HIMALAYAS_PAGE_SIZE : cursor + 1;
+}
+
+function cursorExhaustsSegment(
+  segment: HimalayasFetchSegment,
+  cursor: number,
+  totalCount: number
+) {
+  if (segment.mode === "browse") {
+    return cursor >= totalCount;
+  }
+
+  return (cursor - 1) * HIMALAYAS_PAGE_SIZE >= totalCount;
+}
+
+function didExhaustSegment(
+  segment: HimalayasFetchSegment,
+  payload: HimalayasResponse,
+  entryCount: number,
+  cursor: number
+) {
+  if (segment.mode === "browse") {
+    return (
+      entryCount < HIMALAYAS_PAGE_SIZE ||
+      (typeof payload.totalCount === "number" &&
+        cursorExhaustsSegment(segment, cursor, payload.totalCount))
+    );
+  }
+
+  if (typeof payload.totalCount === "number") {
+    const currentOffset =
+      typeof payload.offset === "number"
+        ? payload.offset
+        : Math.max(0, (cursor - 2) * HIMALAYAS_PAGE_SIZE);
+    return currentOffset + entryCount >= payload.totalCount;
+  }
+
+  return entryCount === 0;
+}
+
+function buildSegmentUrl(segment: HimalayasFetchSegment, cursor: number) {
+  const params = new URLSearchParams();
+  params.set("limit", String(HIMALAYAS_PAGE_SIZE));
+
+  if (segment.mode === "browse") {
+    params.set("offset", String(cursor));
+    return `${HIMALAYAS_API_BASE}?${params.toString()}`;
+  }
+
+  params.set("page", String(cursor));
+  for (const [key, value] of Object.entries(segment.params ?? {})) {
+    params.set(key, value);
+  }
+  return `${HIMALAYAS_SEARCH_API_BASE}?${params.toString()}`;
 }

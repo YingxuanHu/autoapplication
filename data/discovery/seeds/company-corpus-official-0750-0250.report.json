@@ -1,0 +1,221 @@
+{
+  "generatedAt": "2026-03-30T05:51:47.571Z",
+  "corpusCount": 1073,
+  "batchOffset": 750,
+  "batchLimit": 250,
+  "companiesProcessed": 250,
+  "companiesResolved": 250,
+  "companiesUnresolved": 0,
+  "domainsSeeded": 252,
+  "careerPagesDetected": 501,
+  "directAtsUrlsDetected": 11,
+  "candidatesDiscovered": 11,
+  "newCandidates": 10,
+  "skippedKnownCandidates": 1,
+  "promotedSources": [
+    {
+      "sourceKey": "workday:intelcomgroup.wd3.myworkdayjobs.com|intelcomgroup|intelcom",
+      "connectorName": "workday",
+      "companyNames": [
+        "Intelcom"
+      ],
+      "previewCreatedCount": 23,
+      "previewCreatedCanadaCount": 23,
+      "acceptedCount": 23,
+      "acceptedCanadaCount": 23,
+      "boardUrl": "https://intelcomgroup.wd3.myworkdayjobs.com/intelcom",
+      "promotionReason": "canada_heavy_created_volume"
+    },
+    {
+      "sourceKey": "workday:irvingoil.wd3.myworkdayjobs.com|irvingoil|iol_careers_primary",
+      "connectorName": "workday",
+      "companyNames": [
+        "Irving Business Services"
+      ],
+      "previewCreatedCount": 8,
+      "previewCreatedCanadaCount": 8,
+      "acceptedCount": 8,
+      "acceptedCanadaCount": 8,
+      "boardUrl": "https://irvingoil.wd3.myworkdayjobs.com/iol_careers_primary",
+      "promotionReason": "canada_heavy_created_volume"
+    },
+    {
+      "sourceKey": "workday:irvingoil.wd3.myworkdayjobs.com|irvingoil|iolcareers_allotherpositions",
+      "connectorName": "workday",
+      "companyNames": [
+        "Irving Business Services"
+      ],
+      "previewCreatedCount": 7,
+      "previewCreatedCanadaCount": 7,
+      "acceptedCount": 7,
+      "acceptedCanadaCount": 7,
+      "boardUrl": "https://irvingoil.wd3.myworkdayjobs.com/iolcareers_allotherpositions",
+      "promotionReason": "canada_heavy_created_volume"
+    },
+    {
+      "sourceKey": "workday:quadreal.wd10.myworkdayjobs.com|quadreal|quadreal",
+      "connectorName": "workday",
+      "companyNames": [
+        "QuadReal Property Group"
+      ],
+      "previewCreatedCount": 6,
+      "previewCreatedCanadaCount": 6,
+      "acceptedCount": 6,
+      "acceptedCanadaCount": 6,
+      "boardUrl": "https://quadreal.wd10.myworkdayjobs.com/quadreal",
+      "promotionReason": "canada_heavy_created_volume"
+    },
+    {
+      "sourceKey": "workday:irvingoil.wd3.myworkdayjobs.com|irvingoil|iolcareers_refineryoperationsandengineers",
+      "connectorName": "workday",
+      "companyNames": [
+        "Irving Business Services"
+      ],
+      "previewCreatedCount": 3,
+      "previewCreatedCanadaCount": 3,
+      "acceptedCount": 3,
+      "acceptedCanadaCount": 3,
+      "boardUrl": "https://irvingoil.wd3.myworkdayjobs.com/iolcareers_refineryoperationsandengineers",
+      "promotionReason": "canada_heavy_created_volume"
+    },
+    {
+      "sourceKey": "ashby:lawdepot",
+      "connectorName": "ashby",
+      "companyNames": [
+        "LawDepot"
+      ],
+      "previewCreatedCount": 2,
+      "previewCreatedCanadaCount": 2,
+      "acceptedCount": 3,
+      "acceptedCanadaCount": 3,
+      "boardUrl": "https://jobs.ashbyhq.com/lawdepot",
+      "promotionReason": "canada_dense_small_board"
+    }
+  ],
+  "rejectedSources": [
+    {
+      "sourceKey": "lever:lillio",
+      "connectorName": "lever",
+      "companyNames": [
+        "Lillio"
+      ],
+      "boardUrl": "https://jobs.lever.co/lillio",
+      "error": "Lever fetch failed for lillio: 404 Not Found",
+      "previewCreatedCount": 0,
+      "acceptedCanadaCount": 0
+    },
+    {
+      "sourceKey": "workable:meal",
+      "connectorName": "workable",
+      "companyNames": [
+        "MealSuite"
+      ],
+      "boardUrl": "https://apply.workable.com/meal/",
+      "error": null,
+      "previewCreatedCount": 0,
+      "acceptedCanadaCount": 0
+    },
+    {
+      "sourceKey": "workable:mealsuite",
+      "connectorName": "workable",
+      "companyNames": [
+        "MealSuite"
+      ],
+      "boardUrl": "https://apply.workable.com/mealsuite/",
+      "error": null,
+      "previewCreatedCount": 0,
+      "acceptedCanadaCount": 0
+    },
+    {
+      "sourceKey": "workable:tentree",
+      "connectorName": "workable",
+      "companyNames": [
+        "tentree"
+      ],
+      "boardUrl": "https://apply.workable.com/tentree/",
+      "error": null,
+      "previewCreatedCount": 0,
+      "acceptedCanadaCount": 0
+    }
+  ],
+  "ingestSummaries": [
+    {
+      "sourceKey": "workday:intelcomgroup.wd3.myworkdayjobs.com|intelcomgroup|intelcom",
+      "connectorKey": "workday:intelcomgroup.wd3.myworkdayjobs.com|intelcomgroup|intelcom",
+      "sourceName": "Workday:intelcomgroup.wd3.myworkdayjobs.com|intelcomgroup|intelcom",
+      "fetchedCount": 62,
+      "acceptedCount": 23,
+      "canonicalCreatedCount": 9,
+      "canonicalUpdatedCount": 14,
+      "dedupedCount": 14,
+      "canonicalCreatedCanadaCount": 9,
+      "canonicalCreatedCanadaRemoteCount": 0
+    },
+    {
+      "sourceKey": "workday:irvingoil.wd3.myworkdayjobs.com|irvingoil|iol_careers_primary",
+      "connectorKey": "workday:irvingoil.wd3.myworkdayjobs.com|irvingoil|iol_careers_primary",
+      "sourceName": "Workday:irvingoil.wd3.myworkdayjobs.com|irvingoil|iol_careers_primary",
+      "fetchedCount": 39,
+      "acceptedCount": 8,
+      "canonicalCreatedCount": 2,
+      "canonicalUpdatedCount": 6,
+      "dedupedCount": 6,
+      "canonicalCreatedCanadaCount": 2,
+      "canonicalCreatedCanadaRemoteCount": 0
+    },
+    {
+      "sourceKey": "workday:irvingoil.wd3.myworkdayjobs.com|irvingoil|iolcareers_allotherpositions",
+      "connectorKey": "workday:irvingoil.wd3.myworkdayjobs.com|irvingoil|iolcareers_allotherpositions",
+      "sourceName": "Workday:irvingoil.wd3.myworkdayjobs.com|irvingoil|iolcareers_allotherpositions",
+      "fetchedCount": 31,
+      "acceptedCount": 7,
+      "canonicalCreatedCount": 7,
+      "canonicalUpdatedCount": 0,
+      "dedupedCount": 0,
+      "canonicalCreatedCanadaCount": 7,
+      "canonicalCreatedCanadaRemoteCount": 0
+    },
+    {
+      "sourceKey": "workday:quadreal.wd10.myworkdayjobs.com|quadreal|quadreal",
+      "connectorKey": "workday:quadreal.wd10.myworkdayjobs.com|quadreal|quadreal",
+      "sourceName": "Workday:quadreal.wd10.myworkdayjobs.com|quadreal|quadreal",
+      "fetchedCount": 35,
+      "acceptedCount": 6,
+      "canonicalCreatedCount": 6,
+      "canonicalUpdatedCount": 0,
+      "dedupedCount": 0,
+      "canonicalCreatedCanadaCount": 6,
+      "canonicalCreatedCanadaRemoteCount": 0
+    },
+    {
+      "sourceKey": "workday:irvingoil.wd3.myworkdayjobs.com|irvingoil|iolcareers_refineryoperationsandengineers",
+      "connectorKey": "workday:irvingoil.wd3.myworkdayjobs.com|irvingoil|iolcareers_refineryoperationsandengineers",
+      "sourceName": "Workday:irvingoil.wd3.myworkdayjobs.com|irvingoil|iolcareers_refineryoperationsandengineers",
+      "fetchedCount": 8,
+      "acceptedCount": 3,
+      "canonicalCreatedCount": 0,
+      "canonicalUpdatedCount": 3,
+      "dedupedCount": 3,
+      "canonicalCreatedCanadaCount": 0,
+      "canonicalCreatedCanadaRemoteCount": 0
+    },
+    {
+      "sourceKey": "ashby:lawdepot",
+      "connectorKey": "ashby:lawdepot",
+      "sourceName": "Ashby:lawdepot",
+      "fetchedCount": 9,
+      "acceptedCount": 3,
+      "canonicalCreatedCount": 2,
+      "canonicalUpdatedCount": 1,
+      "dedupedCount": 1,
+      "canonicalCreatedCanadaCount": 2,
+      "canonicalCreatedCanadaRemoteCount": 2
+    }
+  ],
+  "resolutionSummary": {
+    "catalog": 0,
+    "cache": 3,
+    "search": 247,
+    "unresolved": 0
+  }
+}
