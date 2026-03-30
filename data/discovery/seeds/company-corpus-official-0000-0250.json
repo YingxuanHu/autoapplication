@@ -1,0 +1,346 @@
+[
+  {
+    "boardUrl": "https://securitycareers-aus.icims.com/jobs/search",
+    "sourceKey": "icims:securitycareers-aus",
+    "connectorName": "icims",
+    "token": "securitycareers-aus",
+    "companyNames": [
+      "Allied Universal"
+    ],
+    "careerPageUrls": [
+      "https://jobs.aus.com/"
+    ],
+    "directAtsUrls": [
+      "https://securitycareers-aus.icims.com/jobs/search"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link",
+      "career_page_scan"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "input": "https://securitycareers-aus.icims.com/jobs/search",
+      "connectorName": "icims",
+      "token": "securitycareers-aus",
+      "sourceKey": "icims:securitycareers-aus",
+      "sourceName": "iCIMS:securitycareers-aus",
+      "boardUrl": "https://securitycareers-aus.icims.com/jobs/search",
+      "source": "token",
+      "pageTitle": "Security Officer - Armed Access Control / Patrol at Allied Universal",
+      "fetchedCount": 95,
+      "acceptedCount": 7,
+      "acceptedCanadaCount": 0,
+      "acceptedCanadaRemoteCount": 0,
+      "previewCreatedCount": 5,
+      "previewCreatedCanadaCount": 0,
+      "previewCreatedCanadaRemoteCount": 0,
+      "previewUpdatedCount": 2,
+      "dedupedCount": 2,
+      "rejectedCount": 88,
+      "existingRawCount": 0,
+      "existingActiveMappingCount": 0,
+      "existingLiveCanonicalCount": 0,
+      "sampleTitles": [
+        "Security Officer Overnight - Northside",
+        "Security Officer Part Time - Day Shift",
+        "Security Officer Part Time Patrol",
+        "Security Officer Enhanced Part Time Sentinel",
+        "Site Supervisor Government Warehouse"
+      ],
+      "sampleLocations": [
+        "Milwaukee, WI, US",
+        "Thief River Falls, MN, US",
+        "Greenville, SC, US",
+        "Moncks Corner, SC, US",
+        "Tustin, CA, US"
+      ]
+    },
+    "recommendedPromotion": false,
+    "promotionReason": "insufficient_canada_weighted_yield"
+  },
+  {
+    "boardUrl": "https://internalcareers-aus.icims.com/jobs/search",
+    "sourceKey": "icims:internalcareers-aus",
+    "connectorName": "icims",
+    "token": "internalcareers-aus",
+    "companyNames": [
+      "Allied Universal"
+    ],
+    "careerPageUrls": [
+      "https://jobs.aus.com/",
+      "https://jobs.ausecurity.ca/",
+      "https://jobs.ausecurity.ca/search-jobs"
+    ],
+    "directAtsUrls": [
+      "https://internalcareers-aus.icims.com/jobs/search"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link",
+      "career_page_scan"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "input": "https://internalcareers-aus.icims.com/jobs/search",
+      "connectorName": "icims",
+      "token": "internalcareers-aus",
+      "sourceKey": "icims:internalcareers-aus",
+      "sourceName": "iCIMS:internalcareers-aus",
+      "boardUrl": "https://internalcareers-aus.icims.com/jobs/search",
+      "source": "token",
+      "pageTitle": null,
+      "fetchedCount": 0,
+      "acceptedCount": 0,
+      "acceptedCanadaCount": 0,
+      "acceptedCanadaRemoteCount": 0,
+      "previewCreatedCount": 0,
+      "previewCreatedCanadaCount": 0,
+      "previewCreatedCanadaRemoteCount": 0,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 0,
+      "existingRawCount": 0,
+      "existingActiveMappingCount": 0,
+      "existingLiveCanonicalCount": 0,
+      "sampleTitles": [],
+      "sampleLocations": [],
+      "error": "fetch failed"
+    },
+    "recommendedPromotion": false,
+    "promotionReason": "fetch failed"
+  },
+  {
+    "boardUrl": "https://jobs.lever.co/deloitte",
+    "sourceKey": "lever:deloitte",
+    "connectorName": "lever",
+    "token": "deloitte",
+    "companyNames": [
+      "Deloitte"
+    ],
+    "careerPageUrls": [
+      "https://www.deloitte.com/global/en/careers/job-search.html"
+    ],
+    "directAtsUrls": [
+      "https://jobs.lever.co/deloitte"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link",
+      "career_page_scan"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "input": "https://jobs.lever.co/deloitte",
+      "connectorName": "lever",
+      "token": "deloitte",
+      "sourceKey": "lever:deloitte",
+      "sourceName": "Lever:deloitte",
+      "boardUrl": "https://jobs.lever.co/deloitte",
+      "source": "token",
+      "pageTitle": null,
+      "fetchedCount": 0,
+      "acceptedCount": 0,
+      "acceptedCanadaCount": 0,
+      "acceptedCanadaRemoteCount": 0,
+      "previewCreatedCount": 0,
+      "previewCreatedCanadaCount": 0,
+      "previewCreatedCanadaRemoteCount": 0,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 0,
+      "existingRawCount": 0,
+      "existingActiveMappingCount": 0,
+      "existingLiveCanonicalCount": 0,
+      "sampleTitles": [],
+      "sampleLocations": [],
+      "error": "Lever fetch failed for deloitte: 404 Not Found"
+    },
+    "recommendedPromotion": false,
+    "promotionReason": "Lever fetch failed for deloitte: 404 Not Found"
+  },
+  {
+    "boardUrl": "https://careers.telusdigital.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+    "sourceKey": "successfactors:careers.telusdigital.com",
+    "connectorName": "successfactors",
+    "token": "careers.telusdigital.com",
+    "companyNames": [
+      "Telus International"
+    ],
+    "careerPageUrls": [
+      "https://www.telusdigital.com/careers"
+    ],
+    "directAtsUrls": [
+      "https://careers.telusdigital.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link",
+      "career_page_scan"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "input": "https://careers.telusdigital.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+      "connectorName": "successfactors",
+      "token": "careers.telusdigital.com",
+      "sourceKey": "successfactors:careers.telusdigital.com",
+      "sourceName": "SuccessFactors:careers.telusdigital.com",
+      "boardUrl": "https://careers.telusdigital.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+      "source": "token",
+      "pageTitle": null,
+      "fetchedCount": 0,
+      "acceptedCount": 0,
+      "acceptedCanadaCount": 0,
+      "acceptedCanadaRemoteCount": 0,
+      "previewCreatedCount": 0,
+      "previewCreatedCanadaCount": 0,
+      "previewCreatedCanadaRemoteCount": 0,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 0,
+      "existingRawCount": 0,
+      "existingActiveMappingCount": 0,
+      "existingLiveCanonicalCount": 0,
+      "sampleTitles": [],
+      "sampleLocations": [],
+      "error": "SuccessFactors fetch failed for https://careers.telusdigital.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc: 403 Forbidden"
+    },
+    "recommendedPromotion": false,
+    "promotionReason": "SuccessFactors fetch failed for https://careers.telusdigital.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc: 403 Forbidden"
+  },
+  {
+    "boardUrl": "https://jobs.ausecurity.ca/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+    "sourceKey": "successfactors:jobs.ausecurity.ca",
+    "connectorName": "successfactors",
+    "token": "jobs.ausecurity.ca",
+    "companyNames": [
+      "Allied Universal"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [
+      "https://jobs.ausecurity.ca/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "input": "https://jobs.ausecurity.ca/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+      "connectorName": "successfactors",
+      "token": "jobs.ausecurity.ca",
+      "sourceKey": "successfactors:jobs.ausecurity.ca",
+      "sourceName": "SuccessFactors:jobs.ausecurity.ca",
+      "boardUrl": "https://jobs.ausecurity.ca/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+      "source": "token",
+      "pageTitle": null,
+      "fetchedCount": 0,
+      "acceptedCount": 0,
+      "acceptedCanadaCount": 0,
+      "acceptedCanadaRemoteCount": 0,
+      "previewCreatedCount": 0,
+      "previewCreatedCanadaCount": 0,
+      "previewCreatedCanadaRemoteCount": 0,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 0,
+      "existingRawCount": 0,
+      "existingActiveMappingCount": 0,
+      "existingLiveCanonicalCount": 0,
+      "sampleTitles": [],
+      "sampleLocations": [],
+      "error": "SuccessFactors fetch failed for https://jobs.ausecurity.ca/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc: 404 Not Found"
+    },
+    "recommendedPromotion": false,
+    "promotionReason": "SuccessFactors fetch failed for https://jobs.ausecurity.ca/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc: 404 Not Found"
+  },
+  {
+    "boardUrl": "https://dttit.taleo.net/careersection/d_corporate+28greece29/jobsearch.ftl?lang=en",
+    "sourceKey": "taleo:dttit/d_corporate+28greece29",
+    "connectorName": "taleo",
+    "token": "dttit/d_corporate+28greece29",
+    "companyNames": [
+      "Deloitte"
+    ],
+    "careerPageUrls": [
+      "https://www.deloitte.com/global/en/careers/job-search.html"
+    ],
+    "directAtsUrls": [
+      "https://dttit.taleo.net/careersection/d_corporate+28greece29/jobsearch.ftl?lang=en"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link",
+      "career_page_scan"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "input": "https://dttit.taleo.net/careersection/d_corporate+28greece29/jobsearch.ftl?lang=en",
+      "connectorName": "taleo",
+      "token": "dttit/d_corporate+28greece29",
+      "sourceKey": "taleo:dttit/d_corporate+28greece29",
+      "sourceName": "Taleo:dttit/d_corporate+28greece29",
+      "boardUrl": "https://dttit.taleo.net/careersection/d_corporate+28greece29/jobsearch.ftl?lang=en",
+      "source": "token",
+      "pageTitle": "Job Search",
+      "fetchedCount": 0,
+      "acceptedCount": 0,
+      "acceptedCanadaCount": 0,
+      "acceptedCanadaRemoteCount": 0,
+      "previewCreatedCount": 0,
+      "previewCreatedCanadaCount": 0,
+      "previewCreatedCanadaRemoteCount": 0,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 0,
+      "existingRawCount": 0,
+      "existingActiveMappingCount": 0,
+      "existingLiveCanonicalCount": 0,
+      "sampleTitles": [],
+      "sampleLocations": []
+    },
+    "recommendedPromotion": false,
+    "promotionReason": "insufficient_canada_weighted_yield"
+  },
+  {
+    "boardUrl": "https://dttit.taleo.net/careersection/d_corporate+28malta29/jobsearch.ftl?lang=en",
+    "sourceKey": "taleo:dttit/d_corporate+28malta29",
+    "connectorName": "taleo",
+    "token": "dttit/d_corporate+28malta29",
+    "companyNames": [
+      "Deloitte"
+    ],
+    "careerPageUrls": [
+      "https://www.deloitte.com/global/en/careers/job-search.html"
+    ],
+    "directAtsUrls": [
+      "https://dttit.taleo.net/careersection/d_corporate+28malta29/jobsearch.ftl?lang=en"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link",
+      "career_page_scan"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "input": "https://dttit.taleo.net/careersection/d_corporate+28malta29/jobsearch.ftl?lang=en",
+      "connectorName": "taleo",
+      "token": "dttit/d_corporate+28malta29",
+      "sourceKey": "taleo:dttit/d_corporate+28malta29",
+      "sourceName": "Taleo:dttit/d_corporate+28malta29",
+      "boardUrl": "https://dttit.taleo.net/careersection/d_corporate+28malta29/jobsearch.ftl?lang=en",
+      "source": "token",
+      "pageTitle": "",
+      "fetchedCount": 0,
+      "acceptedCount": 0,
+      "acceptedCanadaCount": 0,
+      "acceptedCanadaRemoteCount": 0,
+      "previewCreatedCount": 0,
+      "previewCreatedCanadaCount": 0,
+      "previewCreatedCanadaRemoteCount": 0,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 0,
+      "existingRawCount": 0,
+      "existingActiveMappingCount": 0,
+      "existingLiveCanonicalCount": 0,
+      "sampleTitles": [],
+      "sampleLocations": []
+    },
+    "recommendedPromotion": false,
+    "promotionReason": "insufficient_canada_weighted_yield"
+  }
+]

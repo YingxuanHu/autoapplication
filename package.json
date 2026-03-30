@@ -14,6 +14,7 @@
     "ingest": "tsx -r dotenv/config scripts/ingest.ts",
     "source:discover": "tsx -r dotenv/config scripts/discover-sources.ts",
     "enterprise:preflight": "tsx -r dotenv/config scripts/preflight-enterprise.ts",
+    "enterprise:corpus": "tsx -r dotenv/config scripts/discover-company-corpus.ts",
     "workday:scout": "tsx -r dotenv/config scripts/scout-workday.ts",
     "rippling:discover": "tsx -r dotenv/config scripts/discover-rippling.ts",
     "rippling:intake": "tsx -r dotenv/config scripts/discover-rippling.ts --no-search",

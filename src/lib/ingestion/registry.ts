@@ -117,7 +117,10 @@ export function resolveConnectors(
   }
 
   if (connectorName === "himalayas") {
-    return [createHimalayasConnector()];
+    const profiles = resolveTokens(
+      args.sources ?? args.source ?? process.env.HIMALAYAS_SOURCES ?? "global"
+    );
+    return profiles.map((profile) => createHimalayasConnector({ profile }));
   }
 
   if (connectorName === "jobicy") {
@@ -506,15 +509,14 @@ function resolveOptionalIcimsScheduledConnectors(promotedTokens: string[]) {
 }
 
 function resolveOptionalHimalayasScheduledConnectors() {
-  return [
-    {
-      connector: createHimalayasConnector(),
-      cadenceMinutes: resolveCadenceMinutes(
-        process.env.HIMALAYAS_SCHEDULE_MINUTES,
-        720
-      ),
-    },
-  ];
+  const profiles = resolveTokens(process.env.HIMALAYAS_SOURCES ?? "global");
+  return profiles.map((profile) => ({
+    connector: createHimalayasConnector({ profile }),
+    cadenceMinutes: resolveCadenceMinutes(
+      process.env.HIMALAYAS_SCHEDULE_MINUTES,
+      720
+    ),
+  }));
 }
 
 function resolveOptionalJobicyScheduledConnectors() {

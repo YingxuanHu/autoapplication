@@ -7,7 +7,7 @@ import {
 } from "@/lib/ingestion/discovery/sources";
 
 const CAREER_PAGE_FETCH_TIMEOUT_MS = 12_000;
-const MAX_PAGES_PER_COMPANY = 8;
+const MAX_PAGES_PER_COMPANY = 10;
 const CAREER_PAGE_CONCURRENCY = 8;
 const COMPANY_CRAWL_CONCURRENCY = 6;
 const MAX_LINKS_PER_PAGE = 24;
@@ -15,6 +15,12 @@ const CAREER_PATH_HINTS = [
   "/careers",
   "/jobs",
   "/careers/jobs",
+  "/careers/job-openings",
+  "/careers/openings",
+  "/careers/open-positions",
+  "/careers/open-roles",
+  "/careers/current-openings",
+  "/careers/all-jobs",
   "/join-us",
   "/work-with-us",
   "/careers/search",
@@ -25,10 +31,12 @@ const CAREER_PATH_HINTS = [
   "/about-us/careers",
   "/about/careers",
   "/company/careers",
+  "/company/careers/open-positions",
+  "/company/careers/jobs",
   "/our-company/careers",
 ];
 const CAREER_KEYWORD_RE =
-  /(careers?|jobs?|opportunit(?:y|ies)|join-us|work-with-us|employment|talent)/i;
+  /(careers?|jobs?|opportunit(?:y|ies)|join-us|work-with-us|employment|talent|openings?|open[- ]roles?|vacanc(?:y|ies))/i;
 const SKIP_EXTENSIONS_RE =
   /\.(?:pdf|jpg|jpeg|png|gif|svg|webp|ico|css|js|xml|json|rss|zip|mp4|mp3)$/i;
 

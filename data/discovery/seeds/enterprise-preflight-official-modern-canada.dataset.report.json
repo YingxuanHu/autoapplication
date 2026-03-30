@@ -1,0 +1,40 @@
+{
+  "companiesSelected": [
+    "Benevity",
+    "D2L",
+    "Dialogue",
+    "Jobber",
+    "KOHO",
+    "Plusgrade",
+    "Neo Financial",
+    "Float Financial",
+    "Jane App",
+    "Wealthsimple",
+    "AlayaCare",
+    "Coveo",
+    "Geotab",
+    "Hootsuite",
+    "Telesat",
+    "Hopper",
+    "Q4",
+    "Clutch",
+    "FreshBooks",
+    "ApplyBoard",
+    "MDA Space"
+  ],
+  "queryCount": 0,
+  "cacheHits": 0,
+  "cacheMisses": 0,
+  "resultUrlsFetched": 0,
+  "uniqueResultUrls": 1016,
+  "pageUrlsScanned": 210,
+  "directSeedUrls": 0,
+  "candidatesDiscovered": 5,
+  "newCandidates": 2,
+  "skippedKnownCandidates": 3,
+  "candidatesByFamily": {
+    "ashby": 1,
+    "greenhouse": 1
+  },
+  "queryReports": []
+}

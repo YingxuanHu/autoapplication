@@ -1,0 +1,91 @@
+{
+  "generatedAt": "2026-03-30T04:21:12.344Z",
+  "corpusCount": 1000,
+  "batchOffset": 0,
+  "batchLimit": 250,
+  "companiesProcessed": 250,
+  "companiesResolved": 250,
+  "companiesUnresolved": 0,
+  "domainsSeeded": 260,
+  "careerPagesDetected": 475,
+  "directAtsUrlsDetected": 76,
+  "candidatesDiscovered": 59,
+  "newCandidates": 7,
+  "skippedKnownCandidates": 52,
+  "promotedSources": [],
+  "rejectedSources": [
+    {
+      "sourceKey": "icims:internalcareers-aus",
+      "connectorName": "icims",
+      "companyNames": [
+        "Allied Universal"
+      ],
+      "boardUrl": "https://internalcareers-aus.icims.com/jobs/search",
+      "error": "fetch failed",
+      "previewCreatedCount": 0,
+      "acceptedCanadaCount": 0
+    },
+    {
+      "sourceKey": "lever:deloitte",
+      "connectorName": "lever",
+      "companyNames": [
+        "Deloitte"
+      ],
+      "boardUrl": "https://jobs.lever.co/deloitte",
+      "error": "Lever fetch failed for deloitte: 404 Not Found",
+      "previewCreatedCount": 0,
+      "acceptedCanadaCount": 0
+    },
+    {
+      "sourceKey": "successfactors:careers.telusdigital.com",
+      "connectorName": "successfactors",
+      "companyNames": [
+        "Telus International"
+      ],
+      "boardUrl": "https://careers.telusdigital.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+      "error": "SuccessFactors fetch failed for https://careers.telusdigital.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc: 403 Forbidden",
+      "previewCreatedCount": 0,
+      "acceptedCanadaCount": 0
+    },
+    {
+      "sourceKey": "successfactors:jobs.ausecurity.ca",
+      "connectorName": "successfactors",
+      "companyNames": [
+        "Allied Universal"
+      ],
+      "boardUrl": "https://jobs.ausecurity.ca/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+      "error": "SuccessFactors fetch failed for https://jobs.ausecurity.ca/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc: 404 Not Found",
+      "previewCreatedCount": 0,
+      "acceptedCanadaCount": 0
+    },
+    {
+      "sourceKey": "taleo:dttit/d_corporate+28greece29",
+      "connectorName": "taleo",
+      "companyNames": [
+        "Deloitte"
+      ],
+      "boardUrl": "https://dttit.taleo.net/careersection/d_corporate+28greece29/jobsearch.ftl?lang=en",
+      "error": null,
+      "previewCreatedCount": 0,
+      "acceptedCanadaCount": 0
+    },
+    {
+      "sourceKey": "taleo:dttit/d_corporate+28malta29",
+      "connectorName": "taleo",
+      "companyNames": [
+        "Deloitte"
+      ],
+      "boardUrl": "https://dttit.taleo.net/careersection/d_corporate+28malta29/jobsearch.ftl?lang=en",
+      "error": null,
+      "previewCreatedCount": 0,
+      "acceptedCanadaCount": 0
+    }
+  ],
+  "ingestSummaries": [],
+  "resolutionSummary": {
+    "catalog": 125,
+    "cache": 125,
+    "search": 0,
+    "unresolved": 0
+  }
+}

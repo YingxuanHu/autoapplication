@@ -56,12 +56,84 @@ type HimalayasCheckpoint = {
   offset: number;
 };
 
-export function createHimalayasConnector(): SourceConnector {
+type HimalayasProfile = "global" | "canada_friendly" | "canada_strict";
+
+type HimalayasConnectorOptions = {
+  profile?: string;
+};
+
+const HIMALAYAS_PROFILE_CONFIGS: Record<HimalayasProfile, { labelSuffix: string }> = {
+  global: { labelSuffix: "feed" },
+  canada_friendly: { labelSuffix: "canada_friendly" },
+  canada_strict: { labelSuffix: "canada_strict" },
+};
+
+const CA_RESTRICTION_MARKERS = [
+  "canada",
+  "toronto",
+  "vancouver",
+  "montreal",
+  "calgary",
+  "ottawa",
+  "waterloo",
+  "edmonton",
+  "winnipeg",
+  "halifax",
+  "surrey",
+  "burnaby",
+  "mississauga",
+  "ontario",
+  "british columbia",
+  "quebec",
+  "alberta",
+  "manitoba",
+  "saskatchewan",
+  "nova scotia",
+  "new brunswick",
+  "newfoundland",
+  "prince edward island",
+];
+
+const CA_FRIENDLY_RESTRICTION_MARKERS = [
+  ...CA_RESTRICTION_MARKERS,
+  "north america",
+  "americas",
+  "worldwide",
+  "global",
+  "anywhere",
+];
+
+const NON_NA_RESTRICTION_MARKERS = [
+  "europe",
+  "emea",
+  "apac",
+  "asia",
+  "australia",
+  "india",
+  "latam",
+  "germany",
+  "france",
+  "united kingdom",
+  "uk",
+  "singapore",
+  "japan",
+  "poland",
+  "netherlands",
+  "sweden",
+  "middle east",
+  "africa",
+];
+
+export function createHimalayasConnector(
+  options: HimalayasConnectorOptions = {}
+): SourceConnector {
+  const profile = parseHimalayasProfile(options.profile);
+  const profileConfig = HIMALAYAS_PROFILE_CONFIGS[profile];
   const fetchCache = new Map<string, Promise<SourceConnectorFetchResult>>();
 
   return {
-    key: "himalayas:feed",
-    sourceName: "Himalayas:feed",
+    key: `himalayas:${profileConfig.labelSuffix}`,
+    sourceName: `Himalayas:${profileConfig.labelSuffix}`,
     sourceTier: "TIER_3",
     freshnessMode: "FULL_SNAPSHOT",
     async fetchJobs(
@@ -78,6 +150,7 @@ export function createHimalayasConnector(): SourceConnector {
         now: options.now,
         limit: options.limit,
         signal: options.signal,
+        profile,
         checkpoint: parseHimalayasCheckpoint(options.checkpoint),
         onCheckpoint: options.onCheckpoint,
       });
@@ -91,12 +164,14 @@ async function fetchHimalayasJobs({
   now,
   limit,
   signal,
+  profile,
   checkpoint,
   onCheckpoint,
 }: {
   now: Date;
   limit?: number;
   signal?: AbortSignal;
+  profile: HimalayasProfile;
   checkpoint?: HimalayasCheckpoint | null;
   onCheckpoint?: (checkpoint: Prisma.InputJsonValue | null) => Promise<void> | void;
 }): Promise<SourceConnectorFetchResult> {
@@ -146,6 +221,7 @@ async function fetchHimalayasJobs({
 
       for (const entry of entries) {
         if (!entry.title) continue;
+        if (!matchesHimalayasProfile(entry, profile)) continue;
         const sourceId = `himalayas:${entry.guid ?? entry.id ?? entry.title}`;
         if (seenIds.has(sourceId)) continue;
         seenIds.add(sourceId);
@@ -191,6 +267,7 @@ async function fetchHimalayasJobs({
       pagesFetched,
       uniqueJobs: finalJobs.length,
       totalAvailable,
+      profile,
       resumedFromCheckpoint: checkpoint ?? null,
     } as Prisma.InputJsonValue,
   };
@@ -293,4 +370,49 @@ function parseHimalayasCheckpoint(
   }
 
   return { offset };
+}
+
+function parseHimalayasProfile(rawProfile: string | undefined): HimalayasProfile {
+  if (rawProfile === "canada_friendly" || rawProfile === "canada_strict") {
+    return rawProfile;
+  }
+  return "global";
+}
+
+function matchesHimalayasProfile(
+  entry: HimalayasJob,
+  profile: HimalayasProfile
+) {
+  if (profile === "global") return true;
+
+  const restrictions = (entry.locationRestrictions ?? [])
+    .map((value) => value.trim().toLowerCase())
+    .filter(Boolean);
+
+  if (restrictions.length === 0) {
+    return false;
+  }
+
+  const text = restrictions.join(" | ");
+  const explicitCanada = CA_RESTRICTION_MARKERS.some((marker) =>
+    text.includes(marker)
+  );
+
+  if (profile === "canada_strict") {
+    return explicitCanada;
+  }
+
+  const canadaFriendly = CA_FRIENDLY_RESTRICTION_MARKERS.some((marker) =>
+    text.includes(marker)
+  );
+  const explicitNonNAOnly =
+    NON_NA_RESTRICTION_MARKERS.some((marker) => text.includes(marker)) &&
+    !canadaFriendly;
+  const explicitUsOnly =
+    (text.includes("united states") || text.includes("usa") || text.includes("us only")) &&
+    !explicitCanada &&
+    !text.includes("north america") &&
+    !text.includes("americas");
+
+  return canadaFriendly && !explicitNonNAOnly && !explicitUsOnly;
 }

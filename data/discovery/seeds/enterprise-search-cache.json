@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-03-28T05:32:07.503Z",
+  "updatedAt": "2026-03-30T01:27:43.761Z",
   "entries": [
     {
       "query": "site:myworkdayjobs.com \"Bell\" \"Montreal\" careers",
@@ -13576,6 +13576,2068 @@
         "https://www.hydroone.com/careers",
         "https://hydroone.talentnest.com/",
         "https://jobs.hydroone.com/"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"AlayaCare\" \"Montreal\" careers",
+      "fetchedAt": "2026-03-30T00:56:13.129Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22AlayaCare%22+%22Montreal%22+careers",
+        "https://alayacare.com/",
+        "https://alayacare.com/fr-ca/",
+        "https://alayacare.com/the-alayacare-platform/",
+        "https://alayacare.com/about-alayacare/"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"Definity Financial\" \"Waterloo\" careers",
+      "fetchedAt": "2026-03-30T00:56:13.142Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22Definity+Financial%22+%22Waterloo%22+careers",
+        "https://classroom.google.com/",
+        "https://edu.google.ca/workspace-for-education/products/classroom/editions/",
+        "https://apps.apple.com/ca/app/google-classroom/id924620788",
+        "https://learning.google/school/"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"Coveo\" \"Montreal\" careers",
+      "fetchedAt": "2026-03-30T00:56:13.153Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22Coveo%22+%22Montreal%22+careers",
+        "https://support.microsoft.com/en-us/windows/turn-bluetooth-on-or-off-in-windows-9e92fddd-4e12-e32b-9132-5e36bdb2f75a",
+        "https://support.microsoft.com/en-us/windows/fix-bluetooth-disappeared-in-windows-4af6139c-2b7e-44ba-8d05-16c86365b2fd",
+        "https://support.microsoft.com/en-us/windows/bluetooth-keeps-disconnecting-in-windows-81a9cb1e-d15c-4e72-b025-cc0d992dca9f",
+        "https://support.microsoft.com/en-us/windows/fix-bluetooth-problems-in-windows-723e092f-03fa-858b-5c80-131ec3fba75c"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"Float Financial\" \"Toronto\" careers",
+      "fetchedAt": "2026-03-30T00:56:13.157Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22Float+Financial%22+%22Toronto%22+careers",
+        "https://www.zhihu.com/question/67840592",
+        "https://www.zhihu.com/question/298751034",
+        "https://zhidao.baidu.com/question/379619206714742964.html",
+        "https://www.zhihu.com/question/37300506"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"1Password\" \"Toronto\" careers",
+      "fetchedAt": "2026-03-30T00:56:13.178Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%221Password%22+%22Toronto%22+careers",
+        "https://www.reddit.com/r/1Password/comments/11f84x8/1password_8_installation_issues_was_unable_to/",
+        "https://www.zhihu.com/question/268448619",
+        "https://www.reddit.com/r/1Password/comments/148nd7p/microsoft_passkeys/",
+        "https://www.reddit.com/r/1Password/comments/176wold/still_confused_about_passkeys_a_little_help/"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"Benevity\" \"Calgary\" careers",
+      "fetchedAt": "2026-03-30T00:56:13.204Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22Benevity%22+%22Calgary%22+careers",
+        "https://benevity.com/",
+        "https://benevity.com/nonprofits",
+        "https://benevity.com/about-us",
+        "https://benevity.com/benevity-advantage"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"Jane App\" \"Vancouver\" careers",
+      "fetchedAt": "2026-03-30T00:56:13.236Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22Jane+App%22+%22Vancouver%22+careers",
+        "https://www.zhihu.com/question/658983057",
+        "https://zhidao.baidu.com/question/350340381.html",
+        "https://www.zhihu.com/topic/19615922/intro",
+        "https://zhidao.baidu.com/question/1959156200903445260.html"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"Jobber\" \"Edmonton\" careers",
+      "fetchedAt": "2026-03-30T00:56:13.251Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22Jobber%22+%22Edmonton%22+careers",
+        "https://secure.getjobber.com/login",
+        "https://www.getjobber.com/",
+        "https://www.greatplacetowork.ca/en/certified-company/z4870188000001309978",
+        "https://www.getjobber.com/about/careers/"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"KOHO\" \"Toronto\" careers",
+      "fetchedAt": "2026-03-30T00:56:13.274Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22KOHO%22+%22Toronto%22+careers",
+        "https://www.koho.ca/",
+        "https://www.savvynewcanadians.com/koho-review/",
+        "https://play.google.com/store/apps/details?id=ca.koho&hl=en-US",
+        "https://en.wikipedia.org/wiki/Koho_(fintech)"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"Sagen\" \"Oakville\" careers",
+      "fetchedAt": "2026-03-30T00:56:13.333Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22Sagen%22+%22Oakville%22+careers",
+        "https://www.zhihu.com/question/271305602",
+        "https://www.zhihu.com/question/444406755",
+        "http://forum.sagen.at/",
+        "https://www.zhihu.com/question/490193410"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"Relay Financial\" \"Toronto\" careers",
+      "fetchedAt": "2026-03-30T00:56:13.352Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22Relay+Financial%22+%22Toronto%22+careers",
+        "https://zhidao.baidu.com/question/294573748.html",
+        "https://zhidao.baidu.com/question/1444538206776883419.html",
+        "https://zhidao.baidu.com/question/1617929534454427307.html",
+        "https://nl.forum.proximus.be/internet-10/uitgaande-email-via-relay-skynet-be-62781"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"Telesat\" \"Ottawa\" careers",
+      "fetchedAt": "2026-03-30T00:56:13.373Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22Telesat%22+%22Ottawa%22+careers",
+        "https://www.telesat.com/",
+        "https://www.telesat.com/about-us/",
+        "https://www.telesat.com/leo-satellites/",
+        "https://www.telesat.com/press/press-releases/telesat-enters-strategic-partnership-with-government-of-canada-and-mda-space-to-deliver-next-generation-military-satellite-communications-solution/"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"Neo Financial\" \"Calgary\" careers",
+      "fetchedAt": "2026-03-30T00:56:13.379Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22Neo+Financial%22+%22Calgary%22+careers",
+        "https://www.zhihu.com/question/3372382706",
+        "https://zhidao.baidu.com/question/2151265010664153388.html",
+        "https://zhidao.baidu.com/question/1997742300618477667.html",
+        "https://zhidao.baidu.com/question/885320885476975332.html"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"Hootsuite\" \"Vancouver\" careers",
+      "fetchedAt": "2026-03-30T00:56:13.379Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22Hootsuite%22+%22Vancouver%22+careers",
+        "https://www.hootsuite.com/",
+        "https://hootsuite.com/signin",
+        "https://www.hootsuite.com/platform",
+        "https://www.hootsuite.com/fr"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"1Password\" careers",
+      "fetchedAt": "2026-03-30T00:56:13.425Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%221Password%22+careers",
+        "https://www.reddit.com/r/1Password/comments/11f84x8/1password_8_installation_issues_was_unable_to/",
+        "https://www.zhihu.com/question/268448619",
+        "https://www.reddit.com/r/1Password/comments/148nd7p/microsoft_passkeys/",
+        "https://www.reddit.com/r/1Password/comments/176wold/still_confused_about_passkeys_a_little_help/"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"Wealthsimple\" \"Toronto\" careers",
+      "fetchedAt": "2026-03-30T00:56:13.501Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22Wealthsimple%22+%22Toronto%22+careers",
+        "https://bajiu.cn/ditu/?id=2",
+        "https://bajiu.cn/ditu/?dz=2",
+        "https://bajiu.cn/ditu/?sw=2",
+        "https://bajiu.cn/ditu/?id=18"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"AlayaCare\" careers",
+      "fetchedAt": "2026-03-30T00:56:13.515Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22AlayaCare%22+careers",
+        "https://alayacare.com/",
+        "https://alayacare.com/fr-ca/",
+        "https://alayacare.com/the-alayacare-platform/",
+        "https://alayacare.com/about-alayacare/"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"Definity Financial\" careers",
+      "fetchedAt": "2026-03-30T00:56:13.525Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22Definity+Financial%22+careers",
+        "https://undergradaid.northwestern.edu/types-of-aid/scholarships-grants/northwestern-scholarships.html",
+        "https://collegereadyparent.org/northwestern-university-scholarships/",
+        "https://amberstudent.com/blog/post/northwestern-university-scholarships",
+        "https://scholarships360.org/colleges/illinois/northwestern-university/"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"Definity\" \"Waterloo\" careers",
+      "fetchedAt": "2026-03-30T00:56:13.535Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22Definity%22+%22Waterloo%22+careers",
+        "https://devforum.roblox.com/t/completing-the-dynamic-head-migration/4301387",
+        "https://devforum.roblox.com/t/age-check-notifications-in-studio-and-creator-hub/4117693",
+        "https://devforum.roblox.com/t/building-a-safer-marketplace-updates-to-2d-avatar-items-uploading-and-publishing-requirements/4474667",
+        "https://devforum.roblox.com/t/allowlist-for-local-client-configuration-via-fast-flags/3966569"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"Benevity\" careers",
+      "fetchedAt": "2026-03-30T00:56:13.541Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22Benevity%22+careers",
+        "https://benevity.com/join-the-team",
+        "https://www.eluta.ca/jobs-at-benevity",
+        "https://ca.indeed.com/cmp/Benevity-1",
+        "https://ca.linkedin.com/jobs/benevity-jobs"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"Float\" \"Toronto\" careers",
+      "fetchedAt": "2026-03-30T00:56:13.607Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22Float%22+%22Toronto%22+careers",
+        "https://www.zhihu.com/question/67840592",
+        "https://www.zhihu.com/question/298751034",
+        "https://zhidao.baidu.com/question/379619206714742964.html",
+        "https://www.zhihu.com/question/37300506"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"Float Financial\" careers",
+      "fetchedAt": "2026-03-30T00:56:13.615Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22Float+Financial%22+careers",
+        "https://www.zhihu.com/question/67840592",
+        "https://www.zhihu.com/question/298751034",
+        "https://zhidao.baidu.com/question/379619206714742964.html",
+        "https://www.zhihu.com/question/37300506"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"Coveo\" careers",
+      "fetchedAt": "2026-03-30T00:56:13.627Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22Coveo%22+careers",
+        "https://www.snbforums.com/threads/rt-ax86u-and-merlin-rt-ax86u_3004_388-8_4_pureubi-w.93842/",
+        "https://www.snbforums.com/threads/asus-rt-ax86u-pro-no-wan-connectivity-upon-reboot-when-running-in-dual-wan-load-balance-mode.87545/",
+        "https://www.snbforums.com/threads/rt-be92u-firmware-3-0-0-6-102_37435-gdd27f25_1059-g807f7_bb0b-12-23-2024.93358/",
+        "https://www.snbforums.com/threads/asus-merlin-disable-802-11b-dsss-cck.75110/"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"KOHO\" careers",
+      "fetchedAt": "2026-03-30T00:56:13.686Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22KOHO%22+careers",
+        "https://www.koho.ca/",
+        "https://www.savvynewcanadians.com/koho-review/",
+        "https://play.google.com/store/apps/details?id=ca.koho&hl=en-US",
+        "https://en.wikipedia.org/wiki/Koho_(fintech)"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"Jane\" \"Vancouver\" careers",
+      "fetchedAt": "2026-03-30T00:56:13.700Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22Jane%22+%22Vancouver%22+careers",
+        "https://www.zhihu.com/question/658983057",
+        "https://zhidao.baidu.com/question/350340381.html",
+        "https://www.zhihu.com/topic/19615922/intro",
+        "https://zhidao.baidu.com/question/1959156200903445260.html"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"Jobber\" careers",
+      "fetchedAt": "2026-03-30T00:56:13.704Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22Jobber%22+careers",
+        "https://www.getjobber.com/about/careers/",
+        "https://ca.linkedin.com/jobs/jobber-jobs",
+        "https://ca.indeed.com/cmp/Jobber/jobs",
+        "https://www.greatplacetowork.ca/en/certified-company/z4870188000001309978"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"Neo Financial\" careers",
+      "fetchedAt": "2026-03-30T00:56:13.752Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22Neo+Financial%22+careers",
+        "https://www.zhihu.com/question/3372382706",
+        "https://zhidao.baidu.com/question/2151265010664153388.html",
+        "https://zhidao.baidu.com/question/1997742300618477667.html",
+        "https://zhidao.baidu.com/question/885320885476975332.html"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"Hootsuite\" careers",
+      "fetchedAt": "2026-03-30T00:56:13.762Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22Hootsuite%22+careers",
+        "https://www.hootsuite.com/",
+        "https://hootsuite.com/signin",
+        "https://www.hootsuite.com/platform",
+        "https://www.hootsuite.com/fr"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"Relay\" \"Toronto\" careers",
+      "fetchedAt": "2026-03-30T00:56:13.788Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22Relay%22+%22Toronto%22+careers",
+        "https://zhidao.baidu.com/question/294573748.html",
+        "https://zhidao.baidu.com/question/1444538206776883419.html",
+        "https://zhidao.baidu.com/question/1617929534454427307.html",
+        "https://nl.forum.proximus.be/internet-10/uitgaande-email-via-relay-skynet-be-62781"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"Relay Financial\" careers",
+      "fetchedAt": "2026-03-30T00:56:13.797Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22Relay+Financial%22+careers",
+        "https://zhidao.baidu.com/question/294573748.html",
+        "https://zhidao.baidu.com/question/1444538206776883419.html",
+        "https://zhidao.baidu.com/question/1617929534454427307.html",
+        "https://nl.forum.proximus.be/internet-10/uitgaande-email-via-relay-skynet-be-62781"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"Jane App\" careers",
+      "fetchedAt": "2026-03-30T00:56:13.834Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22Jane+App%22+careers",
+        "https://www.zhihu.com/question/658983057",
+        "https://zhidao.baidu.com/question/350340381.html",
+        "https://www.zhihu.com/topic/19615922/intro",
+        "https://zhidao.baidu.com/question/1959156200903445260.html"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"Sagen\" careers",
+      "fetchedAt": "2026-03-30T00:56:13.842Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22Sagen%22+careers",
+        "https://www.zhihu.com/question/271305602",
+        "https://www.zhihu.com/question/444406755",
+        "http://forum.sagen.at/",
+        "https://www.zhihu.com/question/490193410"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"Wealthsimple\" careers",
+      "fetchedAt": "2026-03-30T00:56:13.889Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22Wealthsimple%22+careers",
+        "https://www.wealthsimple.com/en-ca/careers",
+        "https://ca.linkedin.com/jobs/wealthsimple-jobs",
+        "https://jobs.lever.co/wealthsimple",
+        "https://careers.wealthsimple.com/"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"Telesat\" careers",
+      "fetchedAt": "2026-03-30T00:56:13.891Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22Telesat%22+careers",
+        "https://www.telesat.com/",
+        "https://www.telesat.com/about-us/",
+        "https://www.telesat.com/leo-satellites/",
+        "https://www.telesat.com/press/press-releases/telesat-enters-strategic-partnership-with-government-of-canada-and-mda-space-to-deliver-next-generation-military-satellite-communications-solution/"
+      ],
+      "errors": []
+    },
+    {
+      "query": "\"Benevity\" careers workday",
+      "fetchedAt": "2026-03-30T00:56:13.946Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=%22Benevity%22+careers+workday",
+        "https://benevity.com/",
+        "https://benevity.com/nonprofits",
+        "https://benevity.com/about-us",
+        "https://benevity.com/benevity-advantage"
+      ],
+      "errors": []
+    },
+    {
+      "query": "\"AlayaCare\" careers workday",
+      "fetchedAt": "2026-03-30T00:56:13.968Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=%22AlayaCare%22+careers+workday",
+        "https://alayacare.com/",
+        "https://alayacare.com/fr-ca/",
+        "https://alayacare.com/the-alayacare-platform/",
+        "https://alayacare.com/about-alayacare/"
+      ],
+      "errors": []
+    },
+    {
+      "query": "\"Float Financial\" careers workday",
+      "fetchedAt": "2026-03-30T00:56:14.020Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=%22Float+Financial%22+careers+workday",
+        "https://www.zhihu.com/question/67840592",
+        "https://www.zhihu.com/question/298751034",
+        "https://zhidao.baidu.com/question/379619206714742964.html",
+        "https://www.zhihu.com/question/37300506"
+      ],
+      "errors": []
+    },
+    {
+      "query": "\"Coveo\" careers workday",
+      "fetchedAt": "2026-03-30T00:56:14.051Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=%22Coveo%22+careers+workday",
+        "https://forums.x-plane.org/forums/topic/247918-weather-radar-on-toliss-planes/",
+        "https://forums.x-plane.org/forums/topic/317751-weather-radar/",
+        "https://forums.x-plane.org/forums/topic/324920-live-weather-does-not-represent-irl-weather-at-all/",
+        "https://forums.x-plane.org/files/file/15453-xpgfs-noaa-gfs-weather-real-weather-for-x-plane/"
+      ],
+      "errors": []
+    },
+    {
+      "query": "\"Jane App\" careers workday",
+      "fetchedAt": "2026-03-30T00:56:14.071Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=%22Jane+App%22+careers+workday",
+        "https://www.zhihu.com/question/658983057",
+        "https://zhidao.baidu.com/question/350340381.html",
+        "https://www.zhihu.com/topic/19615922/intro",
+        "https://zhidao.baidu.com/question/1959156200903445260.html"
+      ],
+      "errors": []
+    },
+    {
+      "query": "\"Hootsuite\" careers workday",
+      "fetchedAt": "2026-03-30T00:56:14.089Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=%22Hootsuite%22+careers+workday",
+        "https://www.hootsuite.com/",
+        "https://hootsuite.com/signin",
+        "https://www.hootsuite.com/platform",
+        "https://www.hootsuite.com/fr"
+      ],
+      "errors": []
+    },
+    {
+      "query": "\"Jobber\" careers workday",
+      "fetchedAt": "2026-03-30T00:56:14.111Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=%22Jobber%22+careers+workday",
+        "https://secure.getjobber.com/login",
+        "https://www.getjobber.com/",
+        "https://www.greatplacetowork.ca/en/certified-company/z4870188000001309978",
+        "https://www.getjobber.com/about/careers/"
+      ],
+      "errors": []
+    },
+    {
+      "query": "\"Definity Financial\" careers workday",
+      "fetchedAt": "2026-03-30T00:56:14.181Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=%22Definity+Financial%22+careers+workday",
+        "https://www.zhihu.com/question/1883348103458949047",
+        "https://www.zhihu.com/question/6633411738",
+        "https://www.zhihu.com/question/1980596374903993722",
+        "https://www.zhihu.com/question/1903028279096632276"
+      ],
+      "errors": []
+    },
+    {
+      "query": "\"KOHO\" careers workday",
+      "fetchedAt": "2026-03-30T00:56:14.182Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=%22KOHO%22+careers+workday",
+        "https://www.koho.ca/",
+        "https://www.savvynewcanadians.com/koho-review/",
+        "https://play.google.com/store/apps/details?id=ca.koho&hl=en-US",
+        "https://en.wikipedia.org/wiki/Koho_(fintech)"
+      ],
+      "errors": []
+    },
+    {
+      "query": "\"1Password\" careers workday",
+      "fetchedAt": "2026-03-30T00:56:14.183Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=%221Password%22+careers+workday",
+        "https://www.reddit.com/r/1Password/comments/11f84x8/1password_8_installation_issues_was_unable_to/",
+        "https://www.zhihu.com/question/268448619",
+        "https://www.reddit.com/r/1Password/comments/148nd7p/microsoft_passkeys/",
+        "https://www.reddit.com/r/1Password/comments/176wold/still_confused_about_passkeys_a_little_help/"
+      ],
+      "errors": []
+    },
+    {
+      "query": "\"Sagen\" careers workday",
+      "fetchedAt": "2026-03-30T00:56:14.240Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=%22Sagen%22+careers+workday",
+        "https://www.zhihu.com/question/271305602",
+        "https://www.zhihu.com/question/444406755",
+        "http://forum.sagen.at/",
+        "https://www.zhihu.com/question/490193410"
+      ],
+      "errors": []
+    },
+    {
+      "query": "\"Telesat\" careers workday",
+      "fetchedAt": "2026-03-30T00:56:14.291Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=%22Telesat%22+careers+workday",
+        "https://www.telesat.com/",
+        "https://www.telesat.com/about-us/",
+        "https://www.telesat.com/leo-satellites/",
+        "https://www.telesat.com/press/press-releases/telesat-enters-strategic-partnership-with-government-of-canada-and-mda-space-to-deliver-next-generation-military-satellite-communications-solution/"
+      ],
+      "errors": []
+    },
+    {
+      "query": "\"Relay Financial\" careers workday",
+      "fetchedAt": "2026-03-30T00:56:14.292Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=%22Relay+Financial%22+careers+workday",
+        "https://zhidao.baidu.com/question/294573748.html",
+        "https://zhidao.baidu.com/question/1444538206776883419.html",
+        "https://zhidao.baidu.com/question/1617929534454427307.html",
+        "https://nl.forum.proximus.be/internet-10/uitgaande-email-via-relay-skynet-be-62781"
+      ],
+      "errors": []
+    },
+    {
+      "query": "\"Wealthsimple\" careers workday",
+      "fetchedAt": "2026-03-30T00:56:14.376Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=%22Wealthsimple%22+careers+workday",
+        "https://www.reddit.com/r/Wealthsimple/comments/1amcbrl/pros_and_cons_of_investing_through_wealthsimple/",
+        "https://forums.redflagdeals.com/tags/wealthsimple/",
+        "https://www.reddit.com/r/Wealthsimple/top/",
+        "https://forums.redflagdeals.com/wealthsimple-wealthsimple-2025-apple-promotion-2786845/"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"1Password\" jobs",
+      "fetchedAt": "2026-03-30T00:56:14.391Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%221Password%22+jobs",
+        "https://www.reddit.com/r/1Password/comments/11f84x8/1password_8_installation_issues_was_unable_to/",
+        "https://www.zhihu.com/question/268448619",
+        "https://www.reddit.com/r/1Password/comments/148nd7p/microsoft_passkeys/",
+        "https://www.reddit.com/r/1Password/comments/176wold/still_confused_about_passkeys_a_little_help/"
+      ],
+      "errors": []
+    },
+    {
+      "query": "\"Neo Financial\" careers workday",
+      "fetchedAt": "2026-03-30T00:56:14.412Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=%22Neo+Financial%22+careers+workday",
+        "https://www.zhihu.com/question/3372382706",
+        "https://zhidao.baidu.com/question/2151265010664153388.html",
+        "https://zhidao.baidu.com/question/1997742300618477667.html",
+        "https://zhidao.baidu.com/question/885320885476975332.html"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"Coveo\" jobs",
+      "fetchedAt": "2026-03-30T00:56:14.424Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22Coveo%22+jobs",
+        "https://dict.leo.org/englisch-deutsch/%22Please+complete+the+following%22+%22I+accept+and+agree+to+the+user+agreement%22+all",
+        "https://termly.io/resources/articles/agree-to-terms-and-conditions-checkbox/",
+        "https://context.reverso.net/%C3%BCbersetzung/englisch-deutsch/I+accept+and+agree+to+the+user+agreement",
+        "https://www.dict.cc/?s=Please+complete+the+following+I+accept+and+agree+to+the+user+agreement"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"Benevity\" jobs",
+      "fetchedAt": "2026-03-30T00:56:14.430Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22Benevity%22+jobs",
+        "https://benevity.com/join-the-team",
+        "https://ca.linkedin.com/jobs/benevity-jobs",
+        "https://www.eluta.ca/jobs-at-benevity",
+        "https://ca.indeed.com/cmp/Benevity-1"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"Definity\" careers",
+      "fetchedAt": "2026-03-30T00:56:14.485Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22Definity%22+careers",
+        "https://www.scam-detector.com/theres-a-new-booking-com-fake-confirmation-scam/",
+        "https://www.booking.com/customer-service.html",
+        "https://www.bitdefender.com/en-us/blog/hotforsecurity/beware-of-fake-payment-requests-on-booking-com-what-consumers-and-business-owners-need-to-know",
+        "https://www.pcrisk.com/removal-guides/31956-booking-com-email-scam"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"Definity Financial\" jobs",
+      "fetchedAt": "2026-03-30T00:56:14.514Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22Definity+Financial%22+jobs",
+        "https://www.zhihu.com/question/496905206",
+        "https://www.zhihu.com/tardis/bd/art/603444895",
+        "https://www.zhihu.com/tardis/bd/ans/2316023022",
+        "https://www.zhihu.com/question/286219884"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"Float\" careers",
+      "fetchedAt": "2026-03-30T00:56:14.577Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22Float%22+careers",
+        "https://www.zhihu.com/question/67840592",
+        "https://www.zhihu.com/question/298751034",
+        "https://zhidao.baidu.com/question/379619206714742964.html",
+        "https://www.zhihu.com/question/37300506"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"AlayaCare\" jobs",
+      "fetchedAt": "2026-03-30T00:56:14.579Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22AlayaCare%22+jobs",
+        "https://alayacare.com/",
+        "https://alayacare.com/fr-ca/",
+        "https://alayacare.com/the-alayacare-platform/",
+        "https://alayacare.com/about-alayacare/"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"Hootsuite\" jobs",
+      "fetchedAt": "2026-03-30T00:56:14.585Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22Hootsuite%22+jobs",
+        "https://www.hootsuite.com/",
+        "https://hootsuite.com/signin",
+        "https://www.hootsuite.com/platform",
+        "https://www.hootsuite.com/fr"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"Float Financial\" jobs",
+      "fetchedAt": "2026-03-30T00:56:14.607Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22Float+Financial%22+jobs",
+        "https://www.zhihu.com/question/67840592",
+        "https://www.zhihu.com/question/298751034",
+        "https://zhidao.baidu.com/question/379619206714742964.html",
+        "https://www.zhihu.com/question/37300506"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"Jane\" careers",
+      "fetchedAt": "2026-03-30T00:56:14.617Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22Jane%22+careers",
+        "https://www.zhihu.com/question/658983057",
+        "https://zhidao.baidu.com/question/350340381.html",
+        "https://www.zhihu.com/topic/19615922/intro",
+        "https://zhidao.baidu.com/question/1959156200903445260.html"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"Jane App\" jobs",
+      "fetchedAt": "2026-03-30T00:56:14.648Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22Jane+App%22+jobs",
+        "https://www.zhihu.com/question/658983057",
+        "https://zhidao.baidu.com/question/350340381.html",
+        "https://www.zhihu.com/topic/19615922/intro",
+        "https://zhidao.baidu.com/question/1959156200903445260.html"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"Jobber\" jobs",
+      "fetchedAt": "2026-03-30T00:56:14.668Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22Jobber%22+jobs",
+        "https://secure.getjobber.com/login",
+        "https://www.getjobber.com/",
+        "https://www.greatplacetowork.ca/en/certified-company/z4870188000001309978",
+        "https://www.getjobber.com/about/careers/"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"Relay Financial\" jobs",
+      "fetchedAt": "2026-03-30T00:56:14.695Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22Relay+Financial%22+jobs",
+        "https://zhidao.baidu.com/question/294573748.html",
+        "https://zhidao.baidu.com/question/1444538206776883419.html",
+        "https://zhidao.baidu.com/question/1617929534454427307.html",
+        "https://nl.forum.proximus.be/internet-10/uitgaande-email-via-relay-skynet-be-62781"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"Relay\" careers",
+      "fetchedAt": "2026-03-30T00:56:14.715Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22Relay%22+careers",
+        "https://zhidao.baidu.com/question/294573748.html",
+        "https://zhidao.baidu.com/question/1444538206776883419.html",
+        "https://zhidao.baidu.com/question/1617929534454427307.html",
+        "https://nl.forum.proximus.be/internet-10/uitgaande-email-via-relay-skynet-be-62781"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"KOHO\" jobs",
+      "fetchedAt": "2026-03-30T00:56:14.717Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22KOHO%22+jobs",
+        "https://www.koho.ca/",
+        "https://www.savvynewcanadians.com/koho-review/",
+        "https://play.google.com/store/apps/details?id=ca.koho&hl=en-US",
+        "https://en.wikipedia.org/wiki/Koho_(fintech)"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"Sagen\" jobs",
+      "fetchedAt": "2026-03-30T00:56:14.737Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22Sagen%22+jobs",
+        "https://www.zhihu.com/question/271305602",
+        "https://www.zhihu.com/question/444406755",
+        "http://forum.sagen.at/",
+        "https://www.zhihu.com/question/490193410"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"Wealthsimple\" jobs",
+      "fetchedAt": "2026-03-30T00:56:14.780Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22Wealthsimple%22+jobs",
+        "https://www.reddit.com/r/Wealthsimple/comments/1amcbrl/pros_and_cons_of_investing_through_wealthsimple/",
+        "https://forums.redflagdeals.com/tags/wealthsimple/",
+        "https://www.reddit.com/r/Wealthsimple/top/",
+        "https://forums.redflagdeals.com/wealthsimple-wealthsimple-2025-apple-promotion-2786845/"
+      ],
+      "errors": []
+    },
+    {
+      "query": "\"Coveo\" \"myworkdayjobs.com\"",
+      "fetchedAt": "2026-03-30T00:56:14.855Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=%22Coveo%22+%22myworkdayjobs.com%22",
+        "https://funzpoints.com/",
+        "https://cards.barclaycardus.com/banking/cards/carnival-world-mastercard/",
+        "https://oddsseeker.com/sweepstakes/funzpoints/login",
+        "https://funzpoints.com/faq.html"
+      ],
+      "errors": []
+    },
+    {
+      "query": "\"1Password\" \"myworkdayjobs.com\"",
+      "fetchedAt": "2026-03-30T00:56:14.856Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=%221Password%22+%22myworkdayjobs.com%22",
+        "https://www.reddit.com/r/1Password/comments/11f84x8/1password_8_installation_issues_was_unable_to/",
+        "https://www.zhihu.com/question/268448619",
+        "https://www.reddit.com/r/1Password/comments/148nd7p/microsoft_passkeys/",
+        "https://www.reddit.com/r/1Password/comments/176wold/still_confused_about_passkeys_a_little_help/"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"Telesat\" jobs",
+      "fetchedAt": "2026-03-30T00:56:14.891Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22Telesat%22+jobs",
+        "https://www.telesat.com/",
+        "https://www.telesat.com/about-us/",
+        "https://www.telesat.com/leo-satellites/",
+        "https://www.telesat.com/press/press-releases/telesat-enters-strategic-partnership-with-government-of-canada-and-mda-space-to-deliver-next-generation-military-satellite-communications-solution/"
+      ],
+      "errors": []
+    },
+    {
+      "query": "\"Benevity\" \"myworkdayjobs.com\"",
+      "fetchedAt": "2026-03-30T00:56:14.892Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=%22Benevity%22+%22myworkdayjobs.com%22",
+        "https://benevity.com/",
+        "https://benevity.com/nonprofits",
+        "https://benevity.com/about-us",
+        "https://benevity.com/benevity-advantage"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"Neo Financial\" jobs",
+      "fetchedAt": "2026-03-30T00:56:14.915Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22Neo+Financial%22+jobs",
+        "https://www.zhihu.com/question/3372382706",
+        "https://zhidao.baidu.com/question/2151265010664153388.html",
+        "https://zhidao.baidu.com/question/1997742300618477667.html",
+        "https://zhidao.baidu.com/question/885320885476975332.html"
+      ],
+      "errors": []
+    },
+    {
+      "query": "\"AlayaCare\" \"myworkdayjobs.com\"",
+      "fetchedAt": "2026-03-30T00:56:14.942Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=%22AlayaCare%22+%22myworkdayjobs.com%22",
+        "https://alayacare.com/",
+        "https://alayacare.com/fr-ca/",
+        "https://alayacare.com/the-alayacare-platform/",
+        "https://alayacare.com/about-alayacare/"
+      ],
+      "errors": []
+    },
+    {
+      "query": "\"Definity Financial\" \"myworkdayjobs.com\"",
+      "fetchedAt": "2026-03-30T00:56:14.952Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=%22Definity+Financial%22+%22myworkdayjobs.com%22",
+        "https://en.wikipedia.org/wiki/2025%E2%80%932026_Iranian_protests",
+        "https://www.theguardian.com/world/2026/mar/28/iran-pro-regime-demonstrations-detained-people",
+        "https://www.amnesty.org/en/latest/campaigns/2026/01/what-happened-at-the-protests-in-iran/",
+        "https://www.iranmonitor.org/protests"
+      ],
+      "errors": []
+    },
+    {
+      "query": "\"Definity\" careers workday",
+      "fetchedAt": "2026-03-30T00:56:14.955Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=%22Definity%22+careers+workday",
+        "https://devforum.roblox.com/t/completing-the-dynamic-head-migration/4301387",
+        "https://devforum.roblox.com/t/r6-run-walk-animations/2484804",
+        "https://devforum.roblox.com/t/roblox-vng-and-everything-you-need-to-know/3931253",
+        "https://devforum.roblox.com/t/allowlist-for-local-client-configuration-via-fast-flags/3966569"
+      ],
+      "errors": []
+    },
+    {
+      "query": "\"Float Financial\" \"myworkdayjobs.com\"",
+      "fetchedAt": "2026-03-30T00:56:14.967Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=%22Float+Financial%22+%22myworkdayjobs.com%22",
+        "https://www.zhihu.com/question/67840592",
+        "https://www.zhihu.com/question/298751034",
+        "https://zhidao.baidu.com/question/379619206714742964.html",
+        "https://www.zhihu.com/question/37300506"
+      ],
+      "errors": []
+    },
+    {
+      "query": "\"Jane App\" \"myworkdayjobs.com\"",
+      "fetchedAt": "2026-03-30T00:56:15.026Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=%22Jane+App%22+%22myworkdayjobs.com%22",
+        "https://www.zhihu.com/question/658983057",
+        "https://zhidao.baidu.com/question/350340381.html",
+        "https://www.zhihu.com/topic/19615922/intro",
+        "https://zhidao.baidu.com/question/1959156200903445260.html"
+      ],
+      "errors": []
+    },
+    {
+      "query": "\"Float\" careers workday",
+      "fetchedAt": "2026-03-30T00:56:15.031Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=%22Float%22+careers+workday",
+        "https://www.zhihu.com/question/67840592",
+        "https://www.zhihu.com/question/298751034",
+        "https://zhidao.baidu.com/question/379619206714742964.html",
+        "https://www.zhihu.com/question/37300506"
+      ],
+      "errors": []
+    },
+    {
+      "query": "\"Hootsuite\" \"myworkdayjobs.com\"",
+      "fetchedAt": "2026-03-30T00:56:15.046Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=%22Hootsuite%22+%22myworkdayjobs.com%22",
+        "https://www.hootsuite.com/",
+        "https://hootsuite.com/signin",
+        "https://www.hootsuite.com/platform",
+        "https://www.hootsuite.com/fr"
+      ],
+      "errors": []
+    },
+    {
+      "query": "\"KOHO\" \"myworkdayjobs.com\"",
+      "fetchedAt": "2026-03-30T00:56:15.047Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=%22KOHO%22+%22myworkdayjobs.com%22",
+        "https://www.koho.ca/",
+        "https://www.savvynewcanadians.com/koho-review/",
+        "https://play.google.com/store/apps/details?id=ca.koho&hl=en-US",
+        "https://en.wikipedia.org/wiki/Koho_(fintech)"
+      ],
+      "errors": []
+    },
+    {
+      "query": "\"Jobber\" \"myworkdayjobs.com\"",
+      "fetchedAt": "2026-03-30T00:56:15.116Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=%22Jobber%22+%22myworkdayjobs.com%22",
+        "https://secure.getjobber.com/login",
+        "https://www.getjobber.com/",
+        "https://www.greatplacetowork.ca/en/certified-company/z4870188000001309978",
+        "https://www.getjobber.com/about/careers/"
+      ],
+      "errors": []
+    },
+    {
+      "query": "\"Relay Financial\" \"myworkdayjobs.com\"",
+      "fetchedAt": "2026-03-30T00:56:15.133Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=%22Relay+Financial%22+%22myworkdayjobs.com%22",
+        "https://zhidao.baidu.com/question/294573748.html",
+        "https://zhidao.baidu.com/question/1444538206776883419.html",
+        "https://zhidao.baidu.com/question/1617929534454427307.html",
+        "https://nl.forum.proximus.be/internet-10/uitgaande-email-via-relay-skynet-be-62781"
+      ],
+      "errors": []
+    },
+    {
+      "query": "\"Neo Financial\" \"myworkdayjobs.com\"",
+      "fetchedAt": "2026-03-30T00:56:15.135Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=%22Neo+Financial%22+%22myworkdayjobs.com%22",
+        "https://www.zhihu.com/question/3372382706",
+        "https://zhidao.baidu.com/question/2151265010664153388.html",
+        "https://zhidao.baidu.com/question/1997742300618477667.html",
+        "https://zhidao.baidu.com/question/885320885476975332.html"
+      ],
+      "errors": []
+    },
+    {
+      "query": "\"Relay\" careers workday",
+      "fetchedAt": "2026-03-30T00:56:15.135Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=%22Relay%22+careers+workday",
+        "https://zhidao.baidu.com/question/294573748.html",
+        "https://zhidao.baidu.com/question/1444538206776883419.html",
+        "https://zhidao.baidu.com/question/1617929534454427307.html",
+        "https://nl.forum.proximus.be/internet-10/uitgaande-email-via-relay-skynet-be-62781"
+      ],
+      "errors": []
+    },
+    {
+      "query": "\"Jane\" careers workday",
+      "fetchedAt": "2026-03-30T00:56:15.160Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=%22Jane%22+careers+workday",
+        "https://www.zhihu.com/question/658983057",
+        "https://zhidao.baidu.com/question/350340381.html",
+        "https://www.zhihu.com/topic/19615922/intro",
+        "https://zhidao.baidu.com/question/1959156200903445260.html"
+      ],
+      "errors": []
+    },
+    {
+      "query": "\"Telesat\" \"myworkdayjobs.com\"",
+      "fetchedAt": "2026-03-30T00:56:15.209Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=%22Telesat%22+%22myworkdayjobs.com%22",
+        "https://www.telesat.com/",
+        "https://www.telesat.com/about-us/",
+        "https://www.telesat.com/leo-satellites/",
+        "https://www.telesat.com/press/press-releases/telesat-enters-strategic-partnership-with-government-of-canada-and-mda-space-to-deliver-next-generation-military-satellite-communications-solution/"
+      ],
+      "errors": []
+    },
+    {
+      "query": "\"Sagen\" \"myworkdayjobs.com\"",
+      "fetchedAt": "2026-03-30T00:56:15.230Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=%22Sagen%22+%22myworkdayjobs.com%22",
+        "https://www.zhihu.com/question/271305602",
+        "https://www.zhihu.com/question/444406755",
+        "http://forum.sagen.at/",
+        "https://www.zhihu.com/question/490193410"
+      ],
+      "errors": []
+    },
+    {
+      "query": "\"Wealthsimple\" \"myworkdayjobs.com\"",
+      "fetchedAt": "2026-03-30T00:56:15.240Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=%22Wealthsimple%22+%22myworkdayjobs.com%22",
+        "https://www.reddit.com/r/Wealthsimple/comments/1amcbrl/pros_and_cons_of_investing_through_wealthsimple/",
+        "https://forums.redflagdeals.com/tags/wealthsimple/",
+        "https://www.reddit.com/r/Wealthsimple/top/",
+        "https://forums.redflagdeals.com/wealthsimple-wealthsimple-2025-apple-promotion-2786845/"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"Jane\" jobs",
+      "fetchedAt": "2026-03-30T00:56:15.298Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22Jane%22+jobs",
+        "https://www.zhihu.com/question/658983057",
+        "https://zhidao.baidu.com/question/350340381.html",
+        "https://www.zhihu.com/topic/19615922/intro",
+        "https://zhidao.baidu.com/question/1959156200903445260.html"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"Float\" jobs",
+      "fetchedAt": "2026-03-30T00:56:15.304Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22Float%22+jobs",
+        "https://www.zhihu.com/question/67840592",
+        "https://www.zhihu.com/question/298751034",
+        "https://zhidao.baidu.com/question/379619206714742964.html",
+        "https://www.zhihu.com/question/37300506"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"neo\" careers",
+      "fetchedAt": "2026-03-30T00:56:15.313Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22neo%22+careers",
+        "https://www.zhihu.com/question/3372382706",
+        "https://zhidao.baidu.com/question/2151265010664153388.html",
+        "https://zhidao.baidu.com/question/1997742300618477667.html",
+        "https://zhidao.baidu.com/question/885320885476975332.html"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"Definity\" jobs",
+      "fetchedAt": "2026-03-30T00:56:15.334Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22Definity%22+jobs",
+        "https://www.reddit.com/r/MicrosoftRewards/comments/112t4ri/quote_of_the_day/",
+        "https://www.reddit.com/r/bing/comments/13u9qac/ive_been_collecting_the_bing_word_of_the_day_for/",
+        "https://www.reddit.com/r/bing/comments/13mnmmj/interesting_quote_of_the_day_from_bing/",
+        "https://www.reddit.com/r/MicrosoftRewards/comments/11k2hkw/daily_checkin_whats_the_most_you_got_on_day_7/"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"neofinancial\" careers",
+      "fetchedAt": "2026-03-30T00:56:15.339Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22neofinancial%22+careers",
+        "https://www.neofinancial.com/",
+        "https://member.neofinancial.com/login",
+        "https://merchant.neofinancial.com/en-CA/login?lang=en-US",
+        "https://support.neofinancial.com/hc/en-ca"
+      ],
+      "errors": []
+    },
+    {
+      "query": "\"Definity\" \"myworkdayjobs.com\"",
+      "fetchedAt": "2026-03-30T00:56:15.416Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=%22Definity%22+%22myworkdayjobs.com%22",
+        "https://o-hand.com/rabbit-jokes/",
+        "https://listcaboodle.com/funny-rabbit-jokes-for-kids/",
+        "https://www.lovetoknowpets.com/small-mammals/rabbit-jokes",
+        "https://www.petsradar.com/features/funny-rabbit-jokes"
+      ],
+      "errors": []
+    },
+    {
+      "query": "\"Jane\" \"myworkdayjobs.com\"",
+      "fetchedAt": "2026-03-30T00:56:15.446Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=%22Jane%22+%22myworkdayjobs.com%22",
+        "https://www.zhihu.com/question/658983057",
+        "https://zhidao.baidu.com/question/350340381.html",
+        "https://www.zhihu.com/topic/19615922/intro",
+        "https://zhidao.baidu.com/question/1959156200903445260.html"
+      ],
+      "errors": []
+    },
+    {
+      "query": "\"Float\" \"myworkdayjobs.com\"",
+      "fetchedAt": "2026-03-30T00:56:15.449Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=%22Float%22+%22myworkdayjobs.com%22",
+        "https://www.zhihu.com/question/67840592",
+        "https://www.zhihu.com/question/298751034",
+        "https://zhidao.baidu.com/question/379619206714742964.html",
+        "https://www.zhihu.com/question/37300506"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"Relay\" jobs",
+      "fetchedAt": "2026-03-30T00:56:15.463Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22Relay%22+jobs",
+        "https://zhidao.baidu.com/question/294573748.html",
+        "https://zhidao.baidu.com/question/1444538206776883419.html",
+        "https://zhidao.baidu.com/question/1617929534454427307.html",
+        "https://nl.forum.proximus.be/internet-10/uitgaande-email-via-relay-skynet-be-62781"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"RELAYFI\" careers",
+      "fetchedAt": "2026-03-30T00:56:15.479Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22RELAYFI%22+careers",
+        "https://www.dell.com/support/contents/en-us/article/product-support/self-support-knowledgebase/monitor-screen-video/laptop-display-screen-not-working",
+        "https://www.dell.com/community/en/conversations/windows-general/a-white-box-appeared-on-my-laptop-screenhow-to-fix-this/66f7a233899b27730290faac",
+        "https://www.tenforums.com/drivers-hardware/161157-white-screen-replaces-desktop.html",
+        "https://www.dell.com/community/en/conversations/supportassist-for-pcs/white-screen-when-i-run-support-assist/647f97b0f4ccf8a8deaba294"
+      ],
+      "errors": []
+    },
+    {
+      "query": "\"neofinancial\" careers workday",
+      "fetchedAt": "2026-03-30T00:56:15.486Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=%22neofinancial%22+careers+workday",
+        "https://www.neofinancial.com/",
+        "https://member.neofinancial.com/login",
+        "https://merchant.neofinancial.com/en-CA/login?lang=en-US",
+        "https://support.neofinancial.com/hc/en-ca"
+      ],
+      "errors": []
+    },
+    {
+      "query": "\"RELAYFI\" careers workday",
+      "fetchedAt": "2026-03-30T00:56:15.522Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=%22RELAYFI%22+careers+workday",
+        "https://www.verywellhealth.com/fibroids-after-menopause-symptoms-treatment-options-and-more-5190699",
+        "https://pmc.ncbi.nlm.nih.gov/articles/PMC9798543/",
+        "https://atlii.com/fibroids-in-older-women/",
+        "https://health.clevelandclinic.org/uterine-fibroids-after-menopause"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"neofinancial\" jobs",
+      "fetchedAt": "2026-03-30T00:56:15.530Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22neofinancial%22+jobs",
+        "https://www.neofinancial.com/",
+        "https://member.neofinancial.com/login",
+        "https://merchant.neofinancial.com/en-CA/login?lang=en-US",
+        "https://support.neofinancial.com/hc/en-ca"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"RELAYFI\" jobs",
+      "fetchedAt": "2026-03-30T00:56:15.547Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22RELAYFI%22+jobs",
+        "https://www.youtube.com/",
+        "https://play.google.com/store/apps/details?id=com.google.android.youtube&hl=en-US",
+        "https://apps.apple.com/us/app/youtube/id544007664",
+        "https://blog.youtube/"
+      ],
+      "errors": []
+    },
+    {
+      "query": "\"Relay\" \"myworkdayjobs.com\"",
+      "fetchedAt": "2026-03-30T00:56:15.554Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=%22Relay%22+%22myworkdayjobs.com%22",
+        "https://zhidao.baidu.com/question/294573748.html",
+        "https://zhidao.baidu.com/question/1444538206776883419.html",
+        "https://zhidao.baidu.com/question/1617929534454427307.html",
+        "https://nl.forum.proximus.be/internet-10/uitgaande-email-via-relay-skynet-be-62781"
+      ],
+      "errors": []
+    },
+    {
+      "query": "\"RELAYFI\" \"myworkdayjobs.com\"",
+      "fetchedAt": "2026-03-30T00:56:15.569Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=%22RELAYFI%22+%22myworkdayjobs.com%22",
+        "https://www.ratemyprofessors.com/",
+        "https://www.ratemyprofessors.com/school/1003",
+        "https://www.ratemyprofessors.com/school/1452",
+        "https://www.ratemyprofessors.com/school/1082"
+      ],
+      "errors": []
+    },
+    {
+      "query": "\"neofinancial\" \"myworkdayjobs.com\"",
+      "fetchedAt": "2026-03-30T00:56:15.574Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=%22neofinancial%22+%22myworkdayjobs.com%22",
+        "https://www.neofinancial.com/",
+        "https://member.neofinancial.com/login",
+        "https://merchant.neofinancial.com/en-CA/login?lang=en-US",
+        "https://support.neofinancial.com/hc/en-ca"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"Arista Networks\" \"Vancouver\" careers",
+      "fetchedAt": "2026-03-30T01:27:41.974Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22Arista+Networks%22+%22Vancouver%22+careers",
+        "https://www.zhihu.com/question/46581771",
+        "https://www.zhihu.com/question/46581771/answers/updated",
+        "https://www.zhihu.com/question/24073649"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"Clutch\" \"Toronto\" careers",
+      "fetchedAt": "2026-03-30T01:27:42.036Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22Clutch%22+%22Toronto%22+careers",
+        "https://www.zhihu.com/question/649313582",
+        "https://forum.gamer.com.tw/C.php?bsn=1473&snA=30451",
+        "https://www.zhihu.com/question/27608134"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"Dialogue\" \"Montreal\" careers",
+      "fetchedAt": "2026-03-30T01:27:42.060Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22Dialogue%22+%22Montreal%22+careers",
+        "https://zhidao.baidu.com/question/339766853.html",
+        "https://zhidao.baidu.com/question/2150005983085498468.html",
+        "https://zhidao.baidu.com/question/178500228377933484.html"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"D2L\" \"Kitchener\" careers",
+      "fetchedAt": "2026-03-30T01:27:42.063Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22D2L%22+%22Kitchener%22+careers",
+        "https://www.zhihu.com/question/524266302",
+        "https://www.zhihu.com/question/314802145",
+        "https://www.zhihu.com/question/646489478"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"Geotab\" \"Oakville\" careers",
+      "fetchedAt": "2026-03-30T01:27:42.070Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22Geotab%22+%22Oakville%22+careers",
+        "http://my.geotab.com/",
+        "https://www.geotab.com/mygeotab-login/",
+        "https://www.thestar.com/globenewswire/geotab-s-2025-sustainability-and-impact-report-shows-fleets-cutting-fuel-waste-reducing-idling-by/article_fa1e0b23-cf6e-52e0-8329-8b66c6e185ce.html"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"Hopper\" \"Montreal\" careers",
+      "fetchedAt": "2026-03-30T01:27:42.116Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22Hopper%22+%22Montreal%22+careers",
+        "https://www.zhihu.com/question/455419977",
+        "https://www.zhihu.com/question/662984685",
+        "https://www.zhihu.com/question/11261005710"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"MDA Space\" \"Brampton\" careers",
+      "fetchedAt": "2026-03-30T01:27:42.124Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22MDA+Space%22+%22Brampton%22+careers",
+        "https://www.zhihu.com/tardis/zm/art/707864262",
+        "https://www.zhihu.com/question/401108619",
+        "https://zhidao.baidu.com/question/2129735738784534467.html"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"Ada\" \"Toronto\" careers",
+      "fetchedAt": "2026-03-30T01:27:42.146Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22Ada%22+%22Toronto%22+careers",
+        "https://ada.org.au/",
+        "https://ada.org.au/resources",
+        "https://ada.org.au/services"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"Plusgrade\" \"Montreal\" careers",
+      "fetchedAt": "2026-03-30T01:27:42.189Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22Plusgrade%22+%22Montreal%22+careers",
+        "https://www.plusgrade.com/",
+        "https://ca.linkedin.com/company/plusgrade",
+        "https://www.lapresse.ca/affaires/entreprises/2024-03-05/un-fonds-americain-prend-le-controle-de-plusgrade.php"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"Riskfuel\" \"Toronto\" careers",
+      "fetchedAt": "2026-03-30T01:27:42.189Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22Riskfuel%22+%22Toronto%22+careers",
+        "https://www.timeanddate.com/time/zone/usa/california",
+        "https://whichtimezone.com/usa/california/",
+        "https://time.is/California"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"Q4\" \"Toronto\" careers",
+      "fetchedAt": "2026-03-30T01:27:42.210Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22Q4%22+%22Toronto%22+careers",
+        "https://www.zhihu.com/tardis/bd/art/1974925740781876118",
+        "https://www.zhihu.com/question/633365088",
+        "https://www.zhihu.com/question/539370903"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"Vention\" \"Montreal\" careers",
+      "fetchedAt": "2026-03-30T01:27:42.235Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22Vention%22+%22Montreal%22+careers",
+        "https://vention.io/",
+        "https://en.wikipedia.org/wiki/Vention",
+        "https://ca.linkedin.com/company/vention"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"Clutch\" careers",
+      "fetchedAt": "2026-03-30T01:27:42.301Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22Clutch%22+careers",
+        "https://www.zhihu.com/question/649313582",
+        "https://forum.gamer.com.tw/C.php?bsn=1473&snA=30451",
+        "https://www.zhihu.com/question/27608134"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"Softchoice\" \"Toronto\" careers",
+      "fetchedAt": "2026-03-30T01:27:42.328Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22Softchoice%22+%22Toronto%22+careers",
+        "https://www.softchoice.com/",
+        "https://www.wwt.com/corporate/softchoice/overview",
+        "https://softchoice.azurewebsites.net/solutions"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"Arista Networks\" careers",
+      "fetchedAt": "2026-03-30T01:27:42.343Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22Arista+Networks%22+careers",
+        "https://www.zhihu.com/question/46581771",
+        "https://www.zhihu.com/question/46581771/answers/updated",
+        "https://www.zhihu.com/question/24073649"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"D2L\" careers",
+      "fetchedAt": "2026-03-30T01:27:42.351Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22D2L%22+careers",
+        "https://www.d2l.com/careers/",
+        "https://ca.linkedin.com/jobs/d2l-jobs",
+        "https://ca.indeed.com/cmp/D2l-5/jobs"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"Ada\" careers",
+      "fetchedAt": "2026-03-30T01:27:42.351Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22Ada%22+careers",
+        "https://ada.org.au/",
+        "https://ada.org.au/resources",
+        "https://ada.org.au/services"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"Hopper\" careers",
+      "fetchedAt": "2026-03-30T01:27:42.403Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22Hopper%22+careers",
+        "https://www.zhihu.com/question/455419977",
+        "https://www.zhihu.com/question/662984685",
+        "https://www.zhihu.com/question/11261005710"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"Dialogue\" careers",
+      "fetchedAt": "2026-03-30T01:27:42.414Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22Dialogue%22+careers",
+        "https://zhidao.baidu.com/question/339766853.html",
+        "https://zhidao.baidu.com/question/2150005983085498468.html",
+        "https://zhidao.baidu.com/question/178500228377933484.html"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"MDA Space\" careers",
+      "fetchedAt": "2026-03-30T01:27:42.423Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22MDA+Space%22+careers",
+        "https://mda.space/careers/",
+        "https://ca.linkedin.com/jobs/mda-space-jobs",
+        "https://ca.indeed.com/q-mda-space-jobs.html?vjk=c4091df6740653e4"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"Plusgrade\" careers",
+      "fetchedAt": "2026-03-30T01:27:42.444Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22Plusgrade%22+careers",
+        "https://www.plusgrade.com/",
+        "https://ca.linkedin.com/company/plusgrade",
+        "https://www.lapresse.ca/affaires/entreprises/2024-03-05/un-fonds-americain-prend-le-controle-de-plusgrade.php"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"Geotab\" careers",
+      "fetchedAt": "2026-03-30T01:27:42.450Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22Geotab%22+careers",
+        "https://careers.geotab.com/",
+        "https://ca.linkedin.com/jobs/geotab-inc-jobs",
+        "https://job-boards.greenhouse.io/geotab?error=true"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"Q4\" careers",
+      "fetchedAt": "2026-03-30T01:27:42.457Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22Q4%22+careers",
+        "https://www.zhihu.com/tardis/bd/art/1974925740781876118",
+        "https://www.zhihu.com/question/633365088",
+        "https://www.zhihu.com/question/539370903"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"Softchoice\" careers",
+      "fetchedAt": "2026-03-30T01:27:42.504Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22Softchoice%22+careers",
+        "https://www.softchoice.com/",
+        "https://www.wwt.com/corporate/softchoice/overview",
+        "https://softchoice.azurewebsites.net/solutions"
+      ],
+      "errors": []
+    },
+    {
+      "query": "\"Ada\" careers workday",
+      "fetchedAt": "2026-03-30T01:27:42.533Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=%22Ada%22+careers+workday",
+        "https://ada.org.au/",
+        "https://ada.org.au/resources",
+        "https://ada.org.au/services"
+      ],
+      "errors": []
+    },
+    {
+      "query": "\"Arista Networks\" careers workday",
+      "fetchedAt": "2026-03-30T01:27:42.534Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=%22Arista+Networks%22+careers+workday",
+        "https://www.zhihu.com/question/46581771",
+        "https://www.zhihu.com/question/46581771/answers/updated",
+        "https://www.zhihu.com/question/24073649"
+      ],
+      "errors": []
+    },
+    {
+      "query": "\"Clutch\" careers workday",
+      "fetchedAt": "2026-03-30T01:27:42.540Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=%22Clutch%22+careers+workday",
+        "https://www.zhihu.com/question/649313582",
+        "https://forum.gamer.com.tw/C.php?bsn=1473&snA=30451",
+        "https://www.zhihu.com/question/27608134"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"Riskfuel\" careers",
+      "fetchedAt": "2026-03-30T01:27:42.550Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22Riskfuel%22+careers",
+        "https://www.microsoft.com/en-us",
+        "https://www.office.com/",
+        "https://en.wikipedia.org/wiki/Microsoft"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"Vention\" careers",
+      "fetchedAt": "2026-03-30T01:27:42.559Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22Vention%22+careers",
+        "https://vention.io/",
+        "https://en.wikipedia.org/wiki/Vention",
+        "https://ca.linkedin.com/company/vention"
+      ],
+      "errors": []
+    },
+    {
+      "query": "\"D2L\" careers workday",
+      "fetchedAt": "2026-03-30T01:27:42.631Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=%22D2L%22+careers+workday",
+        "https://www.zhihu.com/question/524266302",
+        "https://www.zhihu.com/question/314802145",
+        "https://www.zhihu.com/question/646489478"
+      ],
+      "errors": []
+    },
+    {
+      "query": "\"Hopper\" careers workday",
+      "fetchedAt": "2026-03-30T01:27:42.655Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=%22Hopper%22+careers+workday",
+        "https://www.zhihu.com/question/455419977",
+        "https://www.zhihu.com/question/662984685",
+        "https://www.zhihu.com/question/11261005710"
+      ],
+      "errors": []
+    },
+    {
+      "query": "\"MDA Space\" careers workday",
+      "fetchedAt": "2026-03-30T01:27:42.685Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=%22MDA+Space%22+careers+workday",
+        "https://www.zhihu.com/tardis/zm/art/707864262",
+        "https://www.zhihu.com/question/401108619",
+        "https://zhidao.baidu.com/question/2129735738784534467.html"
+      ],
+      "errors": []
+    },
+    {
+      "query": "\"Dialogue\" careers workday",
+      "fetchedAt": "2026-03-30T01:27:42.689Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=%22Dialogue%22+careers+workday",
+        "https://zhidao.baidu.com/question/339766853.html",
+        "https://zhidao.baidu.com/question/2150005983085498468.html",
+        "https://zhidao.baidu.com/question/178500228377933484.html"
+      ],
+      "errors": []
+    },
+    {
+      "query": "\"Plusgrade\" careers workday",
+      "fetchedAt": "2026-03-30T01:27:42.693Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=%22Plusgrade%22+careers+workday",
+        "https://www.plusgrade.com/",
+        "https://ca.linkedin.com/company/plusgrade",
+        "https://www.lapresse.ca/affaires/entreprises/2024-03-05/un-fonds-americain-prend-le-controle-de-plusgrade.php"
+      ],
+      "errors": []
+    },
+    {
+      "query": "\"Geotab\" careers workday",
+      "fetchedAt": "2026-03-30T01:27:42.731Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=%22Geotab%22+careers+workday",
+        "http://my.geotab.com/",
+        "https://www.geotab.com/mygeotab-login/",
+        "https://www.thestar.com/globenewswire/geotab-s-2025-sustainability-and-impact-report-shows-fleets-cutting-fuel-waste-reducing-idling-by/article_fa1e0b23-cf6e-52e0-8329-8b66c6e185ce.html"
+      ],
+      "errors": []
+    },
+    {
+      "query": "\"Softchoice\" careers workday",
+      "fetchedAt": "2026-03-30T01:27:42.815Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=%22Softchoice%22+careers+workday",
+        "https://www.softchoice.com/",
+        "https://www.wwt.com/corporate/softchoice/overview",
+        "https://softchoice.azurewebsites.net/solutions"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"Arista Networks\" jobs",
+      "fetchedAt": "2026-03-30T01:27:42.828Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22Arista+Networks%22+jobs",
+        "https://www.zhihu.com/question/46581771",
+        "https://www.zhihu.com/question/46581771/answers/updated",
+        "https://www.zhihu.com/question/24073649"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"Ada\" jobs",
+      "fetchedAt": "2026-03-30T01:27:42.832Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22Ada%22+jobs",
+        "https://ada.org.au/",
+        "https://ada.org.au/resources",
+        "https://ada.org.au/services"
+      ],
+      "errors": []
+    },
+    {
+      "query": "\"Q4\" careers workday",
+      "fetchedAt": "2026-03-30T01:27:42.839Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=%22Q4%22+careers+workday",
+        "https://www.zhihu.com/tardis/bd/art/1974925740781876118",
+        "https://www.zhihu.com/question/633365088",
+        "https://www.zhihu.com/question/539370903"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"D2L\" jobs",
+      "fetchedAt": "2026-03-30T01:27:42.911Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22D2L%22+jobs",
+        "https://www.zhihu.com/question/524266302",
+        "https://www.zhihu.com/question/314802145",
+        "https://www.zhihu.com/question/646489478"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"Geotab\" jobs",
+      "fetchedAt": "2026-03-30T01:27:42.928Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22Geotab%22+jobs",
+        "https://careers.geotab.com/",
+        "https://ca.linkedin.com/jobs/geotab-inc-jobs",
+        "https://job-boards.greenhouse.io/geotab?error=true"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"Clutch\" jobs",
+      "fetchedAt": "2026-03-30T01:27:42.955Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22Clutch%22+jobs",
+        "https://www.zhihu.com/question/649313582",
+        "https://forum.gamer.com.tw/C.php?bsn=1473&snA=30451",
+        "https://www.zhihu.com/question/27608134"
+      ],
+      "errors": []
+    },
+    {
+      "query": "\"Vention\" careers workday",
+      "fetchedAt": "2026-03-30T01:27:42.961Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=%22Vention%22+careers+workday",
+        "https://vention.io/",
+        "https://en.wikipedia.org/wiki/Vention",
+        "https://ca.linkedin.com/company/vention"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"Hopper\" jobs",
+      "fetchedAt": "2026-03-30T01:27:42.998Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22Hopper%22+jobs",
+        "https://www.zhihu.com/question/455419977",
+        "https://www.zhihu.com/question/662984685",
+        "https://www.zhihu.com/question/11261005710"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"MDA Space\" jobs",
+      "fetchedAt": "2026-03-30T01:27:43.016Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22MDA+Space%22+jobs",
+        "https://www.zhihu.com/tardis/zm/art/707864262",
+        "https://www.zhihu.com/question/401108619",
+        "https://zhidao.baidu.com/question/2129735738784534467.html"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"Dialogue\" jobs",
+      "fetchedAt": "2026-03-30T01:27:43.036Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22Dialogue%22+jobs",
+        "https://www.dialogue.co/en/careers",
+        "https://ca.linkedin.com/jobs/dialogue-jobs-toronto-on",
+        "https://ca.indeed.com/cmp/Dialogue/jobs/l-Toronto,-ON"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"Plusgrade\" jobs",
+      "fetchedAt": "2026-03-30T01:27:43.077Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22Plusgrade%22+jobs",
+        "https://www.plusgrade.com/",
+        "https://ca.linkedin.com/company/plusgrade",
+        "https://www.lapresse.ca/affaires/entreprises/2024-03-05/un-fonds-americain-prend-le-controle-de-plusgrade.php"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"Vention\" jobs",
+      "fetchedAt": "2026-03-30T01:27:43.141Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22Vention%22+jobs",
+        "https://vention.io/",
+        "https://en.wikipedia.org/wiki/Vention",
+        "https://ca.linkedin.com/company/vention"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"Q4\" jobs",
+      "fetchedAt": "2026-03-30T01:27:43.154Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22Q4%22+jobs",
+        "https://www.zhihu.com/tardis/bd/art/1974925740781876118",
+        "https://www.zhihu.com/question/633365088",
+        "https://www.zhihu.com/question/539370903"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"Softchoice\" jobs",
+      "fetchedAt": "2026-03-30T01:27:43.172Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22Softchoice%22+jobs",
+        "https://www.softchoice.com/",
+        "https://www.wwt.com/corporate/softchoice/overview",
+        "https://softchoice.azurewebsites.net/solutions"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"Riskfuel\" jobs",
+      "fetchedAt": "2026-03-30T01:27:43.231Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22Riskfuel%22+jobs",
+        "https://community.withairbnb.com/t5/Support-with-your-bookings/Log-in/m-p/1887410",
+        "https://community.withairbnb.com/t5/Gestiona-tu-negocio/CIF-Airbnb-Espa%C3%B1a/m-p/2104403",
+        "https://community.withairbnb.com/t5/Host-guides/Contact-Airbnb-A-Community-Help-Guide-UPDATED/m-p/413245"
+      ],
+      "errors": []
+    },
+    {
+      "query": "\"Clutch\" \"myworkdayjobs.com\"",
+      "fetchedAt": "2026-03-30T01:27:43.244Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=%22Clutch%22+%22myworkdayjobs.com%22",
+        "https://www.zhihu.com/question/649313582",
+        "https://forum.gamer.com.tw/C.php?bsn=1473&snA=30451",
+        "https://www.zhihu.com/question/27608134"
+      ],
+      "errors": []
+    },
+    {
+      "query": "\"Riskfuel\" careers workday",
+      "fetchedAt": "2026-03-30T01:27:43.289Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=%22Riskfuel%22+careers+workday",
+        "https://es.pornhub.com/",
+        "https://www.xvideos.com/lang/espanol",
+        "https://www.xnxx.com/search/porno%20en%20espanol"
+      ],
+      "errors": []
+    },
+    {
+      "query": "\"Ada\" \"myworkdayjobs.com\"",
+      "fetchedAt": "2026-03-30T01:27:43.297Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=%22Ada%22+%22myworkdayjobs.com%22",
+        "https://ada.org.au/",
+        "https://ada.org.au/resources",
+        "https://ada.org.au/services"
+      ],
+      "errors": []
+    },
+    {
+      "query": "\"D2L\" \"myworkdayjobs.com\"",
+      "fetchedAt": "2026-03-30T01:27:43.316Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=%22D2L%22+%22myworkdayjobs.com%22",
+        "https://www.zhihu.com/question/524266302",
+        "https://www.zhihu.com/question/314802145",
+        "https://www.zhihu.com/question/646489478"
+      ],
+      "errors": []
+    },
+    {
+      "query": "\"Arista Networks\" \"myworkdayjobs.com\"",
+      "fetchedAt": "2026-03-30T01:27:43.326Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=%22Arista+Networks%22+%22myworkdayjobs.com%22",
+        "https://www.zhihu.com/question/46581771",
+        "https://www.zhihu.com/question/46581771/answers/updated",
+        "https://www.zhihu.com/question/24073649"
+      ],
+      "errors": []
+    },
+    {
+      "query": "\"Dialogue\" \"myworkdayjobs.com\"",
+      "fetchedAt": "2026-03-30T01:27:43.333Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=%22Dialogue%22+%22myworkdayjobs.com%22",
+        "https://zhidao.baidu.com/question/339766853.html",
+        "https://zhidao.baidu.com/question/2150005983085498468.html",
+        "https://zhidao.baidu.com/question/178500228377933484.html"
+      ],
+      "errors": []
+    },
+    {
+      "query": "\"Hopper\" \"myworkdayjobs.com\"",
+      "fetchedAt": "2026-03-30T01:27:43.414Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=%22Hopper%22+%22myworkdayjobs.com%22",
+        "https://www.zhihu.com/question/455419977",
+        "https://www.zhihu.com/question/662984685",
+        "https://www.zhihu.com/question/11261005710"
+      ],
+      "errors": []
+    },
+    {
+      "query": "\"Geotab\" \"myworkdayjobs.com\"",
+      "fetchedAt": "2026-03-30T01:27:43.429Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=%22Geotab%22+%22myworkdayjobs.com%22",
+        "http://my.geotab.com/",
+        "https://www.geotab.com/mygeotab-login/",
+        "https://www.thestar.com/globenewswire/geotab-s-2025-sustainability-and-impact-report-shows-fleets-cutting-fuel-waste-reducing-idling-by/article_fa1e0b23-cf6e-52e0-8329-8b66c6e185ce.html"
+      ],
+      "errors": []
+    },
+    {
+      "query": "\"Riskfuel\" \"myworkdayjobs.com\"",
+      "fetchedAt": "2026-03-30T01:27:43.441Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=%22Riskfuel%22+%22myworkdayjobs.com%22",
+        "https://www.qvc.com/",
+        "https://plus.qvc.com/collections/collection-qvc-new",
+        "https://www.msn.com/en-us/shopping/general/today-s-best-qvc-online-clearance-finds-special-prices-while-they-last/ar-AA18wW7n"
+      ],
+      "errors": []
+    },
+    {
+      "query": "\"MDA Space\" \"myworkdayjobs.com\"",
+      "fetchedAt": "2026-03-30T01:27:43.448Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=%22MDA+Space%22+%22myworkdayjobs.com%22",
+        "https://www.zhihu.com/tardis/zm/art/707864262",
+        "https://www.zhihu.com/question/401108619",
+        "https://zhidao.baidu.com/question/2129735738784534467.html"
+      ],
+      "errors": []
+    },
+    {
+      "query": "\"Plusgrade\" \"myworkdayjobs.com\"",
+      "fetchedAt": "2026-03-30T01:27:43.461Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=%22Plusgrade%22+%22myworkdayjobs.com%22",
+        "https://www.plusgrade.com/",
+        "https://ca.linkedin.com/company/plusgrade",
+        "https://www.lapresse.ca/affaires/entreprises/2024-03-05/un-fonds-americain-prend-le-controle-de-plusgrade.php"
+      ],
+      "errors": []
+    },
+    {
+      "query": "\"Softchoice\" \"myworkdayjobs.com\"",
+      "fetchedAt": "2026-03-30T01:27:43.496Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=%22Softchoice%22+%22myworkdayjobs.com%22",
+        "https://www.softchoice.com/",
+        "https://www.wwt.com/corporate/softchoice/overview",
+        "https://softchoice.azurewebsites.net/solutions"
+      ],
+      "errors": []
+    },
+    {
+      "query": "\"Vention\" \"myworkdayjobs.com\"",
+      "fetchedAt": "2026-03-30T01:27:43.513Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=%22Vention%22+%22myworkdayjobs.com%22",
+        "https://vention.io/",
+        "https://en.wikipedia.org/wiki/Vention",
+        "https://ca.linkedin.com/company/vention"
+      ],
+      "errors": []
+    },
+    {
+      "query": "\"Q4\" \"myworkdayjobs.com\"",
+      "fetchedAt": "2026-03-30T01:27:43.556Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=%22Q4%22+%22myworkdayjobs.com%22",
+        "https://www.zhihu.com/tardis/bd/art/1974925740781876118",
+        "https://www.zhihu.com/question/633365088",
+        "https://www.zhihu.com/question/539370903"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"aristanetworks\" careers",
+      "fetchedAt": "2026-03-30T01:27:43.607Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22aristanetworks%22+careers",
+        "https://maxstream.tv/",
+        "https://maxstream.tv/tv-channels",
+        "https://maxstream.tv/tv-series"
+      ],
+      "errors": []
+    },
+    {
+      "query": "\"q4inc\" careers workday",
+      "fetchedAt": "2026-03-30T01:27:43.610Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=%22q4inc%22+careers+workday",
+        "https://github.com/Robertcell/chatgpt-for-chinese",
+        "https://cellphones.com.vn/sforum/cach-dung-chatgpt",
+        "https://github.com/chat4us/gpt-5"
+      ],
+      "errors": []
+    },
+    {
+      "query": "\"aristanetworks\" careers workday",
+      "fetchedAt": "2026-03-30T01:27:43.612Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=%22aristanetworks%22+careers+workday",
+        "https://pornzen.com/bettie-bondage-fostering-the-bully/",
+        "https://incestporn.xxx/bettie-bondage-fostering-the-bully",
+        "https://porndd.com/video/2775/bettie-bondage-fostering-the-bully/"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"mda\" careers",
+      "fetchedAt": "2026-03-30T01:27:43.648Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22mda%22+careers",
+        "https://mda.space/careers/",
+        "https://ca.linkedin.com/company/mdaspace/jobs",
+        "https://ca.indeed.com/cmp/Mda-1"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"q4inc\" careers",
+      "fetchedAt": "2026-03-30T01:27:43.671Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22q4inc%22+careers",
+        "https://www.heb.com/",
+        "https://www.storeopeninghours.com/retailers/h-e-b",
+        "https://www.theweeklyad.com/heb-weekly-ad/"
+      ],
+      "errors": []
+    },
+    {
+      "query": "\"q4inc\" \"myworkdayjobs.com\"",
+      "fetchedAt": "2026-03-30T01:27:43.696Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=%22q4inc%22+%22myworkdayjobs.com%22",
+        "https://www.reddit.com/r/Veterans/comments/kvw3h7/accessing_iperms_after_ets/",
+        "https://www.reddit.com/r/army/comments/17x2oxt/how_long_does_it_take_for_s1_to_upload_college/",
+        "https://www.reddit.com/r/army/comments/146v8d9/login_issues/"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"q4inc\" jobs",
+      "fetchedAt": "2026-03-30T01:27:43.708Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22q4inc%22+jobs",
+        "https://www.youtube.com/",
+        "https://play.google.com/store/apps/details?id=com.google.android.youtube&hl=en",
+        "https://about.youtube/"
+      ],
+      "errors": []
+    },
+    {
+      "query": "site:myworkdayjobs.com \"aristanetworks\" jobs",
+      "fetchedAt": "2026-03-30T01:27:43.744Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=site%3amyworkdayjobs.com+%22aristanetworks%22+jobs",
+        "https://www.zhihu.com/question/1961449149313552647",
+        "https://www.zhihu.com/question/10000581587",
+        "https://www.zhihu.com/question/1933614090619712329"
+      ],
+      "errors": []
+    },
+    {
+      "query": "\"aristanetworks\" \"myworkdayjobs.com\"",
+      "fetchedAt": "2026-03-30T01:27:43.759Z",
+      "resultUrls": [
+        "http://www.bing.com:80/search?q=%22aristanetworks%22+%22myworkdayjobs.com%22",
+        "https://community.southwest.com/t5/Travel-Policies/How-can-I-finish-watching-a-movie-I-paid-for-on-Southwest-wifi/m-p/79632",
+        "https://community.southwest.com/t5/user/viewprofilepage/user-id/124837",
+        "https://community.southwest.com/t5/user/viewprofilepage/user-id/100523/user-messages-feed/latest-contributions"
       ],
       "errors": []
     }

@@ -1,0 +1,1418 @@
+[
+  {
+    "boardUrl": "https://ciena.wd5.myworkdayjobs.com/careers",
+    "sourceKey": "workday:ciena.wd5.myworkdayjobs.com|ciena|careers",
+    "connectorName": "workday",
+    "token": "ciena.wd5.myworkdayjobs.com|ciena|careers",
+    "companyNames": [
+      "Ciena Government Solutions"
+    ],
+    "careerPageUrls": [
+      "https://www.ciena.com/careers"
+    ],
+    "directAtsUrls": [
+      "https://ciena.wd5.myworkdayjobs.com/careers"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link",
+      "career_page_scan"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "input": "https://ciena.wd5.myworkdayjobs.com/careers",
+      "connectorName": "workday",
+      "token": "ciena.wd5.myworkdayjobs.com|ciena|careers",
+      "sourceKey": "workday:ciena.wd5.myworkdayjobs.com|ciena|careers",
+      "sourceName": "Workday:ciena.wd5.myworkdayjobs.com|ciena|careers",
+      "boardUrl": "https://ciena.wd5.myworkdayjobs.com/careers",
+      "source": "token",
+      "pageTitle": null,
+      "fetchedCount": 100,
+      "acceptedCount": 35,
+      "acceptedCanadaCount": 19,
+      "acceptedCanadaRemoteCount": 0,
+      "previewCreatedCount": 35,
+      "previewCreatedCanadaCount": 19,
+      "previewCreatedCanadaRemoteCount": 0,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 65,
+      "existingRawCount": 0,
+      "existingActiveMappingCount": 0,
+      "existingLiveCanonicalCount": 0,
+      "sampleTitles": [
+        "Senior Business Operations Analyst",
+        "Field Applications Engineer",
+        "Product Line Manager",
+        "Specialist - Account Management - Routing &amp; Switching",
+        "Senior Software Development Manager"
+      ],
+      "sampleLocations": [
+        "Canada- Ottawa- 385 Terry Fox- Bldg B, Canada",
+        "US- CA- Petaluma- 1465 N McDowell Blvd, United States of America",
+        "Canada- Ottawa- 385 Terry Fox- Bldg B, Canada",
+        "India- Gurgaon- JSK Tower- Plot 13, India",
+        "Canada- Ottawa- 385 Terry Fox- Bldg B, Canada"
+      ]
+    },
+    "recommendedPromotion": true,
+    "promotionReason": "canada_heavy_created_volume"
+  },
+  {
+    "boardUrl": "https://ebay.wd5.myworkdayjobs.com/apply",
+    "sourceKey": "workday:ebay.wd5.myworkdayjobs.com|ebay|apply",
+    "connectorName": "workday",
+    "token": "ebay.wd5.myworkdayjobs.com|ebay|apply",
+    "companyNames": [
+      "eBay"
+    ],
+    "careerPageUrls": [
+      "https://jobs.ebayinc.com/us/en/search-results"
+    ],
+    "directAtsUrls": [
+      "https://ebay.wd5.myworkdayjobs.com/apply"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link",
+      "career_page_scan"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "input": "https://ebay.wd5.myworkdayjobs.com/apply",
+      "connectorName": "workday",
+      "token": "ebay.wd5.myworkdayjobs.com|ebay|apply",
+      "sourceKey": "workday:ebay.wd5.myworkdayjobs.com|ebay|apply",
+      "sourceName": "Workday:ebay.wd5.myworkdayjobs.com|ebay|apply",
+      "boardUrl": "https://ebay.wd5.myworkdayjobs.com/apply",
+      "source": "token",
+      "pageTitle": null,
+      "fetchedCount": 100,
+      "acceptedCount": 29,
+      "acceptedCanadaCount": 14,
+      "acceptedCanadaRemoteCount": 14,
+      "previewCreatedCount": 29,
+      "previewCreatedCanadaCount": 14,
+      "previewCreatedCanadaRemoteCount": 14,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 71,
+      "existingRawCount": 0,
+      "existingActiveMappingCount": 0,
+      "existingLiveCanonicalCount": 0,
+      "sampleTitles": [
+        "Distinguished MTS - Seller Engineering",
+        "Sr. Product Manager, Selling Tools",
+        "Global StratOps Lead, eBay Live Supply",
+        "Business Development Manager",
+        "Head of Business Dev, UK eBay Live"
+      ],
+      "sampleLocations": [
+        "United States of America",
+        "Canada",
+        "United States of America",
+        "Germany",
+        "United Kingdom"
+      ]
+    },
+    "recommendedPromotion": true,
+    "promotionReason": "canada_heavy_created_volume"
+  },
+  {
+    "boardUrl": "https://jobs.lever.co/versapay",
+    "sourceKey": "lever:versapay",
+    "connectorName": "lever",
+    "token": "versapay",
+    "companyNames": [
+      "Versapay"
+    ],
+    "careerPageUrls": [
+      "https://www.versapay.com/careers"
+    ],
+    "directAtsUrls": [
+      "https://jobs.lever.co/versapay"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link",
+      "career_page_scan"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "input": "https://jobs.lever.co/versapay",
+      "connectorName": "lever",
+      "token": "versapay",
+      "sourceKey": "lever:versapay",
+      "sourceName": "Lever:versapay",
+      "boardUrl": "https://jobs.lever.co/versapay",
+      "source": "token",
+      "pageTitle": "Versapay",
+      "fetchedCount": 38,
+      "acceptedCount": 21,
+      "acceptedCanadaCount": 11,
+      "acceptedCanadaRemoteCount": 11,
+      "previewCreatedCount": 20,
+      "previewCreatedCanadaCount": 10,
+      "previewCreatedCanadaRemoteCount": 10,
+      "previewUpdatedCount": 1,
+      "dedupedCount": 1,
+      "rejectedCount": 17,
+      "existingRawCount": 0,
+      "existingActiveMappingCount": 0,
+      "existingLiveCanonicalCount": 0,
+      "sampleTitles": [
+        "Accounting Manager, Payment Operations",
+        "Accounting Manager, Payment Operations",
+        "Customer Account Manager",
+        "Customer Account Manager",
+        "Customer Success Operations Manager"
+      ],
+      "sampleLocations": [
+        "United States (Remote)",
+        "Canada (Remote)",
+        "Canada (Remote)",
+        "United States (Remote)",
+        "United States (Remote)"
+      ]
+    },
+    "recommendedPromotion": true,
+    "promotionReason": "canada_heavy_created_volume"
+  },
+  {
+    "boardUrl": "https://jobs.lever.co/fullscript",
+    "sourceKey": "lever:fullscript",
+    "connectorName": "lever",
+    "token": "fullscript",
+    "companyNames": [
+      "Fullscript"
+    ],
+    "careerPageUrls": [
+      "https://fullscript.com/careers"
+    ],
+    "directAtsUrls": [
+      "https://jobs.lever.co/fullscript"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link",
+      "career_page_scan"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "input": "https://jobs.lever.co/fullscript",
+      "connectorName": "lever",
+      "token": "fullscript",
+      "sourceKey": "lever:fullscript",
+      "sourceName": "Lever:fullscript",
+      "boardUrl": "https://jobs.lever.co/fullscript",
+      "source": "token",
+      "pageTitle": "Fullscript",
+      "fetchedCount": 29,
+      "acceptedCount": 17,
+      "acceptedCanadaCount": 13,
+      "acceptedCanadaRemoteCount": 10,
+      "previewCreatedCount": 14,
+      "previewCreatedCanadaCount": 10,
+      "previewCreatedCanadaRemoteCount": 8,
+      "previewUpdatedCount": 3,
+      "dedupedCount": 3,
+      "rejectedCount": 12,
+      "existingRawCount": 0,
+      "existingActiveMappingCount": 0,
+      "existingLiveCanonicalCount": 0,
+      "sampleTitles": [
+        "Customer Support Specialist - Ottawa",
+        "Customer Support Specialist -Kelowna",
+        "CX Infrastructure Analyst",
+        "Director, Strategic Finance",
+        "Engineering Manager, AI Platform & Experiences"
+      ],
+      "sampleLocations": [
+        "Ottawa, ON",
+        "Kelowna, BC, Kamloops, BC",
+        "Ottawa, ON, Kelowna, BC, Toronto, ON",
+        "Boston, MA, Toronto, ON, New York, NY",
+        "Ottawa, ON, Calgary, AB, Toronto, ON"
+      ]
+    },
+    "recommendedPromotion": true,
+    "promotionReason": "canada_heavy_created_volume"
+  },
+  {
+    "boardUrl": "https://jobs.lever.co/shyftlabs",
+    "sourceKey": "lever:shyftlabs",
+    "connectorName": "lever",
+    "token": "shyftlabs",
+    "companyNames": [
+      "ShyftLabs"
+    ],
+    "careerPageUrls": [
+      "https://shyftlabs.io/"
+    ],
+    "directAtsUrls": [
+      "https://jobs.lever.co/shyftlabs"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link",
+      "career_page_scan"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "input": "https://jobs.lever.co/shyftlabs",
+      "connectorName": "lever",
+      "token": "shyftlabs",
+      "sourceKey": "lever:shyftlabs",
+      "sourceName": "Lever:shyftlabs",
+      "boardUrl": "https://jobs.lever.co/shyftlabs",
+      "source": "token",
+      "pageTitle": "ShyftLabs",
+      "fetchedCount": 53,
+      "acceptedCount": 9,
+      "acceptedCanadaCount": 9,
+      "acceptedCanadaRemoteCount": 1,
+      "previewCreatedCount": 7,
+      "previewCreatedCanadaCount": 7,
+      "previewCreatedCanadaRemoteCount": 1,
+      "previewUpdatedCount": 2,
+      "dedupedCount": 2,
+      "rejectedCount": 44,
+      "existingRawCount": 0,
+      "existingActiveMappingCount": 0,
+      "existingLiveCanonicalCount": 0,
+      "sampleTitles": [
+        "Adobe Target Developer",
+        "Amazon Connect Fullstack Developer",
+        "Analytics Engineer",
+        "Apache Druid Engineer",
+        "BI Analyst"
+      ],
+      "sampleLocations": [
+        "Noida, Uttar Pradesh",
+        "Noida, Uttar Pradesh",
+        "Noida, Uttar Pradesh",
+        "Gurugram, Haryana",
+        "Noida, Uttar Pradesh"
+      ]
+    },
+    "recommendedPromotion": true,
+    "promotionReason": "canada_heavy_created_volume"
+  },
+  {
+    "boardUrl": "https://agnicoeagle.taleo.net/careersection/2/jobsearch.ftl?lang=en",
+    "sourceKey": "taleo:agnicoeagle/2",
+    "connectorName": "taleo",
+    "token": "agnicoeagle/2",
+    "companyNames": [
+      "Agnico Eagle"
+    ],
+    "careerPageUrls": [
+      "https://www.agnicoeagle.com/English/careers/overview/default.aspx"
+    ],
+    "directAtsUrls": [
+      "https://agnicoeagle.taleo.net/careersection/2/jobsearch.ftl?lang=en"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link",
+      "career_page_scan"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "input": "https://agnicoeagle.taleo.net/careersection/2/jobsearch.ftl?lang=en",
+      "connectorName": "taleo",
+      "token": "agnicoeagle/2",
+      "sourceKey": "taleo:agnicoeagle/2",
+      "sourceName": "Taleo:agnicoeagle/2",
+      "boardUrl": "https://agnicoeagle.taleo.net/careersection/2/jobsearch.ftl?lang=en",
+      "source": "token",
+      "pageTitle": "Job Search",
+      "fetchedCount": 51,
+      "acceptedCount": 6,
+      "acceptedCanadaCount": 6,
+      "acceptedCanadaRemoteCount": 0,
+      "previewCreatedCount": 6,
+      "previewCreatedCanadaCount": 6,
+      "previewCreatedCanadaRemoteCount": 0,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 45,
+      "existingRawCount": 0,
+      "existingActiveMappingCount": 0,
+      "existingLiveCanonicalCount": 0,
+      "sampleTitles": [
+        "Lineman (DET00394)",
+        "New or Recent Graduate Mine Engineer (MAC00325)",
+        "New or Recent Graduate Mine Geologist (DET00377)",
+        "Sanajiksanut - Apprenticeship Program (NUN00579)",
+        "Mine Geologist (DET00419)"
+      ],
+      "sampleLocations": [
+        "of residence in Canada.",
+        "Kirkland Lake, Ontario",
+        "of residence in Canada. Minimum",
+        "Nunavut",
+        "of residence in Canada. Compensation Statement In accordance with applicable legislation, the expected compensation includes base"
+      ]
+    },
+    "recommendedPromotion": true,
+    "promotionReason": "canada_heavy_created_volume"
+  },
+  {
+    "boardUrl": "https://job-boards.greenhouse.io/tipaltisolutions",
+    "sourceKey": "greenhouse:tipaltisolutions",
+    "connectorName": "greenhouse",
+    "token": "tipaltisolutions",
+    "companyNames": [
+      "Tipalti"
+    ],
+    "careerPageUrls": [
+      "https://tipalti.com/company/jobs/"
+    ],
+    "directAtsUrls": [
+      "https://job-boards.greenhouse.io/tipaltisolutions"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link",
+      "career_page_scan"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "input": "https://job-boards.greenhouse.io/tipaltisolutions",
+      "connectorName": "greenhouse",
+      "token": "tipaltisolutions",
+      "sourceKey": "greenhouse:tipaltisolutions",
+      "sourceName": "Greenhouse:tipaltisolutions",
+      "boardUrl": "https://job-boards.greenhouse.io/tipaltisolutions",
+      "source": "token",
+      "pageTitle": "Job Board | Tipalti",
+      "fetchedCount": 55,
+      "acceptedCount": 15,
+      "acceptedCanadaCount": 8,
+      "acceptedCanadaRemoteCount": 0,
+      "previewCreatedCount": 12,
+      "previewCreatedCanadaCount": 5,
+      "previewCreatedCanadaRemoteCount": 0,
+      "previewUpdatedCount": 3,
+      "dedupedCount": 3,
+      "rejectedCount": 40,
+      "existingRawCount": 0,
+      "existingActiveMappingCount": 0,
+      "existingLiveCanonicalCount": 0,
+      "sampleTitles": [
+        "Account Executive, Commercial",
+        "Alliance Manager",
+        "Associate Customer Onboarding Manager",
+        "Backend Software Engineer (Go)",
+        "Business Intelligence Developer"
+      ],
+      "sampleLocations": [
+        "Toronto, Ontario, Canada",
+        "Plano, Texas, United States; Remote (CAN); Remote (US); Toronto, Ontario, Canada; Vancouver, British Columbia, Canada",
+        "Medellín, Antioquia, Colombia",
+        "Tbilisi, Georgia",
+        "Tbilisi, Georgia"
+      ]
+    },
+    "recommendedPromotion": true,
+    "promotionReason": "canada_heavy_created_volume"
+  },
+  {
+    "boardUrl": "https://motorolasolutions.wd5.myworkdayjobs.com/careers",
+    "sourceKey": "workday:motorolasolutions.wd5.myworkdayjobs.com|motorolasolutions|careers",
+    "connectorName": "workday",
+    "token": "motorolasolutions.wd5.myworkdayjobs.com|motorolasolutions|careers",
+    "companyNames": [
+      "Motorola Solutions"
+    ],
+    "careerPageUrls": [
+      "https://www.motorolasolutions.com/en_us/about/careers.html"
+    ],
+    "directAtsUrls": [
+      "https://motorolasolutions.wd5.myworkdayjobs.com/careers"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link",
+      "career_page_scan"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "input": "https://motorolasolutions.wd5.myworkdayjobs.com/careers",
+      "connectorName": "workday",
+      "token": "motorolasolutions.wd5.myworkdayjobs.com|motorolasolutions|careers",
+      "sourceKey": "workday:motorolasolutions.wd5.myworkdayjobs.com|motorolasolutions|careers",
+      "sourceName": "Workday:motorolasolutions.wd5.myworkdayjobs.com|motorolasolutions|careers",
+      "boardUrl": "https://motorolasolutions.wd5.myworkdayjobs.com/careers",
+      "source": "token",
+      "pageTitle": null,
+      "fetchedCount": 100,
+      "acceptedCount": 22,
+      "acceptedCanadaCount": 3,
+      "acceptedCanadaRemoteCount": 1,
+      "previewCreatedCount": 22,
+      "previewCreatedCanadaCount": 3,
+      "previewCreatedCanadaRemoteCount": 1,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 78,
+      "existingRawCount": 0,
+      "existingActiveMappingCount": 0,
+      "existingLiveCanonicalCount": 0,
+      "sampleTitles": [
+        "Senior Marketing Analyst",
+        "Assistente de Monitoramento",
+        "Avigilon Alta Pre-Sales Solutions Engineer",
+        "Senior Digital Design Engineer (Product Solutions)",
+        "Business Operations Analyst"
+      ],
+      "sampleLocations": [
+        "Sao Paulo, Brazil, Brazil",
+        "Sao Paulo, Brazil, Brazil",
+        "Germany Offsite (ZWG99), Germany",
+        "Los Angeles, CA, United States of America",
+        "Bogota, Colombia (ZCL04), Colombia"
+      ]
+    },
+    "recommendedPromotion": true,
+    "promotionReason": "canada_heavy_created_volume"
+  },
+  {
+    "boardUrl": "https://jobs.lever.co/metergysolutions",
+    "sourceKey": "lever:metergysolutions",
+    "connectorName": "lever",
+    "token": "metergysolutions",
+    "companyNames": [
+      "Metergy Solutions"
+    ],
+    "careerPageUrls": [
+      "https://www.metergysolutions.com/careers"
+    ],
+    "directAtsUrls": [
+      "https://jobs.lever.co/metergysolutions"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link",
+      "career_page_scan"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "input": "https://jobs.lever.co/metergysolutions",
+      "connectorName": "lever",
+      "token": "metergysolutions",
+      "sourceKey": "lever:metergysolutions",
+      "sourceName": "Lever:metergysolutions",
+      "boardUrl": "https://jobs.lever.co/metergysolutions",
+      "source": "token",
+      "pageTitle": "Metergy Solutions",
+      "fetchedCount": 19,
+      "acceptedCount": 4,
+      "acceptedCanadaCount": 3,
+      "acceptedCanadaRemoteCount": 0,
+      "previewCreatedCount": 4,
+      "previewCreatedCanadaCount": 3,
+      "previewCreatedCanadaRemoteCount": 0,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 15,
+      "existingRawCount": 0,
+      "existingActiveMappingCount": 0,
+      "existingLiveCanonicalCount": 0,
+      "sampleTitles": [
+        "Account Executive",
+        "Account Executive",
+        "Billing Analyst (Utilities)",
+        "Business Analyst",
+        "Business Intelligence Manager"
+      ],
+      "sampleLocations": [
+        "Miami, Florida",
+        "Atlanta, Georgia",
+        "New York, New York",
+        "Toronto, Ontario",
+        "New York, New York"
+      ]
+    },
+    "recommendedPromotion": true,
+    "promotionReason": "canada_heavy_created_volume"
+  },
+  {
+    "boardUrl": "https://petalmd.recruitee.com/",
+    "sourceKey": "recruitee:petalmd",
+    "connectorName": "recruitee",
+    "token": "petalmd",
+    "companyNames": [
+      "Petal"
+    ],
+    "careerPageUrls": [
+      "http://www.petal-health.com/en/",
+      "https://www.petal-health.com/en/careers3/"
+    ],
+    "directAtsUrls": [
+      "https://petalmd.recruitee.com/"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link",
+      "career_page_scan"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "input": "https://petalmd.recruitee.com/",
+      "connectorName": "recruitee",
+      "token": "petalmd",
+      "sourceKey": "recruitee:petalmd",
+      "sourceName": "Recruitee:petalmd",
+      "boardUrl": "https://petalmd.recruitee.com/",
+      "source": "token",
+      "pageTitle": null,
+      "fetchedCount": 7,
+      "acceptedCount": 2,
+      "acceptedCanadaCount": 2,
+      "acceptedCanadaRemoteCount": 2,
+      "previewCreatedCount": 2,
+      "previewCreatedCanadaCount": 2,
+      "previewCreatedCanadaRemoteCount": 2,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 5,
+      "existingRawCount": 0,
+      "existingActiveMappingCount": 0,
+      "existingLiveCanonicalCount": 0,
+      "sampleTitles": [
+        "Technical Support and Customer Service Agent",
+        "Revenue Intelligence Manager (RevOps)",
+        "Medical Billing Agent",
+        "Principal Developer - Platform",
+        "Growth Marketing Specialist"
+      ],
+      "sampleLocations": [
+        "Montréal, Québec, Canada | Quebec, Québec, Canada",
+        "Toronto, Ontario, Canada | Quebec, Quebec, Canada | Montréal, Quebec, Canada",
+        "North Vancouver, British Columbia, Canada",
+        "Montréal, Quebec, Canada | Quebec, Quebec, Canada | Toronto, Ontario, Canada | Vancouver, British Columbia, Canada",
+        "Montréal, Quebec, Canada | Quebec, Quebec, Canada | Toronto, Ontario, Canada"
+      ]
+    },
+    "recommendedPromotion": true,
+    "promotionReason": "canada_dense_small_board"
+  },
+  {
+    "boardUrl": "https://corpay.wd103.myworkdayjobs.com/ext_001",
+    "sourceKey": "workday:corpay.wd103.myworkdayjobs.com|corpay|ext_001",
+    "connectorName": "workday",
+    "token": "corpay.wd103.myworkdayjobs.com|corpay|ext_001",
+    "companyNames": [
+      "Corpay"
+    ],
+    "careerPageUrls": [
+      "https://www.corpay.com/careers"
+    ],
+    "directAtsUrls": [
+      "https://corpay.wd103.myworkdayjobs.com/ext_001"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link",
+      "career_page_scan"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "input": "https://corpay.wd103.myworkdayjobs.com/ext_001",
+      "connectorName": "workday",
+      "token": "corpay.wd103.myworkdayjobs.com|corpay|ext_001",
+      "sourceKey": "workday:corpay.wd103.myworkdayjobs.com|corpay|ext_001",
+      "sourceName": "Workday:corpay.wd103.myworkdayjobs.com|corpay|ext_001",
+      "boardUrl": "https://corpay.wd103.myworkdayjobs.com/ext_001",
+      "source": "token",
+      "pageTitle": null,
+      "fetchedCount": 61,
+      "acceptedCount": 2,
+      "acceptedCanadaCount": 2,
+      "acceptedCanadaRemoteCount": 0,
+      "previewCreatedCount": 2,
+      "previewCreatedCanadaCount": 2,
+      "previewCreatedCanadaRemoteCount": 0,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 59,
+      "existingRawCount": 0,
+      "existingActiveMappingCount": 0,
+      "existingLiveCanonicalCount": 0,
+      "sampleTitles": [
+        "Senior Flutter Developer",
+        "Jr. Payroll Specialist",
+        "EV Product Manager",
+        "KYC Associate Analyst",
+        "Transaction Monitoring Associate"
+      ],
+      "sampleLocations": [
+        "Walsall, United Kingdom",
+        "Swindon, United Kingdom",
+        "Swindon, United Kingdom",
+        "Malta Avenue 77 - Cross Border, Malta",
+        "Malta Avenue 77 - Cross Border, Malta"
+      ]
+    },
+    "recommendedPromotion": true,
+    "promotionReason": "canada_dense_small_board"
+  },
+  {
+    "boardUrl": "https://job-boards.greenhouse.io/kaseya",
+    "sourceKey": "greenhouse:kaseya",
+    "connectorName": "greenhouse",
+    "token": "kaseya",
+    "companyNames": [
+      "Kaseya Careers"
+    ],
+    "careerPageUrls": [
+      "https://www.kaseya.com/careers/jobs/"
+    ],
+    "directAtsUrls": [
+      "https://job-boards.greenhouse.io/kaseya"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link",
+      "career_page_scan"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "input": "https://job-boards.greenhouse.io/kaseya",
+      "connectorName": "greenhouse",
+      "token": "kaseya",
+      "sourceKey": "greenhouse:kaseya",
+      "sourceName": "Greenhouse:kaseya",
+      "boardUrl": "https://job-boards.greenhouse.io/kaseya",
+      "source": "token",
+      "pageTitle": "Learn About Our Culture and Jobs - Kaseya Careers",
+      "fetchedCount": 100,
+      "acceptedCount": 19,
+      "acceptedCanadaCount": 3,
+      "acceptedCanadaRemoteCount": 1,
+      "previewCreatedCount": 17,
+      "previewCreatedCanadaCount": 1,
+      "previewCreatedCanadaRemoteCount": 0,
+      "previewUpdatedCount": 2,
+      "dedupedCount": 2,
+      "rejectedCount": 81,
+      "existingRawCount": 0,
+      "existingActiveMappingCount": 0,
+      "existingLiveCanonicalCount": 0,
+      "sampleTitles": [
+        "Account Manager",
+        "Account Manager",
+        "Account Manager",
+        "Account Manager",
+        "Account Manager"
+      ],
+      "sampleLocations": [
+        "Bangalore, India",
+        "Medellin, Colombia",
+        "Miami, FL",
+        "Miami, FL",
+        "Miami, FL"
+      ]
+    },
+    "recommendedPromotion": false,
+    "promotionReason": "insufficient_canada_weighted_yield"
+  },
+  {
+    "boardUrl": "https://jobs.lever.co/policyme",
+    "sourceKey": "lever:policyme",
+    "connectorName": "lever",
+    "token": "policyme",
+    "companyNames": [
+      "PolicyMe"
+    ],
+    "careerPageUrls": [
+      "https://www.policyme.com/careers"
+    ],
+    "directAtsUrls": [
+      "https://jobs.lever.co/policyme"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link",
+      "career_page_scan"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "input": "https://jobs.lever.co/policyme",
+      "connectorName": "lever",
+      "token": "policyme",
+      "sourceKey": "lever:policyme",
+      "sourceName": "Lever:policyme",
+      "boardUrl": "https://jobs.lever.co/policyme",
+      "source": "token",
+      "pageTitle": "PolicyMe",
+      "fetchedCount": 13,
+      "acceptedCount": 1,
+      "acceptedCanadaCount": 1,
+      "acceptedCanadaRemoteCount": 1,
+      "previewCreatedCount": 1,
+      "previewCreatedCanadaCount": 1,
+      "previewCreatedCanadaRemoteCount": 1,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 12,
+      "existingRawCount": 0,
+      "existingActiveMappingCount": 0,
+      "existingLiveCanonicalCount": 0,
+      "sampleTitles": [
+        "Bilingual Customer Success Specialist (Remote)",
+        "Bilingual Licensed Insurance Advisor (Remote)",
+        "Bilingual Quebec Licensed Insurance Advisor (Remote)",
+        "Business Development Representative (Remote)",
+        "Customer Success Specialist (Remote)"
+      ],
+      "sampleLocations": [
+        "Ontario",
+        "Remote in Toronto",
+        "Remote in Quebec",
+        "Remote in Toronto",
+        "Ontario"
+      ]
+    },
+    "recommendedPromotion": true,
+    "promotionReason": "canada_dense_small_board"
+  },
+  {
+    "boardUrl": "https://myview.wd3.myworkdayjobs.com/sdm_careers",
+    "sourceKey": "workday:myview.wd3.myworkdayjobs.com|myview|sdm_careers",
+    "connectorName": "workday",
+    "token": "myview.wd3.myworkdayjobs.com|myview|sdm_careers",
+    "companyNames": [
+      "Shoppers Drug Mart"
+    ],
+    "careerPageUrls": [
+      "https://careers.shoppersdrugmart.ca/en/careers-find-jobs/",
+      "https://corporate.shoppersdrugmart.ca/en/careers-life-at-shoppers/"
+    ],
+    "directAtsUrls": [
+      "https://myview.wd3.myworkdayjobs.com/sdm_careers"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link",
+      "career_page_scan"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "input": "https://myview.wd3.myworkdayjobs.com/sdm_careers",
+      "connectorName": "workday",
+      "token": "myview.wd3.myworkdayjobs.com|myview|sdm_careers",
+      "sourceKey": "workday:myview.wd3.myworkdayjobs.com|myview|sdm_careers",
+      "sourceName": "Workday:myview.wd3.myworkdayjobs.com|myview|sdm_careers",
+      "boardUrl": "https://myview.wd3.myworkdayjobs.com/sdm_careers",
+      "source": "token",
+      "pageTitle": null,
+      "fetchedCount": 100,
+      "acceptedCount": 1,
+      "acceptedCanadaCount": 1,
+      "acceptedCanadaRemoteCount": 0,
+      "previewCreatedCount": 1,
+      "previewCreatedCanadaCount": 1,
+      "previewCreatedCanadaRemoteCount": 0,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 99,
+      "existingRawCount": 0,
+      "existingActiveMappingCount": 0,
+      "existingLiveCanonicalCount": 0,
+      "sampleTitles": [
+        "Pharmacy Assistant",
+        "Pharmacist - FT - Signing Bonus",
+        "Post Office Clerk",
+        "Beauty Manager",
+        "Pharmacy Assistant"
+      ],
+      "sampleLocations": [
+        "500 2Nd Avenue, Unit 249, Prince Rupert, BC, Canada",
+        "210 Wallace Avenue North, Listowel, ON, Canada",
+        "524 Queen St. W., Toronto, ON, Canada",
+        "597 Bernard Ave, Kelowna, BC, Canada",
+        "11800 Cambie Road, Richmond, BC, Canada"
+      ]
+    },
+    "recommendedPromotion": true,
+    "promotionReason": "canada_dense_small_board"
+  },
+  {
+    "boardUrl": "https://jobs.lever.co/houzz",
+    "sourceKey": "lever:houzz",
+    "connectorName": "lever",
+    "token": "houzz",
+    "companyNames": [
+      "House of Commons / Chambre des communes"
+    ],
+    "careerPageUrls": [
+      "https://www.houzz.com/jobs",
+      "https://www.houzz.com/jobs/all-jobs",
+      "https://www.houzz.com/jobs/current-openings",
+      "https://www.houzz.com/jobs/job-openings",
+      "https://www.houzz.com/jobs/jobs",
+      "https://www.houzz.com/jobs/open-positions",
+      "https://www.houzz.com/jobs/open-roles",
+      "https://www.houzz.com/jobs/openings"
+    ],
+    "directAtsUrls": [
+      "https://jobs.lever.co/houzz"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link",
+      "career_page_scan"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "input": "https://jobs.lever.co/houzz",
+      "connectorName": "lever",
+      "token": "houzz",
+      "sourceKey": "lever:houzz",
+      "sourceName": "Lever:houzz",
+      "boardUrl": "https://jobs.lever.co/houzz",
+      "source": "token",
+      "pageTitle": "Houzz",
+      "fetchedCount": 9,
+      "acceptedCount": 1,
+      "acceptedCanadaCount": 0,
+      "acceptedCanadaRemoteCount": 0,
+      "previewCreatedCount": 1,
+      "previewCreatedCanadaCount": 0,
+      "previewCreatedCanadaRemoteCount": 0,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 8,
+      "existingRawCount": 0,
+      "existingActiveMappingCount": 0,
+      "existingLiveCanonicalCount": 0,
+      "sampleTitles": [
+        "Brand Partner (Temporary)",
+        "Field Sales Manager",
+        "Field Sales Representative",
+        "Product Support Specialist I",
+        "Revenue Enablement Partner"
+      ],
+      "sampleLocations": [
+        "Remote - US",
+        "Remote - US",
+        "Remote - US",
+        "Remote - US",
+        "Remote - US"
+      ]
+    },
+    "recommendedPromotion": false,
+    "promotionReason": "insufficient_canada_weighted_yield"
+  },
+  {
+    "boardUrl": "https://careers.astrazeneca.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+    "sourceKey": "successfactors:careers.astrazeneca.com",
+    "connectorName": "successfactors",
+    "token": "careers.astrazeneca.com",
+    "companyNames": [
+      "AstraZeneca"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [
+      "https://careers.astrazeneca.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "input": "https://careers.astrazeneca.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+      "connectorName": "successfactors",
+      "token": "careers.astrazeneca.com",
+      "sourceKey": "successfactors:careers.astrazeneca.com",
+      "sourceName": "SuccessFactors:careers.astrazeneca.com",
+      "boardUrl": "https://careers.astrazeneca.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+      "source": "token",
+      "pageTitle": null,
+      "fetchedCount": 0,
+      "acceptedCount": 0,
+      "acceptedCanadaCount": 0,
+      "acceptedCanadaRemoteCount": 0,
+      "previewCreatedCount": 0,
+      "previewCreatedCanadaCount": 0,
+      "previewCreatedCanadaRemoteCount": 0,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 0,
+      "existingRawCount": 0,
+      "existingActiveMappingCount": 0,
+      "existingLiveCanonicalCount": 0,
+      "sampleTitles": [],
+      "sampleLocations": [],
+      "error": "SuccessFactors fetch failed for https://careers.astrazeneca.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc: 404 Not Found"
+    },
+    "recommendedPromotion": false,
+    "promotionReason": "SuccessFactors fetch failed for https://careers.astrazeneca.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc: 404 Not Found"
+  },
+  {
+    "boardUrl": "https://careers.snap.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+    "sourceKey": "successfactors:careers.snap.com",
+    "connectorName": "successfactors",
+    "token": "careers.snap.com",
+    "companyNames": [
+      "Variational AI"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [
+      "https://careers.snap.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "input": "https://careers.snap.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+      "connectorName": "successfactors",
+      "token": "careers.snap.com",
+      "sourceKey": "successfactors:careers.snap.com",
+      "sourceName": "SuccessFactors:careers.snap.com",
+      "boardUrl": "https://careers.snap.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+      "source": "token",
+      "pageTitle": null,
+      "fetchedCount": 0,
+      "acceptedCount": 0,
+      "acceptedCanadaCount": 0,
+      "acceptedCanadaRemoteCount": 0,
+      "previewCreatedCount": 0,
+      "previewCreatedCanadaCount": 0,
+      "previewCreatedCanadaRemoteCount": 0,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 0,
+      "existingRawCount": 0,
+      "existingActiveMappingCount": 0,
+      "existingLiveCanonicalCount": 0,
+      "sampleTitles": [],
+      "sampleLocations": [],
+      "error": "SuccessFactors fetch failed for https://careers.snap.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc: 404 Not Found"
+    },
+    "recommendedPromotion": false,
+    "promotionReason": "SuccessFactors fetch failed for https://careers.snap.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc: 404 Not Found"
+  },
+  {
+    "boardUrl": "https://jobs.foundever.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+    "sourceKey": "successfactors:jobs.foundever.com",
+    "connectorName": "successfactors",
+    "token": "jobs.foundever.com",
+    "companyNames": [
+      "Foundever"
+    ],
+    "careerPageUrls": [
+      "https://jobs.foundever.com/"
+    ],
+    "directAtsUrls": [
+      "https://jobs.foundever.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link",
+      "career_page_scan"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "input": "https://jobs.foundever.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+      "connectorName": "successfactors",
+      "token": "jobs.foundever.com",
+      "sourceKey": "successfactors:jobs.foundever.com",
+      "sourceName": "SuccessFactors:jobs.foundever.com",
+      "boardUrl": "https://jobs.foundever.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+      "source": "token",
+      "pageTitle": "Foundever® Jobs",
+      "fetchedCount": 10,
+      "acceptedCount": 0,
+      "acceptedCanadaCount": 0,
+      "acceptedCanadaRemoteCount": 0,
+      "previewCreatedCount": 0,
+      "previewCreatedCanadaCount": 0,
+      "previewCreatedCanadaRemoteCount": 0,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 10,
+      "existingRawCount": 0,
+      "existingActiveMappingCount": 0,
+      "existingLiveCanonicalCount": 0,
+      "sampleTitles": [
+        "Representante de Atención al Cliente Bilingüe",
+        "Szlovák nyelvű tanácsadó technológiai vállalathoz - Budapest",
+        "Performance Improvement Manager",
+        "Customer Service Representative - India - Hyderabad Voice",
+        "Sr. Mgr, SAP SuccessFactors EC and Platform"
+      ],
+      "sampleLocations": [
+        "Bogota, Bogo, CO",
+        "Budapest, Buda, HU",
+        "Cairo, Cair, EG",
+        "Hyderabad, Indi, IN",
+        "UK Remote (Sitel), Any, GB"
+      ]
+    },
+    "recommendedPromotion": false,
+    "promotionReason": "insufficient_canada_weighted_yield"
+  },
+  {
+    "boardUrl": "https://agnicoeagle.taleo.net/careersection/4/jobsearch.ftl?lang=en",
+    "sourceKey": "taleo:agnicoeagle/4",
+    "connectorName": "taleo",
+    "token": "agnicoeagle/4",
+    "companyNames": [
+      "Agnico Eagle"
+    ],
+    "careerPageUrls": [
+      "https://www.agnicoeagle.com/English/careers/overview/default.aspx"
+    ],
+    "directAtsUrls": [
+      "https://agnicoeagle.taleo.net/careersection/4/jobsearch.ftl?lang=en"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link",
+      "career_page_scan"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "input": "https://agnicoeagle.taleo.net/careersection/4/jobsearch.ftl?lang=en",
+      "connectorName": "taleo",
+      "token": "agnicoeagle/4",
+      "sourceKey": "taleo:agnicoeagle/4",
+      "sourceName": "Taleo:agnicoeagle/4",
+      "boardUrl": "https://agnicoeagle.taleo.net/careersection/4/jobsearch.ftl?lang=en",
+      "source": "token",
+      "pageTitle": "Job Search",
+      "fetchedCount": 2,
+      "acceptedCount": 0,
+      "acceptedCanadaCount": 0,
+      "acceptedCanadaRemoteCount": 0,
+      "previewCreatedCount": 0,
+      "previewCreatedCanadaCount": 0,
+      "previewCreatedCanadaRemoteCount": 0,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 2,
+      "existingRawCount": 0,
+      "existingActiveMappingCount": 0,
+      "existingLiveCanonicalCount": 0,
+      "sampleTitles": [
+        "New or Recent Graduate Mine Engineer (MAC00325)",
+        "(Summer 26) Internship in Geological Modelling (ROU00347)"
+      ],
+      "sampleLocations": [
+        "Kirkland Lake, Ontario",
+        "Noranda, Rouyn, Quebec"
+      ]
+    },
+    "recommendedPromotion": false,
+    "promotionReason": "insufficient_canada_weighted_yield"
+  },
+  {
+    "boardUrl": "https://agnicoeagle.taleo.net/careersection/en_profile/jobsearch.ftl?lang=en",
+    "sourceKey": "taleo:agnicoeagle/en_profile",
+    "connectorName": "taleo",
+    "token": "agnicoeagle/en_profile",
+    "companyNames": [
+      "Agnico Eagle"
+    ],
+    "careerPageUrls": [
+      "https://www.agnicoeagle.com/English/careers/overview/default.aspx"
+    ],
+    "directAtsUrls": [
+      "https://agnicoeagle.taleo.net/careersection/en_profile/jobsearch.ftl?lang=en"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link",
+      "career_page_scan"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "input": "https://agnicoeagle.taleo.net/careersection/en_profile/jobsearch.ftl?lang=en",
+      "connectorName": "taleo",
+      "token": "agnicoeagle/en_profile",
+      "sourceKey": "taleo:agnicoeagle/en_profile",
+      "sourceName": "Taleo:agnicoeagle/en_profile",
+      "boardUrl": "https://agnicoeagle.taleo.net/careersection/en_profile/jobsearch.ftl?lang=en",
+      "source": "token",
+      "pageTitle": "Job Search",
+      "fetchedCount": 0,
+      "acceptedCount": 0,
+      "acceptedCanadaCount": 0,
+      "acceptedCanadaRemoteCount": 0,
+      "previewCreatedCount": 0,
+      "previewCreatedCanadaCount": 0,
+      "previewCreatedCanadaRemoteCount": 0,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 0,
+      "existingRawCount": 0,
+      "existingActiveMappingCount": 0,
+      "existingLiveCanonicalCount": 0,
+      "sampleTitles": [],
+      "sampleLocations": []
+    },
+    "recommendedPromotion": false,
+    "promotionReason": "insufficient_canada_weighted_yield"
+  },
+  {
+    "boardUrl": "https://apply.workable.com/action/",
+    "sourceKey": "workable:action",
+    "connectorName": "workable",
+    "token": "action",
+    "companyNames": [
+      "Actionstep"
+    ],
+    "careerPageUrls": [
+      "https://www.actionstep.com/about-us/careers/"
+    ],
+    "directAtsUrls": [
+      "https://apply.workable.com/action/"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link",
+      "career_page_scan"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "input": "https://apply.workable.com/action/",
+      "connectorName": "workable",
+      "token": "action",
+      "sourceKey": "workable:action",
+      "sourceName": "Workable:action",
+      "boardUrl": "https://apply.workable.com/action/",
+      "source": "token",
+      "pageTitle": "Action - Current Openings",
+      "fetchedCount": 0,
+      "acceptedCount": 0,
+      "acceptedCanadaCount": 0,
+      "acceptedCanadaRemoteCount": 0,
+      "previewCreatedCount": 0,
+      "previewCreatedCanadaCount": 0,
+      "previewCreatedCanadaRemoteCount": 0,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 0,
+      "existingRawCount": 0,
+      "existingActiveMappingCount": 0,
+      "existingLiveCanonicalCount": 0,
+      "sampleTitles": [],
+      "sampleLocations": []
+    },
+    "recommendedPromotion": false,
+    "promotionReason": "insufficient_canada_weighted_yield"
+  },
+  {
+    "boardUrl": "https://apply.workable.com/actionstep/",
+    "sourceKey": "workable:actionstep",
+    "connectorName": "workable",
+    "token": "actionstep",
+    "companyNames": [
+      "Actionstep"
+    ],
+    "careerPageUrls": [
+      "https://www.actionstep.com/about-us/careers/"
+    ],
+    "directAtsUrls": [
+      "https://apply.workable.com/actionstep/"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link",
+      "career_page_scan"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "input": "https://apply.workable.com/actionstep/",
+      "connectorName": "workable",
+      "token": "actionstep",
+      "sourceKey": "workable:actionstep",
+      "sourceName": "Workable:actionstep",
+      "boardUrl": "https://apply.workable.com/actionstep/",
+      "source": "token",
+      "pageTitle": "Actionstep - Current Openings",
+      "fetchedCount": 25,
+      "acceptedCount": 0,
+      "acceptedCanadaCount": 0,
+      "acceptedCanadaRemoteCount": 0,
+      "previewCreatedCount": 0,
+      "previewCreatedCanadaCount": 0,
+      "previewCreatedCanadaRemoteCount": 0,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 25,
+      "existingRawCount": 0,
+      "existingActiveMappingCount": 0,
+      "existingLiveCanonicalCount": 0,
+      "sampleTitles": [
+        "Account Executive",
+        "Account Executive- Emerging Market",
+        "Accounts Receivable Specialist servicing Canada",
+        "ANZ Sales Director",
+        "Customer Support Analyst"
+      ],
+      "sampleLocations": [
+        "England",
+        "Colorado",
+        "Colorado",
+        "Queensland",
+        "Colorado"
+      ]
+    },
+    "recommendedPromotion": false,
+    "promotionReason": "insufficient_canada_weighted_yield"
+  },
+  {
+    "boardUrl": "https://apply.workable.com/fliip/",
+    "sourceKey": "workable:fliip",
+    "connectorName": "workable",
+    "token": "fliip",
+    "companyNames": [
+      "FLiiP"
+    ],
+    "careerPageUrls": [
+      "https://myfliip.com/",
+      "https://myfliip.com/about-us/"
+    ],
+    "directAtsUrls": [
+      "https://apply.workable.com/fliip/"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link",
+      "career_page_scan"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "input": "https://apply.workable.com/fliip/",
+      "connectorName": "workable",
+      "token": "fliip",
+      "sourceKey": "workable:fliip",
+      "sourceName": "Workable:fliip",
+      "boardUrl": "https://apply.workable.com/fliip/",
+      "source": "token",
+      "pageTitle": "FLiiP - Current Openings",
+      "fetchedCount": 25,
+      "acceptedCount": 0,
+      "acceptedCanadaCount": 0,
+      "acceptedCanadaRemoteCount": 0,
+      "previewCreatedCount": 0,
+      "previewCreatedCanadaCount": 0,
+      "previewCreatedCanadaRemoteCount": 0,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 25,
+      "existingRawCount": 0,
+      "existingActiveMappingCount": 0,
+      "existingLiveCanonicalCount": 0,
+      "sampleTitles": [
+        "Account Executive (Outbound)",
+        "Customer Success Manager",
+        "Full-Stack Content Marketer",
+        "Full-Stack Content Marketer",
+        "Full-Stack Content Marketer"
+      ],
+      "sampleLocations": [
+        "Quebec",
+        "Quebec",
+        "Unknown",
+        "Ontario",
+        "Alberta"
+      ]
+    },
+    "recommendedPromotion": false,
+    "promotionReason": "insufficient_canada_weighted_yield"
+  },
+  {
+    "boardUrl": "https://apply.workable.com/toloka-ai/",
+    "sourceKey": "workable:toloka-ai",
+    "connectorName": "workable",
+    "token": "toloka-ai",
+    "companyNames": [
+      "Mindrift"
+    ],
+    "careerPageUrls": [
+      "https://mindrift.ai/"
+    ],
+    "directAtsUrls": [
+      "https://apply.workable.com/toloka-ai/"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link",
+      "career_page_scan"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "input": "https://apply.workable.com/toloka-ai/",
+      "connectorName": "workable",
+      "token": "toloka-ai",
+      "sourceKey": "workable:toloka-ai",
+      "sourceName": "Workable:toloka-ai",
+      "boardUrl": "https://apply.workable.com/toloka-ai/",
+      "source": "token",
+      "pageTitle": "Mindrift - Current Openings",
+      "fetchedCount": 100,
+      "acceptedCount": 0,
+      "acceptedCanadaCount": 0,
+      "acceptedCanadaRemoteCount": 0,
+      "previewCreatedCount": 0,
+      "previewCreatedCanadaCount": 0,
+      "previewCreatedCanadaRemoteCount": 0,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 100,
+      "existingRawCount": 0,
+      "existingActiveMappingCount": 0,
+      "existingLiveCanonicalCount": 0,
+      "sampleTitles": [
+        "AI Artist - Freelance AI Trainer",
+        "AI Artist - Freelance AI Trainer",
+        "Application Form - University Students and Alumni",
+        "Application Form for University of Bath Students & Alumni",
+        "Application Form: University Students and Alumni"
+      ],
+      "sampleLocations": [
+        "Unknown",
+        "Unknown",
+        "Unknown",
+        "Unknown",
+        "Unknown"
+      ]
+    },
+    "recommendedPromotion": false,
+    "promotionReason": "insufficient_canada_weighted_yield"
+  },
+  {
+    "boardUrl": "https://corpay.wd3.myworkdayjobs.com/ext_001",
+    "sourceKey": "workday:corpay.wd3.myworkdayjobs.com|corpay|ext_001",
+    "connectorName": "workday",
+    "token": "corpay.wd3.myworkdayjobs.com|corpay|ext_001",
+    "companyNames": [
+      "Corpay"
+    ],
+    "careerPageUrls": [
+      "https://www.corpay.com/careers"
+    ],
+    "directAtsUrls": [
+      "https://corpay.wd3.myworkdayjobs.com/ext_001"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link",
+      "career_page_scan"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "input": "https://corpay.wd3.myworkdayjobs.com/ext_001",
+      "connectorName": "workday",
+      "token": "corpay.wd3.myworkdayjobs.com|corpay|ext_001",
+      "sourceKey": "workday:corpay.wd3.myworkdayjobs.com|corpay|ext_001",
+      "sourceName": "Workday:corpay.wd3.myworkdayjobs.com|corpay|ext_001",
+      "boardUrl": "https://corpay.wd3.myworkdayjobs.com/ext_001",
+      "source": "token",
+      "pageTitle": null,
+      "fetchedCount": 0,
+      "acceptedCount": 0,
+      "acceptedCanadaCount": 0,
+      "acceptedCanadaRemoteCount": 0,
+      "previewCreatedCount": 0,
+      "previewCreatedCanadaCount": 0,
+      "previewCreatedCanadaRemoteCount": 0,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 0,
+      "existingRawCount": 0,
+      "existingActiveMappingCount": 0,
+      "existingLiveCanonicalCount": 0,
+      "sampleTitles": [],
+      "sampleLocations": [],
+      "error": "Workday fetch failed for corpay.wd3.myworkdayjobs.com|corpay|ext_001: 422 Unprocessable Entity"
+    },
+    "recommendedPromotion": false,
+    "promotionReason": "Workday fetch failed for corpay.wd3.myworkdayjobs.com|corpay|ext_001: 422 Unprocessable Entity"
+  }
+]

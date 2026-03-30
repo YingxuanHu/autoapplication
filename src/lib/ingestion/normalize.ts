@@ -382,6 +382,7 @@ function inferRegion(location: string): Region | null {
   const normalizedLocation = location.toUpperCase();
   if (
     normalizedLocation.includes("NORTH AMERICA") ||
+    normalizedLocation.includes("AMERICAS") ||
     normalizedLocation.includes("US & CANADA") ||
     normalizedLocation.includes("US/CANADA") ||
     normalizedLocation.includes("US AND CANADA")
@@ -459,6 +460,19 @@ function inferRegion(location: string): Region | null {
       "POLAND",
     ];
     if (!NON_NA_REMOTE_QUALIFIERS.some((q) => normalizedLocation.includes(q))) {
+      if (
+        normalizedLocation.includes("WORLDWIDE") ||
+        normalizedLocation.includes("ANYWHERE") ||
+        normalizedLocation === "GLOBAL" ||
+        normalizedLocation.includes("NORTH AMERICA") ||
+        normalizedLocation.includes("AMERICAS") ||
+        normalizedLocation.includes("CANADA") ||
+        normalizedLocation.includes("US & CANADA") ||
+        normalizedLocation.includes("US/CANADA") ||
+        normalizedLocation.includes("US AND CANADA")
+      ) {
+        return "CA";
+      }
       return "US";
     }
   }
