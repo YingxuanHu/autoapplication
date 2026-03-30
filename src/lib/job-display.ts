@@ -250,6 +250,7 @@ export function getSourceShortName(sourceName: string | null): string | null {
   if (sourceName.startsWith("Jobicy:")) return "JY";
   if (sourceName.startsWith("iCIMS:")) return "IC";
   if (sourceName.startsWith("Lever:")) return "LV";
+  if (sourceName.startsWith("Remotive:")) return "RM";
   if (sourceName.startsWith("Recruitee:")) return "RQ";
   if (sourceName.startsWith("SuccessFactors:")) return "SF";
   if (sourceName.startsWith("Workday:")) return "WD";

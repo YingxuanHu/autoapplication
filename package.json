@@ -18,6 +18,7 @@
     "rippling:discover": "tsx -r dotenv/config scripts/discover-rippling.ts",
     "rippling:intake": "tsx -r dotenv/config scripts/discover-rippling.ts --no-search",
     "ingest:schedule": "tsx -r dotenv/config scripts/ingest-scheduled.ts",
+    "ingest:orchestrate": "tsx -r dotenv/config scripts/ingest-orchestrated.ts",
     "ingest:expand": "tsx -r dotenv/config scripts/ingest-expand.ts"
   },
   "dependencies": {

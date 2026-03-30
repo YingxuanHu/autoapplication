@@ -17,6 +17,7 @@ import type {
   SourceConnectorFetchResult,
   SourceConnectorJob,
 } from "@/lib/ingestion/types";
+import { sleepWithAbort, throwIfAborted } from "@/lib/ingestion/runtime-control";
 
 const MUSE_API_BASE = "https://www.themuse.com/api/public/jobs";
 const MUSE_PAGE_SIZE = 20; // API returns 20 per page
@@ -82,6 +83,11 @@ type MuseResponse = {
   results?: MuseJob[];
 };
 
+type MuseCheckpoint = {
+  categoryIndex: number;
+  page: number;
+};
+
 export function createMuseConnector(): SourceConnector {
   const fetchCache = new Map<string, Promise<SourceConnectorFetchResult>>();
 
@@ -93,11 +99,20 @@ export function createMuseConnector(): SourceConnector {
     async fetchJobs(
       options: SourceConnectorFetchOptions
     ): Promise<SourceConnectorFetchResult> {
-      const cacheKey = String(options.limit ?? "all");
+      const cacheKey = JSON.stringify({
+        limit: options.limit ?? "all",
+        checkpoint: options.checkpoint ?? null,
+      });
       const existing = fetchCache.get(cacheKey);
       if (existing) return existing;
 
-      const request = fetchMuseJobs(options.now, options.limit);
+      const request = fetchMuseJobs({
+        now: options.now,
+        limit: options.limit,
+        signal: options.signal,
+        checkpoint: parseMuseCheckpoint(options.checkpoint),
+        onCheckpoint: options.onCheckpoint,
+      });
       fetchCache.set(cacheKey, request);
       return request;
     },
@@ -105,17 +120,44 @@ export function createMuseConnector(): SourceConnector {
 }
 
 async function fetchMuseJobs(
-  now: Date,
-  limit?: number
+  {
+    now,
+    limit,
+    signal,
+    checkpoint,
+    onCheckpoint,
+  }: {
+    now: Date;
+    limit?: number;
+    signal?: AbortSignal;
+    checkpoint?: MuseCheckpoint | null;
+    onCheckpoint?: (checkpoint: Prisma.InputJsonValue | null) => Promise<void> | void;
+  }
 ): Promise<SourceConnectorFetchResult> {
   const allJobs: SourceConnectorJob[] = [];
   const seenIds = new Set<string>();
   let totalApiCalls = 0;
+  let nextCheckpoint: MuseCheckpoint | null = checkpoint ?? {
+    categoryIndex: 0,
+    page: 0,
+  };
 
-  for (const category of MUSE_CATEGORIES) {
+  for (
+    let categoryIndex = checkpoint?.categoryIndex ?? 0;
+    categoryIndex < MUSE_CATEGORIES.length;
+    categoryIndex++
+  ) {
+    throwIfAborted(signal);
     if (typeof limit === "number" && allJobs.length >= limit) break;
+    const category = MUSE_CATEGORIES[categoryIndex];
 
-    for (let page = 0; page < MUSE_MAX_PAGES; page++) {
+    for (
+      let page = categoryIndex === (checkpoint?.categoryIndex ?? 0)
+        ? (checkpoint?.page ?? 0)
+        : 0;
+      page < MUSE_MAX_PAGES;
+      page++
+    ) {
       if (typeof limit === "number" && allJobs.length >= limit) break;
 
       try {
@@ -131,6 +173,7 @@ async function fetchMuseJobs(
 
         const url = `${MUSE_API_BASE}?${params.toString()}`;
         const response = await fetch(url, {
+          signal,
           headers: {
             Accept: "application/json",
             "User-Agent":
@@ -143,7 +186,12 @@ async function fetchMuseJobs(
         if (!response.ok) {
           if (response.status === 429) {
             // Rate limited — wait and skip this category
-            await new Promise((resolve) => setTimeout(resolve, 10000));
+            await sleepWithAbort(10000, signal);
+            nextCheckpoint = {
+              categoryIndex: categoryIndex + 1,
+              page: 0,
+            };
+            await onCheckpoint?.(nextCheckpoint as Prisma.InputJsonValue);
             break;
           }
           break;
@@ -152,14 +200,21 @@ async function fetchMuseJobs(
         const payload = (await response.json()) as MuseResponse;
         const entries = payload.results ?? [];
 
-        if (entries.length === 0) break;
+        if (entries.length === 0) {
+          nextCheckpoint = {
+            categoryIndex: categoryIndex + 1,
+            page: 0,
+          };
+          await onCheckpoint?.(nextCheckpoint as Prisma.InputJsonValue);
+          break;
+        }
 
         for (const entry of entries) {
           if (!entry.id || !entry.name) continue;
           const sourceId = `themuse:${entry.id}`;
           if (seenIds.has(sourceId)) continue;
           seenIds.add(sourceId);
-          allJobs.push(mapMuseJob(entry, now));
+          allJobs.push(mapMuseJob(entry));
         }
 
         // Stop if we're past the last page
@@ -167,38 +222,71 @@ async function fetchMuseJobs(
           payload.page_count !== undefined &&
           page >= payload.page_count - 1
         ) {
+          nextCheckpoint = {
+            categoryIndex: categoryIndex + 1,
+            page: 0,
+          };
+          await onCheckpoint?.(nextCheckpoint as Prisma.InputJsonValue);
           break;
         }
 
         // Stop if fewer than a full page
-        if (entries.length < MUSE_PAGE_SIZE) break;
+        if (entries.length < MUSE_PAGE_SIZE) {
+          nextCheckpoint = {
+            categoryIndex: categoryIndex + 1,
+            page: 0,
+          };
+          await onCheckpoint?.(nextCheckpoint as Prisma.InputJsonValue);
+          break;
+        }
+
+        nextCheckpoint = {
+          categoryIndex,
+          page: page + 1,
+        };
+        await onCheckpoint?.(nextCheckpoint as Prisma.InputJsonValue);
       } catch {
         break;
       }
 
-      await new Promise((resolve) => setTimeout(resolve, MUSE_RATE_DELAY_MS));
+      await sleepWithAbort(MUSE_RATE_DELAY_MS, signal);
     }
 
     // Small delay between categories
-    await new Promise((resolve) => setTimeout(resolve, 500));
+    await sleepWithAbort(500, signal);
   }
 
   const finalJobs =
     typeof limit === "number" ? allJobs.slice(0, limit) : allJobs;
+  const exhausted =
+    nextCheckpoint == null || nextCheckpoint.categoryIndex >= MUSE_CATEGORIES.length;
 
   return {
     jobs: finalJobs,
+    checkpoint: exhausted ? null : (nextCheckpoint as Prisma.InputJsonValue),
+    exhausted,
     metadata: {
       apiUrl: MUSE_API_BASE,
       categories: MUSE_CATEGORIES,
       fetchedAt: now.toISOString(),
       totalApiCalls,
       totalFetched: finalJobs.length,
+      resumedFromCheckpoint: checkpoint ?? null,
     } as Prisma.InputJsonValue,
   };
 }
 
-function mapMuseJob(entry: MuseJob, now: Date): SourceConnectorJob {
+function parseMuseCheckpoint(value: Prisma.InputJsonValue | null | undefined) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return null;
+  const record = value as Record<string, unknown>;
+  const categoryIndex =
+    typeof record.categoryIndex === "number" ? record.categoryIndex : 0;
+  const page = typeof record.page === "number" ? record.page : 0;
+  if (categoryIndex < 0 || page < 0) return null;
+  return { categoryIndex, page } satisfies MuseCheckpoint;
+}
+
+function mapMuseJob(entry: MuseJob): SourceConnectorJob {
   const id = String(entry.id ?? "");
   const title = (entry.name ?? "").trim();
   const company = (entry.company?.name ?? "").trim();

@@ -11,6 +11,10 @@
  */
 import type { Prisma } from "@/generated/prisma/client";
 import type { EmploymentType, WorkMode } from "@/generated/prisma/client";
+import {
+  sleepWithAbort,
+  throwIfAborted,
+} from "@/lib/ingestion/runtime-control";
 import type {
   SourceConnector,
   SourceConnectorFetchOptions,
@@ -20,7 +24,7 @@ import type {
 
 const HIMALAYAS_API_BASE = "https://himalayas.app/jobs/api";
 const HIMALAYAS_PAGE_SIZE = 20; // API max per request
-const HIMALAYAS_MAX_PAGES = 80; // 80 * 20 = 1,600 jobs max per run
+const HIMALAYAS_MAX_PAGES = 160; // 160 * 20 = 3,200 jobs max per run
 const HIMALAYAS_RATE_DELAY_MS = 1200; // Be respectful, avoid 429
 
 type HimalayasJob = {
@@ -48,6 +52,10 @@ type HimalayasResponse = {
   totalCount?: number;
 };
 
+type HimalayasCheckpoint = {
+  offset: number;
+};
+
 export function createHimalayasConnector(): SourceConnector {
   const fetchCache = new Map<string, Promise<SourceConnectorFetchResult>>();
 
@@ -59,28 +67,53 @@ export function createHimalayasConnector(): SourceConnector {
     async fetchJobs(
       options: SourceConnectorFetchOptions
     ): Promise<SourceConnectorFetchResult> {
-      const cacheKey = String(options.limit ?? "all");
+      const cacheKey = JSON.stringify({
+        limit: options.limit ?? "all",
+        checkpoint: options.checkpoint ?? null,
+      });
       const existing = fetchCache.get(cacheKey);
       if (existing) return existing;
 
-      const request = fetchHimalayasJobs(options.now, options.limit);
+      const request = fetchHimalayasJobs({
+        now: options.now,
+        limit: options.limit,
+        signal: options.signal,
+        checkpoint: parseHimalayasCheckpoint(options.checkpoint),
+        onCheckpoint: options.onCheckpoint,
+      });
       fetchCache.set(cacheKey, request);
       return request;
     },
   };
 }
 
-async function fetchHimalayasJobs(
-  now: Date,
-  limit?: number
-): Promise<SourceConnectorFetchResult> {
+async function fetchHimalayasJobs({
+  now,
+  limit,
+  signal,
+  checkpoint,
+  onCheckpoint,
+}: {
+  now: Date;
+  limit?: number;
+  signal?: AbortSignal;
+  checkpoint?: HimalayasCheckpoint | null;
+  onCheckpoint?: (checkpoint: Prisma.InputJsonValue | null) => Promise<void> | void;
+}): Promise<SourceConnectorFetchResult> {
   const allJobs: SourceConnectorJob[] = [];
   const seenIds = new Set<string>();
-  let offset = 0;
+  let offset = checkpoint?.offset ?? 0;
   let totalFetched = 0;
   let pagesFetched = 0;
+  let totalAvailable: number | null = null;
+  const requestedPages =
+    typeof limit === "number"
+      ? Math.max(1, Math.ceil(limit / HIMALAYAS_PAGE_SIZE))
+      : HIMALAYAS_MAX_PAGES;
+  const maxPages = Math.min(HIMALAYAS_MAX_PAGES, requestedPages + 8);
 
-  for (let page = 0; page < HIMALAYAS_MAX_PAGES; page++) {
+  for (let page = 0; page < maxPages; page++) {
+    throwIfAborted(signal);
     if (typeof limit === "number" && allJobs.length >= limit) break;
 
     try {
@@ -91,12 +124,12 @@ async function fetchHimalayasJobs(
           "User-Agent":
             "Mozilla/5.0 (compatible; autoapplication-himalayas/1.0)",
         },
+        signal,
       });
 
       if (!response.ok) {
         if (response.status === 429) {
-          // Rate limited — wait and retry once
-          await new Promise((resolve) => setTimeout(resolve, 5000));
+          await sleepWithAbort(5000, signal);
           continue;
         }
         break;
@@ -104,48 +137,66 @@ async function fetchHimalayasJobs(
 
       const payload = (await response.json()) as HimalayasResponse;
       const entries = payload.jobs ?? [];
+      totalAvailable = payload.totalCount ?? totalAvailable;
 
-      if (entries.length === 0) break; // No more jobs
+      if (entries.length === 0) {
+        await onCheckpoint?.(null);
+        break;
+      }
 
       for (const entry of entries) {
         if (!entry.title) continue;
         const sourceId = `himalayas:${entry.guid ?? entry.id ?? entry.title}`;
         if (seenIds.has(sourceId)) continue;
         seenIds.add(sourceId);
-        allJobs.push(mapHimalayasJob(entry, now));
+        allJobs.push(mapHimalayasJob(entry));
       }
 
       totalFetched += entries.length;
       offset += HIMALAYAS_PAGE_SIZE;
       pagesFetched++;
 
-      // Stop if we got fewer than a full page
-      if (entries.length < HIMALAYAS_PAGE_SIZE) break;
-    } catch {
-      // Skip failed pages
+      const exhausted = entries.length < HIMALAYAS_PAGE_SIZE;
+      await onCheckpoint?.(
+        exhausted ? null : ({ offset } satisfies HimalayasCheckpoint)
+      );
+
+      if (exhausted) {
+        offset = 0;
+        break;
+      }
+    } catch (error) {
+      if (signal?.aborted) {
+        throw error;
+      }
       break;
     }
 
-    // Rate delay between pages
-    await new Promise((resolve) => setTimeout(resolve, HIMALAYAS_RATE_DELAY_MS));
+    await sleepWithAbort(HIMALAYAS_RATE_DELAY_MS, signal);
   }
 
   const finalJobs =
     typeof limit === "number" ? allJobs.slice(0, limit) : allJobs;
+  const exhausted =
+    totalAvailable !== null ? offset >= totalAvailable : totalFetched < HIMALAYAS_PAGE_SIZE;
 
   return {
     jobs: finalJobs,
+    checkpoint: exhausted ? null : ({ offset } satisfies HimalayasCheckpoint),
+    exhausted,
     metadata: {
       apiUrl: HIMALAYAS_API_BASE,
       fetchedAt: now.toISOString(),
       totalFetched,
       pagesFetched,
       uniqueJobs: finalJobs.length,
+      totalAvailable,
+      resumedFromCheckpoint: checkpoint ?? null,
     } as Prisma.InputJsonValue,
   };
 }
 
-function mapHimalayasJob(entry: HimalayasJob, now: Date): SourceConnectorJob {
+function mapHimalayasJob(entry: HimalayasJob): SourceConnectorJob {
   const id = entry.guid ?? entry.id ?? "";
   const title = (entry.title ?? "").trim();
   const company = (entry.companyName ?? "").trim();
@@ -167,8 +218,7 @@ function mapHimalayasJob(entry: HimalayasJob, now: Date): SourceConnectorJob {
     workMode: "REMOTE" as WorkMode,
     salaryMin: entry.minSalary && entry.minSalary > 0 ? entry.minSalary : null,
     salaryMax: entry.maxSalary && entry.maxSalary > 0 ? entry.maxSalary : null,
-    salaryCurrency:
-      entry.minSalary || entry.maxSalary ? "USD" : null,
+    salaryCurrency: entry.minSalary || entry.maxSalary ? "USD" : null,
     metadata: {
       source: "himalayas",
       categories: entry.categories ?? [],
@@ -185,7 +235,6 @@ function normalizeLocationRestrictions(
 
   const joined = restrictions.join(", ");
 
-  // Check for worldwide/anywhere
   if (
     restrictions.some(
       (r) => /anywhere/i.test(r) || /worldwide/i.test(r) || /global/i.test(r)
@@ -194,7 +243,6 @@ function normalizeLocationRestrictions(
     return "Remote (Worldwide)";
   }
 
-  // If only one or two specific countries
   const countries = restrictions.filter(
     (r) => r.length > 1 && !/anywhere|worldwide|global/i.test(r)
   );
@@ -230,4 +278,19 @@ function stripHtml(html: string): string {
     .replace(/&#39;/gi, "'")
     .replace(/\n{3,}/g, "\n\n")
     .trim();
+}
+
+function parseHimalayasCheckpoint(
+  checkpoint: Prisma.InputJsonValue | null | undefined
+): HimalayasCheckpoint | null {
+  if (!checkpoint || typeof checkpoint !== "object" || Array.isArray(checkpoint)) {
+    return null;
+  }
+
+  const offset = (checkpoint as Record<string, unknown>).offset;
+  if (typeof offset !== "number" || !Number.isFinite(offset) || offset < 0) {
+    return null;
+  }
+
+  return { offset };
 }

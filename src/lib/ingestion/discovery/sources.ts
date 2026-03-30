@@ -10,6 +10,7 @@ import {
   createLeverConnector,
   createMuseConnector,
   createRemoteOkConnector,
+  createRemotiveConnector,
   createTaleoConnector,
   createUsaJobsConnector,
   createRecruiteeConnector,
@@ -210,6 +211,8 @@ export function buildDiscoveredSourceName(
         ? "Himalayas"
       : connectorName === "jobicy"
         ? "Jobicy"
+      : connectorName === "remotive"
+        ? "Remotive"
       : connectorName === "themuse"
         ? "TheMuse"
       : connectorName.charAt(0).toUpperCase() + connectorName.slice(1);
@@ -259,8 +262,12 @@ export function buildDiscoveredSourceUrl(
       return "https://himalayas.app/jobs";
     case "jobicy":
       return "https://jobicy.com/remote-jobs";
+    case "remotive":
+      return "https://remotive.com/remote-jobs";
     case "themuse":
       return "https://www.themuse.com/jobs";
+    default:
+      throw new Error(`Unsupported discovered source connector: ${connectorName}`);
   }
 }
 
@@ -1218,8 +1225,14 @@ function createConnectorForCandidate(candidate: DiscoveredSourceCandidate) {
       return createHimalayasConnector();
     case "jobicy":
       return createJobicyConnector();
+    case "remotive":
+      return createRemotiveConnector();
     case "themuse":
       return createMuseConnector();
+    default:
+      throw new Error(
+        `Unsupported discovered source connector: ${candidate.connectorName}`
+      );
   }
 }
 

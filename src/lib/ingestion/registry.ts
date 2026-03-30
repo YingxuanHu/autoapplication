@@ -9,6 +9,7 @@ import {
   createJobicyConnector,
   createLeverConnector,
   createMuseConnector,
+  createRemotiveConnector,
   createRecruiteeConnector,
   createRemoteOkConnector,
   createRipplingConnector,
@@ -37,6 +38,7 @@ export type SupportedConnectorName =
   | "icims"
   | "jobicy"
   | "lever"
+  | "remotive"
   | "themuse"
   | "recruitee"
   | "remoteok"
@@ -108,7 +110,10 @@ export function resolveConnectors(
     const countries = resolveTokens(
       args.sources ?? args.source ?? process.env.ADZUNA_COUNTRIES ?? "ca,us"
     );
-    return countries.map((country) => createAdzunaConnector({ country }));
+    return countries.map((token) => {
+      const [country, profile] = token.split(":");
+      return createAdzunaConnector({ country, profile });
+    });
   }
 
   if (connectorName === "himalayas") {
@@ -117,6 +122,10 @@ export function resolveConnectors(
 
   if (connectorName === "jobicy") {
     return [createJobicyConnector()];
+  }
+
+  if (connectorName === "remotive") {
+    return [createRemotiveConnector()];
   }
 
   if (connectorName === "themuse") {
@@ -415,6 +424,7 @@ export function getScheduledConnectors(): ScheduledConnectorDefinition[] {
     ...resolveOptionalAdzunaScheduledConnectors(),
     ...resolveOptionalHimalayasScheduledConnectors(),
     ...resolveOptionalJobicyScheduledConnectors(),
+    ...resolveOptionalRemotiveScheduledConnectors(),
     ...resolveOptionalMuseScheduledConnectors(),
     ...resolveOptionalRemoteOkScheduledConnectors(),
     ...resolveOptionalUsaJobsScheduledConnectors(),
@@ -513,6 +523,18 @@ function resolveOptionalJobicyScheduledConnectors() {
       connector: createJobicyConnector(),
       cadenceMinutes: resolveCadenceMinutes(
         process.env.JOBICY_SCHEDULE_MINUTES,
+        720
+      ),
+    },
+  ];
+}
+
+function resolveOptionalRemotiveScheduledConnectors() {
+  return [
+    {
+      connector: createRemotiveConnector(),
+      cadenceMinutes: resolveCadenceMinutes(
+        process.env.REMOTIVE_SCHEDULE_MINUTES,
         720
       ),
     },
@@ -635,6 +657,7 @@ function loadPromotedDiscoveryTargets() {
     icims: [],
     jobicy: [],
     lever: [],
+    remotive: [],
     themuse: [],
     recruitee: [],
     remoteok: [],

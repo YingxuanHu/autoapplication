@@ -31,6 +31,8 @@ type IngestConnectorOptions = {
   allowOverlappingRuns?: boolean;
   triggerLabel?: string;
   scheduleCadenceMinutes?: number | null;
+  maxRuntimeMs?: number;
+  runMetadata?: Record<string, Prisma.InputJsonValue | null>;
 };
 
 export async function previewConnectorIngestion(
@@ -83,11 +85,13 @@ export async function ingestConnector(
 ): Promise<IngestionSummary> {
   const startedAt = options.now ?? new Date();
   const runMode = options.runMode ?? "MANUAL";
+  const startingCheckpoint = await loadResumeCheckpoint(connector.key);
+  const runOptionsState = buildRunOptions(options, startingCheckpoint);
   const run = await createIngestionRun({
     connector,
     startedAt,
     runMode,
-    runOptions: buildRunOptions(options),
+    runOptions: runOptionsState,
     allowOverlappingRuns: options.allowOverlappingRuns ?? false,
   });
 
@@ -103,22 +107,82 @@ export async function ingestConnector(
   }
 
   try {
+    const persistCheckpoint = async (checkpoint: Prisma.InputJsonValue | null) => {
+      runOptionsState.checkpoint = checkpoint;
+      runOptionsState.checkpointUpdatedAt = new Date().toISOString();
+      runOptionsState.checkpointExhausted = false;
+      await prisma.ingestionRun.update({
+        where: { id: run.id },
+        data: {
+          runOptions: runOptionsState as Prisma.InputJsonValue,
+        },
+      });
+    };
+    const runtimeController =
+      typeof options.maxRuntimeMs === "number" && options.maxRuntimeMs > 0
+        ? new AbortController()
+        : null;
+    const runtimeTimer =
+      runtimeController && typeof options.maxRuntimeMs === "number"
+        ? setTimeout(() => {
+            runtimeController.abort(
+              new Error(
+                `Runtime budget exceeded after ${options.maxRuntimeMs}ms`
+              )
+            );
+          }, options.maxRuntimeMs)
+        : null;
+    runtimeTimer?.unref?.();
+
     await backfillCanonicalDedupeFields();
-    await performConnectorIngestion(connector, summary, startedAt, options.limit);
+    try {
+      await performConnectorIngestion(
+        connector,
+        summary,
+        startedAt,
+        options.limit,
+        runtimeController?.signal,
+        options.maxRuntimeMs,
+        startingCheckpoint,
+        persistCheckpoint
+      );
+    } finally {
+      if (runtimeTimer) clearTimeout(runtimeTimer);
+    }
     summary.status = "SUCCESS";
+    runOptionsState.checkpoint = summary.checkpoint ?? null;
+    runOptionsState.checkpointUpdatedAt = new Date().toISOString();
+    runOptionsState.checkpointExhausted = summary.checkpointExhausted ?? false;
+    runOptionsState.resultMetrics = buildRunResultMetrics(summary);
 
     await prisma.ingestionRun.update({
       where: { id: run.id },
-      data: buildRunUpdateData(summary, "SUCCESS", new Date(), null),
+      data: buildRunUpdateData(
+        summary,
+        "SUCCESS",
+        new Date(),
+        null,
+        runOptionsState as Prisma.InputJsonValue
+      ),
     });
 
     return summary;
   } catch (error) {
     summary.status = "FAILED";
+    runOptionsState.checkpoint = summary.checkpoint ?? runOptionsState.checkpoint ?? null;
+    runOptionsState.checkpointUpdatedAt = new Date().toISOString();
+    runOptionsState.checkpointExhausted = summary.checkpointExhausted ?? false;
+    runOptionsState.resultMetrics = buildRunResultMetrics(summary);
 
     await prisma.ingestionRun.update({
       where: { id: run.id },
-      data: buildRunUpdateData(summary, "FAILED", new Date(), getErrorSummary(error)),
+      data: buildRunUpdateData(
+        summary,
+        "FAILED",
+        new Date(),
+        getErrorSummary(error),
+        runOptionsState as Prisma.InputJsonValue
+      ),
     });
 
     throw error;
@@ -198,7 +262,11 @@ async function performConnectorIngestion(
   connector: SourceConnector,
   summary: IngestionSummary,
   now: Date,
-  limit?: number
+  limit?: number,
+  signal?: AbortSignal,
+  maxRuntimeMs?: number,
+  checkpoint?: Prisma.InputJsonValue | null,
+  onCheckpoint?: (checkpoint: Prisma.InputJsonValue | null) => Promise<void>
 ) {
   const seenSourceIds = new Set<string>();
   const freshnessCandidateIds = new Set<string>();
@@ -208,7 +276,15 @@ async function performConnectorIngestion(
   const fetchResult = await connector.fetchJobs({
     now,
     limit,
+    signal,
+    maxRuntimeMs,
+    checkpoint,
+    onCheckpoint,
+    deadlineAt:
+      typeof maxRuntimeMs === "number" ? new Date(now.getTime() + maxRuntimeMs) : undefined,
   });
+  summary.checkpoint = fetchResult.checkpoint ?? null;
+  summary.checkpointExhausted = fetchResult.exhausted ?? fetchResult.checkpoint == null;
 
   for (const sourceJob of fetchResult.jobs) {
     summary.fetchedCount += 1;
@@ -239,6 +315,12 @@ async function performConnectorIngestion(
     }
 
     summary.acceptedCount += 1;
+    if (isCanadaJob(normalizationResult.job)) {
+      summary.acceptedCanadaCount += 1;
+      if (isCanadaRemoteJob(normalizationResult.job)) {
+        summary.acceptedCanadaRemoteCount += 1;
+      }
+    }
 
     const mappedCanonical = await findMappedCanonical(rawJobResult.rawJob.id);
     const compatibleMappedCanonical =
@@ -265,6 +347,12 @@ async function performConnectorIngestion(
 
     if (canonicalResult.created) {
       summary.canonicalCreatedCount += 1;
+      if (isCanadaJob(normalizationResult.job)) {
+        summary.canonicalCreatedCanadaCount += 1;
+        if (isCanadaRemoteJob(normalizationResult.job)) {
+          summary.canonicalCreatedCanadaRemoteCount += 1;
+        }
+      }
     } else {
       summary.canonicalUpdatedCount += 1;
     }
@@ -350,6 +438,12 @@ async function performConnectorPreview(
     }
 
     summary.acceptedCount += 1;
+    if (isCanadaJob(normalizationResult.job)) {
+      summary.acceptedCanadaCount += 1;
+      if (isCanadaRemoteJob(normalizationResult.job)) {
+        summary.acceptedCanadaRemoteCount += 1;
+      }
+    }
 
     const mappedCanonical = existingRawJob
       ? await findMappedCanonical(existingRawJob.id)
@@ -372,6 +466,12 @@ async function performConnectorPreview(
       summary.canonicalUpdatedCount += 1;
     } else {
       summary.canonicalCreatedCount += 1;
+      if (isCanadaJob(normalizationResult.job)) {
+        summary.canonicalCreatedCanadaCount += 1;
+        if (isCanadaRemoteJob(normalizationResult.job)) {
+          summary.canonicalCreatedCanadaRemoteCount += 1;
+        }
+      }
     }
 
     const existingMapping = existingRawJob
@@ -407,10 +507,14 @@ function createEmptySummary(
     freshnessMode: connector.freshnessMode,
     fetchedCount: 0,
     acceptedCount: 0,
+    acceptedCanadaCount: 0,
+    acceptedCanadaRemoteCount: 0,
     rejectedCount: 0,
     rawCreatedCount: 0,
     rawUpdatedCount: 0,
     canonicalCreatedCount: 0,
+    canonicalCreatedCanadaCount: 0,
+    canonicalCreatedCanadaRemoteCount: 0,
     canonicalUpdatedCount: 0,
     dedupedCount: 0,
     sourceMappingCreatedCount: 0,
@@ -421,22 +525,34 @@ function createEmptySummary(
     expiredCount: 0,
     removedCount: 0,
     skippedReasons: {},
+    checkpoint: null,
+    checkpointExhausted: false,
   };
 }
 
-function buildRunOptions(options: Omit<IngestConnectorOptions, "now" | "runMode">) {
+function buildRunOptions(
+  options: Omit<IngestConnectorOptions, "now" | "runMode">,
+  checkpoint: Prisma.InputJsonValue | null
+): Record<string, Prisma.InputJsonValue | null> {
   return {
     limit: options.limit ?? null,
     triggerLabel: options.triggerLabel ?? null,
     scheduleCadenceMinutes: options.scheduleCadenceMinutes ?? null,
-  } as Prisma.InputJsonValue;
+    maxRuntimeMs: options.maxRuntimeMs ?? null,
+    runMetadata: options.runMetadata ?? null,
+    checkpoint,
+    checkpointUpdatedAt: checkpoint ? new Date().toISOString() : null,
+    checkpointExhausted: checkpoint == null,
+    resultMetrics: null,
+  };
 }
 
 function buildRunUpdateData(
   summary: IngestionSummary,
   status: IngestionRunStatus,
   endedAt: Date,
-  errorSummary: string | null
+  errorSummary: string | null,
+  runOptions: Prisma.InputJsonValue
 ) {
   return {
     status,
@@ -457,8 +573,58 @@ function buildRunUpdateData(
     expiredCount: summary.expiredCount,
     removedCount: summary.removedCount,
     skippedReasons: summary.skippedReasons as Prisma.InputJsonValue,
+    runOptions,
     errorSummary,
   } satisfies Prisma.IngestionRunUncheckedUpdateInput;
+}
+
+async function loadResumeCheckpoint(connectorKey: string) {
+  const recentRuns = await prisma.ingestionRun.findMany({
+    where: { connectorKey },
+    orderBy: { startedAt: "desc" },
+    take: 10,
+    select: {
+      runOptions: true,
+    },
+  });
+
+  for (const run of recentRuns) {
+    const options = asJsonObject(run.runOptions);
+    if (!options) continue;
+    const exhausted = options.checkpointExhausted;
+    const checkpoint = options.checkpoint;
+    if (exhausted === true) return null;
+    if (checkpoint !== undefined && checkpoint !== null) {
+      return checkpoint as Prisma.InputJsonValue;
+    }
+  }
+
+  return null;
+}
+
+function buildRunResultMetrics(summary: IngestionSummary) {
+  return {
+    acceptedCanadaCount: summary.acceptedCanadaCount,
+    acceptedCanadaRemoteCount: summary.acceptedCanadaRemoteCount,
+    canonicalCreatedCanadaCount: summary.canonicalCreatedCanadaCount,
+    canonicalCreatedCanadaRemoteCount: summary.canonicalCreatedCanadaRemoteCount,
+  } satisfies Record<string, Prisma.InputJsonValue | null>;
+}
+
+function asJsonObject(value: Prisma.JsonValue | null | undefined) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    return null;
+  }
+
+  return value as Record<string, Prisma.JsonValue | null>;
+}
+
+function isCanadaJob(job: NormalizedJobInput) {
+  return job.region === "CA";
+}
+
+function isCanadaRemoteJob(job: NormalizedJobInput) {
+  return job.region === "CA" && job.workMode === "REMOTE";
 }
 
 async function upsertRawJob({

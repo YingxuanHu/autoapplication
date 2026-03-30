@@ -27,6 +27,7 @@ export {
   validateTaleoPortal,
 } from "./taleo";
 export { createRemoteOkConnector } from "./remoteok";
+export { createRemotiveConnector } from "./remotive";
 export { createSmartRecruitersConnector } from "./smartrecruiters";
 export {
   buildWorkdayApiUrl,

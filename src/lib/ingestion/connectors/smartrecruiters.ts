@@ -7,6 +7,7 @@ import type {
   SourceConnectorFetchOptions,
   SourceConnectorFetchResult,
 } from "@/lib/ingestion/types";
+import { throwIfAborted } from "@/lib/ingestion/runtime-control";
 
 const SMARTRECRUITERS_PAGE_SIZE = 100;
 const DETAIL_BATCH_SIZE = 8;
@@ -87,6 +88,7 @@ export function createSmartRecruitersConnector({
       const listings = await fetchAllListings({
         companyIdentifier,
         limit: options.limit,
+        signal: options.signal,
       });
 
       const jobs = await mapInBatches(
@@ -96,6 +98,7 @@ export function createSmartRecruitersConnector({
           companyIdentifier,
           fallbackCompanyName: resolvedCompanyName,
           listing,
+          signal: options.signal,
         })
       );
 
@@ -115,17 +118,21 @@ export function createSmartRecruitersConnector({
 async function fetchAllListings({
   companyIdentifier,
   limit,
+  signal,
 }: {
   companyIdentifier: string;
   limit?: number;
+  signal?: AbortSignal;
 }) {
   const listings: SmartRecruitersListing[] = [];
   let offset = 0;
 
   while (true) {
+    throwIfAborted(signal);
     const response = await fetch(
       `https://api.smartrecruiters.com/v1/companies/${companyIdentifier}/postings?limit=${SMARTRECRUITERS_PAGE_SIZE}&offset=${offset}`,
       {
+        signal,
         headers: {
           Accept: "application/json",
         },
@@ -158,14 +165,16 @@ async function buildSourceJob({
   companyIdentifier,
   fallbackCompanyName,
   listing,
+  signal,
 }: {
   companyIdentifier: string;
   fallbackCompanyName: string;
   listing: SmartRecruitersListing;
+  signal?: AbortSignal;
 }) {
   const shouldFetchDetail = mayNeedDetailFetch(listing);
   const detail = shouldFetchDetail
-    ? await fetchPostingDetail(companyIdentifier, listing.id)
+    ? await fetchPostingDetail(companyIdentifier, listing.id, signal)
     : null;
 
   const sourceRecord = detail ?? listing;
@@ -198,10 +207,15 @@ async function buildSourceJob({
   };
 }
 
-async function fetchPostingDetail(companyIdentifier: string, postingId: string) {
+async function fetchPostingDetail(
+  companyIdentifier: string,
+  postingId: string,
+  signal?: AbortSignal
+) {
   const response = await fetch(
     `https://api.smartrecruiters.com/v1/companies/${companyIdentifier}/postings/${postingId}`,
     {
+      signal,
       headers: {
         Accept: "application/json",
       },

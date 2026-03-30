@@ -9,6 +9,7 @@ import type {
   SourceConnectorFetchResult,
   SourceConnectorJob,
 } from "@/lib/ingestion/types";
+import { throwIfAborted } from "@/lib/ingestion/runtime-control";
 
 const WORKDAY_PAGE_SIZE = 20;
 const WORKDAY_DETAIL_CONCURRENCY = 6;
@@ -106,6 +107,10 @@ type WorkdayJobDetail = {
   runtimeConfig: WorkdayRuntimeConfig | null;
 };
 
+type WorkdayCheckpoint = {
+  offset: number;
+};
+
 export function buildWorkdaySourceToken({
   host,
   tenant,
@@ -163,7 +168,10 @@ export function createWorkdayConnector(
     async fetchJobs(
       options: SourceConnectorFetchOptions
     ): Promise<SourceConnectorFetchResult> {
-      const cacheKey = String(options.limit ?? "all");
+      const cacheKey = JSON.stringify({
+        limit: options.limit ?? "all",
+        checkpoint: options.checkpoint ?? null,
+      });
       const existing = fetchCache.get(cacheKey);
       if (existing) return existing;
 
@@ -172,6 +180,9 @@ export function createWorkdayConnector(
         fallbackCompanyName: resolvedCompanyName,
         now: options.now,
         limit: options.limit,
+        signal: options.signal,
+        checkpoint: parseWorkdayCheckpoint(options.checkpoint),
+        onCheckpoint: options.onCheckpoint,
       });
       fetchCache.set(cacheKey, request);
       return request;
@@ -184,75 +195,35 @@ async function fetchWorkdayJobs({
   fallbackCompanyName,
   now,
   limit,
+  signal,
+  checkpoint,
+  onCheckpoint,
 }: {
   target: WorkdaySourceTarget;
   fallbackCompanyName: string;
   now: Date;
   limit?: number;
+  signal?: AbortSignal;
+  checkpoint?: WorkdayCheckpoint | null;
+  onCheckpoint?: (checkpoint: Prisma.InputJsonValue | null) => Promise<void> | void;
 }): Promise<SourceConnectorFetchResult> {
-  const listingJobs = await fetchListingJobs(target, limit);
-  const jobs = await mapWithConcurrency(
-    listingJobs,
-    WORKDAY_DETAIL_CONCURRENCY,
-    async (job) =>
-      buildSourceJob({
-        target,
-        fallbackCompanyName,
-        now,
-        job,
-      })
-  );
-
-  return {
-    jobs,
-    metadata: {
-      host: target.host,
-      tenant: target.tenant,
-      site: target.site,
-      boardUrl: buildWorkdayBoardUrl(target),
-      apiUrl: buildWorkdayApiUrl(target),
-      fetchedAt: now.toISOString(),
-      totalFetched: jobs.length,
-    } as Prisma.InputJsonValue,
-  };
-}
-
-async function fetchListingJobs(target: WorkdaySourceTarget, maxJobs?: number) {
-  const jobs: WorkdayListJob[] = [];
-  let offset = 0;
+  const jobs: SourceConnectorJob[] = [];
+  let offset = checkpoint?.offset ?? 0;
   let total: number | null = null;
+  let exhausted = false;
 
   while (true) {
+    throwIfAborted(signal);
     const remaining =
-      typeof maxJobs === "number" ? Math.max(maxJobs - jobs.length, 0) : null;
+      typeof limit === "number" ? Math.max(limit - jobs.length, 0) : null;
     if (remaining === 0) break;
 
     const requestedLimit =
       typeof remaining === "number"
         ? Math.min(WORKDAY_PAGE_SIZE, remaining)
         : WORKDAY_PAGE_SIZE;
-    const response = await fetch(buildWorkdayApiUrl(target), {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        "User-Agent": "Mozilla/5.0 (compatible; autoapplication-workday/1.0)",
-      },
-      body: JSON.stringify({
-        appliedFacets: {},
-        limit: requestedLimit,
-        offset,
-        searchText: "",
-      }),
-    });
 
-    if (!response.ok) {
-      throw new Error(
-        `Workday fetch failed for ${buildWorkdaySourceToken(target)}: ${response.status} ${response.statusText}`
-      );
-    }
-
-    const payload = (await response.json()) as WorkdayListResponse;
+    const payload = await fetchListingPage(target, requestedLimit, offset, signal);
     const postings = (payload.jobPostings ?? []).filter((job) =>
       Boolean(job.title?.trim() && job.externalPath?.trim())
     );
@@ -261,17 +232,91 @@ async function fetchListingJobs(target: WorkdaySourceTarget, maxJobs?: number) {
       total = payload.total;
     }
 
-    if (postings.length === 0) break;
+    if (postings.length === 0) {
+      exhausted = true;
+      await onCheckpoint?.(null);
+      break;
+    }
 
-    jobs.push(...postings);
+    const pageJobs = await mapWithConcurrency(
+      postings,
+      WORKDAY_DETAIL_CONCURRENCY,
+      async (job) =>
+        buildSourceJob({
+          target,
+          fallbackCompanyName,
+          now,
+          job,
+          signal,
+        })
+    );
+    jobs.push(...pageJobs);
     offset += postings.length;
 
-    if (typeof maxJobs === "number" && jobs.length >= maxJobs) break;
-    if (typeof total === "number" && offset >= total) break;
-    if (postings.length < requestedLimit) break;
+    const sourceExhausted =
+      (typeof total === "number" && offset >= total) ||
+      postings.length < requestedLimit;
+    if (sourceExhausted) {
+      exhausted = true;
+      await onCheckpoint?.(null);
+      break;
+    }
+
+    if (typeof limit === "number" && jobs.length >= limit) {
+      await onCheckpoint?.({ offset } satisfies WorkdayCheckpoint);
+      break;
+    }
+
+    await onCheckpoint?.({ offset } satisfies WorkdayCheckpoint);
   }
 
-  return typeof maxJobs === "number" ? jobs.slice(0, maxJobs) : jobs;
+  return {
+    jobs,
+    checkpoint: exhausted ? null : ({ offset } satisfies WorkdayCheckpoint),
+    exhausted,
+    metadata: {
+      host: target.host,
+      tenant: target.tenant,
+      site: target.site,
+      boardUrl: buildWorkdayBoardUrl(target),
+      apiUrl: buildWorkdayApiUrl(target),
+      fetchedAt: now.toISOString(),
+      totalFetched: jobs.length,
+      resumedFromCheckpoint: checkpoint ?? null,
+    } as Prisma.InputJsonValue,
+  };
+}
+
+async function fetchListingPage(
+  target: WorkdaySourceTarget,
+  requestedLimit: number,
+  offset: number,
+  signal?: AbortSignal
+) {
+  throwIfAborted(signal);
+  const response = await fetch(buildWorkdayApiUrl(target), {
+    method: "POST",
+    signal,
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+      "User-Agent": "Mozilla/5.0 (compatible; autoapplication-workday/1.0)",
+    },
+    body: JSON.stringify({
+      appliedFacets: {},
+      limit: requestedLimit,
+      offset,
+      searchText: "",
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error(
+      `Workday fetch failed for ${buildWorkdaySourceToken(target)}: ${response.status} ${response.statusText}`
+    );
+  }
+
+  return (await response.json()) as WorkdayListResponse;
 }
 
 async function buildSourceJob({
@@ -279,13 +324,15 @@ async function buildSourceJob({
   fallbackCompanyName,
   now,
   job,
+  signal,
 }: {
   target: WorkdaySourceTarget;
   fallbackCompanyName: string;
   now: Date;
   job: WorkdayListJob;
+  signal?: AbortSignal;
 }): Promise<SourceConnectorJob> {
-  const detail = await fetchJobDetail(target, job.externalPath);
+  const detail = await fetchJobDetail(target, job.externalPath, signal);
   const jsonLd = detail.jsonLd;
   const pageUrl = jsonLd?.url?.trim() || detail.pageUrl;
   const salary = extractSalary(jsonLd?.baseSalary ?? null);
@@ -332,15 +379,26 @@ async function buildSourceJob({
   };
 }
 
+function parseWorkdayCheckpoint(value: Prisma.InputJsonValue | null | undefined) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return null;
+  const record = value as Record<string, unknown>;
+  const offset = typeof record.offset === "number" ? record.offset : null;
+  if (offset == null || !Number.isFinite(offset) || offset < 0) return null;
+  return { offset } satisfies WorkdayCheckpoint;
+}
+
 async function fetchJobDetail(
   target: WorkdaySourceTarget,
-  externalPath: string
+  externalPath: string,
+  signal?: AbortSignal
 ): Promise<WorkdayJobDetail> {
   const detailUrl = buildDetailPageUrl(target, externalPath);
   const localeDetailUrl = buildDetailPageUrl(target, externalPath, "en-US");
 
   for (const pageUrl of [...new Set([detailUrl, localeDetailUrl])]) {
+    throwIfAborted(signal);
     const response = await fetch(pageUrl, {
+      signal,
       headers: {
         Accept: "text/html",
         "User-Agent": "Mozilla/5.0 (compatible; autoapplication-workday/1.0)",
