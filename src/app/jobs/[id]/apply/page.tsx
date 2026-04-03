@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ExternalLink } from "lucide-react";
+import { Bot, ExternalLink } from "lucide-react";
 import { ApplicationReviewActions } from "@/components/jobs/application-review-actions";
 import {
   APPLICATION_REVIEW_STATE_META,
@@ -27,6 +27,8 @@ export default async function JobApplyPage({ params }: JobApplyPageProps) {
 
   const {
     automationMode,
+    atsName,
+    atsSupported,
     job,
     latestPackage,
     packagePreview,
@@ -101,6 +103,12 @@ export default async function JobApplyPage({ params }: JobApplyPageProps) {
           {packageState}
           <Sep />
           {submissionState}
+          {atsSupported ? (
+            <>
+              <Sep />
+              <span className="text-blue-600 dark:text-blue-400">{atsName} auto-fill</span>
+            </>
+          ) : null}
         </p>
       </div>
 
@@ -112,6 +120,8 @@ export default async function JobApplyPage({ params }: JobApplyPageProps) {
           latestPackageId={latestPackage?.id ?? null}
           latestSubmission={latestSubmission}
           canCreatePackage={canCreatePackage}
+          atsSupported={atsSupported}
+          atsName={atsName}
         />
       </div>
 
@@ -153,32 +163,39 @@ export default async function JobApplyPage({ params }: JobApplyPageProps) {
         <div className="border-t border-border py-4">
           <p className="mb-3 text-xs text-muted-foreground">Submission history</p>
           <div className="space-y-3">
-            {submissions.map((submission) => (
-              <div
-                key={submission.id}
-                className="border-b border-border/60 pb-3 last:border-b-0 last:pb-0"
-              >
-                <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium text-foreground">
-                    {formatDisplayLabel(submission.status)}
-                  </span>
-                  {submission.submissionMethod ? (
-                    <span className="text-xs text-muted-foreground">
-                      {formatDisplayLabel(submission.submissionMethod)}
+            {submissions.map((submission) => {
+              const autoLog = parseAutomationLog(submission.notes);
+              const isAuto = submission.submissionMethod?.startsWith("auto:");
+              return (
+                <div
+                  key={submission.id}
+                  className="border-b border-border/60 pb-3 last:border-b-0 last:pb-0"
+                >
+                  <div className="flex items-center gap-2">
+                    {isAuto ? <Bot className="h-3.5 w-3.5 text-muted-foreground" /> : null}
+                    <span className="text-sm font-medium text-foreground">
+                      {formatDisplayLabel(submission.status)}
                     </span>
+                    {submission.submissionMethod ? (
+                      <span className="text-xs text-muted-foreground">
+                        {formatDisplayLabel(submission.submissionMethod)}
+                      </span>
+                    ) : null}
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    {formatPostedAge(submission.updatedAt)}
+                    {submission.submittedAt
+                      ? ` · submitted ${formatPostedAge(submission.submittedAt)}`
+                      : ""}
+                  </p>
+                  {autoLog ? (
+                    <AutomationLogSummary log={autoLog} />
+                  ) : submission.notes ? (
+                    <p className="mt-1 text-xs text-muted-foreground">{submission.notes}</p>
                   ) : null}
                 </div>
-                <p className="text-xs text-muted-foreground">
-                  {formatPostedAge(submission.updatedAt)}
-                  {submission.submittedAt
-                    ? ` · submitted ${formatPostedAge(submission.submittedAt)}`
-                    : ""}
-                </p>
-                {submission.notes ? (
-                  <p className="mt-1 text-xs text-muted-foreground">{submission.notes}</p>
-                ) : null}
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       ) : null}
@@ -295,5 +312,71 @@ function KV({ label, value }: { label: string; value: string }) {
 
 function Sep() {
   return <span className="mx-1.5 text-border">·</span>;
+}
+
+// ─── Automation log helpers ─────────────────────────────────────────────────
+
+type AutomationLog = {
+  atsName: string;
+  mode: string;
+  status: string;
+  filledFieldCount: number;
+  unfillableFieldCount: number;
+  blockers: Array<{ type: string; detail: string }>;
+  durationMs: number;
+  screenshots: string[];
+  notes: string;
+};
+
+function parseAutomationLog(notes: string | null): AutomationLog | null {
+  if (!notes) return null;
+  try {
+    const parsed = JSON.parse(notes);
+    if (parsed && typeof parsed === "object" && "atsName" in parsed && "status" in parsed) {
+      return parsed as AutomationLog;
+    }
+  } catch {
+    // Not a JSON automation log
+  }
+  return null;
+}
+
+function AutomationLogSummary({ log }: { log: AutomationLog }) {
+  const statusColor =
+    log.status === "submitted" ? "text-green-600 dark:text-green-400" :
+    log.status === "filled" ? "text-blue-600 dark:text-blue-400" :
+    log.status === "blocked" ? "text-yellow-600 dark:text-yellow-400" :
+    "text-red-600 dark:text-red-400";
+
+  return (
+    <div className="mt-2 space-y-1.5">
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">
+        <span className={`font-medium ${statusColor}`}>
+          {log.status.toUpperCase()}
+        </span>
+        <span className="text-muted-foreground">
+          {log.atsName} · {log.mode.replace(/_/g, " ")}
+        </span>
+        <span className="text-muted-foreground">
+          {log.filledFieldCount} filled · {log.unfillableFieldCount} unfillable
+        </span>
+        <span className="text-muted-foreground">
+          {(log.durationMs / 1000).toFixed(1)}s
+        </span>
+      </div>
+      {log.blockers.length > 0 ? (
+        <div className="space-y-0.5">
+          {log.blockers.map((b, i) => (
+            <p key={i} className="text-xs text-yellow-600 dark:text-yellow-400">
+              Blocker: [{b.type}] {b.detail}
+            </p>
+          ))}
+        </div>
+      ) : null}
+      {log.notes ? (
+        <p className="text-xs text-muted-foreground">{log.notes}</p>
+      ) : null}
+    </div>
+  );
 }
 

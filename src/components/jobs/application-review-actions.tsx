@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { LoaderCircle } from "lucide-react";
+import { Bot, LoaderCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { ApplicationReviewState, ApplicationSubmissionSummary } from "@/types";
 
@@ -12,7 +12,24 @@ type ApplicationReviewActionsProps = {
   latestPackageId: string | null;
   latestSubmission: ApplicationSubmissionSummary | null;
   canCreatePackage: boolean;
+  /** Whether a registered ATS filler can handle this job's apply URL */
+  atsSupported?: boolean;
+  /** Name of the ATS filler (e.g. "Greenhouse") */
+  atsName?: string | null;
 };
+
+/** Parse a JSON error body or truncate raw text to a user-friendly message. */
+function extractErrorMessage(body: string, fallback: string): string {
+  try {
+    const json = JSON.parse(body);
+    if (typeof json.error === "string") return json.error;
+  } catch {
+    // not JSON — likely HTML error page
+  }
+  // Truncate to avoid rendering full HTML pages
+  if (body.length > 200) return fallback;
+  return body || fallback;
+}
 
 // ─── Workflow step ────────────────────────────────────────────────────────────
 
@@ -53,10 +70,13 @@ export function ApplicationReviewActions({
   latestPackageId,
   latestSubmission,
   canCreatePackage,
+  atsSupported = false,
+  atsName = null,
 }: ApplicationReviewActionsProps) {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
+  const [autoApplyStatus, setAutoApplyStatus] = useState<"idle" | "running" | "done">("idle");
 
   const step = getWorkflowStep(
     reviewState,
@@ -76,11 +96,14 @@ export function ApplicationReviewActions({
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ intent }),
         });
-        if (!res.ok) throw new Error(await res.text());
+        if (!res.ok) {
+          const body = await res.text();
+          throw new Error(extractErrorMessage(body, "Something went wrong"));
+        }
         router.refresh();
       } catch (e) {
         console.error(e);
-        setError("Something went wrong. Try again.");
+        setError(e instanceof Error ? e.message : "Something went wrong. Try again.");
       }
     });
   }
@@ -95,16 +118,48 @@ export function ApplicationReviewActions({
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ intent }),
         });
-        if (!res.ok) throw new Error(await res.text());
+        if (!res.ok) {
+          const body = await res.text();
+          throw new Error(extractErrorMessage(body, "Could not update submission status"));
+        }
         router.refresh();
       } catch (e) {
         console.error(e);
-        setError("Could not update submission status.");
+        setError(e instanceof Error ? e.message : "Could not update submission status.");
       }
     });
   }
 
-  const spinner = isPending ? <LoaderCircle className="h-3.5 w-3.5 animate-spin" /> : null;
+  function triggerAutoApply(mode: "dry_run" | "fill_only" | "fill_and_submit") {
+    if (isPending || autoApplyStatus === "running") return;
+    setError(null);
+    setAutoApplyStatus("running");
+    startTransition(async () => {
+      try {
+        const res = await fetch(`/api/jobs/${jobId}/auto-apply`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ mode }),
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          throw new Error(data?.error ?? "Auto-apply failed");
+        }
+        setAutoApplyStatus("done");
+        router.refresh();
+      } catch (e) {
+        setAutoApplyStatus("idle");
+        setError(e instanceof Error ? e.message : "Auto-apply failed. Try again.");
+      }
+    });
+  }
+
+  const spinner = isPending && autoApplyStatus !== "running"
+    ? <LoaderCircle className="h-3.5 w-3.5 animate-spin" />
+    : null;
+  const autoSpinner = autoApplyStatus === "running"
+    ? <LoaderCircle className="h-3.5 w-3.5 animate-spin" />
+    : <Bot className="h-3.5 w-3.5" />;
 
   // ── Render per step ──────────────────────────────────────────────────────
 
@@ -143,6 +198,16 @@ export function ApplicationReviewActions({
                   ? "Update package"
                   : "Prepare package"}
           </Button>
+          {atsSupported && !isManual ? (
+            <Button
+              variant="outline"
+              onClick={() => triggerAutoApply("fill_only")}
+              disabled={isPending || autoApplyStatus === "running"}
+            >
+              {autoSpinner}
+              Auto-fill{atsName ? ` (${atsName})` : ""}
+            </Button>
+          ) : null}
           <Button variant="ghost" onClick={() => post("submit")} disabled={isPending}>
             {spinner}
             {isManual ? "Mark submitted manually" : "Mark submitted"}
@@ -151,6 +216,11 @@ export function ApplicationReviewActions({
         {hasFailed ? (
           <p className="text-xs text-muted-foreground">
             Previous submission was marked as failed. Prepare a fresh package or record a new attempt.
+          </p>
+        ) : null}
+        {atsSupported && !isManual ? (
+          <p className="text-xs text-muted-foreground">
+            Auto-fill opens the application form and fills fields automatically. You can review before submitting.
           </p>
         ) : null}
         {error ? <p aria-live="polite" className="text-xs text-destructive">{error}</p> : null}
@@ -168,7 +238,16 @@ export function ApplicationReviewActions({
             : "When you have actually submitted the application, record it below."}
         </p>
         <div className="flex flex-wrap items-center gap-2">
-          <Button onClick={() => post("submit")} disabled={isPending}>
+          {atsSupported && !isManual ? (
+            <Button
+              onClick={() => triggerAutoApply("fill_only")}
+              disabled={isPending || autoApplyStatus === "running"}
+            >
+              {autoSpinner}
+              Auto-fill{atsName ? ` (${atsName})` : ""}
+            </Button>
+          ) : null}
+          <Button variant={atsSupported && !isManual ? "outline" : "default"} onClick={() => post("submit")} disabled={isPending}>
             {spinner}
             {isManual ? "Mark submitted manually" : "Mark as submitted"}
           </Button>

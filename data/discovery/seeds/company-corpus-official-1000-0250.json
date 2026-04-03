@@ -1,0 +1,207 @@
+[
+  {
+    "boardUrl": "https://job-boards.greenhouse.io/runwayml",
+    "sourceKey": "greenhouse:runwayml",
+    "connectorName": "greenhouse",
+    "token": "runwayml",
+    "companyNames": [
+      "Runway ML"
+    ],
+    "careerPageUrls": [
+      "https://runwayml.com/careers"
+    ],
+    "directAtsUrls": [
+      "https://job-boards.greenhouse.io/runwayml"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link",
+      "career_page_scan"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "input": "https://job-boards.greenhouse.io/runwayml",
+      "connectorName": "greenhouse",
+      "token": "runwayml",
+      "sourceKey": "greenhouse:runwayml",
+      "sourceName": "Greenhouse:runwayml",
+      "boardUrl": "https://job-boards.greenhouse.io/runwayml",
+      "source": "token",
+      "pageTitle": "Jobs at Runway",
+      "fetchedCount": 35,
+      "acceptedCount": 11,
+      "acceptedCanadaCount": 0,
+      "acceptedCanadaRemoteCount": 0,
+      "previewCreatedCount": 9,
+      "previewCreatedCanadaCount": 0,
+      "previewCreatedCanadaRemoteCount": 0,
+      "previewUpdatedCount": 2,
+      "dedupedCount": 2,
+      "rejectedCount": 24,
+      "existingRawCount": 0,
+      "existingActiveMappingCount": 0,
+      "existingLiveCanonicalCount": 0,
+      "sampleTitles": [
+        "AI Engagement Manager",
+        "API Deployment Manager",
+        "Applied Research Science Lead, Generative Audio",
+        "Applied Research Science Lead, Language",
+        "Applied Research Science Lead, Model Scaling"
+      ],
+      "sampleLocations": [
+        "New York; Remote; San Francisco",
+        "New York; Remote; San Francisco",
+        "Remote",
+        "Remote",
+        "Remote"
+      ]
+    },
+    "recommendedPromotion": false,
+    "promotionReason": "insufficient_canada_weighted_yield"
+  },
+  {
+    "boardUrl": "https://ats.rippling.com/ritual/jobs",
+    "sourceKey": "rippling:ritual",
+    "connectorName": "rippling",
+    "token": "ritual",
+    "companyNames": [
+      "Ritual"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [
+      "https://ats.rippling.com/ritual/jobs"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "input": "https://ats.rippling.com/ritual/jobs",
+      "connectorName": "rippling",
+      "token": "ritual",
+      "sourceKey": "rippling:ritual",
+      "sourceName": "Rippling:ritual",
+      "boardUrl": "https://ats.rippling.com/ritual/jobs",
+      "source": "token",
+      "pageTitle": null,
+      "fetchedCount": 2,
+      "acceptedCount": 1,
+      "acceptedCanadaCount": 0,
+      "acceptedCanadaRemoteCount": 0,
+      "previewCreatedCount": 1,
+      "previewCreatedCanadaCount": 0,
+      "previewCreatedCanadaRemoteCount": 0,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 1,
+      "existingRawCount": 0,
+      "existingActiveMappingCount": 0,
+      "existingLiveCanonicalCount": 0,
+      "sampleTitles": [
+        "Director of Growth Marketing, Media",
+        "Senior Quality Specialist"
+      ],
+      "sampleLocations": [
+        "Los Angeles, CA",
+        "Los Angeles, CA"
+      ]
+    },
+    "recommendedPromotion": false,
+    "promotionReason": "insufficient_canada_weighted_yield"
+  },
+  {
+    "boardUrl": "https://careers-amd.icims.com/jobs/search",
+    "sourceKey": "icims:careers-amd",
+    "connectorName": "icims",
+    "token": "careers-amd",
+    "companyNames": [
+      "AMD"
+    ],
+    "careerPageUrls": [
+      "https://careers.amd.com/careers-home/jobs",
+      "https://www.amd.com/en/corporate/careers.html?utm_campaign=careers&utm_medium=redirect&utm_source=301"
+    ],
+    "directAtsUrls": [
+      "https://careers-amd.icims.com/jobs/search"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link",
+      "career_page_scan"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "input": "https://careers-amd.icims.com/jobs/search",
+      "connectorName": "icims",
+      "token": "careers-amd",
+      "sourceKey": "icims:careers-amd",
+      "sourceName": "iCIMS:careers-amd",
+      "boardUrl": "https://careers-amd.icims.com/jobs/search",
+      "source": "token",
+      "pageTitle": null,
+      "fetchedCount": 0,
+      "acceptedCount": 0,
+      "acceptedCanadaCount": 0,
+      "acceptedCanadaRemoteCount": 0,
+      "previewCreatedCount": 0,
+      "previewCreatedCanadaCount": 0,
+      "previewCreatedCanadaRemoteCount": 0,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 0,
+      "existingRawCount": 0,
+      "existingActiveMappingCount": 0,
+      "existingLiveCanonicalCount": 0,
+      "sampleTitles": [],
+      "sampleLocations": []
+    },
+    "recommendedPromotion": false,
+    "promotionReason": "insufficient_canada_weighted_yield"
+  },
+  {
+    "boardUrl": "https://internal-amd.icims.com/jobs/search",
+    "sourceKey": "icims:internal-amd",
+    "connectorName": "icims",
+    "token": "internal-amd",
+    "companyNames": [
+      "AMD"
+    ],
+    "careerPageUrls": [
+      "https://careers.amd.com/careers-home/jobs",
+      "https://www.amd.com/en/corporate/careers.html?utm_campaign=careers&utm_medium=redirect&utm_source=301"
+    ],
+    "directAtsUrls": [
+      "https://internal-amd.icims.com/jobs/search"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link",
+      "career_page_scan"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "input": "https://internal-amd.icims.com/jobs/search",
+      "connectorName": "icims",
+      "token": "internal-amd",
+      "sourceKey": "icims:internal-amd",
+      "sourceName": "iCIMS:internal-amd",
+      "boardUrl": "https://internal-amd.icims.com/jobs/search",
+      "source": "token",
+      "pageTitle": null,
+      "fetchedCount": 0,
+      "acceptedCount": 0,
+      "acceptedCanadaCount": 0,
+      "acceptedCanadaRemoteCount": 0,
+      "previewCreatedCount": 0,
+      "previewCreatedCanadaCount": 0,
+      "previewCreatedCanadaRemoteCount": 0,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 0,
+      "existingRawCount": 0,
+      "existingActiveMappingCount": 0,
+      "existingLiveCanonicalCount": 0,
+      "sampleTitles": [],
+      "sampleLocations": []
+    },
+    "recommendedPromotion": false,
+    "promotionReason": "insufficient_canada_weighted_yield"
+  }
+]

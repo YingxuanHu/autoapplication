@@ -1,0 +1,503 @@
+[
+  {
+    "boardUrl": "https://uwaterloo.wd3.myworkdayjobs.com/uw_careers",
+    "sourceKey": "workday:uwaterloo.wd3.myworkdayjobs.com|uwaterloo|uw_careers",
+    "connectorName": "workday",
+    "token": "uwaterloo.wd3.myworkdayjobs.com|uwaterloo|uw_careers",
+    "companyNames": [
+      "University of Waterloo"
+    ],
+    "careerPageUrls": [
+      "https://uwaterloo.ca/careers/current-opportunities"
+    ],
+    "directAtsUrls": [
+      "https://uwaterloo.wd3.myworkdayjobs.com/uw_careers"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link",
+      "career_page_scan"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "input": "https://uwaterloo.wd3.myworkdayjobs.com/uw_careers",
+      "connectorName": "workday",
+      "token": "uwaterloo.wd3.myworkdayjobs.com|uwaterloo|uw_careers",
+      "sourceKey": "workday:uwaterloo.wd3.myworkdayjobs.com|uwaterloo|uw_careers",
+      "sourceName": "Workday:uwaterloo.wd3.myworkdayjobs.com|uwaterloo|uw_careers",
+      "boardUrl": "https://uwaterloo.wd3.myworkdayjobs.com/uw_careers",
+      "source": "token",
+      "pageTitle": null,
+      "fetchedCount": 62,
+      "acceptedCount": 9,
+      "acceptedCanadaCount": 9,
+      "acceptedCanadaRemoteCount": 0,
+      "previewCreatedCount": 8,
+      "previewCreatedCanadaCount": 8,
+      "previewCreatedCanadaRemoteCount": 0,
+      "previewUpdatedCount": 1,
+      "dedupedCount": 1,
+      "rejectedCount": 53,
+      "existingRawCount": 0,
+      "existingActiveMappingCount": 0,
+      "existingLiveCanonicalCount": 0,
+      "sampleTitles": [
+        "(Senior) Development Officer",
+        "Business Intelligence Architect and Developer",
+        "Laboratory Instructor, Hardware Specialist",
+        "Assistant Registrar, Admissions",
+        "Community Relations and Events Specialist"
+      ],
+      "sampleLocations": [
+        "Pearl Sullivan Engineering Building, Canada",
+        "Ira G. Needles Hall, Canada",
+        "Engineering 2, Canada",
+        "East Campus 2, Canada",
+        "East Campus 1, Canada"
+      ]
+    },
+    "recommendedPromotion": true,
+    "promotionReason": "canada_heavy_created_volume"
+  },
+  {
+    "boardUrl": "https://xylem.wd5.myworkdayjobs.com/xylem-careers",
+    "sourceKey": "workday:xylem.wd5.myworkdayjobs.com|xylem|xylem-careers",
+    "connectorName": "workday",
+    "token": "xylem.wd5.myworkdayjobs.com|xylem|xylem-careers",
+    "companyNames": [
+      "Xylem"
+    ],
+    "careerPageUrls": [
+      "https://www.xylem.com/en-us/",
+      "https://www.xylem.com/en-us/careers/"
+    ],
+    "directAtsUrls": [
+      "https://xylem.wd5.myworkdayjobs.com/xylem-careers"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link",
+      "career_page_scan"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "input": "https://xylem.wd5.myworkdayjobs.com/xylem-careers",
+      "connectorName": "workday",
+      "token": "xylem.wd5.myworkdayjobs.com|xylem|xylem-careers",
+      "sourceKey": "workday:xylem.wd5.myworkdayjobs.com|xylem|xylem-careers",
+      "sourceName": "Workday:xylem.wd5.myworkdayjobs.com|xylem|xylem-careers",
+      "boardUrl": "https://xylem.wd5.myworkdayjobs.com/xylem-careers",
+      "source": "token",
+      "pageTitle": null,
+      "fetchedCount": 100,
+      "acceptedCount": 9,
+      "acceptedCanadaCount": 1,
+      "acceptedCanadaRemoteCount": 1,
+      "previewCreatedCount": 9,
+      "previewCreatedCanadaCount": 1,
+      "previewCreatedCanadaRemoteCount": 1,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 91,
+      "existingRawCount": 0,
+      "existingActiveMappingCount": 0,
+      "existingLiveCanonicalCount": 0,
+      "sampleTitles": [
+        "CDL Driver Technician",
+        "Field Service Engineer – Wastewater",
+        "Graduate Sales Engineer",
+        "Engineer I",
+        "PLANNING ENGINEER"
+      ],
+      "sampleLocations": [
+        "United States of America",
+        "Colorado Springs 725 Wooten, United States of America",
+        "United Kingdom",
+        "India",
+        "India"
+      ]
+    },
+    "recommendedPromotion": false,
+    "promotionReason": "insufficient_canada_weighted_yield"
+  },
+  {
+    "boardUrl": "https://jobs.ashbyhq.com/tonal",
+    "sourceKey": "ashby:tonal",
+    "connectorName": "ashby",
+    "token": "tonal",
+    "companyNames": [
+      "Tonal"
+    ],
+    "careerPageUrls": [
+      "https://tonal.com/",
+      "https://tonal.com/pages/careers"
+    ],
+    "directAtsUrls": [
+      "https://jobs.ashbyhq.com/tonal"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link",
+      "career_page_scan"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "input": "https://jobs.ashbyhq.com/tonal",
+      "connectorName": "ashby",
+      "token": "tonal",
+      "sourceKey": "ashby:tonal",
+      "sourceName": "Ashby:tonal",
+      "boardUrl": "https://jobs.ashbyhq.com/tonal",
+      "source": "token",
+      "pageTitle": "Tonal Jobs",
+      "fetchedCount": 17,
+      "acceptedCount": 6,
+      "acceptedCanadaCount": 2,
+      "acceptedCanadaRemoteCount": 1,
+      "previewCreatedCount": 5,
+      "previewCreatedCanadaCount": 1,
+      "previewCreatedCanadaRemoteCount": 1,
+      "previewUpdatedCount": 1,
+      "dedupedCount": 1,
+      "rejectedCount": 11,
+      "existingRawCount": 0,
+      "existingActiveMappingCount": 0,
+      "existingLiveCanonicalCount": 0,
+      "sampleTitles": [
+        "Business System Manager (Contract)",
+        "Customer Care Advocate",
+        "Director, Business Systems",
+        "Director, Product Management - Healthcare Platform",
+        "Product Management Intern – Retail Sales & Demo Conversion"
+      ],
+      "sampleLocations": [
+        "Toronto, ON",
+        "Toronto, ON",
+        "Toronto, ON",
+        "San Francisco, CA",
+        "Toronto, ON"
+      ]
+    },
+    "recommendedPromotion": false,
+    "promotionReason": "insufficient_canada_weighted_yield"
+  },
+  {
+    "boardUrl": "https://healthcare.wd1.myworkdayjobs.com/search",
+    "sourceKey": "workday:healthcare.wd1.myworkdayjobs.com|healthcare|search",
+    "connectorName": "workday",
+    "token": "healthcare.wd1.myworkdayjobs.com|healthcare|search",
+    "companyNames": [
+      "Solventum"
+    ],
+    "careerPageUrls": [
+      "https://www.solventum.com/en-us/home/our-company/careers/"
+    ],
+    "directAtsUrls": [
+      "https://healthcare.wd1.myworkdayjobs.com/search"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link",
+      "career_page_scan"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "input": "https://healthcare.wd1.myworkdayjobs.com/search",
+      "connectorName": "workday",
+      "token": "healthcare.wd1.myworkdayjobs.com|healthcare|search",
+      "sourceKey": "workday:healthcare.wd1.myworkdayjobs.com|healthcare|search",
+      "sourceName": "Workday:healthcare.wd1.myworkdayjobs.com|healthcare|search",
+      "boardUrl": "https://healthcare.wd1.myworkdayjobs.com/search",
+      "source": "token",
+      "pageTitle": null,
+      "fetchedCount": 100,
+      "acceptedCount": 9,
+      "acceptedCanadaCount": 0,
+      "acceptedCanadaRemoteCount": 0,
+      "previewCreatedCount": 9,
+      "previewCreatedCanadaCount": 0,
+      "previewCreatedCanadaRemoteCount": 0,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 91,
+      "existingRawCount": 0,
+      "existingActiveMappingCount": 0,
+      "existingLiveCanonicalCount": 0,
+      "sampleTitles": [
+        "HIS Senior Healthcare Performance Advisor",
+        "Account Manager - Infection Prevention Specialist, Peri-Op Cleveland/Columbus",
+        "Marketing Intelligence Manager - Remote",
+        "National Account Marketing Manager - Remote",
+        "Clinical Development Analyst"
+      ],
+      "sampleLocations": [
+        "United States of America",
+        "United States of America",
+        "United States of America",
+        "United States of America",
+        "United States of America"
+      ]
+    },
+    "recommendedPromotion": false,
+    "promotionReason": "insufficient_canada_weighted_yield"
+  },
+  {
+    "boardUrl": "https://job-boards.greenhouse.io/metalab",
+    "sourceKey": "greenhouse:metalab",
+    "connectorName": "greenhouse",
+    "token": "metalab",
+    "companyNames": [
+      "MetaLab"
+    ],
+    "careerPageUrls": [
+      "https://www.metalab.com/careers"
+    ],
+    "directAtsUrls": [
+      "https://job-boards.greenhouse.io/metalab"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link",
+      "career_page_scan"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "input": "https://job-boards.greenhouse.io/metalab",
+      "connectorName": "greenhouse",
+      "token": "metalab",
+      "sourceKey": "greenhouse:metalab",
+      "sourceName": "Greenhouse:metalab",
+      "boardUrl": "https://job-boards.greenhouse.io/metalab",
+      "source": "token",
+      "pageTitle": "Jobs at Metalab",
+      "fetchedCount": 9,
+      "acceptedCount": 8,
+      "acceptedCanadaCount": 0,
+      "acceptedCanadaRemoteCount": 0,
+      "previewCreatedCount": 1,
+      "previewCreatedCanadaCount": 0,
+      "previewCreatedCanadaRemoteCount": 0,
+      "previewUpdatedCount": 7,
+      "dedupedCount": 7,
+      "rejectedCount": 1,
+      "existingRawCount": 0,
+      "existingActiveMappingCount": 0,
+      "existingLiveCanonicalCount": 0,
+      "sampleTitles": [
+        "Brand Designer",
+        "Brand Director",
+        "Design Lead",
+        "Executive Design Director (Brand & Product)",
+        "Marketing Lead"
+      ],
+      "sampleLocations": [
+        "Remote",
+        "Remote",
+        "Remote",
+        "Remote",
+        "Remote"
+      ]
+    },
+    "recommendedPromotion": false,
+    "promotionReason": "insufficient_canada_weighted_yield"
+  },
+  {
+    "boardUrl": "https://jobs.lever.co/welocalize",
+    "sourceKey": "lever:welocalize",
+    "connectorName": "lever",
+    "token": "welocalize",
+    "companyNames": [
+      "Welocalize"
+    ],
+    "careerPageUrls": [
+      "https://careers.welocalize.com/",
+      "https://www.welocalize.com/wp-signup.php?new=welocalize.com"
+    ],
+    "directAtsUrls": [
+      "https://jobs.lever.co/welocalize"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link",
+      "career_page_scan"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "input": "https://jobs.lever.co/welocalize",
+      "connectorName": "lever",
+      "token": "welocalize",
+      "sourceKey": "lever:welocalize",
+      "sourceName": "Lever:welocalize",
+      "boardUrl": "https://jobs.lever.co/welocalize",
+      "source": "token",
+      "pageTitle": "Welocalize",
+      "fetchedCount": 100,
+      "acceptedCount": 0,
+      "acceptedCanadaCount": 0,
+      "acceptedCanadaRemoteCount": 0,
+      "previewCreatedCount": 0,
+      "previewCreatedCanadaCount": 0,
+      "previewCreatedCanadaRemoteCount": 0,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 100,
+      "existingRawCount": 0,
+      "existingActiveMappingCount": 0,
+      "existingLiveCanonicalCount": 0,
+      "sampleTitles": [
+        "*Scout Junior Quality Coordinator - Portuguese (Brazil)",
+        "*Scout Junior Quality Coordinator - Spanish (Mexico)",
+        "*Scout Search Quality Rater - Arabic (Egypt)",
+        "*Scout Search Quality Rater - English (Australia)",
+        "*Scout Search Quality Rater - English (Canada)"
+      ],
+      "sampleLocations": [
+        "Brazil",
+        "Mexico City, Mexico",
+        "Cairo, Egypt",
+        "Australia",
+        "Canada"
+      ]
+    },
+    "recommendedPromotion": false,
+    "promotionReason": "insufficient_canada_weighted_yield"
+  },
+  {
+    "boardUrl": "https://careers.aramark.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+    "sourceKey": "successfactors:careers.aramark.com",
+    "connectorName": "successfactors",
+    "token": "careers.aramark.com",
+    "companyNames": [
+      "Aramark"
+    ],
+    "careerPageUrls": [
+      "https://careers.aramark.com/"
+    ],
+    "directAtsUrls": [
+      "https://careers.aramark.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link",
+      "career_page_scan"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "input": "https://careers.aramark.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+      "connectorName": "successfactors",
+      "token": "careers.aramark.com",
+      "sourceKey": "successfactors:careers.aramark.com",
+      "sourceName": "SuccessFactors:careers.aramark.com",
+      "boardUrl": "https://careers.aramark.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+      "source": "token",
+      "pageTitle": "Aramark Careers - Search",
+      "fetchedCount": 0,
+      "acceptedCount": 0,
+      "acceptedCanadaCount": 0,
+      "acceptedCanadaRemoteCount": 0,
+      "previewCreatedCount": 0,
+      "previewCreatedCanadaCount": 0,
+      "previewCreatedCanadaRemoteCount": 0,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 0,
+      "existingRawCount": 0,
+      "existingActiveMappingCount": 0,
+      "existingLiveCanonicalCount": 0,
+      "sampleTitles": [],
+      "sampleLocations": [],
+      "error": "no_structured_listing: Board did not expose structured SuccessFactors listing data on the public search page."
+    },
+    "recommendedPromotion": false,
+    "promotionReason": "no_structured_listing: Board did not expose structured SuccessFactors listing data on the public search page."
+  },
+  {
+    "boardUrl": "https://healthcare.wd1.myworkdayjobs.com/search&",
+    "sourceKey": "workday:healthcare.wd1.myworkdayjobs.com|healthcare|search&",
+    "connectorName": "workday",
+    "token": "healthcare.wd1.myworkdayjobs.com|healthcare|search&",
+    "companyNames": [
+      "Solventum"
+    ],
+    "careerPageUrls": [
+      "https://www.solventum.com/en-us/home/our-company/careers/"
+    ],
+    "directAtsUrls": [
+      "https://healthcare.wd1.myworkdayjobs.com/search&"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link",
+      "career_page_scan"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "input": "https://healthcare.wd1.myworkdayjobs.com/search&",
+      "connectorName": "workday",
+      "token": "healthcare.wd1.myworkdayjobs.com|healthcare|search&",
+      "sourceKey": "workday:healthcare.wd1.myworkdayjobs.com|healthcare|search&",
+      "sourceName": "Workday:healthcare.wd1.myworkdayjobs.com|healthcare|search&",
+      "boardUrl": "https://healthcare.wd1.myworkdayjobs.com/search&",
+      "source": "token",
+      "pageTitle": null,
+      "fetchedCount": 0,
+      "acceptedCount": 0,
+      "acceptedCanadaCount": 0,
+      "acceptedCanadaRemoteCount": 0,
+      "previewCreatedCount": 0,
+      "previewCreatedCanadaCount": 0,
+      "previewCreatedCanadaRemoteCount": 0,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 0,
+      "existingRawCount": 0,
+      "existingActiveMappingCount": 0,
+      "existingLiveCanonicalCount": 0,
+      "sampleTitles": [],
+      "sampleLocations": [],
+      "error": "Workday fetch failed for healthcare.wd1.myworkdayjobs.com|healthcare|search&: 404 Not Found"
+    },
+    "recommendedPromotion": false,
+    "promotionReason": "Workday fetch failed for healthcare.wd1.myworkdayjobs.com|healthcare|search&: 404 Not Found"
+  },
+  {
+    "boardUrl": "https://huntington.wd12.myworkdayjobs.com/hnbcareers",
+    "sourceKey": "workday:huntington.wd12.myworkdayjobs.com|huntington|hnbcareers",
+    "connectorName": "workday",
+    "token": "huntington.wd12.myworkdayjobs.com|huntington|hnbcareers",
+    "companyNames": [
+      "Huntington Ingalls Industries"
+    ],
+    "careerPageUrls": [
+      "https://www.huntington.com/careers"
+    ],
+    "directAtsUrls": [
+      "https://huntington.wd12.myworkdayjobs.com/hnbcareers"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link",
+      "career_page_scan"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "input": "https://huntington.wd12.myworkdayjobs.com/hnbcareers",
+      "connectorName": "workday",
+      "token": "huntington.wd12.myworkdayjobs.com|huntington|hnbcareers",
+      "sourceKey": "workday:huntington.wd12.myworkdayjobs.com|huntington|hnbcareers",
+      "sourceName": "Workday:huntington.wd12.myworkdayjobs.com|huntington|hnbcareers",
+      "boardUrl": "https://huntington.wd12.myworkdayjobs.com/hnbcareers",
+      "source": "token",
+      "pageTitle": null,
+      "fetchedCount": 0,
+      "acceptedCount": 0,
+      "acceptedCanadaCount": 0,
+      "acceptedCanadaRemoteCount": 0,
+      "previewCreatedCount": 0,
+      "previewCreatedCanadaCount": 0,
+      "previewCreatedCanadaRemoteCount": 0,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 0,
+      "existingRawCount": 0,
+      "existingActiveMappingCount": 0,
+      "existingLiveCanonicalCount": 0,
+      "sampleTitles": [],
+      "sampleLocations": [],
+      "error": "Workday fetch failed for huntington.wd12.myworkdayjobs.com|huntington|hnbcareers: 500 Internal Server Error"
+    },
+    "recommendedPromotion": false,
+    "promotionReason": "Workday fetch failed for huntington.wd12.myworkdayjobs.com|huntington|hnbcareers: 500 Internal Server Error"
+  }
+]

@@ -1,0 +1,24 @@
+{
+  "generatedAt": "2026-03-30T14:47:01.285Z",
+  "corpusCount": 4000,
+  "batchOffset": 1250,
+  "batchLimit": 250,
+  "companiesProcessed": 250,
+  "companiesResolved": 250,
+  "companiesUnresolved": 0,
+  "domainsSeeded": 254,
+  "careerPagesDetected": 478,
+  "directAtsUrlsDetected": 10,
+  "candidatesDiscovered": 8,
+  "newCandidates": 0,
+  "skippedKnownCandidates": 8,
+  "promotedSources": [],
+  "rejectedSources": [],
+  "ingestSummaries": [],
+  "resolutionSummary": {
+    "catalog": 0,
+    "cache": 247,
+    "search": 3,
+    "unresolved": 0
+  }
+}

@@ -12,6 +12,7 @@
  */
 import type { Prisma } from "@/generated/prisma/client";
 import type { EmploymentType, WorkMode } from "@/generated/prisma/client";
+import { throwIfAborted } from "@/lib/ingestion/runtime-control";
 import type {
   SourceConnector,
   SourceConnectorFetchOptions,
@@ -53,7 +54,7 @@ export function createRemoteOkConnector(): SourceConnector {
       const existing = fetchCache.get(cacheKey);
       if (existing) return existing;
 
-      const request = fetchRemoteOkJobs(options.now, options.limit);
+      const request = fetchRemoteOkJobs(options.now, options.limit, options.signal);
       fetchCache.set(cacheKey, request);
       return request;
     },
@@ -62,9 +63,13 @@ export function createRemoteOkConnector(): SourceConnector {
 
 async function fetchRemoteOkJobs(
   now: Date,
-  limit?: number
+  limit?: number,
+  signal?: AbortSignal
 ): Promise<SourceConnectorFetchResult> {
+  throwIfAborted(signal);
+
   const response = await fetch(REMOTEOK_API_URL, {
+    signal,
     headers: {
       Accept: "application/json",
       "User-Agent":

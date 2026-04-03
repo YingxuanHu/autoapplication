@@ -245,7 +245,8 @@ async function fetchMuseJobs(
           page: page + 1,
         };
         await onCheckpoint?.(nextCheckpoint as Prisma.InputJsonValue);
-      } catch {
+      } catch (error) {
+        if (signal?.aborted) throw error;
         break;
       }
 

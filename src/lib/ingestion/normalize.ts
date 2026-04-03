@@ -103,6 +103,7 @@ const CA_CITY_MARKERS = [
   "toronto",
   "vancouver",
   "montreal",
+  "montréal",
   "calgary",
   "ottawa",
   "waterloo",
@@ -117,6 +118,75 @@ const CA_CITY_MARKERS = [
   "halifax",
   "edmonton",
   "regina",
+  "kitchener",
+  "london, on",
+  "brampton",
+  "scarborough",
+  "richmond, bc",
+  "laval",
+  "longueuil",
+  "gatineau",
+  "sherbrooke",
+  "barrie",
+  "st. john",
+  "thunder bay",
+  "kelowna",
+  "victoria, bc",
+  "fredericton",
+  "moncton",
+  "charlottetown",
+  "north york",
+  "etobicoke",
+  "kanata",
+  "oakville",
+  "burlington, on",
+  "guelph",
+  "saint-laurent",
+  "dorval",
+  "grande prairie",
+  "red deer",
+  "lethbridge",
+  "nanaimo",
+  "kamloops",
+  "prince george",
+  "saint john",
+  "trois-rivières",
+  "saguenay",
+  "lévis",
+  "terrebonne",
+  "brossard",
+  "repentigny",
+  "newmarket",
+  "richmond hill",
+  "vaughan",
+  "ajax",
+  "whitby",
+  "oshawa",
+  "pickering",
+  "cambridge, on",
+  "kingston, on",
+  "sudbury",
+  "peterborough, on",
+  "brantford",
+  "st. catharines",
+  "niagara falls, on",
+  "chatham, on",
+  "sarnia",
+  "windsor, on",
+  "coquitlam",
+  "langley",
+  "abbotsford",
+  "new westminster",
+  "north vancouver",
+  "west vancouver",
+  "delta, bc",
+  "maple ridge",
+  "chilliwack",
+  "courtenay",
+  "comox",
+  "whistler",
+  "squamish",
+  "acheson",
 ];
 
 const ROLE_PATTERNS: Array<{
@@ -128,7 +198,7 @@ const ROLE_PATTERNS: Array<{
 
   // Solutions Engineering: pre-sales / technical integration roles
   {
-    pattern: /\b(solutions engineer|sales engineer)\b/i,
+    pattern: /\b(solutions engineer|sales engineer|solutions consultant|pre-sales engineer|implementation engineer|integration engineer|customer engineer)\b/i,
     industry: "TECH",
     roleFamily: "Solutions Engineering",
   },
@@ -136,7 +206,7 @@ const ROLE_PATTERNS: Array<{
   // Listed before SWE so "solutions architect" doesn't fall into the broad engineer match
   {
     pattern:
-      /\b(solutions architect|enterprise architect|technical architect|cloud architect|staff architect|principal architect|resident engineer)\b/i,
+      /\b(solutions architect|enterprise architect|technical architect|cloud architect|staff architect|principal architect|resident engineer|infrastructure architect|security architect|network architect|data architect)\b/i,
     industry: "TECH",
     roleFamily: "Solutions Architecture",
   },
@@ -144,9 +214,16 @@ const ROLE_PATTERNS: Array<{
   // "product management" (gerund) catches exec titles like "Director, Product Management"
   {
     pattern:
-      /\b(product manager|product management|group product manager|senior product manager|staff product manager|principal product manager|technical program manager|tpm)\b/i,
+      /\b(product manager|product management|group product manager|senior product manager|staff product manager|principal product manager|technical program manager|program manager|tpm)\b/i,
     industry: "TECH",
     roleFamily: "Product Management",
+  },
+  // Project / Delivery Management: scrum, agile, release, delivery roles
+  {
+    pattern:
+      /\b(project manager|scrum master|agile coach|release manager|delivery manager|project management|program management|pmo)\b/i,
+    industry: "TECH",
+    roleFamily: "Project Management",
   },
   // Research: AI/ML research scientists and engineers at AI-first companies
   // "researcher" alone kept intentional — at OpenAI/Anthropic it is always a technical role
@@ -158,20 +235,20 @@ const ROLE_PATTERNS: Array<{
   // Data Science: ML engineering, applied science, and data science leadership
   // "data science" (standalone) catches exec titles like "Data Science Manager", "Head of Data Science"
   {
-    pattern: /\b(machine learning|ml engineer|data scientist|data science|applied scientist)\b/i,
+    pattern: /\b(machine learning|ml engineer|data scientist|data science|applied scientist|ai engineer|artificial intelligence)\b/i,
     industry: "TECH",
     roleFamily: "Data Science",
   },
   // Data Engineering: pipeline / platform engineering (distinct from analyst/science)
   {
-    pattern: /\b(data engineer|etl engineer|data pipeline engineer|data platform engineer)\b/i,
+    pattern: /\b(data engineer|etl engineer|data pipeline engineer|data platform engineer|database engineer|database developer)\b/i,
     industry: "TECH",
     roleFamily: "Data Engineering",
   },
   // Data Analyst: analytics and BI
   {
     pattern:
-      /\b(data analyst|analytics engineer|business intelligence|bi analyst|data analytics)\b/i,
+      /\b(data analyst|analytics engineer|business intelligence|bi analyst|data analytics|bi developer|reporting analyst)\b/i,
     industry: "TECH",
     roleFamily: "Data Analyst",
   },
@@ -183,35 +260,42 @@ const ROLE_PATTERNS: Array<{
   },
   // Business Analyst
   {
-    pattern: /\b(business analyst)\b/i,
+    pattern: /\b(business analyst|business systems analyst|systems analyst)\b/i,
     industry: "TECH",
     roleFamily: "Business Analyst",
   },
   // Security
   {
-    pattern: /\b(security)\b/i,
+    pattern: /\b(security|cybersecurity|cyber security)\b/i,
     industry: "TECH",
     roleFamily: "Security",
   },
   // QA / Test
   {
-    pattern: /\b(qa|quality assurance|test automation)\b/i,
+    pattern: /\b(qa|quality assurance|test automation|sdet|quality engineer|test engineer)\b/i,
     industry: "TECH",
     roleFamily: "QA",
+  },
+  // IT / Systems Administration: infrastructure operations, DBA, helpdesk
+  {
+    pattern:
+      /\b(it manager|it director|it specialist|it analyst|it operations|systems administrator|system administrator|sysadmin|database administrator|dba|network administrator|help desk|helpdesk|it support|it technician|network engineer|infrastructure manager|it infrastructure)\b/i,
+    industry: "TECH",
+    roleFamily: "IT Operations",
   },
   // Marketing: tech marketing roles at tech companies — product marketing, growth, demand gen
   // Scoped to compound titles to avoid matching pure "marketing" which would catch non-tech roles.
   // Listed before Design and SWE to prevent "Growth Marketing Engineer" noise.
   {
     pattern:
-      /\b(product marketing|growth marketing|performance marketing|content marketing|marketing manager|demand generation|marketing analyst|field marketing|digital marketing|brand marketing|marketing operations|lifecycle marketing|marketing lead|marketing director)\b/i,
+      /\b(product marketing|growth marketing|performance marketing|content marketing|marketing manager|demand generation|marketing analyst|field marketing|digital marketing|brand marketing|marketing operations|lifecycle marketing|marketing lead|marketing director|marketing intern|marketing coordinator|marketing specialist|brand ambassador|marketer|marketing)\b/i,
     industry: "TECH",
     roleFamily: "Marketing",
   },
   // Technical Writing / Developer Relations: technical content and community roles
   {
     pattern:
-      /\b(technical writer|developer relations|developer advocate|devrel|developer experience|documentation engineer|technical documentation|technical editor)\b/i,
+      /\b(technical writer|developer relations|developer advocate|devrel|developer experience|documentation engineer|technical documentation|technical editor|community engineer)\b/i,
     industry: "TECH",
     roleFamily: "Technical Writing",
   },
@@ -219,9 +303,16 @@ const ROLE_PATTERNS: Array<{
   // "Designer, Web & Brand" from matching the SWE catch-all via "web engineer"
   {
     pattern:
-      /\b(designer|design lead|design director|ux design|ui design|product design|brand design|graphic design|visual design|interaction design|design manager)\b/i,
+      /\b(designer|design lead|design director|ux design|ui design|product design|brand design|graphic design|visual design|interaction design|design manager|ux researcher)\b/i,
     industry: "TECH",
     roleFamily: "Design",
+  },
+  // Customer Success: technical customer-facing roles at tech companies
+  {
+    pattern:
+      /\b(customer success|customer success manager|customer success engineer|technical account manager|technical support engineer|support engineer|customer engineer|implementation consultant|onboarding specialist)\b/i,
+    industry: "TECH",
+    roleFamily: "Customer Success",
   },
   // SWE: broad engineering catch-all — listed last among tech so specific roles above take priority
   // "web" is scoped to "web engineer|web developer" to avoid matching design/content titles.
@@ -229,7 +320,7 @@ const ROLE_PATTERNS: Array<{
   // "Platform Partnerships" or "Platform Growth" do not slip into the engineering pool.
   {
     pattern:
-      /\b(software|frontend|front-end|backend|back-end|full[- ]stack|platform engineer|platform engineering|platform developer|mobile|ios|android|devops|site reliability|sre|web engineer|web developer|engineer|engineering manager|dx engineer|content engineer|design engineer)\b/i,
+      /\b(software|frontend|front-end|back\s*end|back-end|full[- ]stack|platform engineer|platform engineering|platform developer|mobile|ios|android|devops|dev ops|site reliability|sre|web engineer|web developer|cloud engineer|infrastructure engineer|systems engineer|reliability engineer|build engineer|release engineer|automation engineer|engineer|engineering manager|dx engineer|content engineer|design engineer|embedded|firmware|developer|développeur|ingénieur(?:\s+logiciel)?)\b/i,
     industry: "TECH",
     roleFamily: "SWE",
   },
@@ -237,7 +328,7 @@ const ROLE_PATTERNS: Array<{
   // ── Finance roles ────────────────────────────────────────────────────────────
 
   {
-    pattern: /\b(financial analyst|corporate finance|finance analyst|treasury)\b/i,
+    pattern: /\b(financial analyst|corporate finance|finance analyst|treasury|finance manager|finance director|controller|comptroller)\b/i,
     industry: "FINANCE",
     roleFamily: "Financial Analyst",
   },
@@ -248,10 +339,38 @@ const ROLE_PATTERNS: Array<{
     industry: "FINANCE",
     roleFamily: "FP&A",
   },
+  // Accounting: accountants, auditors, tax specialists
   {
-    pattern: /\b(investment banking)\b/i,
+    pattern:
+      /\b(accountant|accounting|accounting manager|fund accountant|tax analyst|tax manager|auditor|audit manager|bookkeeper|accounts payable|accounts receivable|cpa)\b/i,
+    industry: "FINANCE",
+    roleFamily: "Accounting",
+  },
+  // Quantitative / Trading: quants, traders, portfolio management
+  {
+    pattern:
+      /\b(quantitative analyst|quant analyst|quant developer|quantitative developer|quantitative researcher|quant researcher|trader|trading analyst|trading desk|portfolio manager|portfolio analyst|fund manager|asset manager|investment analyst)\b/i,
+    industry: "FINANCE",
+    roleFamily: "Quantitative Finance",
+  },
+  // Actuarial / Insurance: actuaries, underwriters, claims
+  {
+    pattern:
+      /\b(actuary|actuarial|underwriter|underwriting|claims analyst|insurance analyst|loss adjuster)\b/i,
+    industry: "FINANCE",
+    roleFamily: "Actuarial",
+  },
+  {
+    pattern: /\b(investment banking|investment bank)\b/i,
     industry: "FINANCE",
     roleFamily: "Investment Banking",
+  },
+  // Lending / Banking: loan officers, mortgage, banking operations
+  {
+    pattern:
+      /\b(loan officer|mortgage|loan analyst|credit analyst|banking|banker|bank manager|branch manager|teller|relationship manager|commercial banker|private banker|personal banker)\b/i,
+    industry: "FINANCE",
+    roleFamily: "Banking",
   },
   {
     pattern: /\b(risk)\b/i,
@@ -259,7 +378,7 @@ const ROLE_PATTERNS: Array<{
     roleFamily: "Risk",
   },
   {
-    pattern: /\b(compliance)\b/i,
+    pattern: /\b(compliance|aml|anti-money laundering|kyc|know your customer|regulatory)\b/i,
     industry: "FINANCE",
     roleFamily: "Compliance",
   },
@@ -269,21 +388,122 @@ const ROLE_PATTERNS: Array<{
     roleFamily: "Credit",
   },
   {
-    pattern: /\b(wealth management|wealth)\b/i,
+    pattern: /\b(wealth management|wealth|financial advisor|financial planner|financial planning)\b/i,
     industry: "FINANCE",
     roleFamily: "Wealth Management",
   },
   // Operations: finance/tech ops; biz ops at tech companies is also captured here
   {
-    pattern: /\b(operations analyst|biz ops|bizops|business operations|operations)\b/i,
+    pattern: /\b(operations analyst|biz ops|bizops|business operations|operations manager|operations director|operations)\b/i,
     industry: "FINANCE",
     roleFamily: "Operations",
+  },
+
+  // ── Cross-industry roles ──────────────────────────────────────────────────────
+
+  // Sales & Revenue: direct revenue-generating roles
+  {
+    pattern:
+      /\b(account executive|sales manager|sales director|sales representatives?|sales lead|inside sales|outside sales|sales operations|revenue manager|revenue operations|sales development|sdr\b|bdr\b|business development representative|enterprise sales|regional sales|national sales|sales analyst|sales enablement|channel sales|partner sales|sales consultant|inbound sales|sales executive|sales team|sales trainer|vendeur|vendeuse|ventes|représentant.*ventes?)\b/i,
+    industry: "TECH",
+    roleFamily: "Sales",
+  },
+  // Business Development: partnerships, strategic BD
+  {
+    pattern:
+      /\b(business development|partnerships manager|partnerships director|strategic partnerships|partner manager|alliances manager|channel manager|bd manager)\b/i,
+    industry: "TECH",
+    roleFamily: "Business Development",
+  },
+  // Consulting / Advisory: professional services, management consulting
+  {
+    pattern:
+      /\b(consultant|consulting|advisory|practice lead|practice manager|engagement manager|managing consultant|principal consultant|senior consultant)\b/i,
+    industry: "TECH",
+    roleFamily: "Consulting",
+  },
+  // Legal: corporate legal, contracts, IP, regulatory counsel
+  {
+    pattern:
+      /\b(attorney|lawyer|counsel|general counsel|paralegal|legal analyst|legal operations|legal manager|contracts manager|contract manager|ip counsel|corporate counsel|legal director)\b/i,
+    industry: "FINANCE",
+    roleFamily: "Legal",
+  },
+  // Supply Chain / Procurement: sourcing, logistics, procurement
+  {
+    pattern:
+      /\b(supply chain|procurement|purchasing|logistics manager|logistics analyst|sourcing manager|sourcing analyst|inventory manager|demand planner|supply planner|materials manager|vendor manager)\b/i,
+    industry: "TECH",
+    roleFamily: "Supply Chain",
+  },
+  // Communications / PR: corporate communications and public relations
+  {
+    pattern:
+      /\b(communications manager|communications director|public relations|pr manager|corporate communications|internal communications|media relations|investor relations)\b/i,
+    industry: "TECH",
+    roleFamily: "Communications",
+  },
+  // Administrative / Executive Support: EA, office management
+  {
+    pattern:
+      /\b(executive assistant|administrative assistant|office manager|office administrator|chief of staff|admin assistant|administrative coordinator)\b/i,
+    industry: "TECH",
+    roleFamily: "Administrative",
+  },
+
+  // Technical / Engineering (non-software): inspectors, lab techs, QC, environmental
+  {
+    pattern:
+      /\b(quality inspector|quality control|environmental.*(?:analyst|monitor|specialist|engineer)|lab(?:oratory)?\s+(?:technician|analyst|assistant)|test(?:er|ing)\b|quality assurance.*(?:analyst|inspector)|maintenance.*(?:engineer|leader|manager|technician)|plant.*(?:manager|engineer)|controls\s+(?:engineer|technician)|field\s+(?:engineer|technician)|process\s+engineer|chemical\s+engineer|mechanical\s+(?:engineer|designer)|electrical\s+engineer|civil\s+engineer|structural\s+engineer|manufacturing\s+engineer|industrial\s+engineer|biostatistic|statistician|scientist|researcher|research\s+(?:analyst|assistant|associate)|webmestre|webmaster)\b/i,
+    industry: "TECH",
+    roleFamily: "Technical",
+  },
+  // Internships / Co-ops / Students (tech and finance focused)
+  {
+    pattern:
+      /\b(intern\b|internship|co-?op\b|stagiaire|summer\s+student|work\s+(?:term|placement))\b/i,
+    industry: "TECH",
+    roleFamily: "Internship",
+  },
+
+  // ── General Professional catch-all ─────────────────────────────────────────────
+  // Matches any remaining title with common professional keywords.
+  // Listed LAST so specific families above always take priority.
+  // This captures the long tail of legitimate business roles at tech/finance companies.
+  {
+    pattern:
+      /\b(manager|director|analyst|coordinator|specialist|advisor|officer|lead\b|head of|vp\b|vice president|associate|supervisor|administrator|strategist|planner|representative|clerk|technologist|receptionist|technician|assistant|operator|programmer|buyer|reviewer|trainer|consultant|executive|gestionnaire|analyste|conseill(?:er|ère)|comptable|responsable|coordonnateur|coordonnatrice|technicien(?:ne)?|agent(?:e)?|préposé|commis|adjoint(?:e)?|directeur|directrice|gérant(?:e)?|courtier|inspecteur|opérateur|webmestre|merchant|ambassador)\b/i,
+    industry: "TECH",
+    roleFamily: "General Professional",
   },
 ];
 
 const EXCLUDED_TITLE_PATTERNS = [
+  // Recruiting / HR
   /\b(recruiter|recruiting coordinator|recruiting ops|talent acquisition|technical recruiter|sourcer)\b/i,
   /\b(people partner|people operations|people ops|hr business partner|human resources)\b/i,
+  // Healthcare / Medical
+  /\b(registered nurse|\bRN\b|nurse practitioner|nursing|physician|surgeon|medical director|pharmacist|pharmacy|dental|dentist|veterinar|therapist|physiotherapist|occupational therapist|radiolog|pathologist|optometrist|chiropract|paramedic|midwife|phlebotom|sonograph|respiratory|speech.lang|audiolog|dietitian|nutritionist|oncology|hematology|cardiolog|neurolog|dermatolog|psychiatr|anesthesi|medical science liaison|clinical research associate|clinical nurse)\b/i,
+  // Trades / Manual labour
+  /\b(mechanic|electrician|plumber|welder|carpenter|painter|roofer|mason|hvac|installer(?!\s+(?:software|engineer))|pipefitter|millwright|machinist|sheet metal|ironworker|boilermaker|glazier|drywall|framing)\b/i,
+  // Driving / Transportation
+  /\b(cdl|truck driver|bus driver|delivery driver|forklift|warehouse associate|sorter|picker|packer)\b/i,
+  // Childcare / Domestic
+  /\b(babysitter|nanny|caregiver|childcare|au pair)\b/i,
+  // Food service / Retail frontline
+  /\b(barista|server|cook\b|chef\b|dishwasher|busser|bartender|cashier|stocker|grocery)\b/i,
+  // Education (non-tech)
+  /\b(teacher|professor|lecturer|tutor(?!ial)|principal(?!\s+(?:engineer|architect|consultant|analyst|developer|scientist|designer|manager|director|swe|technical|planning|product|data|security|program|software|cloud|platform|solutions|financial|investment))|superintendent|librarian|dean\b|provost)\b/i,
+  // Skilled trades / Construction
+  /\b(crane operator|heavy equipment|excavat|concrete|paving|asphalt|demolition|scaffolding|surveyor)\b/i,
+  // Law enforcement / Emergency / Military (not corporate security)
+  /\b(police|sheriff|firefighter|paramedic|corrections officer|probation officer|dispatch(?!er\b.*(?:software|tech|logistics)))\b/i,
+  // Agriculture / Outdoors
+  /\b(farm worker|rancher|horticultur|arborist|landscap|groundskeeper)\b/i,
+  // French healthcare / trades / manual exclusions
+  /\b(infirmi(?:er|ère)|médecin|chirurgien|pharmacien|dentiste|vétérinaire|ambulancier|sage-femme|préposé aux bénéficiaires|aide-soignant|ouvrier|soudeur|mécanicien|électricien|plombier|charpentier|camionneur|chauffeur(?:\s+de\s+camion)?|enseignant|professeur|journalier|manoeuvre|assembleur|magasinier|opérateur de machinerie|éducateur.*petite enfance|ajusteur|monteur d'avions)\b/i,
+  // General spam / non-job patterns
+  /\b(door\s+to\s+door|brand\s+ambassador.*activation|remote\s+recruiter.*\$\d|personal\s+development\s+sales)\b/i,
 ];
 
 type NormalizeSourceJobOptions = {
@@ -421,6 +641,18 @@ function inferRegion(location: string): Region | null {
   // Treat the province + trailing country pair as Canada before the lone "CA"
   // token can be misread as California.
   if (trailingPart === "CA" && CA_PROVINCE_CODES.has(secondTrailingPart)) {
+    return "CA";
+  }
+
+  // Handle trailing country codes: "City, STATE, US" or "City, PROVINCE, CA"
+  // Many ATS feeds (Workday, iCIMS, etc.) append country code after state/province.
+  if (
+    (trailingPart === "US" || trailingPart === "USA") &&
+    US_STATE_CODES.has(secondTrailingPart)
+  ) {
+    return "US";
+  }
+  if (trailingPart === "CANADA" && CA_PROVINCE_CODES.has(secondTrailingPart)) {
     return "CA";
   }
 

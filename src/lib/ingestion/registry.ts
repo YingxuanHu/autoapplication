@@ -19,6 +19,7 @@ import {
   createUsaJobsConnector,
   createWorkdayConnector,
   createWorkableConnector,
+  createJobBankConnector,
 } from "@/lib/ingestion/connectors";
 import {
   ASHBY_DEFAULT_ORG_TOKENS,
@@ -26,7 +27,9 @@ import {
   LEVER_DEFAULT_SITE_TOKENS,
   RECRUITEE_DEFAULT_COMPANY_TOKENS,
   RIPPLING_DEFAULT_BOARD_TOKENS,
+  SMARTRECRUITERS_DEFAULT_COMPANY_TOKENS,
   TALEO_DEFAULT_SOURCE_TOKENS,
+  WORKABLE_DEFAULT_ACCOUNT_TOKENS,
 } from "@/lib/ingestion/coverage";
 import type { SourceConnector } from "@/lib/ingestion/types";
 
@@ -48,7 +51,8 @@ export type SupportedConnectorName =
   | "taleo"
   | "usajobs"
   | "workday"
-  | "workable";
+  | "workable"
+  | "jobbank";
 
 export type ConnectorResolutionArgs = {
   board?: string;
@@ -258,7 +262,7 @@ export function resolveConnectors(
       args.accounts ??
         args.account ??
         process.env.WORKABLE_ACCOUNT_TOKENS ??
-        ""
+        WORKABLE_DEFAULT_ACCOUNT_TOKENS.join(",")
     );
 
     if (accountTokens.length === 0) {
@@ -329,12 +333,16 @@ export function resolveConnectors(
     );
   }
 
+  if (connectorName === "jobbank") {
+    return [createJobBankConnector()];
+  }
+
   // smartrecruiters
   const companyTokens = resolveTokens(
     args.companies ??
       args.company ??
       process.env.SMARTRECRUITERS_COMPANY_TOKENS ??
-      "visa"
+      SMARTRECRUITERS_DEFAULT_COMPANY_TOKENS.join(",")
   );
 
   if (companyTokens.length === 0) {
@@ -433,6 +441,7 @@ export function getScheduledConnectors(): ScheduledConnectorDefinition[] {
     ...resolveOptionalUsaJobsScheduledConnectors(),
     ...resolveOptionalTaleoScheduledConnectors(promotedDiscoveryTargets.taleo),
     ...resolveOptionalIcimsScheduledConnectors(promotedDiscoveryTargets.icims),
+    ...resolveOptionalJobBankScheduledConnectors(),
   ];
 }
 
@@ -464,8 +473,9 @@ function resolveOptionalSuccessFactorsScheduledConnectors(promotedTokens: string
 function resolveOptionalSmartRecruitersScheduledConnectors(
   promotedTokens: string[]
 ) {
+  const defaults = SMARTRECRUITERS_DEFAULT_COMPANY_TOKENS.join(",");
   const tokens = resolveTokens(
-    mergeTokenValues(process.env.SMARTRECRUITERS_COMPANY_TOKENS ?? "", promotedTokens)
+    mergeTokenValues(process.env.SMARTRECRUITERS_COMPANY_TOKENS ?? defaults, promotedTokens)
   );
   if (tokens.length === 0) return [];
 
@@ -479,8 +489,9 @@ function resolveOptionalSmartRecruitersScheduledConnectors(
 }
 
 function resolveOptionalWorkableScheduledConnectors(promotedTokens: string[]) {
+  const defaults = WORKABLE_DEFAULT_ACCOUNT_TOKENS.join(",");
   const tokens = resolveTokens(
-    mergeTokenValues(process.env.WORKABLE_ACCOUNT_TOKENS ?? "", promotedTokens)
+    mergeTokenValues(process.env.WORKABLE_ACCOUNT_TOKENS ?? defaults, promotedTokens)
   );
   if (tokens.length === 0) return [];
 
@@ -561,13 +572,24 @@ function resolveOptionalAdzunaScheduledConnectors() {
   if (!appId || !appKey) return [];
 
   const countries = resolveTokens(process.env.ADZUNA_COUNTRIES ?? "ca,us");
-  return countries.map((country) => ({
+  const cadence = resolveCadenceMinutes(process.env.ADZUNA_SCHEDULE_MINUTES, 360);
+
+  // Primary broad connectors per country
+  const primary = countries.map((country) => ({
     connector: createAdzunaConnector({ country, appId, appKey }),
-    cadenceMinutes: resolveCadenceMinutes(
-      process.env.ADZUNA_SCHEDULE_MINUTES,
-      360
-    ),
+    cadenceMinutes: cadence,
   }));
+
+  // Additional profile connectors for deeper per-category coverage
+  const additionalProfiles = ["techcore", "specialist", "discovery"] as const;
+  const additional = countries.flatMap((country) =>
+    additionalProfiles.map((profile) => ({
+      connector: createAdzunaConnector({ country, appId, appKey, profile }),
+      cadenceMinutes: cadence,
+    }))
+  );
+
+  return [...primary, ...additional];
 }
 
 function resolveOptionalRemoteOkScheduledConnectors() {
@@ -593,6 +615,19 @@ function resolveOptionalUsaJobsScheduledConnectors() {
       cadenceMinutes: resolveCadenceMinutes(
         process.env.USAJOBS_SCHEDULE_MINUTES,
         720
+      ),
+    },
+  ];
+}
+
+function resolveOptionalJobBankScheduledConnectors() {
+  // Job Bank CSV is updated monthly — run once per day (1440 min)
+  return [
+    {
+      connector: createJobBankConnector(),
+      cadenceMinutes: resolveCadenceMinutes(
+        process.env.JOBBANK_SCHEDULE_MINUTES,
+        1440
       ),
     },
   ];
@@ -670,6 +705,7 @@ function loadPromotedDiscoveryTargets() {
     usajobs: [],
     workday: [],
     workable: [],
+    jobbank: [],
   };
 
   if (!existsSync(DISCOVERY_STORE_PATH)) {

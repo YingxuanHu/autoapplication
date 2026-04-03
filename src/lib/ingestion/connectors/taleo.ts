@@ -23,6 +23,10 @@
  */
 import type { Prisma } from "@/generated/prisma/client";
 import type { EmploymentType, WorkMode } from "@/generated/prisma/client";
+import {
+  sleepWithAbort,
+  throwIfAborted,
+} from "@/lib/ingestion/runtime-control";
 import type {
   SourceConnector,
   SourceConnectorFetchOptions,
@@ -159,6 +163,7 @@ export function createTaleoConnector(
         fallbackCompanyName: resolvedCompanyName,
         now: fetchOptions.now,
         limit: fetchOptions.limit,
+        signal: fetchOptions.signal,
       });
       fetchCache.set(cacheKey, request);
       return request;
@@ -173,14 +178,18 @@ async function fetchTaleoJobs({
   fallbackCompanyName,
   now,
   limit,
+  signal,
 }: {
   target: TaleoTarget;
   fallbackCompanyName: string;
   now: Date;
   limit?: number;
+  signal?: AbortSignal;
 }): Promise<SourceConnectorFetchResult> {
+  throwIfAborted(signal);
+
   // Step 1: Try REST API with headless portal ID discovery
-  const restResult = await tryRestApiFetch(target, fallbackCompanyName, now, limit);
+  const restResult = await tryRestApiFetch(target, fallbackCompanyName, now, limit, signal);
   if (restResult) {
     return restResult;
   }
@@ -189,7 +198,7 @@ async function fetchTaleoJobs({
   console.log(
     `[taleo:${buildTaleoSourceToken(target)}] REST API unavailable, falling back to sitemap + headless detail`
   );
-  return fetchViaSitemapAndHeadless(target, fallbackCompanyName, now, limit);
+  return fetchViaSitemapAndHeadless(target, fallbackCompanyName, now, limit, signal);
 }
 
 // ─── REST API path ──────────────────────────────────────────────────────────
@@ -198,7 +207,8 @@ async function tryRestApiFetch(
   target: TaleoTarget,
   fallbackCompanyName: string,
   now: Date,
-  limit?: number
+  limit?: number,
+  signal?: AbortSignal
 ): Promise<SourceConnectorFetchResult | null> {
   // First: discover the numeric portal ID by rendering the search page
   const portalId = await discoverPortalId(target);
@@ -215,7 +225,7 @@ async function tryRestApiFetch(
 
   // Now use the REST API with the numeric portal ID
   try {
-    const restJobs = await fetchRestJobs(target, portalId, limit);
+    const restJobs = await fetchRestJobs(target, portalId, limit, signal);
     if (restJobs.length === 0) return null;
 
     const jobs = restJobs.map((row) =>
@@ -295,7 +305,8 @@ async function discoverPortalId(target: TaleoTarget): Promise<string | null> {
 async function fetchRestJobs(
   target: TaleoTarget,
   portalId: string,
-  maxJobs?: number
+  maxJobs?: number,
+  signal?: AbortSignal
 ): Promise<TaleoRestJobRow[]> {
   const jobs: TaleoRestJobRow[] = [];
   let offset = 1;
@@ -303,6 +314,7 @@ async function fetchRestJobs(
   const restBaseUrl = `https://${target.tenant}.taleo.net/careersection/rest/jobboard/searchjobs?lang=en&portal=${portalId}`;
 
   while (true) {
+    throwIfAborted(signal);
     const remaining =
       typeof maxJobs === "number" ? Math.max(maxJobs - jobs.length, 0) : null;
     if (remaining === 0) break;
@@ -314,6 +326,7 @@ async function fetchRestJobs(
 
     const response = await fetch(restBaseUrl, {
       method: "POST",
+      signal,
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
@@ -411,7 +424,8 @@ async function fetchViaSitemapAndHeadless(
   target: TaleoTarget,
   fallbackCompanyName: string,
   now: Date,
-  limit?: number
+  limit?: number,
+  signal?: AbortSignal
 ): Promise<SourceConnectorFetchResult> {
   const sitemapEntries = await fetchSitemap(target);
   const entriesToProcess =
@@ -426,6 +440,7 @@ async function fetchViaSitemapAndHeadless(
 
   async function worker() {
     while (cursor < entriesToProcess.length) {
+      throwIfAborted(signal);
       const index = cursor;
       cursor += 1;
       const entry = entriesToProcess[index]!;

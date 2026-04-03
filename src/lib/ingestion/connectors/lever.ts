@@ -1,5 +1,6 @@
 import type {
   EmploymentType,
+  Prisma,
   WorkMode,
 } from "@/generated/prisma/client";
 import type {
@@ -68,9 +69,17 @@ export function createLeverConnector({
       );
 
       if (!response.ok) {
-        throw new Error(
-          `Lever fetch failed for ${siteToken}: ${response.status} ${response.statusText}`
+        console.error(
+          `[lever:${siteToken}] Fetch failed: ${response.status} ${response.statusText}`
         );
+        return {
+          jobs: [],
+          metadata: {
+            siteToken,
+            error: `${response.status} ${response.statusText}`,
+            fetchedAt: options.now.toISOString(),
+          } as Prisma.InputJsonValue,
+        };
       }
 
       const payload = (await response.json()) as LeverPosting[];

@@ -12,6 +12,10 @@
  */
 import type { Prisma } from "@/generated/prisma/client";
 import type { EmploymentType, WorkMode } from "@/generated/prisma/client";
+import {
+  sleepWithAbort,
+  throwIfAborted,
+} from "@/lib/ingestion/runtime-control";
 import type {
   SourceConnector,
   SourceConnectorFetchOptions,
@@ -138,6 +142,7 @@ export function createUsaJobsConnector(
         email,
         now: fetchOptions.now,
         limit: fetchOptions.limit,
+        signal: fetchOptions.signal,
       });
       fetchCache.set(cacheKey, request);
       return request;
@@ -167,12 +172,14 @@ async function fetchUsaJobsJobs({
   email,
   now,
   limit,
+  signal,
 }: {
   keyword: string;
   apiKey: string;
   email: string;
   now: Date;
   limit?: number;
+  signal?: AbortSignal;
 }): Promise<SourceConnectorFetchResult> {
   const allJobs: SourceConnectorJob[] = [];
   const seenIds = new Set<string>();
@@ -180,6 +187,7 @@ async function fetchUsaJobsJobs({
   let totalAvailable = 0;
 
   while (true) {
+    throwIfAborted(signal);
     if (typeof limit === "number" && allJobs.length >= limit) break;
 
     const params = new URLSearchParams({
@@ -192,10 +200,11 @@ async function fetchUsaJobsJobs({
     const url = `${USAJOBS_API_BASE}?${params.toString()}`;
 
     if (page > 1) {
-      await sleep(USAJOBS_RATE_DELAY_MS);
+      await sleepWithAbort(USAJOBS_RATE_DELAY_MS, signal);
     }
 
     const response = await fetch(url, {
+      signal,
       headers: {
         "Authorization-Key": apiKey,
         "User-Agent": email,
@@ -360,6 +369,3 @@ function inferWorkMode(pos: UsaJobsPosition, location: string): WorkMode | null 
   return null;
 }
 
-function sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}

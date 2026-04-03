@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { serializeJobCardData } from "@/lib/job-serialization";
 import { formatPostedAge } from "@/lib/job-display";
-import { getJobs, type JobFilterParams } from "@/lib/queries/jobs";
+import { getJobs, getFeedStats, type JobFilterParams } from "@/lib/queries/jobs";
 import { getIngestionStatus } from "@/lib/queries/ingestion";
 
 type JobsPageProps = {
@@ -39,9 +39,10 @@ export default async function JobsPage({ searchParams }: JobsPageProps) {
   const resolvedSearchParams = await searchParams;
   const filters = parseJobFilters(resolvedSearchParams);
 
-  const [jobsResult, ingestionStatus] = await Promise.all([
+  const [jobsResult, ingestionStatus, feedStats] = await Promise.all([
     getJobs(filters),
     getIngestionStatus(),
+    getFeedStats(),
   ]);
 
   const jobCards = jobsResult.data.map((job) =>
@@ -84,6 +85,40 @@ export default async function JobsPage({ searchParams }: JobsPageProps) {
               : ""}
           </p>
         ) : null}
+      </div>
+
+      {/* Stats bar */}
+      <div className="mb-4 grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-5">
+        <StatCard
+          label="Live jobs"
+          value={feedStats.totalLive.toLocaleString()}
+          detail={feedStats.newLast24h > 0 ? `+${feedStats.newLast24h.toLocaleString()} today` : undefined}
+          accentClass="text-foreground"
+        />
+        <StatCard
+          label="Auto-apply"
+          value={feedStats.autoEligibleCount.toLocaleString()}
+          detail="ready to submit"
+          accentClass="text-emerald-600"
+        />
+        <StatCard
+          label="Review"
+          value={feedStats.reviewRequiredCount.toLocaleString()}
+          detail="needs review"
+          accentClass="text-amber-600"
+        />
+        <StatCard
+          label="Saved"
+          value={feedStats.savedCount.toLocaleString()}
+          detail={feedStats.savedEndingSoonCount > 0 ? `${feedStats.savedEndingSoonCount} ending soon` : undefined}
+          accentClass="text-blue-600"
+        />
+        <StatCard
+          label="Manual"
+          value={feedStats.manualOnlyCount.toLocaleString()}
+          detail="manual apply"
+          accentClass="text-muted-foreground"
+        />
       </div>
 
       {/* Category pills + sort controls */}
@@ -496,4 +531,28 @@ function countAdvancedFilters(filters: JobFilterParams) {
     const value = filters[key];
     return value !== undefined && value !== "";
   }).length;
+}
+
+function StatCard({
+  label,
+  value,
+  detail,
+  accentClass,
+}: {
+  label: string;
+  value: string;
+  detail?: string;
+  accentClass?: string;
+}) {
+  return (
+    <div className="rounded-lg border border-border bg-card px-3 py-2">
+      <p className="text-xs text-muted-foreground">{label}</p>
+      <p className={`text-lg font-semibold tabular-nums ${accentClass ?? "text-foreground"}`}>
+        {value}
+      </p>
+      {detail ? (
+        <p className="text-xs text-muted-foreground">{detail}</p>
+      ) : null}
+    </div>
+  );
 }

@@ -311,9 +311,19 @@ async function fetchListingPage(
   });
 
   if (!response.ok) {
-    throw new Error(
-      `Workday fetch failed for ${buildWorkdaySourceToken(target)}: ${response.status} ${response.statusText}`
+    console.error(
+      `[workday:${buildWorkdaySourceToken(target)}] Fetch failed: ${response.status} ${response.statusText}`
     );
+    return { jobPostings: [], total: 0 } as WorkdayListResponse;
+  }
+
+  // Guard against HTML responses (bot detection returns HTML instead of JSON)
+  const contentType = response.headers.get("content-type") ?? "";
+  if (!contentType.includes("application/json")) {
+    console.error(
+      `[workday:${buildWorkdaySourceToken(target)}] Unexpected content-type: ${contentType} (likely bot detection)`
+    );
+    return { jobPostings: [], total: 0 } as WorkdayListResponse;
   }
 
   return (await response.json()) as WorkdayListResponse;

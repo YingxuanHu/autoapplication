@@ -10,6 +10,10 @@
  */
 import type { Prisma } from "@/generated/prisma/client";
 import type { EmploymentType, WorkMode } from "@/generated/prisma/client";
+import {
+  sleepWithAbort,
+  throwIfAborted,
+} from "@/lib/ingestion/runtime-control";
 import type {
   SourceConnector,
   SourceConnectorFetchOptions,
@@ -71,7 +75,7 @@ export function createJobicyConnector(): SourceConnector {
       const existing = fetchCache.get(cacheKey);
       if (existing) return existing;
 
-      const request = fetchJobicyJobs(options.now, options.limit);
+      const request = fetchJobicyJobs(options.now, options.limit, options.signal);
       fetchCache.set(cacheKey, request);
       return request;
     },
@@ -80,17 +84,20 @@ export function createJobicyConnector(): SourceConnector {
 
 async function fetchJobicyJobs(
   now: Date,
-  limit?: number
+  limit?: number,
+  signal?: AbortSignal
 ): Promise<SourceConnectorFetchResult> {
   const allJobs: SourceConnectorJob[] = [];
   const seenIds = new Set<string>();
 
   for (const tag of JOBICY_TAGS) {
+    throwIfAborted(signal);
     if (typeof limit === "number" && allJobs.length >= limit) break;
 
     try {
       const url = `${JOBICY_API_BASE}?count=50&tag=${tag}`;
       const response = await fetch(url, {
+        signal,
         headers: {
           Accept: "application/json",
           "User-Agent": "Mozilla/5.0 (compatible; autoapplication-jobicy/1.0)",
@@ -109,12 +116,11 @@ async function fetchJobicyJobs(
         seenIds.add(sourceId);
         allJobs.push(mapJobicyJob(entry, now));
       }
-    } catch {
-      // Skip failed tags
+    } catch (error) {
+      if (signal?.aborted) throw error;
     }
 
-    // Small delay between tags
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    await sleepWithAbort(1000, signal);
   }
 
   const finalJobs = typeof limit === "number" ? allJobs.slice(0, limit) : allJobs;

@@ -13,14 +13,15 @@ export async function POST(
 ) {
   try {
     const { id } = await params;
-    const body = (await request.json()) as { intent?: "prepare" | "submit" };
+    const body = await request.json();
+    const intent = typeof body?.intent === "string" ? body.intent : null;
 
-    if (body.intent === "prepare") {
+    if (intent === "prepare") {
       const result = await prepareApplicationReview(id);
       return successResponse(result, 201);
     }
 
-    if (body.intent === "submit") {
+    if (intent === "submit") {
       const result = await submitApplicationReview(id);
       return successResponse(result, 201);
     }
@@ -39,9 +40,8 @@ export async function PATCH(
 ) {
   try {
     const { id } = await params;
-    const body = (await request.json()) as {
-      intent?: "confirm" | "fail" | "withdraw";
-    };
+    const body = await request.json();
+    const patchIntent = typeof body?.intent === "string" ? body.intent : null;
 
     const statusMap = {
       confirm: "CONFIRMED",
@@ -49,12 +49,11 @@ export async function PATCH(
       withdraw: "WITHDRAWN",
     } as const;
 
-    const intent = body.intent;
-    if (!intent || !(intent in statusMap)) {
+    if (!patchIntent || !(patchIntent in statusMap)) {
       return errorResponse("Invalid intent — expected confirm, fail, or withdraw", 400);
     }
 
-    const result = await updateApplicationSubmissionStatus(id, statusMap[intent]);
+    const result = await updateApplicationSubmissionStatus(id, statusMap[patchIntent as keyof typeof statusMap]);
     return successResponse(result);
   } catch (error) {
     console.error("PATCH /api/jobs/[id]/apply error:", error);

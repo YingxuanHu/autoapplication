@@ -1,0 +1,522 @@
+[
+  {
+    "boardUrl": "https://job-boards.greenhouse.io/hatchcareers",
+    "sourceKey": "greenhouse:hatchcareers",
+    "connectorName": "greenhouse",
+    "token": "hatchcareers",
+    "companyNames": [
+      "Hatch"
+    ],
+    "careerPageUrls": [
+      "https://www.hatch.co/careers"
+    ],
+    "directAtsUrls": [
+      "https://job-boards.greenhouse.io/hatchcareers"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link",
+      "career_page_scan"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "input": "https://job-boards.greenhouse.io/hatchcareers",
+      "connectorName": "greenhouse",
+      "token": "hatchcareers",
+      "sourceKey": "greenhouse:hatchcareers",
+      "sourceName": "Greenhouse:hatchcareers",
+      "boardUrl": "https://job-boards.greenhouse.io/hatchcareers",
+      "source": "token",
+      "pageTitle": "Jobs at Hatch",
+      "fetchedCount": 4,
+      "acceptedCount": 3,
+      "acceptedCanadaCount": 3,
+      "acceptedCanadaRemoteCount": 3,
+      "previewCreatedCount": 3,
+      "previewCreatedCanadaCount": 3,
+      "previewCreatedCanadaRemoteCount": 3,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 1,
+      "existingRawCount": 0,
+      "existingActiveMappingCount": 0,
+      "existingLiveCanonicalCount": 0,
+      "sampleTitles": [
+        "Growth Strategy Analyst",
+        "Lead Software Engineer - Mobile",
+        "Principal Embedded Engineer",
+        "Senior Software Engineer - Mobile"
+      ],
+      "sampleLocations": [
+        "Distributed, 🇺🇸 + 🇨🇦 (US + Canada)",
+        "Distributed, 🇺🇸 + 🇨🇦 (US + Canada)",
+        "Distributed, 🇺🇸 + 🇨🇦 (US + Canada)",
+        "Distributed, 🇺🇸 + 🇨🇦 (US + Canada)"
+      ]
+    },
+    "recommendedPromotion": true,
+    "promotionReason": "canada_heavy_created_volume"
+  },
+  {
+    "boardUrl": "https://alcoa.wd5.myworkdayjobs.com/careers",
+    "sourceKey": "workday:alcoa.wd5.myworkdayjobs.com|alcoa|careers",
+    "connectorName": "workday",
+    "token": "alcoa.wd5.myworkdayjobs.com|alcoa|careers",
+    "companyNames": [
+      "Alcoa USA Group"
+    ],
+    "careerPageUrls": [
+      "https://alcoa.wd5.myworkdayjobs.com/en-US/careers",
+      "https://www.alcoa.com/careers/en",
+      "https://www.alcoa.com/global/en/home/"
+    ],
+    "directAtsUrls": [
+      "https://alcoa.wd5.myworkdayjobs.com/careers"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link",
+      "career_page_scan"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "input": "https://alcoa.wd5.myworkdayjobs.com/careers",
+      "connectorName": "workday",
+      "token": "alcoa.wd5.myworkdayjobs.com|alcoa|careers",
+      "sourceKey": "workday:alcoa.wd5.myworkdayjobs.com|alcoa|careers",
+      "sourceName": "Workday:alcoa.wd5.myworkdayjobs.com|alcoa|careers",
+      "boardUrl": "https://alcoa.wd5.myworkdayjobs.com/careers",
+      "source": "token",
+      "pageTitle": null,
+      "fetchedCount": 100,
+      "acceptedCount": 14,
+      "acceptedCanadaCount": 1,
+      "acceptedCanadaRemoteCount": 0,
+      "previewCreatedCount": 14,
+      "previewCreatedCanadaCount": 1,
+      "previewCreatedCanadaRemoteCount": 0,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 86,
+      "existingRawCount": 0,
+      "existingActiveMappingCount": 0,
+      "existingLiveCanonicalCount": 0,
+      "sampleTitles": [
+        "Site Communications Manager, Alcoa Operations (Warrick)",
+        "Operadora(or) de Refinaria A",
+        "Fiabiliste - Gestion de l'intégrité des actifs - Permanent",
+        "Gestionnaire - Énergie",
+        "Conseiller(ère) technique - Environnement et Services"
+      ],
+      "sampleLocations": [
+        "US WAR Warrick Newburgh, In, United States of America",
+        "BR POC Pocos de Caldas, Brazil",
+        "CA ADQ Deschambault, QC, Canada",
+        "CA ABI Becancour, QC, Canada",
+        "CA ABI Becancour, QC, Canada"
+      ]
+    },
+    "recommendedPromotion": false,
+    "promotionReason": "insufficient_canada_weighted_yield"
+  },
+  {
+    "boardUrl": "https://amplify.wd1.myworkdayjobs.com/amplify_careers",
+    "sourceKey": "workday:amplify.wd1.myworkdayjobs.com|amplify|amplify_careers",
+    "connectorName": "workday",
+    "token": "amplify.wd1.myworkdayjobs.com|amplify|amplify_careers",
+    "companyNames": [
+      "Amplify"
+    ],
+    "careerPageUrls": [
+      "https://amplify.com/careers/"
+    ],
+    "directAtsUrls": [
+      "https://amplify.wd1.myworkdayjobs.com/amplify_careers"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link",
+      "career_page_scan"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "input": "https://amplify.wd1.myworkdayjobs.com/amplify_careers",
+      "connectorName": "workday",
+      "token": "amplify.wd1.myworkdayjobs.com|amplify|amplify_careers",
+      "sourceKey": "workday:amplify.wd1.myworkdayjobs.com|amplify|amplify_careers",
+      "sourceName": "Workday:amplify.wd1.myworkdayjobs.com|amplify|amplify_careers",
+      "boardUrl": "https://amplify.wd1.myworkdayjobs.com/amplify_careers",
+      "source": "token",
+      "pageTitle": null,
+      "fetchedCount": 36,
+      "acceptedCount": 13,
+      "acceptedCanadaCount": 0,
+      "acceptedCanadaRemoteCount": 0,
+      "previewCreatedCount": 13,
+      "previewCreatedCanadaCount": 0,
+      "previewCreatedCanadaRemoteCount": 0,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 23,
+      "existingRawCount": 0,
+      "existingActiveMappingCount": 0,
+      "existingLiveCanonicalCount": 0,
+      "sampleTitles": [
+        "Product Trainer",
+        "Customer Success Manager (Inside/Small Accounts)",
+        "Art Director (Contractor)",
+        "Technical Project Manager",
+        "Professional Learning Specialist, Bilingual Literacy (Part-Time, Contractor)"
+      ],
+      "sampleLocations": [
+        "Remote - United States, United States of America",
+        "Remote - United States, United States of America",
+        "Remote - United States, United States of America",
+        "Remote - United States, United States of America",
+        "Remote - United States, United States of America"
+      ]
+    },
+    "recommendedPromotion": false,
+    "promotionReason": "insufficient_canada_weighted_yield"
+  },
+  {
+    "boardUrl": "https://careers.aflac.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+    "sourceKey": "successfactors:careers.aflac.com",
+    "connectorName": "successfactors",
+    "token": "careers.aflac.com",
+    "companyNames": [
+      "Aflac"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [
+      "https://careers.aflac.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "input": "https://careers.aflac.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+      "connectorName": "successfactors",
+      "token": "careers.aflac.com",
+      "sourceKey": "successfactors:careers.aflac.com",
+      "sourceName": "SuccessFactors:careers.aflac.com",
+      "boardUrl": "https://careers.aflac.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+      "source": "token",
+      "pageTitle": "Aflac, Incorporated Jobs",
+      "fetchedCount": 45,
+      "acceptedCount": 7,
+      "acceptedCanadaCount": 0,
+      "acceptedCanadaRemoteCount": 0,
+      "previewCreatedCount": 7,
+      "previewCreatedCanadaCount": 0,
+      "previewCreatedCanadaRemoteCount": 0,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 38,
+      "existingRawCount": 0,
+      "existingActiveMappingCount": 0,
+      "existingLiveCanonicalCount": 0,
+      "sampleTitles": [
+        "Actuary II",
+        "Platform Engineer III (Workday)",
+        "Claims Technical Lead (PLADS LTD)",
+        "FP&A Analyst II",
+        "Cyber Crime Prevent Consult"
+      ],
+      "sampleLocations": [
+        "GA, US",
+        "Remote, OR, US",
+        "Remote, OR, US",
+        "GA, US",
+        "Remote, OR, US"
+      ]
+    },
+    "recommendedPromotion": false,
+    "promotionReason": "insufficient_canada_weighted_yield"
+  },
+  {
+    "boardUrl": "https://job-boards.greenhouse.io/rapidsos",
+    "sourceKey": "greenhouse:rapidsos",
+    "connectorName": "greenhouse",
+    "token": "rapidsos",
+    "companyNames": [
+      "RapidSOS"
+    ],
+    "careerPageUrls": [
+      "https://rapidsos.com/careers/"
+    ],
+    "directAtsUrls": [
+      "https://job-boards.greenhouse.io/rapidsos"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link",
+      "career_page_scan"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "input": "https://job-boards.greenhouse.io/rapidsos",
+      "connectorName": "greenhouse",
+      "token": "rapidsos",
+      "sourceKey": "greenhouse:rapidsos",
+      "sourceName": "Greenhouse:rapidsos",
+      "boardUrl": "https://job-boards.greenhouse.io/rapidsos",
+      "source": "token",
+      "pageTitle": "Jobs at RapidSOS",
+      "fetchedCount": 18,
+      "acceptedCount": 9,
+      "acceptedCanadaCount": 0,
+      "acceptedCanadaRemoteCount": 0,
+      "previewCreatedCount": 4,
+      "previewCreatedCanadaCount": 0,
+      "previewCreatedCanadaRemoteCount": 0,
+      "previewUpdatedCount": 5,
+      "dedupedCount": 5,
+      "rejectedCount": 9,
+      "existingRawCount": 0,
+      "existingActiveMappingCount": 0,
+      "existingLiveCanonicalCount": 0,
+      "sampleTitles": [
+        "Business Intelligence & AI Analyst",
+        "Director, Business Intelligence & Analytics",
+        "Implementation Engineer",
+        "Join our Business Talent Community",
+        "Join our Go-To-Market Talent Community"
+      ],
+      "sampleLocations": [
+        "Remote",
+        "Remote: Boston, MA; NYC, NY; San Francisco, CA",
+        "United States (Remote)",
+        "New York, NY",
+        "New York, NY"
+      ]
+    },
+    "recommendedPromotion": false,
+    "promotionReason": "insufficient_canada_weighted_yield"
+  },
+  {
+    "boardUrl": "https://job-boards.greenhouse.io/bloomerang",
+    "sourceKey": "greenhouse:bloomerang",
+    "connectorName": "greenhouse",
+    "token": "bloomerang",
+    "companyNames": [
+      "Bloomerang"
+    ],
+    "careerPageUrls": [
+      "https://bloomerang.com/company/careers/"
+    ],
+    "directAtsUrls": [
+      "https://job-boards.greenhouse.io/bloomerang"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link",
+      "career_page_scan"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "input": "https://job-boards.greenhouse.io/bloomerang",
+      "connectorName": "greenhouse",
+      "token": "bloomerang",
+      "sourceKey": "greenhouse:bloomerang",
+      "sourceName": "Greenhouse:bloomerang",
+      "boardUrl": "https://job-boards.greenhouse.io/bloomerang",
+      "source": "token",
+      "pageTitle": "Jobs at  Bloomerang",
+      "fetchedCount": 22,
+      "acceptedCount": 5,
+      "acceptedCanadaCount": 0,
+      "acceptedCanadaRemoteCount": 0,
+      "previewCreatedCount": 1,
+      "previewCreatedCanadaCount": 0,
+      "previewCreatedCanadaRemoteCount": 0,
+      "previewUpdatedCount": 4,
+      "dedupedCount": 4,
+      "rejectedCount": 17,
+      "existingRawCount": 0,
+      "existingActiveMappingCount": 0,
+      "existingLiveCanonicalCount": 0,
+      "sampleTitles": [
+        "Account Executive Level 2",
+        "Account Executive Level 3",
+        "Account Manager Level 3",
+        "Associate Conversion Data Analyst",
+        "Conversion Project Manager"
+      ],
+      "sampleLocations": [
+        "Remote, US",
+        "Remote, US",
+        "Remote, US",
+        "Remote, US",
+        "Remote, US"
+      ]
+    },
+    "recommendedPromotion": false,
+    "promotionReason": "insufficient_canada_weighted_yield"
+  },
+  {
+    "boardUrl": "https://ypo.wd1.myworkdayjobs.com/ypo_external",
+    "sourceKey": "workday:ypo.wd1.myworkdayjobs.com|ypo|ypo_external",
+    "connectorName": "workday",
+    "token": "ypo.wd1.myworkdayjobs.com|ypo|ypo_external",
+    "companyNames": [
+      "YPO"
+    ],
+    "careerPageUrls": [
+      "https://www.ypo.org/careers/"
+    ],
+    "directAtsUrls": [
+      "https://ypo.wd1.myworkdayjobs.com/ypo_external"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link",
+      "career_page_scan"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "input": "https://ypo.wd1.myworkdayjobs.com/ypo_external",
+      "connectorName": "workday",
+      "token": "ypo.wd1.myworkdayjobs.com|ypo|ypo_external",
+      "sourceKey": "workday:ypo.wd1.myworkdayjobs.com|ypo|ypo_external",
+      "sourceName": "Workday:ypo.wd1.myworkdayjobs.com|ypo|ypo_external",
+      "boardUrl": "https://ypo.wd1.myworkdayjobs.com/ypo_external",
+      "source": "token",
+      "pageTitle": null,
+      "fetchedCount": 5,
+      "acceptedCount": 1,
+      "acceptedCanadaCount": 0,
+      "acceptedCanadaRemoteCount": 0,
+      "previewCreatedCount": 1,
+      "previewCreatedCanadaCount": 0,
+      "previewCreatedCanadaRemoteCount": 0,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 4,
+      "existingRawCount": 0,
+      "existingActiveMappingCount": 0,
+      "existingLiveCanonicalCount": 0,
+      "sampleTitles": [
+        "Strategic Accounts Manager",
+        "Marketing and Communications Manager, Networks",
+        "Digital Asset Manager",
+        "Financial Analyst",
+        "Regional Manager"
+      ],
+      "sampleLocations": [
+        "US-TX-Remote, United States of America",
+        "US-Remote, United States of America",
+        "US-Remote, United States of America",
+        "US-Remote, United States of America",
+        "India, India"
+      ]
+    },
+    "recommendedPromotion": false,
+    "promotionReason": "insufficient_canada_weighted_yield"
+  },
+  {
+    "boardUrl": "https://job-boards.greenhouse.io/bitmex",
+    "sourceKey": "greenhouse:bitmex",
+    "connectorName": "greenhouse",
+    "token": "bitmex",
+    "companyNames": [
+      "BitMEX"
+    ],
+    "careerPageUrls": [
+      "https://www.bitmex.com/careers"
+    ],
+    "directAtsUrls": [
+      "https://job-boards.greenhouse.io/bitmex"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link",
+      "career_page_scan"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "input": "https://job-boards.greenhouse.io/bitmex",
+      "connectorName": "greenhouse",
+      "token": "bitmex",
+      "sourceKey": "greenhouse:bitmex",
+      "sourceName": "Greenhouse:bitmex",
+      "boardUrl": "https://job-boards.greenhouse.io/bitmex",
+      "source": "token",
+      "pageTitle": "Jobs at BitMEX",
+      "fetchedCount": 26,
+      "acceptedCount": 0,
+      "acceptedCanadaCount": 0,
+      "acceptedCanadaRemoteCount": 0,
+      "previewCreatedCount": 0,
+      "previewCreatedCanadaCount": 0,
+      "previewCreatedCanadaRemoteCount": 0,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 26,
+      "existingRawCount": 0,
+      "existingActiveMappingCount": 0,
+      "existingLiveCanonicalCount": 0,
+      "sampleTitles": [
+        "Crypto Trading Product Designer",
+        "Customer Support Specialist (Russian Speaker)",
+        "Engineering Lead, Custody",
+        "Engineering Lead, Custody",
+        "Engineering Lead, Custody"
+      ],
+      "sampleLocations": [
+        "Remote - Asia",
+        "Remote - EMEA",
+        "Hong Kong",
+        "Remote - Europe",
+        "Singapore"
+      ]
+    },
+    "recommendedPromotion": false,
+    "promotionReason": "insufficient_canada_weighted_yield"
+  },
+  {
+    "boardUrl": "https://job-boards.greenhouse.io/hatchhirescontractors",
+    "sourceKey": "greenhouse:hatchhirescontractors",
+    "connectorName": "greenhouse",
+    "token": "hatchhirescontractors",
+    "companyNames": [
+      "Hatch"
+    ],
+    "careerPageUrls": [
+      "https://www.hatch.co/careers/freelance"
+    ],
+    "directAtsUrls": [
+      "https://job-boards.greenhouse.io/hatchhirescontractors"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link",
+      "career_page_scan"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "input": "https://job-boards.greenhouse.io/hatchhirescontractors",
+      "connectorName": "greenhouse",
+      "token": "hatchhirescontractors",
+      "sourceKey": "greenhouse:hatchhirescontractors",
+      "sourceName": "Greenhouse:hatchhirescontractors",
+      "boardUrl": "https://job-boards.greenhouse.io/hatchhirescontractors",
+      "source": "token",
+      "pageTitle": "Jobs at Hatch Contracts",
+      "fetchedCount": 1,
+      "acceptedCount": 0,
+      "acceptedCanadaCount": 0,
+      "acceptedCanadaRemoteCount": 0,
+      "previewCreatedCount": 0,
+      "previewCreatedCanadaCount": 0,
+      "previewCreatedCanadaRemoteCount": 0,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 1,
+      "existingRawCount": 0,
+      "existingActiveMappingCount": 0,
+      "existingLiveCanonicalCount": 0,
+      "sampleTitles": [
+        "Sr. Supplier and Product Quality Manager"
+      ],
+      "sampleLocations": [
+        "Guangdong, China"
+      ]
+    },
+    "recommendedPromotion": false,
+    "promotionReason": "insufficient_canada_weighted_yield"
+  }
+]

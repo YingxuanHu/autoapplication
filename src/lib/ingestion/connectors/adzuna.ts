@@ -23,7 +23,7 @@ import { sleepWithAbort, throwIfAborted } from "@/lib/ingestion/runtime-control"
 
 const ADZUNA_API_BASE = "https://api.adzuna.com/v1/api/jobs";
 const ADZUNA_PAGE_SIZE = 50; // max allowed by API
-const ADZUNA_MAX_PAGES = 20; // safety limit per category
+const ADZUNA_MAX_PAGES = 50; // safety limit per category (50 pages × 50 = 2500 per category)
 const ADZUNA_RATE_DELAY_MS = 2500; // keep request rate conservative
 
 type AdzunaConnectorOptions = {
@@ -87,6 +87,13 @@ const BROAD_CATEGORIES = [
   "admin-jobs",
   "pr-advertising-marketing-jobs",
   "sales-jobs",
+  "legal-jobs",
+  "customer-services-jobs",
+  "logistics-warehouse-jobs",
+  "hr-jobs",
+  "creative-design-jobs",
+  "energy-oil-gas-jobs",
+  "manufacturing-jobs",
 ];
 
 const TECHCORE_CATEGORIES = [
@@ -134,7 +141,7 @@ const ADZUNA_PROFILES: Record<string, AdzunaProfile> = {
     name: "broad",
     categories: BROAD_CATEGORIES,
     maxPages: ADZUNA_MAX_PAGES,
-    maxDaysOld: 14,
+    maxDaysOld: 45,
     categoryStrategy: "ROUND_ROBIN",
   },
   techcore: {
@@ -160,7 +167,7 @@ const ADZUNA_PROFILES: Record<string, AdzunaProfile> = {
   },
 };
 
-const DEFAULT_PROFILE = ADZUNA_PROFILES.baseline;
+const DEFAULT_PROFILE = ADZUNA_PROFILES.broad;
 
 const STAFFING_COMPANY_RE =
   /\b(targeted talent|teksystems|allegis group|c\/o allegis group)\b/i;

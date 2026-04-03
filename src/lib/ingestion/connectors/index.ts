@@ -41,3 +41,4 @@ export { createJobicyConnector } from "./jobicy";
 export { createMuseConnector } from "./themuse";
 export { createUsaJobsConnector, createUsaJobsBatchConnectors } from "./usajobs";
 export { createWorkableConnector } from "./workable";
+export { createJobBankConnector } from "./jobbank";

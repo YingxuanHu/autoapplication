@@ -22,6 +22,7 @@ const TRUSTED_SOURCE_PREFIXES = [
   "SmartRecruiters:",
   "Taleo:",
   "USAJobs:",
+  "Workable:",
   "Workday:",
 ];
 const TRUSTED_HOST_SUFFIXES = [
@@ -44,6 +45,7 @@ const TRUSTED_HOST_SUFFIXES = [
   "themuse.com",
   "www.themuse.com",
   "usajobs.gov",
+  "apply.workable.com",
   "adzuna.com",
 ];
 const BLOCKED_HOST_SUFFIXES = [
@@ -190,16 +192,16 @@ export function resolveJobLinks({
         kind: "APPLY" as const,
         sourceName: trustedSource?.sourceName ?? liveSource?.sourceName ?? null,
       }
-    : trustedSource
+    : trustedSource?.parsedSourceUrl
       ? {
-          href: trustedSource.parsedSourceUrl!.toString(),
+          href: trustedSource.parsedSourceUrl.toString(),
           label: "Open source posting",
           kind: "SOURCE" as const,
           sourceName: trustedSource.sourceName,
         }
-      : liveSource
+      : liveSource?.parsedSourceUrl
         ? {
-            href: liveSource.parsedSourceUrl!.toString(),
+            href: liveSource.parsedSourceUrl.toString(),
             label: "Open source posting",
             kind: "SOURCE" as const,
             sourceName: liveSource.sourceName,

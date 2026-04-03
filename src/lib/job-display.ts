@@ -260,5 +260,6 @@ export function getSourceShortName(sourceName: string | null): string | null {
   if (sourceName.startsWith("Adzuna:")) return "AZ";
   if (sourceName.startsWith("RemoteOK:")) return "RO";
   if (sourceName.startsWith("USAJobs:")) return "UJ";
+  if (sourceName.startsWith("Workable:")) return "WB";
   return null;
 }
