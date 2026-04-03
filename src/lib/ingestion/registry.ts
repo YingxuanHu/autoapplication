@@ -1,17 +1,25 @@
 import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import {
+  createAdzunaConnector,
   createAshbyConnector,
   createGreenhouseConnector,
+  createHimalayasConnector,
   createIcimsConnector,
+  createJobicyConnector,
   createLeverConnector,
+  createMuseConnector,
+  createRemotiveConnector,
   createRecruiteeConnector,
+  createRemoteOkConnector,
   createRipplingConnector,
   createSuccessFactorsConnector,
   createSmartRecruitersConnector,
   createTaleoConnector,
+  createUsaJobsConnector,
   createWorkdayConnector,
   createWorkableConnector,
+  createJobBankConnector,
 } from "@/lib/ingestion/connectors";
 import {
   ASHBY_DEFAULT_ORG_TOKENS,
@@ -19,22 +27,32 @@ import {
   LEVER_DEFAULT_SITE_TOKENS,
   RECRUITEE_DEFAULT_COMPANY_TOKENS,
   RIPPLING_DEFAULT_BOARD_TOKENS,
+  SMARTRECRUITERS_DEFAULT_COMPANY_TOKENS,
   TALEO_DEFAULT_SOURCE_TOKENS,
+  WORKABLE_DEFAULT_ACCOUNT_TOKENS,
 } from "@/lib/ingestion/coverage";
 import type { SourceConnector } from "@/lib/ingestion/types";
 
 export type SupportedConnectorName =
+  | "adzuna"
   | "ashby"
   | "greenhouse"
+  | "himalayas"
   | "icims"
+  | "jobicy"
   | "lever"
+  | "remotive"
+  | "themuse"
   | "recruitee"
+  | "remoteok"
   | "rippling"
   | "successfactors"
   | "smartrecruiters"
   | "taleo"
+  | "usajobs"
   | "workday"
-  | "workable";
+  | "workable"
+  | "jobbank";
 
 export type ConnectorResolutionArgs = {
   board?: string;
@@ -92,6 +110,50 @@ export function resolveConnectors(
   connectorName: SupportedConnectorName,
   args: ConnectorResolutionArgs
 ): SourceConnector[] {
+  if (connectorName === "adzuna") {
+    const countries = resolveTokens(
+      args.sources ?? args.source ?? process.env.ADZUNA_COUNTRIES ?? "ca,us"
+    );
+    return countries.map((token) => {
+      const [country, profile] = token.split(":");
+      return createAdzunaConnector({ country, profile });
+    });
+  }
+
+  if (connectorName === "himalayas") {
+    const profiles = resolveTokens(
+      args.sources ?? args.source ?? process.env.HIMALAYAS_SOURCES ?? "global"
+    );
+    return profiles.map((profile) => createHimalayasConnector({ profile }));
+  }
+
+  if (connectorName === "jobicy") {
+    return [createJobicyConnector()];
+  }
+
+  if (connectorName === "remotive") {
+    return [createRemotiveConnector()];
+  }
+
+  if (connectorName === "themuse") {
+    return [createMuseConnector()];
+  }
+
+  if (connectorName === "remoteok") {
+    return [createRemoteOkConnector()];
+  }
+
+  if (connectorName === "usajobs") {
+    const keywords = resolveTokens(
+      args.sources ?? args.source ?? process.env.USAJOBS_KEYWORDS ?? ""
+    );
+    if (keywords.length === 0) {
+      // Single broad connector
+      return [createUsaJobsConnector()];
+    }
+    return keywords.map((keyword) => createUsaJobsConnector({ keyword }));
+  }
+
   if (connectorName === "ashby") {
     const orgTokens = resolveTokens(
       args.orgs ?? args.org ?? process.env.ASHBY_ORG_TOKENS ?? DEFAULT_ASHBY_ORGS
@@ -200,7 +262,7 @@ export function resolveConnectors(
       args.accounts ??
         args.account ??
         process.env.WORKABLE_ACCOUNT_TOKENS ??
-        ""
+        WORKABLE_DEFAULT_ACCOUNT_TOKENS.join(",")
     );
 
     if (accountTokens.length === 0) {
@@ -271,12 +333,16 @@ export function resolveConnectors(
     );
   }
 
+  if (connectorName === "jobbank") {
+    return [createJobBankConnector()];
+  }
+
   // smartrecruiters
   const companyTokens = resolveTokens(
     args.companies ??
       args.company ??
       process.env.SMARTRECRUITERS_COMPANY_TOKENS ??
-      "visa"
+      SMARTRECRUITERS_DEFAULT_COMPANY_TOKENS.join(",")
   );
 
   if (companyTokens.length === 0) {
@@ -366,8 +432,16 @@ export function getScheduledConnectors(): ScheduledConnectorDefinition[] {
       promotedDiscoveryTargets.workable
     ),
     ...resolveOptionalWorkdayScheduledConnectors(promotedDiscoveryTargets.workday),
+    ...resolveOptionalAdzunaScheduledConnectors(),
+    ...resolveOptionalHimalayasScheduledConnectors(),
+    ...resolveOptionalJobicyScheduledConnectors(),
+    ...resolveOptionalRemotiveScheduledConnectors(),
+    ...resolveOptionalMuseScheduledConnectors(),
+    ...resolveOptionalRemoteOkScheduledConnectors(),
+    ...resolveOptionalUsaJobsScheduledConnectors(),
     ...resolveOptionalTaleoScheduledConnectors(promotedDiscoveryTargets.taleo),
     ...resolveOptionalIcimsScheduledConnectors(promotedDiscoveryTargets.icims),
+    ...resolveOptionalJobBankScheduledConnectors(),
   ];
 }
 
@@ -399,8 +473,9 @@ function resolveOptionalSuccessFactorsScheduledConnectors(promotedTokens: string
 function resolveOptionalSmartRecruitersScheduledConnectors(
   promotedTokens: string[]
 ) {
+  const defaults = SMARTRECRUITERS_DEFAULT_COMPANY_TOKENS.join(",");
   const tokens = resolveTokens(
-    mergeTokenValues(process.env.SMARTRECRUITERS_COMPANY_TOKENS ?? "", promotedTokens)
+    mergeTokenValues(process.env.SMARTRECRUITERS_COMPANY_TOKENS ?? defaults, promotedTokens)
   );
   if (tokens.length === 0) return [];
 
@@ -414,8 +489,9 @@ function resolveOptionalSmartRecruitersScheduledConnectors(
 }
 
 function resolveOptionalWorkableScheduledConnectors(promotedTokens: string[]) {
+  const defaults = WORKABLE_DEFAULT_ACCOUNT_TOKENS.join(",");
   const tokens = resolveTokens(
-    mergeTokenValues(process.env.WORKABLE_ACCOUNT_TOKENS ?? "", promotedTokens)
+    mergeTokenValues(process.env.WORKABLE_ACCOUNT_TOKENS ?? defaults, promotedTokens)
   );
   if (tokens.length === 0) return [];
 
@@ -441,6 +517,120 @@ function resolveOptionalIcimsScheduledConnectors(promotedTokens: string[]) {
       240
     ),
   }));
+}
+
+function resolveOptionalHimalayasScheduledConnectors() {
+  const profiles = resolveTokens(process.env.HIMALAYAS_SOURCES ?? "global");
+  return profiles.map((profile) => ({
+    connector: createHimalayasConnector({ profile }),
+    cadenceMinutes: resolveCadenceMinutes(
+      process.env.HIMALAYAS_SCHEDULE_MINUTES,
+      720
+    ),
+  }));
+}
+
+function resolveOptionalJobicyScheduledConnectors() {
+  return [
+    {
+      connector: createJobicyConnector(),
+      cadenceMinutes: resolveCadenceMinutes(
+        process.env.JOBICY_SCHEDULE_MINUTES,
+        720
+      ),
+    },
+  ];
+}
+
+function resolveOptionalRemotiveScheduledConnectors() {
+  return [
+    {
+      connector: createRemotiveConnector(),
+      cadenceMinutes: resolveCadenceMinutes(
+        process.env.REMOTIVE_SCHEDULE_MINUTES,
+        720
+      ),
+    },
+  ];
+}
+
+function resolveOptionalMuseScheduledConnectors() {
+  return [
+    {
+      connector: createMuseConnector(),
+      cadenceMinutes: resolveCadenceMinutes(
+        process.env.THEMUSE_SCHEDULE_MINUTES,
+        720
+      ),
+    },
+  ];
+}
+
+function resolveOptionalAdzunaScheduledConnectors() {
+  const appId = process.env.ADZUNA_APP_ID ?? "";
+  const appKey = process.env.ADZUNA_APP_KEY ?? "";
+  if (!appId || !appKey) return [];
+
+  const countries = resolveTokens(process.env.ADZUNA_COUNTRIES ?? "ca,us");
+  const cadence = resolveCadenceMinutes(process.env.ADZUNA_SCHEDULE_MINUTES, 360);
+
+  // Primary broad connectors per country
+  const primary = countries.map((country) => ({
+    connector: createAdzunaConnector({ country, appId, appKey }),
+    cadenceMinutes: cadence,
+  }));
+
+  // Additional profile connectors for deeper per-category coverage
+  const additionalProfiles = ["techcore", "specialist", "discovery"] as const;
+  const additional = countries.flatMap((country) =>
+    additionalProfiles.map((profile) => ({
+      connector: createAdzunaConnector({ country, appId, appKey, profile }),
+      cadenceMinutes: cadence,
+    }))
+  );
+
+  return [...primary, ...additional];
+}
+
+function resolveOptionalRemoteOkScheduledConnectors() {
+  return [
+    {
+      connector: createRemoteOkConnector(),
+      cadenceMinutes: resolveCadenceMinutes(
+        process.env.REMOTEOK_SCHEDULE_MINUTES,
+        720
+      ),
+    },
+  ];
+}
+
+function resolveOptionalUsaJobsScheduledConnectors() {
+  const apiKey = process.env.USAJOBS_API_KEY ?? "";
+  const email = process.env.USAJOBS_EMAIL ?? "";
+  if (!apiKey || !email) return [];
+
+  return [
+    {
+      connector: createUsaJobsConnector({ apiKey, email }),
+      cadenceMinutes: resolveCadenceMinutes(
+        process.env.USAJOBS_SCHEDULE_MINUTES,
+        720
+      ),
+    },
+  ];
+}
+
+function resolveOptionalJobBankScheduledConnectors() {
+  // Job Bank CSV is updated monthly — run once per day (1440 min)
+  return [
+    {
+      connector: createJobBankConnector(),
+      cadenceMinutes: resolveCadenceMinutes(
+        process.env.JOBBANK_SCHEDULE_MINUTES,
+        1440
+      ),
+    },
+  ];
 }
 
 function resolveOptionalTaleoScheduledConnectors(promotedTokens: string[]) {
@@ -497,17 +687,25 @@ function mergeTokenValues(baseValue: string, promotedTokens: string[]) {
 
 function loadPromotedDiscoveryTargets() {
   const emptyTargets: Record<SupportedConnectorName, string[]> = {
+    adzuna: [],
     ashby: [],
     greenhouse: [],
+    himalayas: [],
     icims: [],
+    jobicy: [],
     lever: [],
+    remotive: [],
+    themuse: [],
     recruitee: [],
+    remoteok: [],
     rippling: [],
     successfactors: [],
     smartrecruiters: [],
     taleo: [],
+    usajobs: [],
     workday: [],
     workable: [],
+    jobbank: [],
   };
 
   if (!existsSync(DISCOVERY_STORE_PATH)) {

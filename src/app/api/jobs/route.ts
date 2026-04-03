@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
       workMode: sp.get("workMode") ?? undefined,
       industry: sp.get("industry") ?? undefined,
       roleFamily: sp.get("roleFamily") ?? undefined,
-      salaryMin: sp.get("salaryMin") ? parseInt(sp.get("salaryMin")!) : undefined,
+      salaryMin: parseIntParam(sp.get("salaryMin"), 0) || undefined,
       experienceLevel: sp.get("experienceLevel") ?? undefined,
       submissionCategory: sp.get("submissionCategory") ?? undefined,
       status: sp.get("status") ?? undefined,

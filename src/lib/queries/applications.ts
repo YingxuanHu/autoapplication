@@ -3,6 +3,7 @@ import { DEMO_USER_ID } from "@/lib/constants";
 import { formatDisplayLabel, formatSalary } from "@/lib/job-display";
 import { serializeJobDetailData } from "@/lib/job-serialization";
 import { recordAction } from "@/lib/queries/behavior";
+import { resolveATSFiller } from "@/lib/automation/fillers";
 import type {
   ApplicationHistoryItem,
   ApplicationHistoryStatus,
@@ -116,6 +117,7 @@ export async function getApplicationReviewData(
   const detailJob = serializeJobDetail(job);
   const packagePreview = buildPackagePreview(detailJob, profile, recommendedResume);
   const reviewState = getApplicationReviewState(detailJob);
+  const atsFiller = resolveATSFiller(job.applyUrl);
 
   return {
     job: detailJob,
@@ -130,6 +132,8 @@ export async function getApplicationReviewData(
     reviewState,
     automationMode: profile.automationMode,
     workAuthorization: profile.workAuthorization,
+    atsSupported: atsFiller !== null,
+    atsName: atsFiller?.atsName ?? null,
   };
 }
 

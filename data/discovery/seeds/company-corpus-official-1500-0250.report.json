@@ -1,0 +1,96 @@
+{
+  "generatedAt": "2026-03-30T14:49:47.689Z",
+  "corpusCount": 4000,
+  "batchOffset": 1500,
+  "batchLimit": 250,
+  "companiesProcessed": 250,
+  "companiesResolved": 250,
+  "companiesUnresolved": 0,
+  "domainsSeeded": 251,
+  "careerPagesDetected": 500,
+  "directAtsUrlsDetected": 13,
+  "candidatesDiscovered": 13,
+  "newCandidates": 9,
+  "skippedKnownCandidates": 4,
+  "promotedSources": [
+    {
+      "sourceKey": "workday:uwaterloo.wd3.myworkdayjobs.com|uwaterloo|uw_careers",
+      "connectorName": "workday",
+      "companyNames": [
+        "University of Waterloo"
+      ],
+      "previewCreatedCount": 8,
+      "previewCreatedCanadaCount": 8,
+      "acceptedCount": 9,
+      "acceptedCanadaCount": 9,
+      "boardUrl": "https://uwaterloo.wd3.myworkdayjobs.com/uw_careers",
+      "promotionReason": "canada_heavy_created_volume"
+    }
+  ],
+  "rejectedSources": [
+    {
+      "sourceKey": "lever:welocalize",
+      "connectorName": "lever",
+      "companyNames": [
+        "Welocalize"
+      ],
+      "boardUrl": "https://jobs.lever.co/welocalize",
+      "error": null,
+      "previewCreatedCount": 0,
+      "acceptedCanadaCount": 0
+    },
+    {
+      "sourceKey": "successfactors:careers.aramark.com",
+      "connectorName": "successfactors",
+      "companyNames": [
+        "Aramark"
+      ],
+      "boardUrl": "https://careers.aramark.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+      "error": "no_structured_listing: Board did not expose structured SuccessFactors listing data on the public search page.",
+      "previewCreatedCount": 0,
+      "acceptedCanadaCount": 0
+    },
+    {
+      "sourceKey": "workday:healthcare.wd1.myworkdayjobs.com|healthcare|search&",
+      "connectorName": "workday",
+      "companyNames": [
+        "Solventum"
+      ],
+      "boardUrl": "https://healthcare.wd1.myworkdayjobs.com/search&",
+      "error": "Workday fetch failed for healthcare.wd1.myworkdayjobs.com|healthcare|search&: 404 Not Found",
+      "previewCreatedCount": 0,
+      "acceptedCanadaCount": 0
+    },
+    {
+      "sourceKey": "workday:huntington.wd12.myworkdayjobs.com|huntington|hnbcareers",
+      "connectorName": "workday",
+      "companyNames": [
+        "Huntington Ingalls Industries"
+      ],
+      "boardUrl": "https://huntington.wd12.myworkdayjobs.com/hnbcareers",
+      "error": "Workday fetch failed for huntington.wd12.myworkdayjobs.com|huntington|hnbcareers: 500 Internal Server Error",
+      "previewCreatedCount": 0,
+      "acceptedCanadaCount": 0
+    }
+  ],
+  "ingestSummaries": [
+    {
+      "sourceKey": "workday:uwaterloo.wd3.myworkdayjobs.com|uwaterloo|uw_careers",
+      "connectorKey": "workday:uwaterloo.wd3.myworkdayjobs.com|uwaterloo|uw_careers",
+      "sourceName": "Workday:uwaterloo.wd3.myworkdayjobs.com|uwaterloo|uw_careers",
+      "fetchedCount": 39,
+      "acceptedCount": 5,
+      "canonicalCreatedCount": 3,
+      "canonicalUpdatedCount": 2,
+      "dedupedCount": 2,
+      "canonicalCreatedCanadaCount": 3,
+      "canonicalCreatedCanadaRemoteCount": 0
+    }
+  ],
+  "resolutionSummary": {
+    "catalog": 0,
+    "cache": 39,
+    "search": 211,
+    "unresolved": 0
+  }
+}

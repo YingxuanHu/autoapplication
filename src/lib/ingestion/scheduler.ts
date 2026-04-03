@@ -66,15 +66,23 @@ export async function runScheduledIngestion(options: {
       }
     }
 
-    const summary = await ingestConnector(definition.connector, {
-      now,
-      runMode: "SCHEDULED",
-      allowOverlappingRuns: false,
-      triggerLabel: options.triggerLabel ?? "schedule.route",
-      scheduleCadenceMinutes: definition.cadenceMinutes,
-    });
+    try {
+      const summary = await ingestConnector(definition.connector, {
+        now,
+        runMode: "SCHEDULED",
+        allowOverlappingRuns: false,
+        triggerLabel: options.triggerLabel ?? "schedule.route",
+        scheduleCadenceMinutes: definition.cadenceMinutes,
+      });
 
-    executedRuns.push(summary);
+      executedRuns.push(summary);
+    } catch (error) {
+      console.error(
+        `[scheduler] Connector ${definition.connector.key} failed:`,
+        error instanceof Error ? error.message : error
+      );
+      // Continue to next connector — one failure should not stop the cycle
+    }
   }
 
   const lifecycle = await reconcileCanonicalLifecycle({ now });

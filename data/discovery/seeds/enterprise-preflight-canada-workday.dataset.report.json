@@ -1,0 +1,1299 @@
+{
+  "companiesSelected": [
+    "Benevity",
+    "Jobber",
+    "KOHO",
+    "Neo Financial",
+    "Telus",
+    "1Password",
+    "Float Financial",
+    "Jane App",
+    "Relay Financial",
+    "Wealthsimple",
+    "CGI",
+    "AlayaCare",
+    "Coveo",
+    "Definity Financial",
+    "Hootsuite",
+    "Sagen",
+    "Stantec",
+    "Telesat",
+    "WSP",
+    "BMO"
+  ],
+  "queryCount": 140,
+  "cacheHits": 36,
+  "cacheMisses": 104,
+  "resultUrlsFetched": 460,
+  "uniqueResultUrls": 1123,
+  "pageUrlsScanned": 405,
+  "directSeedUrls": 20,
+  "candidatesDiscovered": 11,
+  "newCandidates": 1,
+  "skippedKnownCandidates": 10,
+  "candidatesByFamily": {
+    "workday": 1
+  },
+  "queryReports": [
+    {
+      "companyName": "1Password",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"1Password\" \"Toronto\" careers",
+      "reason": "workday_company_name_canada_city",
+      "fromCache": false,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "AlayaCare",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"AlayaCare\" \"Montreal\" careers",
+      "reason": "workday_company_name_canada_city",
+      "fromCache": false,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Benevity",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Benevity\" \"Calgary\" careers",
+      "reason": "workday_company_name_canada_city",
+      "fromCache": false,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "BMO",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"BMO\" \"Toronto\" careers",
+      "reason": "workday_company_name_canada_city",
+      "fromCache": true,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "CGI",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"CGI\" \"Montreal\" careers",
+      "reason": "workday_company_name_canada_city",
+      "fromCache": true,
+      "resultUrlsFetched": 8,
+      "errors": []
+    },
+    {
+      "companyName": "Coveo",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Coveo\" \"Montreal\" careers",
+      "reason": "workday_company_name_canada_city",
+      "fromCache": false,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Definity Financial",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Definity Financial\" \"Waterloo\" careers",
+      "reason": "workday_company_name_canada_city",
+      "fromCache": false,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Float Financial",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Float Financial\" \"Toronto\" careers",
+      "reason": "workday_company_name_canada_city",
+      "fromCache": false,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Hootsuite",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Hootsuite\" \"Vancouver\" careers",
+      "reason": "workday_company_name_canada_city",
+      "fromCache": false,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Jane App",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Jane App\" \"Vancouver\" careers",
+      "reason": "workday_company_name_canada_city",
+      "fromCache": false,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Jobber",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Jobber\" \"Edmonton\" careers",
+      "reason": "workday_company_name_canada_city",
+      "fromCache": false,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "KOHO",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"KOHO\" \"Toronto\" careers",
+      "reason": "workday_company_name_canada_city",
+      "fromCache": false,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Neo Financial",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Neo Financial\" \"Calgary\" careers",
+      "reason": "workday_company_name_canada_city",
+      "fromCache": false,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Relay Financial",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Relay Financial\" \"Toronto\" careers",
+      "reason": "workday_company_name_canada_city",
+      "fromCache": false,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Sagen",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Sagen\" \"Oakville\" careers",
+      "reason": "workday_company_name_canada_city",
+      "fromCache": false,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Stantec",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Stantec\" \"Edmonton\" careers",
+      "reason": "workday_company_name_canada_city",
+      "fromCache": true,
+      "resultUrlsFetched": 8,
+      "errors": []
+    },
+    {
+      "companyName": "Telesat",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Telesat\" \"Ottawa\" careers",
+      "reason": "workday_company_name_canada_city",
+      "fromCache": false,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Telus",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Telus\" \"Vancouver\" careers",
+      "reason": "workday_company_name_canada_city",
+      "fromCache": true,
+      "resultUrlsFetched": 8,
+      "errors": []
+    },
+    {
+      "companyName": "Wealthsimple",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Wealthsimple\" \"Toronto\" careers",
+      "reason": "workday_company_name_canada_city",
+      "fromCache": false,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "WSP",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"WSP\" \"Montreal\" careers",
+      "reason": "workday_company_name_canada_city",
+      "fromCache": true,
+      "resultUrlsFetched": 8,
+      "errors": []
+    },
+    {
+      "companyName": "1Password",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"1Password\" careers",
+      "reason": "workday_company_name_direct",
+      "fromCache": false,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "AlayaCare",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"AlayaCare\" careers",
+      "reason": "workday_company_name_direct",
+      "fromCache": false,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Benevity",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Benevity\" careers",
+      "reason": "workday_company_name_direct",
+      "fromCache": false,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "BMO",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"BMO\" careers",
+      "reason": "workday_company_name_direct",
+      "fromCache": true,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "CGI",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"CGI\" careers",
+      "reason": "workday_company_name_direct",
+      "fromCache": true,
+      "resultUrlsFetched": 8,
+      "errors": []
+    },
+    {
+      "companyName": "Coveo",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Coveo\" careers",
+      "reason": "workday_company_name_direct",
+      "fromCache": false,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Definity Financial",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Definity Financial\" careers",
+      "reason": "workday_company_name_direct",
+      "fromCache": false,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Definity Financial",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Definity\" \"Waterloo\" careers",
+      "reason": "workday_search_term_canada_city",
+      "fromCache": false,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Float Financial",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Float Financial\" careers",
+      "reason": "workday_company_name_direct",
+      "fromCache": false,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Float Financial",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Float\" \"Toronto\" careers",
+      "reason": "workday_search_term_canada_city",
+      "fromCache": false,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Hootsuite",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Hootsuite\" careers",
+      "reason": "workday_company_name_direct",
+      "fromCache": false,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Jane App",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Jane App\" careers",
+      "reason": "workday_company_name_direct",
+      "fromCache": false,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Jane App",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Jane\" \"Vancouver\" careers",
+      "reason": "workday_search_term_canada_city",
+      "fromCache": false,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Jobber",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Jobber\" careers",
+      "reason": "workday_company_name_direct",
+      "fromCache": false,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "KOHO",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"KOHO\" careers",
+      "reason": "workday_company_name_direct",
+      "fromCache": false,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Neo Financial",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Neo Financial\" careers",
+      "reason": "workday_company_name_direct",
+      "fromCache": false,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Relay Financial",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Relay Financial\" careers",
+      "reason": "workday_company_name_direct",
+      "fromCache": false,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Relay Financial",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Relay\" \"Toronto\" careers",
+      "reason": "workday_search_term_canada_city",
+      "fromCache": false,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Sagen",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Sagen\" careers",
+      "reason": "workday_company_name_direct",
+      "fromCache": false,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Stantec",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Stantec\" careers",
+      "reason": "workday_company_name_direct",
+      "fromCache": true,
+      "resultUrlsFetched": 8,
+      "errors": []
+    },
+    {
+      "companyName": "Telesat",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Telesat\" careers",
+      "reason": "workday_company_name_direct",
+      "fromCache": false,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Telus",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Telus\" careers",
+      "reason": "workday_company_name_direct",
+      "fromCache": true,
+      "resultUrlsFetched": 8,
+      "errors": []
+    },
+    {
+      "companyName": "Wealthsimple",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Wealthsimple\" careers",
+      "reason": "workday_company_name_direct",
+      "fromCache": false,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "WSP",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"WSP\" careers",
+      "reason": "workday_company_name_direct",
+      "fromCache": true,
+      "resultUrlsFetched": 8,
+      "errors": []
+    },
+    {
+      "companyName": "1Password",
+      "family": "workday",
+      "query": "\"1Password\" careers workday",
+      "reason": "workday_company_name_careers_page",
+      "fromCache": false,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "AlayaCare",
+      "family": "workday",
+      "query": "\"AlayaCare\" careers workday",
+      "reason": "workday_company_name_careers_page",
+      "fromCache": false,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Benevity",
+      "family": "workday",
+      "query": "\"Benevity\" careers workday",
+      "reason": "workday_company_name_careers_page",
+      "fromCache": false,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "BMO",
+      "family": "workday",
+      "query": "\"BMO\" careers workday",
+      "reason": "workday_company_name_careers_page",
+      "fromCache": true,
+      "resultUrlsFetched": 4,
+      "errors": []
+    },
+    {
+      "companyName": "CGI",
+      "family": "workday",
+      "query": "\"CGI\" careers workday",
+      "reason": "workday_company_name_careers_page",
+      "fromCache": true,
+      "resultUrlsFetched": 8,
+      "errors": []
+    },
+    {
+      "companyName": "Coveo",
+      "family": "workday",
+      "query": "\"Coveo\" careers workday",
+      "reason": "workday_company_name_careers_page",
+      "fromCache": false,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Definity Financial",
+      "family": "workday",
+      "query": "\"Definity Financial\" careers workday",
+      "reason": "workday_company_name_careers_page",
+      "fromCache": false,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Float Financial",
+      "family": "workday",
+      "query": "\"Float Financial\" careers workday",
+      "reason": "workday_company_name_careers_page",
+      "fromCache": false,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Hootsuite",
+      "family": "workday",
+      "query": "\"Hootsuite\" careers workday",
+      "reason": "workday_company_name_careers_page",
+      "fromCache": false,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Jane App",
+      "family": "workday",
+      "query": "\"Jane App\" careers workday",
+      "reason": "workday_company_name_careers_page",
+      "fromCache": false,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Jobber",
+      "family": "workday",
+      "query": "\"Jobber\" careers workday",
+      "reason": "workday_company_name_careers_page",
+      "fromCache": false,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "KOHO",
+      "family": "workday",
+      "query": "\"KOHO\" careers workday",
+      "reason": "workday_company_name_careers_page",
+      "fromCache": false,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Neo Financial",
+      "family": "workday",
+      "query": "\"Neo Financial\" careers workday",
+      "reason": "workday_company_name_careers_page",
+      "fromCache": false,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Relay Financial",
+      "family": "workday",
+      "query": "\"Relay Financial\" careers workday",
+      "reason": "workday_company_name_careers_page",
+      "fromCache": false,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Sagen",
+      "family": "workday",
+      "query": "\"Sagen\" careers workday",
+      "reason": "workday_company_name_careers_page",
+      "fromCache": false,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Stantec",
+      "family": "workday",
+      "query": "\"Stantec\" careers workday",
+      "reason": "workday_company_name_careers_page",
+      "fromCache": true,
+      "resultUrlsFetched": 8,
+      "errors": []
+    },
+    {
+      "companyName": "Telesat",
+      "family": "workday",
+      "query": "\"Telesat\" careers workday",
+      "reason": "workday_company_name_careers_page",
+      "fromCache": false,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Telus",
+      "family": "workday",
+      "query": "\"Telus\" careers workday",
+      "reason": "workday_company_name_careers_page",
+      "fromCache": true,
+      "resultUrlsFetched": 8,
+      "errors": []
+    },
+    {
+      "companyName": "Wealthsimple",
+      "family": "workday",
+      "query": "\"Wealthsimple\" careers workday",
+      "reason": "workday_company_name_careers_page",
+      "fromCache": false,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "WSP",
+      "family": "workday",
+      "query": "\"WSP\" careers workday",
+      "reason": "workday_company_name_careers_page",
+      "fromCache": true,
+      "resultUrlsFetched": 8,
+      "errors": []
+    },
+    {
+      "companyName": "1Password",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"1Password\" jobs",
+      "reason": "workday_company_name_jobs",
+      "fromCache": false,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "AlayaCare",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"AlayaCare\" jobs",
+      "reason": "workday_company_name_jobs",
+      "fromCache": false,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Benevity",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Benevity\" jobs",
+      "reason": "workday_company_name_jobs",
+      "fromCache": false,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "BMO",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"BMO\" jobs",
+      "reason": "workday_company_name_jobs",
+      "fromCache": true,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "CGI",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"CGI\" jobs",
+      "reason": "workday_company_name_jobs",
+      "fromCache": true,
+      "resultUrlsFetched": 8,
+      "errors": []
+    },
+    {
+      "companyName": "Coveo",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Coveo\" jobs",
+      "reason": "workday_company_name_jobs",
+      "fromCache": false,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Definity Financial",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Definity Financial\" jobs",
+      "reason": "workday_company_name_jobs",
+      "fromCache": false,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Definity Financial",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Definity\" careers",
+      "reason": "workday_search_term_direct",
+      "fromCache": false,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Float Financial",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Float Financial\" jobs",
+      "reason": "workday_company_name_jobs",
+      "fromCache": false,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Float Financial",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Float\" careers",
+      "reason": "workday_search_term_direct",
+      "fromCache": false,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Hootsuite",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Hootsuite\" jobs",
+      "reason": "workday_company_name_jobs",
+      "fromCache": false,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Jane App",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Jane App\" jobs",
+      "reason": "workday_company_name_jobs",
+      "fromCache": false,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Jane App",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Jane\" careers",
+      "reason": "workday_search_term_direct",
+      "fromCache": false,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Jobber",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Jobber\" jobs",
+      "reason": "workday_company_name_jobs",
+      "fromCache": false,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "KOHO",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"KOHO\" jobs",
+      "reason": "workday_company_name_jobs",
+      "fromCache": false,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Neo Financial",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Neo Financial\" jobs",
+      "reason": "workday_company_name_jobs",
+      "fromCache": false,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Relay Financial",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Relay Financial\" jobs",
+      "reason": "workday_company_name_jobs",
+      "fromCache": false,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Relay Financial",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Relay\" careers",
+      "reason": "workday_search_term_direct",
+      "fromCache": false,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Sagen",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Sagen\" jobs",
+      "reason": "workday_company_name_jobs",
+      "fromCache": false,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Stantec",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Stantec\" jobs",
+      "reason": "workday_company_name_jobs",
+      "fromCache": true,
+      "resultUrlsFetched": 8,
+      "errors": []
+    },
+    {
+      "companyName": "Telesat",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Telesat\" jobs",
+      "reason": "workday_company_name_jobs",
+      "fromCache": false,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Telus",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Telus\" jobs",
+      "reason": "workday_company_name_jobs",
+      "fromCache": true,
+      "resultUrlsFetched": 8,
+      "errors": []
+    },
+    {
+      "companyName": "Wealthsimple",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Wealthsimple\" jobs",
+      "reason": "workday_company_name_jobs",
+      "fromCache": false,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "WSP",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"WSP\" jobs",
+      "reason": "workday_company_name_jobs",
+      "fromCache": true,
+      "resultUrlsFetched": 8,
+      "errors": []
+    },
+    {
+      "companyName": "1Password",
+      "family": "workday",
+      "query": "\"1Password\" \"myworkdayjobs.com\"",
+      "reason": "workday_company_name_host_hint",
+      "fromCache": false,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "AlayaCare",
+      "family": "workday",
+      "query": "\"AlayaCare\" \"myworkdayjobs.com\"",
+      "reason": "workday_company_name_host_hint",
+      "fromCache": false,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Benevity",
+      "family": "workday",
+      "query": "\"Benevity\" \"myworkdayjobs.com\"",
+      "reason": "workday_company_name_host_hint",
+      "fromCache": false,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "BMO",
+      "family": "workday",
+      "query": "\"BMO\" \"myworkdayjobs.com\"",
+      "reason": "workday_company_name_host_hint",
+      "fromCache": true,
+      "resultUrlsFetched": 8,
+      "errors": []
+    },
+    {
+      "companyName": "CGI",
+      "family": "workday",
+      "query": "\"CGI\" \"myworkdayjobs.com\"",
+      "reason": "workday_company_name_host_hint",
+      "fromCache": true,
+      "resultUrlsFetched": 8,
+      "errors": []
+    },
+    {
+      "companyName": "Coveo",
+      "family": "workday",
+      "query": "\"Coveo\" \"myworkdayjobs.com\"",
+      "reason": "workday_company_name_host_hint",
+      "fromCache": false,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Definity Financial",
+      "family": "workday",
+      "query": "\"Definity Financial\" \"myworkdayjobs.com\"",
+      "reason": "workday_company_name_host_hint",
+      "fromCache": false,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Definity Financial",
+      "family": "workday",
+      "query": "\"Definity\" careers workday",
+      "reason": "workday_search_term_careers_page",
+      "fromCache": false,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Float Financial",
+      "family": "workday",
+      "query": "\"Float Financial\" \"myworkdayjobs.com\"",
+      "reason": "workday_company_name_host_hint",
+      "fromCache": false,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Float Financial",
+      "family": "workday",
+      "query": "\"Float\" careers workday",
+      "reason": "workday_search_term_careers_page",
+      "fromCache": false,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Hootsuite",
+      "family": "workday",
+      "query": "\"Hootsuite\" \"myworkdayjobs.com\"",
+      "reason": "workday_company_name_host_hint",
+      "fromCache": false,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Jane App",
+      "family": "workday",
+      "query": "\"Jane App\" \"myworkdayjobs.com\"",
+      "reason": "workday_company_name_host_hint",
+      "fromCache": false,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Jane App",
+      "family": "workday",
+      "query": "\"Jane\" careers workday",
+      "reason": "workday_search_term_careers_page",
+      "fromCache": false,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Jobber",
+      "family": "workday",
+      "query": "\"Jobber\" \"myworkdayjobs.com\"",
+      "reason": "workday_company_name_host_hint",
+      "fromCache": false,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "KOHO",
+      "family": "workday",
+      "query": "\"KOHO\" \"myworkdayjobs.com\"",
+      "reason": "workday_company_name_host_hint",
+      "fromCache": false,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Neo Financial",
+      "family": "workday",
+      "query": "\"Neo Financial\" \"myworkdayjobs.com\"",
+      "reason": "workday_company_name_host_hint",
+      "fromCache": false,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Relay Financial",
+      "family": "workday",
+      "query": "\"Relay Financial\" \"myworkdayjobs.com\"",
+      "reason": "workday_company_name_host_hint",
+      "fromCache": false,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Relay Financial",
+      "family": "workday",
+      "query": "\"Relay\" careers workday",
+      "reason": "workday_search_term_careers_page",
+      "fromCache": false,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Sagen",
+      "family": "workday",
+      "query": "\"Sagen\" \"myworkdayjobs.com\"",
+      "reason": "workday_company_name_host_hint",
+      "fromCache": false,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Stantec",
+      "family": "workday",
+      "query": "\"Stantec\" \"myworkdayjobs.com\"",
+      "reason": "workday_company_name_host_hint",
+      "fromCache": true,
+      "resultUrlsFetched": 8,
+      "errors": []
+    },
+    {
+      "companyName": "Telesat",
+      "family": "workday",
+      "query": "\"Telesat\" \"myworkdayjobs.com\"",
+      "reason": "workday_company_name_host_hint",
+      "fromCache": false,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Telus",
+      "family": "workday",
+      "query": "\"Telus\" \"myworkdayjobs.com\"",
+      "reason": "workday_company_name_host_hint",
+      "fromCache": true,
+      "resultUrlsFetched": 8,
+      "errors": []
+    },
+    {
+      "companyName": "Wealthsimple",
+      "family": "workday",
+      "query": "\"Wealthsimple\" \"myworkdayjobs.com\"",
+      "reason": "workday_company_name_host_hint",
+      "fromCache": false,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "WSP",
+      "family": "workday",
+      "query": "\"WSP\" \"myworkdayjobs.com\"",
+      "reason": "workday_company_name_host_hint",
+      "fromCache": true,
+      "resultUrlsFetched": 8,
+      "errors": []
+    },
+    {
+      "companyName": "Definity Financial",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Definity\" jobs",
+      "reason": "workday_search_term_jobs",
+      "fromCache": false,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Float Financial",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Float\" jobs",
+      "reason": "workday_search_term_jobs",
+      "fromCache": false,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Jane App",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Jane\" jobs",
+      "reason": "workday_search_term_jobs",
+      "fromCache": false,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Neo Financial",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"neo\" careers",
+      "reason": "tenant_direct",
+      "fromCache": false,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Neo Financial",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"neofinancial\" careers",
+      "reason": "workday_tenant_term_direct",
+      "fromCache": false,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Relay Financial",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Relay\" jobs",
+      "reason": "workday_search_term_jobs",
+      "fromCache": false,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Relay Financial",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"RELAYFI\" careers",
+      "reason": "workday_tenant_term_direct",
+      "fromCache": false,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Definity Financial",
+      "family": "workday",
+      "query": "\"Definity\" \"myworkdayjobs.com\"",
+      "reason": "workday_search_term_host_hint",
+      "fromCache": false,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Float Financial",
+      "family": "workday",
+      "query": "\"Float\" \"myworkdayjobs.com\"",
+      "reason": "workday_search_term_host_hint",
+      "fromCache": false,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Jane App",
+      "family": "workday",
+      "query": "\"Jane\" \"myworkdayjobs.com\"",
+      "reason": "workday_search_term_host_hint",
+      "fromCache": false,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Neo Financial",
+      "family": "workday",
+      "query": "\"neofinancial\" careers workday",
+      "reason": "workday_tenant_term_careers_page",
+      "fromCache": false,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Relay Financial",
+      "family": "workday",
+      "query": "\"Relay\" \"myworkdayjobs.com\"",
+      "reason": "workday_search_term_host_hint",
+      "fromCache": false,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Relay Financial",
+      "family": "workday",
+      "query": "\"RELAYFI\" careers workday",
+      "reason": "workday_tenant_term_careers_page",
+      "fromCache": false,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Neo Financial",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"neofinancial\" jobs",
+      "reason": "workday_tenant_term_jobs",
+      "fromCache": false,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Relay Financial",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"RELAYFI\" jobs",
+      "reason": "workday_tenant_term_jobs",
+      "fromCache": false,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Neo Financial",
+      "family": "workday",
+      "query": "\"neofinancial\" \"myworkdayjobs.com\"",
+      "reason": "workday_tenant_term_host_hint",
+      "fromCache": false,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Relay Financial",
+      "family": "workday",
+      "query": "\"RELAYFI\" \"myworkdayjobs.com\"",
+      "reason": "workday_tenant_term_host_hint",
+      "fromCache": false,
+      "resultUrlsFetched": 5,
+      "errors": []
+    },
+    {
+      "companyName": "Canada:Calgary",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Calgary\" Canada careers",
+      "reason": "generic_canada_city",
+      "fromCache": true,
+      "resultUrlsFetched": 8,
+      "errors": []
+    },
+    {
+      "companyName": "Canada:Montreal",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Montreal\" Canada careers",
+      "reason": "generic_canada_city",
+      "fromCache": true,
+      "resultUrlsFetched": 8,
+      "errors": []
+    },
+    {
+      "companyName": "Canada:Ottawa",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Ottawa\" Canada careers",
+      "reason": "generic_canada_city",
+      "fromCache": true,
+      "resultUrlsFetched": 8,
+      "errors": []
+    },
+    {
+      "companyName": "Canada:Toronto",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Toronto\" Canada careers",
+      "reason": "generic_canada_city",
+      "fromCache": true,
+      "resultUrlsFetched": 8,
+      "errors": []
+    },
+    {
+      "companyName": "Canada:Vancouver",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Vancouver\" Canada careers",
+      "reason": "generic_canada_city",
+      "fromCache": true,
+      "resultUrlsFetched": 8,
+      "errors": []
+    },
+    {
+      "companyName": "Canada:Waterloo",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com \"Waterloo\" Canada careers",
+      "reason": "generic_canada_city",
+      "fromCache": true,
+      "resultUrlsFetched": 8,
+      "errors": []
+    },
+    {
+      "companyName": "Canada:cloud",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com Canada \"cloud\" careers",
+      "reason": "generic_canada_sector",
+      "fromCache": true,
+      "resultUrlsFetched": 8,
+      "errors": []
+    },
+    {
+      "companyName": "Canada:enterprise software",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com Canada \"enterprise software\" careers",
+      "reason": "generic_canada_sector",
+      "fromCache": true,
+      "resultUrlsFetched": 8,
+      "errors": []
+    },
+    {
+      "companyName": "Canada:fintech",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com Canada \"fintech\" careers",
+      "reason": "generic_canada_sector",
+      "fromCache": true,
+      "resultUrlsFetched": 8,
+      "errors": []
+    },
+    {
+      "companyName": "Canada:healthcare",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com Canada \"healthcare\" careers",
+      "reason": "generic_canada_sector",
+      "fromCache": true,
+      "resultUrlsFetched": 8,
+      "errors": []
+    },
+    {
+      "companyName": "Canada:telecom",
+      "family": "workday",
+      "query": "site:myworkdayjobs.com Canada \"telecom\" careers",
+      "reason": "generic_canada_sector",
+      "fromCache": true,
+      "resultUrlsFetched": 8,
+      "errors": []
+    }
+  ]
+}

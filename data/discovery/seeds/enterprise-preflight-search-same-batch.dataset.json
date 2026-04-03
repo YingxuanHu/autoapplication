@@ -1,0 +1,204 @@
+[
+  {
+    "boardUrl": "https://rogersbh.wd1.myworkdayjobs.com/rbhcareer",
+    "sourceKey": "workday:rogersbh.wd1.myworkdayjobs.com|rogersbh|rbhcareer",
+    "connectorName": "workday",
+    "token": "rogersbh.wd1.myworkdayjobs.com|rogersbh|rbhcareer",
+    "companyNames": [
+      "Rogers"
+    ],
+    "discoveredFromQueries": [
+      "\"Rogers\" \"myworkdayjobs.com\"",
+      "\"Rogers\" careers workday"
+    ],
+    "searchResultUrls": [
+      "https://rogersbh.wd1.myworkdayjobs.com/RBHCareer",
+      "https://rogersbh.wd1.myworkdayjobs.com/en-US/RBHCareer/job/Patient-Care-Trainer---PRN_R5773"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [],
+    "matchedReasons": [
+      "workday_company_name_careers_page",
+      "workday_company_name_host_hint"
+    ],
+    "knownStatus": null,
+    "url": "https://rogersbh.wd1.myworkdayjobs.com/rbhcareer"
+  },
+  {
+    "boardUrl": "https://jobs.torontohydro.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+    "sourceKey": "successfactors:jobs.torontohydro.com",
+    "connectorName": "successfactors",
+    "token": "jobs.torontohydro.com",
+    "companyNames": [
+      "Toronto Hydro"
+    ],
+    "discoveredFromQueries": [
+      "\"torontohydro\" careers workday"
+    ],
+    "searchResultUrls": [
+      "https://jobs.torontohydro.com/job/Toronto-Engineer-ON/574239717/"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [],
+    "matchedReasons": [
+      "workday_tenant_term_careers_page"
+    ],
+    "knownStatus": null,
+    "url": "https://jobs.torontohydro.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc"
+  },
+  {
+    "boardUrl": "https://cadence.wd1.myworkdayjobs.com/external_careers",
+    "sourceKey": "workday:cadence.wd1.myworkdayjobs.com|cadence|external_careers",
+    "connectorName": "workday",
+    "token": "cadence.wd1.myworkdayjobs.com|cadence|external_careers",
+    "companyNames": [
+      "CAE"
+    ],
+    "discoveredFromQueries": [
+      "\"CAE\" \"myworkdayjobs.com\""
+    ],
+    "searchResultUrls": [
+      "https://cadence.wd1.myworkdayjobs.com/External_Careers"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [],
+    "matchedReasons": [
+      "workday_company_name_host_hint"
+    ],
+    "knownStatus": null,
+    "url": "https://cadence.wd1.myworkdayjobs.com/external_careers"
+  },
+  {
+    "boardUrl": "https://cncbinternational.wd3.myworkdayjobs.com/cncbiexternalcareersite",
+    "sourceKey": "workday:cncbinternational.wd3.myworkdayjobs.com|cncbinternational|cncbiexternalcareersite",
+    "connectorName": "workday",
+    "token": "cncbinternational.wd3.myworkdayjobs.com|cncbinternational|cncbiexternalcareersite",
+    "companyNames": [
+      "CN Rail"
+    ],
+    "discoveredFromQueries": [
+      "\"CN\" careers workday"
+    ],
+    "searchResultUrls": [
+      "https://cncbinternational.wd3.myworkdayjobs.com/zh-CN/CNCBIExternalCareerSite"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [],
+    "matchedReasons": [
+      "workday_search_term_careers_page"
+    ],
+    "knownStatus": null,
+    "url": "https://cncbinternational.wd3.myworkdayjobs.com/cncbiexternalcareersite"
+  },
+  {
+    "boardUrl": "https://fph.wd3.myworkdayjobs.com/edc_careers",
+    "sourceKey": "workday:fph.wd3.myworkdayjobs.com|fph|edc_careers",
+    "connectorName": "workday",
+    "token": "fph.wd3.myworkdayjobs.com|fph|edc_careers",
+    "companyNames": [
+      "Export Development Canada"
+    ],
+    "discoveredFromQueries": [
+      "\"EDC\" careers workday"
+    ],
+    "searchResultUrls": [
+      "https://fph.wd3.myworkdayjobs.com/EDC_Careers",
+      "https://fph.wd3.myworkdayjobs.com/en-US/EDC_Careers/job/Engineer-Electrical---I-C-Design_JR00003797"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [],
+    "matchedReasons": [
+      "workday_search_term_careers_page"
+    ],
+    "knownStatus": null,
+    "url": "https://fph.wd3.myworkdayjobs.com/edc_careers"
+  },
+  {
+    "boardUrl": "https://hyvee.wd1.myworkdayjobs.com/hyveecareers",
+    "sourceKey": "workday:hyvee.wd1.myworkdayjobs.com|hyvee|hyveecareers",
+    "connectorName": "workday",
+    "token": "hyvee.wd1.myworkdayjobs.com|hyvee|hyveecareers",
+    "companyNames": [
+      "iA Financial Group"
+    ],
+    "discoveredFromQueries": [
+      "\"iA\" \"myworkdayjobs.com\""
+    ],
+    "searchResultUrls": [
+      "https://hyvee.wd1.myworkdayjobs.com/HyVeeCareers"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [],
+    "matchedReasons": [
+      "workday_search_term_host_hint"
+    ],
+    "knownStatus": null,
+    "url": "https://hyvee.wd1.myworkdayjobs.com/hyveecareers"
+  },
+  {
+    "boardUrl": "https://icon.wd3.myworkdayjobs.com/broadbean_external",
+    "sourceKey": "workday:icon.wd3.myworkdayjobs.com|icon|broadbean_external",
+    "connectorName": "workday",
+    "token": "icon.wd3.myworkdayjobs.com|icon|broadbean_external",
+    "companyNames": [
+      "Telus"
+    ],
+    "discoveredFromQueries": [
+      "\"Telus\" \"myworkdayjobs.com\""
+    ],
+    "searchResultUrls": [
+      "https://icon.wd3.myworkdayjobs.com/en-US/broadbean_external/job/Senior-CRA_JR145071"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [],
+    "matchedReasons": [
+      "workday_company_name_host_hint"
+    ],
+    "knownStatus": null,
+    "url": "https://icon.wd3.myworkdayjobs.com/broadbean_external"
+  },
+  {
+    "boardUrl": "https://navcanada.wd10.myworkdayjobs.com/ats_career",
+    "sourceKey": "workday:navcanada.wd10.myworkdayjobs.com|navcanada|ats_career",
+    "connectorName": "workday",
+    "token": "navcanada.wd10.myworkdayjobs.com|navcanada|ats_career",
+    "companyNames": [
+      "NAV CANADA"
+    ],
+    "discoveredFromQueries": [
+      "\"NAV CANADA\" careers workday"
+    ],
+    "searchResultUrls": [
+      "https://navcanada.wd10.myworkdayjobs.com/ATS_Career"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [],
+    "matchedReasons": [
+      "workday_company_name_careers_page"
+    ],
+    "knownStatus": null,
+    "url": "https://navcanada.wd10.myworkdayjobs.com/ats_career"
+  },
+  {
+    "boardUrl": "https://tencent.wd1.myworkdayjobs.com/tencent_careers",
+    "sourceKey": "workday:tencent.wd1.myworkdayjobs.com|tencent|tencent_careers",
+    "connectorName": "workday",
+    "token": "tencent.wd1.myworkdayjobs.com|tencent|tencent_careers",
+    "companyNames": [
+      "CN Rail"
+    ],
+    "discoveredFromQueries": [
+      "\"CN\" \"myworkdayjobs.com\""
+    ],
+    "searchResultUrls": [
+      "https://tencent.wd1.myworkdayjobs.com/zh-CN/Tencent_Careers"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [],
+    "matchedReasons": [
+      "workday_search_term_host_hint"
+    ],
+    "knownStatus": null,
+    "url": "https://tencent.wd1.myworkdayjobs.com/tencent_careers"
+  }
+]

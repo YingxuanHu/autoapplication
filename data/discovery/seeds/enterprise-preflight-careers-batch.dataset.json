@@ -1,0 +1,120 @@
+[
+  {
+    "boardUrl": "https://careers.bankofcanada.ca/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+    "sourceKey": "successfactors:careers.bankofcanada.ca",
+    "connectorName": "successfactors",
+    "token": "careers.bankofcanada.ca",
+    "companyNames": [
+      "Bank of Canada"
+    ],
+    "discoveredFromQueries": [],
+    "searchResultUrls": [],
+    "careerPageUrls": [],
+    "directAtsUrls": [
+      "https://careers.bankofcanada.ca/talentcommunity/subscribe/?locale=en_US"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link"
+    ],
+    "knownStatus": null,
+    "url": "https://careers.bankofcanada.ca/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc"
+  },
+  {
+    "boardUrl": "https://careers.fortisbc.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+    "sourceKey": "successfactors:careers.fortisbc.com",
+    "connectorName": "successfactors",
+    "token": "careers.fortisbc.com",
+    "companyNames": [
+      "FortisBC"
+    ],
+    "discoveredFromQueries": [],
+    "searchResultUrls": [],
+    "careerPageUrls": [],
+    "directAtsUrls": [
+      "https://careers.fortisbc.com/search"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link"
+    ],
+    "knownStatus": null,
+    "url": "https://careers.fortisbc.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc"
+  },
+  {
+    "boardUrl": "https://jobs.nutrien.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+    "sourceKey": "successfactors:jobs.nutrien.com",
+    "connectorName": "successfactors",
+    "token": "jobs.nutrien.com",
+    "companyNames": [
+      "Nutrien"
+    ],
+    "discoveredFromQueries": [],
+    "searchResultUrls": [],
+    "careerPageUrls": [],
+    "directAtsUrls": [
+      "https://jobs.nutrien.com/search/?"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link"
+    ],
+    "knownStatus": null,
+    "url": "https://jobs.nutrien.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc"
+  },
+  {
+    "boardUrl": "https://careers.telus.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+    "sourceKey": "successfactors:careers.telus.com",
+    "connectorName": "successfactors",
+    "token": "careers.telus.com",
+    "companyNames": [],
+    "discoveredFromQueries": [],
+    "searchResultUrls": [],
+    "careerPageUrls": [],
+    "directAtsUrls": [
+      "https://careers.telus.com/search/?jobAlerts=true&rcmLoggedIn=true&locale=en_US&micrositeid=",
+      "https://careers.telus.com/search/?jobAlerts=true&rcmLoggedIn=true&locale=en_US&micrositeid=?linktype=subnav",
+      "https://careers.telus.com/search?locale=en_US&utm_source=careersite&utm_campaign=TELUS.COM/CAREERS_LowerCTA",
+      "https://careers.telus.com/search?locale=en_US&utm_source=careersite&utm_campaign=TELUS.COM/CAREERS_TopCTA"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link"
+    ],
+    "knownStatus": null,
+    "url": "https://careers.telus.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc"
+  },
+  {
+    "boardUrl": "https://jobs.teck.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+    "sourceKey": "successfactors:jobs.teck.com",
+    "connectorName": "successfactors",
+    "token": "jobs.teck.com",
+    "companyNames": [],
+    "discoveredFromQueries": [],
+    "searchResultUrls": [],
+    "careerPageUrls": [],
+    "directAtsUrls": [
+      "https://jobs.teck.com/search/?q=&locationsearch=",
+      "https://jobs.teck.com/search/?utm_source=careersite&utm_campaign=AllJobsButton_TeckCareers"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link"
+    ],
+    "knownStatus": null,
+    "url": "https://jobs.teck.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc"
+  },
+  {
+    "boardUrl": "https://jobs.torontohydro.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+    "sourceKey": "successfactors:jobs.torontohydro.com",
+    "connectorName": "successfactors",
+    "token": "jobs.torontohydro.com",
+    "companyNames": [],
+    "discoveredFromQueries": [],
+    "searchResultUrls": [],
+    "careerPageUrls": [],
+    "directAtsUrls": [
+      "https://jobs.torontohydro.com/search/?q=&optionsFacetsDD_departmenta"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link"
+    ],
+    "knownStatus": null,
+    "url": "https://jobs.torontohydro.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc"
+  }
+]

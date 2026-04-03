@@ -143,6 +143,8 @@ model ResumeVariant {
 
   user                UserProfile          @relation(fields: [userId], references: [id], onDelete: Cascade)
   applicationPackages ApplicationPackage[]
+
+  @@index([userId])
 }
 
 model JobRaw {
@@ -200,13 +202,31 @@ model JobCanonical {
   applicationPackages    ApplicationPackage[]
   behaviorSignals        UserBehaviorSignal[]
 
-  @@index([status, lastSeenAt])
+  // ── Deduplication indexes ──
   @@index([duplicateClusterId])
   @@index([applyUrlKey])
   @@index([companyKey, titleCoreKey, region])
   @@index([companyKey, roleFamily, region])
   @@index([companyKey, locationKey, region])
   @@index([companyKey, descriptionFingerprint, region])
+
+  // ── Feed query indexes ──
+  // Primary feed sort: status + postedAt covers the default newest-first ordering
+  @@index([status, postedAt(sort: Desc)])
+  // Region filter (very common): status + region + postedAt
+  @@index([status, region, postedAt(sort: Desc)])
+  // Role family filter: status + roleFamily + postedAt
+  @@index([status, roleFamily, postedAt(sort: Desc)])
+  // Work mode filter: status + workMode + postedAt
+  @@index([status, workMode, postedAt(sort: Desc)])
+  // Experience level filter: status + experienceLevel + postedAt
+  @@index([status, experienceLevel, postedAt(sort: Desc)])
+  // Industry filter: status + industry + postedAt
+  @@index([status, industry, postedAt(sort: Desc)])
+  // Salary filter: status + salaryMax for "min salary" filtering
+  @@index([status, salaryMax(sort: Desc)])
+  // Lifecycle reconciliation: status + lastSeenAt
+  @@index([status, lastSeenAt])
 }
 
 model JobSourceMapping {
@@ -243,6 +263,9 @@ model JobEligibility {
   updatedAt                    DateTime           @updatedAt
 
   canonicalJob JobCanonical @relation(fields: [canonicalJobId], references: [id], onDelete: Cascade)
+
+  // Feed filter by submission category
+  @@index([submissionCategory])
 }
 
 model ApplicationPackage {
@@ -261,6 +284,8 @@ model ApplicationPackage {
   canonicalJob  JobCanonical  @relation(fields: [canonicalJobId], references: [id], onDelete: Cascade)
   resumeVariant ResumeVariant @relation(fields: [resumeVariantId], references: [id], onDelete: Cascade)
   submissions   ApplicationSubmission[]
+
+  @@index([userId, canonicalJobId])
 }
 
 model ApplicationSubmission {
@@ -278,6 +303,8 @@ model ApplicationSubmission {
   user         UserProfile         @relation(fields: [userId], references: [id], onDelete: Cascade)
   canonicalJob JobCanonical        @relation(fields: [canonicalJobId], references: [id], onDelete: Cascade)
   package      ApplicationPackage? @relation(fields: [packageId], references: [id], onDelete: SetNull)
+
+  @@index([userId, canonicalJobId])
 }
 
 model SavedJob {
@@ -293,6 +320,7 @@ model SavedJob {
   canonicalJob JobCanonical @relation(fields: [canonicalJobId], references: [id], onDelete: Cascade)
 
   @@unique([userId, canonicalJobId])
+  @@index([userId, status])
 }
 
 model UserPreference {
@@ -319,6 +347,10 @@ model UserBehaviorSignal {
 
   user         UserProfile  @relation(fields: [userId], references: [id], onDelete: Cascade)
   canonicalJob JobCanonical @relation(fields: [canonicalJobId], references: [id], onDelete: Cascade)
+
+  // Feed query: exclude passed jobs for a user
+  @@index([userId, action])
+  @@index([userId, canonicalJobId, action])
 }
 
 model IngestionRun {

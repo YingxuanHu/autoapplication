@@ -1,3 +1,4 @@
+export { createAdzunaConnector } from "./adzuna";
 export { createAshbyConnector } from "./ashby";
 export {
   buildIcimsBoardUrl,
@@ -25,6 +26,8 @@ export {
   parseTaleoSourceToken,
   validateTaleoPortal,
 } from "./taleo";
+export { createRemoteOkConnector } from "./remoteok";
+export { createRemotiveConnector } from "./remotive";
 export { createSmartRecruitersConnector } from "./smartrecruiters";
 export {
   buildWorkdayApiUrl,
@@ -33,4 +36,9 @@ export {
   createWorkdayConnector,
   parseWorkdaySourceToken,
 } from "./workday";
+export { createHimalayasConnector } from "./himalayas";
+export { createJobicyConnector } from "./jobicy";
+export { createMuseConnector } from "./themuse";
+export { createUsaJobsConnector, createUsaJobsBatchConnectors } from "./usajobs";
 export { createWorkableConnector } from "./workable";
+export { createJobBankConnector } from "./jobbank";

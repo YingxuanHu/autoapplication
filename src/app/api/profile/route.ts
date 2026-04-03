@@ -13,10 +13,42 @@ export async function GET() {
   }
 }
 
+const ALLOWED_PROFILE_FIELDS = new Set([
+  "name",
+  "email",
+  "linkedinUrl",
+  "githubUrl",
+  "portfolioUrl",
+  "workAuthorization",
+  "salaryMin",
+  "salaryMax",
+  "salaryCurrency",
+  "preferredWorkMode",
+  "experienceLevel",
+  "automationMode",
+]);
+
 export async function PATCH(request: NextRequest) {
   try {
     const body = await request.json();
-    const updated = await updateProfile(body);
+
+    if (!body || typeof body !== "object" || Array.isArray(body)) {
+      return errorResponse("Request body must be a JSON object", 400);
+    }
+
+    // Strip unknown fields to prevent unexpected data from reaching Prisma
+    const sanitized: Record<string, unknown> = {};
+    for (const [key, value] of Object.entries(body)) {
+      if (ALLOWED_PROFILE_FIELDS.has(key)) {
+        sanitized[key] = value;
+      }
+    }
+
+    if (Object.keys(sanitized).length === 0) {
+      return errorResponse("No valid fields provided", 400);
+    }
+
+    const updated = await updateProfile(sanitized);
     return successResponse(updated);
   } catch (error) {
     console.error("PATCH /api/profile error:", error);

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Bookmark, Briefcase, Database, FileCheck2, User, Zap } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { ThemeToggle } from "./theme-toggle";
 
 const NAV_ITEMS = [
   { href: "/jobs", label: "Jobs", icon: Briefcase },
@@ -50,10 +51,11 @@ export function NavSidebar() {
       </nav>
 
       {/* Footer */}
-      <div className="border-t px-4 py-3">
+      <div className="flex items-center justify-between border-t px-4 py-3">
         <p className="text-xs text-muted-foreground">
           AutoApplication v0.1
         </p>
+        <ThemeToggle />
       </div>
     </aside>
   );

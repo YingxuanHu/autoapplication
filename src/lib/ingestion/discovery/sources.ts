@@ -1,11 +1,18 @@
 import { readFile } from "node:fs/promises";
 import { prisma } from "@/lib/db";
 import {
+  createAdzunaConnector,
   createAshbyConnector,
   createGreenhouseConnector,
+  createHimalayasConnector,
   createIcimsConnector,
+  createJobicyConnector,
   createLeverConnector,
+  createMuseConnector,
+  createRemoteOkConnector,
+  createRemotiveConnector,
   createTaleoConnector,
+  createUsaJobsConnector,
   createRecruiteeConnector,
   createRipplingConnector,
   createSuccessFactorsConnector,
@@ -156,7 +163,11 @@ export type SourceDiscoveryPreviewResult = {
   pageTitle: string | null;
   fetchedCount: number;
   acceptedCount: number;
+  acceptedCanadaCount: number;
+  acceptedCanadaRemoteCount: number;
   previewCreatedCount: number;
+  previewCreatedCanadaCount: number;
+  previewCreatedCanadaRemoteCount: number;
   previewUpdatedCount: number;
   dedupedCount: number;
   rejectedCount: number;
@@ -200,6 +211,14 @@ export function buildDiscoveredSourceName(
         ? "iCIMS"
       : connectorName === "taleo"
         ? "Taleo"
+      : connectorName === "himalayas"
+        ? "Himalayas"
+      : connectorName === "jobicy"
+        ? "Jobicy"
+      : connectorName === "remotive"
+        ? "Remotive"
+      : connectorName === "themuse"
+        ? "TheMuse"
       : connectorName.charAt(0).toUpperCase() + connectorName.slice(1);
   return `${prefix}:${token}`;
 }
@@ -237,6 +256,22 @@ export function buildDiscoveredSourceUrl(
       const section = sepIndex > 0 ? normalizedToken.slice(sepIndex + 1) : "1";
       return `https://${tenant}.taleo.net/careersection/${section}/jobsearch.ftl?lang=en`;
     }
+    case "adzuna":
+      return `https://www.adzuna.${normalizedToken === "us" ? "com" : normalizedToken === "ca" ? "ca" : "com"}/search?q=`;
+    case "remoteok":
+      return "https://remoteok.com/remote-jobs";
+    case "usajobs":
+      return "https://www.usajobs.gov/Search/Results";
+    case "himalayas":
+      return "https://himalayas.app/jobs";
+    case "jobicy":
+      return "https://jobicy.com/remote-jobs";
+    case "remotive":
+      return "https://remotive.com/remote-jobs";
+    case "themuse":
+      return "https://www.themuse.com/jobs";
+    default:
+      throw new Error(`Unsupported discovered source connector: ${connectorName}`);
   }
 }
 
@@ -501,7 +536,11 @@ export async function previewSourceCandidates(
           pageTitle: null,
           fetchedCount: 0,
           acceptedCount: 0,
+          acceptedCanadaCount: 0,
+          acceptedCanadaRemoteCount: 0,
           previewCreatedCount: 0,
+          previewCreatedCanadaCount: 0,
+          previewCreatedCanadaRemoteCount: 0,
           previewUpdatedCount: 0,
           dedupedCount: 0,
           rejectedCount: 0,
@@ -568,7 +607,12 @@ export async function previewSourceCandidate(
     pageTitle,
     fetchedCount: previewSummary.fetchedCount,
     acceptedCount: previewSummary.acceptedCount,
+    acceptedCanadaCount: previewSummary.acceptedCanadaCount,
+    acceptedCanadaRemoteCount: previewSummary.acceptedCanadaRemoteCount,
     previewCreatedCount: previewSummary.canonicalCreatedCount,
+    previewCreatedCanadaCount: previewSummary.canonicalCreatedCanadaCount,
+    previewCreatedCanadaRemoteCount:
+      previewSummary.canonicalCreatedCanadaRemoteCount,
     previewUpdatedCount: previewSummary.canonicalUpdatedCount,
     dedupedCount: previewSummary.dedupedCount,
     rejectedCount: previewSummary.rejectedCount,
@@ -605,7 +649,11 @@ async function previewSuccessFactorsCandidate(
       pageTitle: boardValidation.pageTitle,
       fetchedCount: 0,
       acceptedCount: 0,
+      acceptedCanadaCount: 0,
+      acceptedCanadaRemoteCount: 0,
       previewCreatedCount: 0,
+      previewCreatedCanadaCount: 0,
+      previewCreatedCanadaRemoteCount: 0,
       previewUpdatedCount: 0,
       dedupedCount: 0,
       rejectedCount: 0,
@@ -635,7 +683,12 @@ async function previewSuccessFactorsCandidate(
     pageTitle: boardValidation.pageTitle,
     fetchedCount: previewSummary.fetchedCount,
     acceptedCount: previewSummary.acceptedCount,
+    acceptedCanadaCount: previewSummary.acceptedCanadaCount,
+    acceptedCanadaRemoteCount: previewSummary.acceptedCanadaRemoteCount,
     previewCreatedCount: previewSummary.canonicalCreatedCount,
+    previewCreatedCanadaCount: previewSummary.canonicalCreatedCanadaCount,
+    previewCreatedCanadaRemoteCount:
+      previewSummary.canonicalCreatedCanadaRemoteCount,
     previewUpdatedCount: previewSummary.canonicalUpdatedCount,
     dedupedCount: previewSummary.dedupedCount,
     rejectedCount: previewSummary.rejectedCount,
@@ -674,7 +727,42 @@ export function extractKnownAtsUrlsFromText(text: string) {
     }
   }
 
+  for (const atsFragment of extractKnownAtsUrlFragments(normalizedText)) {
+    for (const discoveredUrl of extractKnownAtsUrlsFromInputUrl(atsFragment)) {
+      urls.add(discoveredUrl);
+    }
+  }
+
   return [...urls];
+}
+
+const ATS_URL_FRAGMENT_PATTERNS = [
+  /(?:https?:)?\/\/jobs\.ashbyhq\.com\/[^\s"'<>\\]+/gi,
+  /(?:https?:)?\/\/(?:job-boards|boards)\.greenhouse\.io\/[^\s"'<>\\]+/gi,
+  /(?:https?:)?\/\/jobs\.lever\.co\/[^\s"'<>\\]+/gi,
+  /(?:https?:)?\/\/jobs\.smartrecruiters\.com\/[^\s"'<>\\]+/gi,
+  /(?:https?:)?\/\/apply\.workable\.com\/[^\s"'<>\\]+/gi,
+  /(?:https?:)?\/\/[a-z0-9-]+\.icims\.com\/jobs[^\s"'<>\\]*/gi,
+  /(?:https?:)?\/\/[a-z0-9-]+\.taleo\.net\/careersection\/[^\s"'<>\\]+/gi,
+  /(?:https?:)?\/\/[a-z0-9-]+\.(?:wd\d+)\.myworkdayjobs\.com\/[^\s"'<>\\]+/gi,
+  /(?:https?:)?\/\/(?:jobs|careers)\.[a-z0-9.-]+\/(?:search|job|talentcommunity)[^\s"'<>\\]*/gi,
+];
+
+function extractKnownAtsUrlFragments(text: string) {
+  const fragments = new Set<string>();
+
+  for (const pattern of ATS_URL_FRAGMENT_PATTERNS) {
+    for (const match of text.match(pattern) ?? []) {
+      const normalizedMatch = normalizeDetectedUrl(
+        match.startsWith("//") ? `https:${match}` : match
+      );
+      if (normalizedMatch) {
+        fragments.add(normalizedMatch);
+      }
+    }
+  }
+
+  return [...fragments];
 }
 
 // ─── Search-based ATS discovery ──────────────────────────────────────────────
@@ -898,7 +986,16 @@ function tryParseJsonUrls(content: string): string[] | null {
       return parsed
         .map((item: Record<string, unknown>) =>
           typeof item === "object" && item !== null
-            ? String(item.url ?? item.href ?? item.link ?? item.career_url ?? "")
+            ? String(
+                item.url ??
+                  item.href ??
+                  item.link ??
+                  item.career_url ??
+                  item.boardUrl ??
+                  item.sourceUrl ??
+                  item.source_url ??
+                  ""
+              )
             : ""
         )
         .filter(Boolean);
@@ -1147,7 +1244,7 @@ function matchAtsSource(parsedUrl: URL): AtsMatch | null {
   return null;
 }
 
-function createConnectorForCandidate(candidate: DiscoveredSourceCandidate) {
+export function createConnectorForCandidate(candidate: DiscoveredSourceCandidate) {
   switch (candidate.connectorName) {
     case "ashby":
       return createAshbyConnector({ orgSlug: candidate.token });
@@ -1175,6 +1272,24 @@ function createConnectorForCandidate(candidate: DiscoveredSourceCandidate) {
       return createIcimsConnector({ portalSubdomain: candidate.token });
     case "taleo":
       return createTaleoConnector({ sourceToken: candidate.token });
+    case "adzuna":
+      return createAdzunaConnector({ country: candidate.token });
+    case "remoteok":
+      return createRemoteOkConnector();
+    case "usajobs":
+      return createUsaJobsConnector({ keyword: candidate.token });
+    case "himalayas":
+      return createHimalayasConnector();
+    case "jobicy":
+      return createJobicyConnector();
+    case "remotive":
+      return createRemotiveConnector();
+    case "themuse":
+      return createMuseConnector();
+    default:
+      throw new Error(
+        `Unsupported discovered source connector: ${candidate.connectorName}`
+      );
   }
 }
 

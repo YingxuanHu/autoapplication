@@ -1,0 +1,305 @@
+{
+  "generatedAt": "2026-03-30T04:28:42.277Z",
+  "corpusCount": 1000,
+  "batchOffset": 250,
+  "batchLimit": 250,
+  "companiesProcessed": 250,
+  "companiesResolved": 250,
+  "companiesUnresolved": 0,
+  "domainsSeeded": 252,
+  "careerPagesDetected": 550,
+  "directAtsUrlsDetected": 30,
+  "candidatesDiscovered": 30,
+  "newCandidates": 25,
+  "skippedKnownCandidates": 5,
+  "promotedSources": [
+    {
+      "sourceKey": "workday:ciena.wd5.myworkdayjobs.com|ciena|careers",
+      "connectorName": "workday",
+      "companyNames": [
+        "Ciena Government Solutions"
+      ],
+      "previewCreatedCount": 35,
+      "previewCreatedCanadaCount": 19,
+      "acceptedCount": 35,
+      "acceptedCanadaCount": 19,
+      "boardUrl": "https://ciena.wd5.myworkdayjobs.com/careers",
+      "promotionReason": "canada_heavy_created_volume"
+    },
+    {
+      "sourceKey": "workday:ebay.wd5.myworkdayjobs.com|ebay|apply",
+      "connectorName": "workday",
+      "companyNames": [
+        "eBay"
+      ],
+      "previewCreatedCount": 29,
+      "previewCreatedCanadaCount": 14,
+      "acceptedCount": 29,
+      "acceptedCanadaCount": 14,
+      "boardUrl": "https://ebay.wd5.myworkdayjobs.com/apply",
+      "promotionReason": "canada_heavy_created_volume"
+    },
+    {
+      "sourceKey": "lever:versapay",
+      "connectorName": "lever",
+      "companyNames": [
+        "Versapay"
+      ],
+      "previewCreatedCount": 20,
+      "previewCreatedCanadaCount": 10,
+      "acceptedCount": 21,
+      "acceptedCanadaCount": 11,
+      "boardUrl": "https://jobs.lever.co/versapay",
+      "promotionReason": "canada_heavy_created_volume"
+    },
+    {
+      "sourceKey": "lever:fullscript",
+      "connectorName": "lever",
+      "companyNames": [
+        "Fullscript"
+      ],
+      "previewCreatedCount": 14,
+      "previewCreatedCanadaCount": 10,
+      "acceptedCount": 17,
+      "acceptedCanadaCount": 13,
+      "boardUrl": "https://jobs.lever.co/fullscript",
+      "promotionReason": "canada_heavy_created_volume"
+    },
+    {
+      "sourceKey": "lever:shyftlabs",
+      "connectorName": "lever",
+      "companyNames": [
+        "ShyftLabs"
+      ],
+      "previewCreatedCount": 7,
+      "previewCreatedCanadaCount": 7,
+      "acceptedCount": 9,
+      "acceptedCanadaCount": 9,
+      "boardUrl": "https://jobs.lever.co/shyftlabs",
+      "promotionReason": "canada_heavy_created_volume"
+    },
+    {
+      "sourceKey": "taleo:agnicoeagle/2",
+      "connectorName": "taleo",
+      "companyNames": [
+        "Agnico Eagle"
+      ],
+      "previewCreatedCount": 6,
+      "previewCreatedCanadaCount": 6,
+      "acceptedCount": 6,
+      "acceptedCanadaCount": 6,
+      "boardUrl": "https://agnicoeagle.taleo.net/careersection/2/jobsearch.ftl?lang=en",
+      "promotionReason": "canada_heavy_created_volume"
+    },
+    {
+      "sourceKey": "greenhouse:tipaltisolutions",
+      "connectorName": "greenhouse",
+      "companyNames": [
+        "Tipalti"
+      ],
+      "previewCreatedCount": 12,
+      "previewCreatedCanadaCount": 5,
+      "acceptedCount": 15,
+      "acceptedCanadaCount": 8,
+      "boardUrl": "https://job-boards.greenhouse.io/tipaltisolutions",
+      "promotionReason": "canada_heavy_created_volume"
+    },
+    {
+      "sourceKey": "workday:motorolasolutions.wd5.myworkdayjobs.com|motorolasolutions|careers",
+      "connectorName": "workday",
+      "companyNames": [
+        "Motorola Solutions"
+      ],
+      "previewCreatedCount": 22,
+      "previewCreatedCanadaCount": 3,
+      "acceptedCount": 22,
+      "acceptedCanadaCount": 3,
+      "boardUrl": "https://motorolasolutions.wd5.myworkdayjobs.com/careers",
+      "promotionReason": "canada_heavy_created_volume"
+    },
+    {
+      "sourceKey": "lever:metergysolutions",
+      "connectorName": "lever",
+      "companyNames": [
+        "Metergy Solutions"
+      ],
+      "previewCreatedCount": 4,
+      "previewCreatedCanadaCount": 3,
+      "acceptedCount": 4,
+      "acceptedCanadaCount": 3,
+      "boardUrl": "https://jobs.lever.co/metergysolutions",
+      "promotionReason": "canada_heavy_created_volume"
+    },
+    {
+      "sourceKey": "recruitee:petalmd",
+      "connectorName": "recruitee",
+      "companyNames": [
+        "Petal"
+      ],
+      "previewCreatedCount": 2,
+      "previewCreatedCanadaCount": 2,
+      "acceptedCount": 2,
+      "acceptedCanadaCount": 2,
+      "boardUrl": "https://petalmd.recruitee.com/",
+      "promotionReason": "canada_dense_small_board"
+    },
+    {
+      "sourceKey": "workday:corpay.wd103.myworkdayjobs.com|corpay|ext_001",
+      "connectorName": "workday",
+      "companyNames": [
+        "Corpay"
+      ],
+      "previewCreatedCount": 2,
+      "previewCreatedCanadaCount": 2,
+      "acceptedCount": 2,
+      "acceptedCanadaCount": 2,
+      "boardUrl": "https://corpay.wd103.myworkdayjobs.com/ext_001",
+      "promotionReason": "canada_dense_small_board"
+    },
+    {
+      "sourceKey": "lever:policyme",
+      "connectorName": "lever",
+      "companyNames": [
+        "PolicyMe"
+      ],
+      "previewCreatedCount": 1,
+      "previewCreatedCanadaCount": 1,
+      "acceptedCount": 1,
+      "acceptedCanadaCount": 1,
+      "boardUrl": "https://jobs.lever.co/policyme",
+      "promotionReason": "canada_dense_small_board"
+    },
+    {
+      "sourceKey": "workday:myview.wd3.myworkdayjobs.com|myview|sdm_careers",
+      "connectorName": "workday",
+      "companyNames": [
+        "Shoppers Drug Mart"
+      ],
+      "previewCreatedCount": 1,
+      "previewCreatedCanadaCount": 1,
+      "acceptedCount": 1,
+      "acceptedCanadaCount": 1,
+      "boardUrl": "https://myview.wd3.myworkdayjobs.com/sdm_careers",
+      "promotionReason": "canada_dense_small_board"
+    }
+  ],
+  "rejectedSources": [
+    {
+      "sourceKey": "successfactors:careers.astrazeneca.com",
+      "connectorName": "successfactors",
+      "companyNames": [
+        "AstraZeneca"
+      ],
+      "boardUrl": "https://careers.astrazeneca.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+      "error": "SuccessFactors fetch failed for https://careers.astrazeneca.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc: 404 Not Found",
+      "previewCreatedCount": 0,
+      "acceptedCanadaCount": 0
+    },
+    {
+      "sourceKey": "successfactors:careers.snap.com",
+      "connectorName": "successfactors",
+      "companyNames": [
+        "Variational AI"
+      ],
+      "boardUrl": "https://careers.snap.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+      "error": "SuccessFactors fetch failed for https://careers.snap.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc: 404 Not Found",
+      "previewCreatedCount": 0,
+      "acceptedCanadaCount": 0
+    },
+    {
+      "sourceKey": "successfactors:jobs.foundever.com",
+      "connectorName": "successfactors",
+      "companyNames": [
+        "Foundever"
+      ],
+      "boardUrl": "https://jobs.foundever.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+      "error": null,
+      "previewCreatedCount": 0,
+      "acceptedCanadaCount": 0
+    },
+    {
+      "sourceKey": "taleo:agnicoeagle/4",
+      "connectorName": "taleo",
+      "companyNames": [
+        "Agnico Eagle"
+      ],
+      "boardUrl": "https://agnicoeagle.taleo.net/careersection/4/jobsearch.ftl?lang=en",
+      "error": null,
+      "previewCreatedCount": 0,
+      "acceptedCanadaCount": 0
+    },
+    {
+      "sourceKey": "taleo:agnicoeagle/en_profile",
+      "connectorName": "taleo",
+      "companyNames": [
+        "Agnico Eagle"
+      ],
+      "boardUrl": "https://agnicoeagle.taleo.net/careersection/en_profile/jobsearch.ftl?lang=en",
+      "error": null,
+      "previewCreatedCount": 0,
+      "acceptedCanadaCount": 0
+    },
+    {
+      "sourceKey": "workable:action",
+      "connectorName": "workable",
+      "companyNames": [
+        "Actionstep"
+      ],
+      "boardUrl": "https://apply.workable.com/action/",
+      "error": null,
+      "previewCreatedCount": 0,
+      "acceptedCanadaCount": 0
+    },
+    {
+      "sourceKey": "workable:actionstep",
+      "connectorName": "workable",
+      "companyNames": [
+        "Actionstep"
+      ],
+      "boardUrl": "https://apply.workable.com/actionstep/",
+      "error": null,
+      "previewCreatedCount": 0,
+      "acceptedCanadaCount": 0
+    },
+    {
+      "sourceKey": "workable:fliip",
+      "connectorName": "workable",
+      "companyNames": [
+        "FLiiP"
+      ],
+      "boardUrl": "https://apply.workable.com/fliip/",
+      "error": null,
+      "previewCreatedCount": 0,
+      "acceptedCanadaCount": 0
+    },
+    {
+      "sourceKey": "workable:toloka-ai",
+      "connectorName": "workable",
+      "companyNames": [
+        "Mindrift"
+      ],
+      "boardUrl": "https://apply.workable.com/toloka-ai/",
+      "error": null,
+      "previewCreatedCount": 0,
+      "acceptedCanadaCount": 0
+    },
+    {
+      "sourceKey": "workday:corpay.wd3.myworkdayjobs.com|corpay|ext_001",
+      "connectorName": "workday",
+      "companyNames": [
+        "Corpay"
+      ],
+      "boardUrl": "https://corpay.wd3.myworkdayjobs.com/ext_001",
+      "error": "Workday fetch failed for corpay.wd3.myworkdayjobs.com|corpay|ext_001: 422 Unprocessable Entity",
+      "previewCreatedCount": 0,
+      "acceptedCanadaCount": 0
+    }
+  ],
+  "ingestSummaries": [],
+  "resolutionSummary": {
+    "catalog": 0,
+    "cache": 0,
+    "search": 250,
+    "unresolved": 0
+  }
+}

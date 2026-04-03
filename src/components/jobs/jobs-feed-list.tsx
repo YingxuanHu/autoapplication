@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { JobCardActions } from "@/components/jobs/job-card-actions";
 import { JobSummaryCard } from "@/components/jobs/job-summary-card";
@@ -10,13 +10,24 @@ export function JobsFeedList({ initialJobs }: { initialJobs: JobCardData[] }) {
   const [jobs, setJobs] = useState(initialJobs);
   const [dismissingIds, setDismissingIds] = useState<Set<string>>(new Set());
   const [passedCount, setPassedCount] = useState(0);
+  const dismissTimers = useRef(new Map<string, ReturnType<typeof setTimeout>>());
+
+  // Clean up all pending timers on unmount
+  useEffect(() => {
+    const timers = dismissTimers.current;
+    return () => {
+      for (const timer of timers.values()) clearTimeout(timer);
+      timers.clear();
+    };
+  }, []);
 
   const handlePass = useCallback((jobId: string) => {
     // Start fade-out animation
     setDismissingIds((prev) => new Set(prev).add(jobId));
 
     // Remove from list after animation completes
-    setTimeout(() => {
+    const timer = setTimeout(() => {
+      dismissTimers.current.delete(jobId);
       setJobs((current) => current.filter((j) => j.id !== jobId));
       setDismissingIds((prev) => {
         const next = new Set(prev);
@@ -25,6 +36,7 @@ export function JobsFeedList({ initialJobs }: { initialJobs: JobCardData[] }) {
       });
       setPassedCount((c) => c + 1);
     }, 200);
+    dismissTimers.current.set(jobId, timer);
   }, []);
 
   const handleSavedChange = useCallback((jobId: string, saved: boolean) => {

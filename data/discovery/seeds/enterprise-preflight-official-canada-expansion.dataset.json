@@ -1,0 +1,892 @@
+[
+  {
+    "boardUrl": "https://careers.cpr.ca/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+    "sourceKey": "successfactors:careers.cpr.ca",
+    "connectorName": "successfactors",
+    "token": "careers.cpr.ca",
+    "companyNames": [
+      "CPKC (CP Rail)"
+    ],
+    "discoveredFromQueries": [
+      "\"CP Rail\" careers workday",
+      "\"CPKC\" careers workday",
+      "\"Canadian Pacific Kansas City\" careers workday",
+      "site:myworkdayjobs.com \"CP Rail\" careers",
+      "site:myworkdayjobs.com \"CPKC\" careers"
+    ],
+    "searchResultUrls": [
+      "http://kcsouthern-careers.silkroad.com/",
+      "https://careers.cpr.ca/",
+      "https://careers.cpr.ca/viewalljobs/?locale=en_US",
+      "https://kcsouthernenglishcareers.silkroad.com/"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [],
+    "matchedReasons": [
+      "workday_name_segment_careers_page",
+      "workday_name_segment_direct",
+      "workday_search_term_careers_page",
+      "workday_search_term_direct"
+    ],
+    "knownStatus": null,
+    "url": "https://careers.cpr.ca/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc"
+  },
+  {
+    "boardUrl": "https://careers.telusdigital.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+    "sourceKey": "successfactors:careers.telusdigital.com",
+    "connectorName": "successfactors",
+    "token": "careers.telusdigital.com",
+    "companyNames": [
+      "Telus"
+    ],
+    "discoveredFromQueries": [
+      "\"Telus\" careers workday",
+      "site:myworkdayjobs.com \"Telus\" careers",
+      "site:myworkdayjobs.com \"Telus\" jobs"
+    ],
+    "searchResultUrls": [
+      "https://www.telusdigital.com/careers"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [],
+    "matchedReasons": [
+      "workday_company_name_careers_page",
+      "workday_company_name_direct",
+      "workday_company_name_jobs"
+    ],
+    "knownStatus": null,
+    "url": "https://careers.telusdigital.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc"
+  },
+  {
+    "boardUrl": "https://nexstar.wd5.myworkdayjobs.com/nexstar",
+    "sourceKey": "workday:nexstar.wd5.myworkdayjobs.com|nexstar|nexstar",
+    "connectorName": "workday",
+    "token": "nexstar.wd5.myworkdayjobs.com|nexstar|nexstar",
+    "companyNames": [
+      "Export Development Canada",
+      "iA Financial Group"
+    ],
+    "discoveredFromQueries": [
+      "\"EDC\" \"myworkdayjobs.com\"",
+      "\"iA\" \"myworkdayjobs.com\""
+    ],
+    "searchResultUrls": [
+      "https://ibna.org/news/job-postings/",
+      "https://www.showbizjobs.com/search?searchstring=kit+packs"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [],
+    "matchedReasons": [
+      "workday_search_term_host_hint"
+    ],
+    "knownStatus": null,
+    "url": "https://nexstar.wd5.myworkdayjobs.com/nexstar"
+  },
+  {
+    "boardUrl": "https://job-boards.greenhouse.io/stackadapt",
+    "sourceKey": "greenhouse:stackadapt",
+    "connectorName": "greenhouse",
+    "token": "stackadapt",
+    "companyNames": [
+      "StackAdapt"
+    ],
+    "discoveredFromQueries": [],
+    "searchResultUrls": [],
+    "careerPageUrls": [
+      "https://www.stackadapt.com/",
+      "https://www.stackadapt.com/careers"
+    ],
+    "directAtsUrls": [
+      "https://job-boards.greenhouse.io/stackadapt"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link",
+      "career_page_scan"
+    ],
+    "knownStatus": null,
+    "url": "https://job-boards.greenhouse.io/stackadapt"
+  },
+  {
+    "boardUrl": "https://jobs.lever.co/caseware",
+    "sourceKey": "lever:caseware",
+    "connectorName": "lever",
+    "token": "caseware",
+    "companyNames": [
+      "Caseware"
+    ],
+    "discoveredFromQueries": [],
+    "searchResultUrls": [],
+    "careerPageUrls": [
+      "https://www.caseware.com/",
+      "https://www.caseware.com/careers"
+    ],
+    "directAtsUrls": [
+      "https://jobs.lever.co/caseware"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link",
+      "career_page_scan"
+    ],
+    "knownStatus": null,
+    "url": "https://jobs.lever.co/caseware"
+  },
+  {
+    "boardUrl": "https://jobs.hydro.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+    "sourceKey": "successfactors:jobs.hydro.com",
+    "connectorName": "successfactors",
+    "token": "jobs.hydro.com",
+    "companyNames": [
+      "Toronto Hydro"
+    ],
+    "discoveredFromQueries": [
+      "\"Toronto Hydro\" careers workday",
+      "site:myworkdayjobs.com \"Toronto Hydro\" careers"
+    ],
+    "searchResultUrls": [
+      "https://www.hydro.com/en-CA/global/careers/vacancies2/"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [],
+    "matchedReasons": [
+      "workday_company_name_careers_page",
+      "workday_company_name_direct"
+    ],
+    "knownStatus": null,
+    "url": "https://jobs.hydro.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc"
+  },
+  {
+    "boardUrl": "https://ghr.wd1.myworkdayjobs.com/lateral-us",
+    "sourceKey": "workday:ghr.wd1.myworkdayjobs.com|ghr|lateral-us",
+    "connectorName": "workday",
+    "token": "ghr.wd1.myworkdayjobs.com|ghr|lateral-us",
+    "companyNames": [
+      "iA Financial Group"
+    ],
+    "discoveredFromQueries": [
+      "\"Industrial Alliance\" \"myworkdayjobs.com\"",
+      "\"iA Financial Group\" \"myworkdayjobs.com\""
+    ],
+    "searchResultUrls": [
+      "https://us.trabajo.org/jobs-%22Fulcrum+Financial+Management+LLC%22+%22Performance+Gap%22+%22Central+Maryland%22"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [],
+    "matchedReasons": [
+      "workday_company_name_host_hint",
+      "workday_search_term_host_hint"
+    ],
+    "knownStatus": null,
+    "url": "https://ghr.wd1.myworkdayjobs.com/lateral-us"
+  },
+  {
+    "boardUrl": "https://rogersbh.wd1.myworkdayjobs.com/rbhcareer",
+    "sourceKey": "workday:rogersbh.wd1.myworkdayjobs.com|rogersbh|rbhcareer",
+    "connectorName": "workday",
+    "token": "rogersbh.wd1.myworkdayjobs.com|rogersbh|rbhcareer",
+    "companyNames": [
+      "Rogers"
+    ],
+    "discoveredFromQueries": [
+      "\"Rogers\" \"myworkdayjobs.com\"",
+      "\"Rogers\" careers workday"
+    ],
+    "searchResultUrls": [
+      "https://rogersbh.wd1.myworkdayjobs.com/RBHCareer",
+      "https://rogersbh.wd1.myworkdayjobs.com/en-US/RBHCareer/job/Patient-Care-Trainer---PRN_R5773"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [],
+    "matchedReasons": [
+      "workday_company_name_careers_page",
+      "workday_company_name_host_hint"
+    ],
+    "knownStatus": null,
+    "url": "https://rogersbh.wd1.myworkdayjobs.com/rbhcareer"
+  },
+  {
+    "boardUrl": "https://jobs.ashbyhq.com/top-hat",
+    "sourceKey": "ashby:top-hat",
+    "connectorName": "ashby",
+    "token": "top-hat",
+    "companyNames": [
+      "Top Hat"
+    ],
+    "discoveredFromQueries": [],
+    "searchResultUrls": [],
+    "careerPageUrls": [
+      "https://tophat.com/company/work-with-us/"
+    ],
+    "directAtsUrls": [
+      "https://jobs.ashbyhq.com/top-hat"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link",
+      "career_page_scan"
+    ],
+    "knownStatus": null,
+    "url": "https://jobs.ashbyhq.com/top-hat"
+  },
+  {
+    "boardUrl": "https://job-boards.greenhouse.io/contactmonkey",
+    "sourceKey": "greenhouse:contactmonkey",
+    "connectorName": "greenhouse",
+    "token": "contactmonkey",
+    "companyNames": [
+      "ContactMonkey"
+    ],
+    "discoveredFromQueries": [],
+    "searchResultUrls": [],
+    "careerPageUrls": [
+      "https://www.contactmonkey.com/careers"
+    ],
+    "directAtsUrls": [
+      "https://job-boards.greenhouse.io/contactmonkey"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link",
+      "career_page_scan"
+    ],
+    "knownStatus": null,
+    "url": "https://job-boards.greenhouse.io/contactmonkey"
+  },
+  {
+    "boardUrl": "https://job-boards.greenhouse.io/touchbistro",
+    "sourceKey": "greenhouse:touchbistro",
+    "connectorName": "greenhouse",
+    "token": "touchbistro",
+    "companyNames": [
+      "TouchBistro"
+    ],
+    "discoveredFromQueries": [],
+    "searchResultUrls": [],
+    "careerPageUrls": [
+      "https://www.touchbistro.com/careers/"
+    ],
+    "directAtsUrls": [
+      "https://job-boards.greenhouse.io/touchbistro"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link",
+      "career_page_scan"
+    ],
+    "knownStatus": null,
+    "url": "https://job-boards.greenhouse.io/touchbistro"
+  },
+  {
+    "boardUrl": "https://abbott.wd5.myworkdayjobs.com/abbottcareers",
+    "sourceKey": "workday:abbott.wd5.myworkdayjobs.com|abbott|abbottcareers",
+    "connectorName": "workday",
+    "token": "abbott.wd5.myworkdayjobs.com|abbott|abbottcareers",
+    "companyNames": [
+      "CN Rail"
+    ],
+    "discoveredFromQueries": [
+      "\"CN\" \"myworkdayjobs.com\""
+    ],
+    "searchResultUrls": [
+      "https://askai.glarity.app/zh-CN/search/%E5%9C%A8%E7%BE%8E%E5%9B%BD-%E5%A6%82%E4%BD%95%E9%80%9A%E8%BF%87myworkdayjobs-com%E7%94%B3%E8%AF%B7%E8%BD%AF%E4%BB%B6%E5%BC%80%E5%8F%91%E8%81%8C%E4%BD%8D"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [],
+    "matchedReasons": [
+      "workday_search_term_host_hint"
+    ],
+    "knownStatus": null,
+    "url": "https://abbott.wd5.myworkdayjobs.com/abbottcareers"
+  },
+  {
+    "boardUrl": "https://abbott.wd5.myworkdayjobs.com/abbottcareers2",
+    "sourceKey": "workday:abbott.wd5.myworkdayjobs.com|abbott|abbottcareers2",
+    "connectorName": "workday",
+    "token": "abbott.wd5.myworkdayjobs.com|abbott|abbottcareers2",
+    "companyNames": [
+      "CN Rail"
+    ],
+    "discoveredFromQueries": [
+      "\"CN\" \"myworkdayjobs.com\""
+    ],
+    "searchResultUrls": [
+      "https://askai.glarity.app/zh-CN/search/%E5%9C%A8%E7%BE%8E%E5%9B%BD-%E5%A6%82%E4%BD%95%E9%80%9A%E8%BF%87myworkdayjobs-com%E7%94%B3%E8%AF%B7%E8%BD%AF%E4%BB%B6%E5%BC%80%E5%8F%91%E8%81%8C%E4%BD%8D"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [],
+    "matchedReasons": [
+      "workday_search_term_host_hint"
+    ],
+    "knownStatus": null,
+    "url": "https://abbott.wd5.myworkdayjobs.com/abbottcareers2"
+  },
+  {
+    "boardUrl": "https://adobe.wd5.myworkdayjobs.com/adobecareers",
+    "sourceKey": "workday:adobe.wd5.myworkdayjobs.com|adobe|adobecareers",
+    "connectorName": "workday",
+    "token": "adobe.wd5.myworkdayjobs.com|adobe|adobecareers",
+    "companyNames": [
+      "OpenText"
+    ],
+    "discoveredFromQueries": [
+      "\"OpenText\" \"myworkdayjobs.com\""
+    ],
+    "searchResultUrls": [
+      "https://bugspotter.in/it-companies-career-page/"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [],
+    "matchedReasons": [
+      "workday_company_name_host_hint"
+    ],
+    "knownStatus": null,
+    "url": "https://adobe.wd5.myworkdayjobs.com/adobecareers"
+  },
+  {
+    "boardUrl": "https://cncbinternational.wd3.myworkdayjobs.com/cncbiexternalcareersite",
+    "sourceKey": "workday:cncbinternational.wd3.myworkdayjobs.com|cncbinternational|cncbiexternalcareersite",
+    "connectorName": "workday",
+    "token": "cncbinternational.wd3.myworkdayjobs.com|cncbinternational|cncbiexternalcareersite",
+    "companyNames": [
+      "CN Rail"
+    ],
+    "discoveredFromQueries": [
+      "\"CN\" careers workday"
+    ],
+    "searchResultUrls": [
+      "https://cncbinternational.wd3.myworkdayjobs.com/zh-CN/CNCBIExternalCareerSite"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [],
+    "matchedReasons": [
+      "workday_search_term_careers_page"
+    ],
+    "knownStatus": null,
+    "url": "https://cncbinternational.wd3.myworkdayjobs.com/cncbiexternalcareersite"
+  },
+  {
+    "boardUrl": "https://discover.wd5.myworkdayjobs.com/discover",
+    "sourceKey": "workday:discover.wd5.myworkdayjobs.com|discover|discover",
+    "connectorName": "workday",
+    "token": "discover.wd5.myworkdayjobs.com|discover|discover",
+    "companyNames": [
+      "CN Rail"
+    ],
+    "discoveredFromQueries": [
+      "\"CN\" \"myworkdayjobs.com\""
+    ],
+    "searchResultUrls": [
+      "https://askai.glarity.app/zh-CN/search/%E5%9C%A8%E7%BE%8E%E5%9B%BD-%E5%A6%82%E4%BD%95%E9%80%9A%E8%BF%87myworkdayjobs-com%E7%94%B3%E8%AF%B7%E8%BD%AF%E4%BB%B6%E5%BC%80%E5%8F%91%E8%81%8C%E4%BD%8D"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [],
+    "matchedReasons": [
+      "workday_search_term_host_hint"
+    ],
+    "knownStatus": null,
+    "url": "https://discover.wd5.myworkdayjobs.com/discover"
+  },
+  {
+    "boardUrl": "https://fph.wd3.myworkdayjobs.com/edc_careers",
+    "sourceKey": "workday:fph.wd3.myworkdayjobs.com|fph|edc_careers",
+    "connectorName": "workday",
+    "token": "fph.wd3.myworkdayjobs.com|fph|edc_careers",
+    "companyNames": [
+      "Export Development Canada"
+    ],
+    "discoveredFromQueries": [
+      "\"EDC\" careers workday"
+    ],
+    "searchResultUrls": [
+      "https://fph.wd3.myworkdayjobs.com/EDC_Careers",
+      "https://fph.wd3.myworkdayjobs.com/en-US/EDC_Careers/job/Engineer-Electrical---I-C-Design_JR00003797"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [],
+    "matchedReasons": [
+      "workday_search_term_careers_page"
+    ],
+    "knownStatus": null,
+    "url": "https://fph.wd3.myworkdayjobs.com/edc_careers"
+  },
+  {
+    "boardUrl": "https://generalmotors.wd5.myworkdayjobs.com/careers_gm",
+    "sourceKey": "workday:generalmotors.wd5.myworkdayjobs.com|generalmotors|careers_gm",
+    "connectorName": "workday",
+    "token": "generalmotors.wd5.myworkdayjobs.com|generalmotors|careers_gm",
+    "companyNames": [
+      "CN Rail"
+    ],
+    "discoveredFromQueries": [
+      "\"CN\" \"myworkdayjobs.com\""
+    ],
+    "searchResultUrls": [
+      "https://askai.glarity.app/zh-CN/search/%E5%9C%A8%E7%BE%8E%E5%9B%BD-%E5%A6%82%E4%BD%95%E9%80%9A%E8%BF%87myworkdayjobs-com%E7%94%B3%E8%AF%B7%E8%BD%AF%E4%BB%B6%E5%BC%80%E5%8F%91%E8%81%8C%E4%BD%8D"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [],
+    "matchedReasons": [
+      "workday_search_term_host_hint"
+    ],
+    "knownStatus": null,
+    "url": "https://generalmotors.wd5.myworkdayjobs.com/careers_gm"
+  },
+  {
+    "boardUrl": "https://hyvee.wd1.myworkdayjobs.com/hyveecareers",
+    "sourceKey": "workday:hyvee.wd1.myworkdayjobs.com|hyvee|hyveecareers",
+    "connectorName": "workday",
+    "token": "hyvee.wd1.myworkdayjobs.com|hyvee|hyveecareers",
+    "companyNames": [
+      "iA Financial Group"
+    ],
+    "discoveredFromQueries": [
+      "\"iA\" \"myworkdayjobs.com\""
+    ],
+    "searchResultUrls": [
+      "https://hyvee.wd1.myworkdayjobs.com/HyVeeCareers"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [],
+    "matchedReasons": [
+      "workday_search_term_host_hint"
+    ],
+    "knownStatus": null,
+    "url": "https://hyvee.wd1.myworkdayjobs.com/hyveecareers"
+  },
+  {
+    "boardUrl": "https://icon.wd3.myworkdayjobs.com/broadbean_external",
+    "sourceKey": "workday:icon.wd3.myworkdayjobs.com|icon|broadbean_external",
+    "connectorName": "workday",
+    "token": "icon.wd3.myworkdayjobs.com|icon|broadbean_external",
+    "companyNames": [
+      "Telus"
+    ],
+    "discoveredFromQueries": [
+      "\"Telus\" \"myworkdayjobs.com\""
+    ],
+    "searchResultUrls": [
+      "https://icon.wd3.myworkdayjobs.com/en-US/broadbean_external/job/Senior-CRA_JR145071"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [],
+    "matchedReasons": [
+      "workday_company_name_host_hint"
+    ],
+    "knownStatus": null,
+    "url": "https://icon.wd3.myworkdayjobs.com/broadbean_external"
+  },
+  {
+    "boardUrl": "https://illumina.wd1.myworkdayjobs.com/illumina-careers",
+    "sourceKey": "workday:illumina.wd1.myworkdayjobs.com|illumina|illumina-careers",
+    "connectorName": "workday",
+    "token": "illumina.wd1.myworkdayjobs.com|illumina|illumina-careers",
+    "companyNames": [
+      "OpenText"
+    ],
+    "discoveredFromQueries": [
+      "\"OpenText\" \"myworkdayjobs.com\""
+    ],
+    "searchResultUrls": [
+      "https://bugspotter.in/it-companies-career-page/"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [],
+    "matchedReasons": [
+      "workday_company_name_host_hint"
+    ],
+    "knownStatus": null,
+    "url": "https://illumina.wd1.myworkdayjobs.com/illumina-careers"
+  },
+  {
+    "boardUrl": "https://imf.wd5.myworkdayjobs.com/imf",
+    "sourceKey": "workday:imf.wd5.myworkdayjobs.com|imf|imf",
+    "connectorName": "workday",
+    "token": "imf.wd5.myworkdayjobs.com|imf|imf",
+    "companyNames": [
+      "CN Rail"
+    ],
+    "discoveredFromQueries": [
+      "\"CN\" \"myworkdayjobs.com\""
+    ],
+    "searchResultUrls": [
+      "https://career.uibe.edu.cn/front/showContent.jspa?contentId=109136&channelId=1679"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [],
+    "matchedReasons": [
+      "workday_search_term_host_hint"
+    ],
+    "knownStatus": null,
+    "url": "https://imf.wd5.myworkdayjobs.com/imf"
+  },
+  {
+    "boardUrl": "https://isu.wd1.myworkdayjobs.com/iowastatejobs",
+    "sourceKey": "workday:isu.wd1.myworkdayjobs.com|isu|iowastatejobs",
+    "connectorName": "workday",
+    "token": "isu.wd1.myworkdayjobs.com|isu|iowastatejobs",
+    "companyNames": [
+      "iA Financial Group"
+    ],
+    "discoveredFromQueries": [
+      "\"iA\" \"myworkdayjobs.com\""
+    ],
+    "searchResultUrls": [
+      "https://vetmed.iastate.edu/vdl/about/veterinary-diagnostic-laboratory-job-openings/"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [],
+    "matchedReasons": [
+      "workday_search_term_host_hint"
+    ],
+    "knownStatus": null,
+    "url": "https://isu.wd1.myworkdayjobs.com/iowastatejobs"
+  },
+  {
+    "boardUrl": "https://jci.wd5.myworkdayjobs.com/jci_confidential",
+    "sourceKey": "workday:jci.wd5.myworkdayjobs.com|jci|jci_confidential",
+    "connectorName": "workday",
+    "token": "jci.wd5.myworkdayjobs.com|jci|jci_confidential",
+    "companyNames": [
+      "CN Rail"
+    ],
+    "discoveredFromQueries": [
+      "\"CN\" \"myworkdayjobs.com\""
+    ],
+    "searchResultUrls": [
+      "https://askai.glarity.app/zh-CN/search/%E5%A6%82%E4%BD%95%E5%9C%A8MyWorkdayJobs%E7%BD%91%E7%AB%99%E4%B8%8A%E7%94%B3%E8%AF%B7%E8%BD%AF%E4%BB%B6%E5%BC%80%E5%8F%91%E5%B7%A5%E7%A8%8B%E5%B8%88%E8%81%8C%E4%BD%8D"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [],
+    "matchedReasons": [
+      "workday_search_term_host_hint"
+    ],
+    "knownStatus": null,
+    "url": "https://jci.wd5.myworkdayjobs.com/jci_confidential"
+  },
+  {
+    "boardUrl": "https://lcbo.wd3.myworkdayjobs.com/lcbocareersite",
+    "sourceKey": "workday:lcbo.wd3.myworkdayjobs.com|lcbo|lcbocareersite",
+    "connectorName": "workday",
+    "token": "lcbo.wd3.myworkdayjobs.com|lcbo|lcbocareersite",
+    "companyNames": [
+      "Telus"
+    ],
+    "discoveredFromQueries": [
+      "\"Telus\" \"myworkdayjobs.com\""
+    ],
+    "searchResultUrls": [
+      "https://www.leapforjobs.ca/?post_type=awsm_job_openings&p=15842"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [],
+    "matchedReasons": [
+      "workday_company_name_host_hint"
+    ],
+    "knownStatus": null,
+    "url": "https://lcbo.wd3.myworkdayjobs.com/lcbocareersite"
+  },
+  {
+    "boardUrl": "https://lendlease.wd3.myworkdayjobs.com/lendleasecareers",
+    "sourceKey": "workday:lendlease.wd3.myworkdayjobs.com|lendlease|lendleasecareers",
+    "connectorName": "workday",
+    "token": "lendlease.wd3.myworkdayjobs.com|lendlease|lendleasecareers",
+    "companyNames": [
+      "CN Rail"
+    ],
+    "discoveredFromQueries": [
+      "\"CN\" \"myworkdayjobs.com\""
+    ],
+    "searchResultUrls": [
+      "https://www.lendlease.com/cn/careers/careers-faqs/"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [],
+    "matchedReasons": [
+      "workday_search_term_host_hint"
+    ],
+    "knownStatus": null,
+    "url": "https://lendlease.wd3.myworkdayjobs.com/lendleasecareers"
+  },
+  {
+    "boardUrl": "https://marshallmedical.wd1.myworkdayjobs.com/mmc",
+    "sourceKey": "workday:marshallmedical.wd1.myworkdayjobs.com|marshallmedical|mmc",
+    "connectorName": "workday",
+    "token": "marshallmedical.wd1.myworkdayjobs.com|marshallmedical|mmc",
+    "companyNames": [
+      "Export Development Canada"
+    ],
+    "discoveredFromQueries": [
+      "\"EDC\" \"myworkdayjobs.com\""
+    ],
+    "searchResultUrls": [
+      "https://business.eldoradocounty.org/jobs/"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [],
+    "matchedReasons": [
+      "workday_search_term_host_hint"
+    ],
+    "knownStatus": null,
+    "url": "https://marshallmedical.wd1.myworkdayjobs.com/mmc"
+  },
+  {
+    "boardUrl": "https://mpc.wd1.myworkdayjobs.com/mpccareers",
+    "sourceKey": "workday:mpc.wd1.myworkdayjobs.com|mpc|mpccareers",
+    "connectorName": "workday",
+    "token": "mpc.wd1.myworkdayjobs.com|mpc|mpccareers",
+    "companyNames": [
+      "CN Rail"
+    ],
+    "discoveredFromQueries": [
+      "\"CN\" \"myworkdayjobs.com\""
+    ],
+    "searchResultUrls": [
+      "https://askai.glarity.app/zh-CN/search/%E5%A6%82%E4%BD%95%E5%9C%A8MyWorkdayJobs%E7%BD%91%E7%AB%99%E4%B8%8A%E7%94%B3%E8%AF%B7%E8%BD%AF%E4%BB%B6%E5%BC%80%E5%8F%91%E5%B7%A5%E7%A8%8B%E5%B8%88%E8%81%8C%E4%BD%8D"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [],
+    "matchedReasons": [
+      "workday_search_term_host_hint"
+    ],
+    "knownStatus": null,
+    "url": "https://mpc.wd1.myworkdayjobs.com/mpccareers"
+  },
+  {
+    "boardUrl": "https://poet.wd1.myworkdayjobs.com/poet",
+    "sourceKey": "workday:poet.wd1.myworkdayjobs.com|poet|poet",
+    "connectorName": "workday",
+    "token": "poet.wd1.myworkdayjobs.com|poet|poet",
+    "companyNames": [
+      "Export Development Canada"
+    ],
+    "discoveredFromQueries": [
+      "\"EDC\" \"myworkdayjobs.com\""
+    ],
+    "searchResultUrls": [
+      "https://www.obriencounty.com/jobs/poet-temporary-facilities-laborer-2"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [],
+    "matchedReasons": [
+      "workday_search_term_host_hint"
+    ],
+    "knownStatus": null,
+    "url": "https://poet.wd1.myworkdayjobs.com/poet"
+  },
+  {
+    "boardUrl": "https://prysmiangroup.wd3.myworkdayjobs.com/careers",
+    "sourceKey": "workday:prysmiangroup.wd3.myworkdayjobs.com|prysmiangroup|careers",
+    "connectorName": "workday",
+    "token": "prysmiangroup.wd3.myworkdayjobs.com|prysmiangroup|careers",
+    "companyNames": [
+      "CN Rail"
+    ],
+    "discoveredFromQueries": [
+      "\"CN\" \"myworkdayjobs.com\""
+    ],
+    "searchResultUrls": [
+      "https://cn.prysmian.com/careers/what-we-offer/graduate-program"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [],
+    "matchedReasons": [
+      "workday_search_term_host_hint"
+    ],
+    "knownStatus": null,
+    "url": "https://prysmiangroup.wd3.myworkdayjobs.com/careers"
+  },
+  {
+    "boardUrl": "https://redhat.wd5.myworkdayjobs.com/jobs",
+    "sourceKey": "workday:redhat.wd5.myworkdayjobs.com|redhat|jobs",
+    "connectorName": "workday",
+    "token": "redhat.wd5.myworkdayjobs.com|redhat|jobs",
+    "companyNames": [
+      "CN Rail"
+    ],
+    "discoveredFromQueries": [
+      "\"CN\" \"myworkdayjobs.com\""
+    ],
+    "searchResultUrls": [
+      "https://askai.glarity.app/zh-CN/search/%E5%A6%82%E4%BD%95%E5%9C%A8MyWorkdayJobs%E7%BD%91%E7%AB%99%E4%B8%8A%E7%94%B3%E8%AF%B7%E8%BD%AF%E4%BB%B6%E5%BC%80%E5%8F%91%E5%B7%A5%E7%A8%8B%E5%B8%88%E8%81%8C%E4%BD%8D"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [],
+    "matchedReasons": [
+      "workday_search_term_host_hint"
+    ],
+    "knownStatus": null,
+    "url": "https://redhat.wd5.myworkdayjobs.com/jobs"
+  },
+  {
+    "boardUrl": "https://sbdinc.wd1.myworkdayjobs.com/stanley_black_decker_career_site",
+    "sourceKey": "workday:sbdinc.wd1.myworkdayjobs.com|sbdinc|stanley_black_decker_career_site",
+    "connectorName": "workday",
+    "token": "sbdinc.wd1.myworkdayjobs.com|sbdinc|stanley_black_decker_career_site",
+    "companyNames": [
+      "CN Rail"
+    ],
+    "discoveredFromQueries": [
+      "\"CN\" \"myworkdayjobs.com\""
+    ],
+    "searchResultUrls": [
+      "https://askai.glarity.app/zh-CN/search/%E5%9C%A8%E7%BE%8E%E5%9B%BD-%E5%A6%82%E4%BD%95%E9%80%9A%E8%BF%87myworkdayjobs-com%E7%94%B3%E8%AF%B7%E8%BD%AF%E4%BB%B6%E5%BC%80%E5%8F%91%E8%81%8C%E4%BD%8D"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [],
+    "matchedReasons": [
+      "workday_search_term_host_hint"
+    ],
+    "knownStatus": null,
+    "url": "https://sbdinc.wd1.myworkdayjobs.com/stanley_black_decker_career_site"
+  },
+  {
+    "boardUrl": "https://tencent.wd1.myworkdayjobs.com/tencent_careers",
+    "sourceKey": "workday:tencent.wd1.myworkdayjobs.com|tencent|tencent_careers",
+    "connectorName": "workday",
+    "token": "tencent.wd1.myworkdayjobs.com|tencent|tencent_careers",
+    "companyNames": [
+      "CN Rail"
+    ],
+    "discoveredFromQueries": [
+      "\"CN\" \"myworkdayjobs.com\""
+    ],
+    "searchResultUrls": [
+      "https://tencent.wd1.myworkdayjobs.com/zh-CN/Tencent_Careers"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [],
+    "matchedReasons": [
+      "workday_search_term_host_hint"
+    ],
+    "knownStatus": null,
+    "url": "https://tencent.wd1.myworkdayjobs.com/tencent_careers"
+  },
+  {
+    "boardUrl": "https://trimedx.wd1.myworkdayjobs.com/tmx",
+    "sourceKey": "workday:trimedx.wd1.myworkdayjobs.com|trimedx|tmx",
+    "connectorName": "workday",
+    "token": "trimedx.wd1.myworkdayjobs.com|trimedx|tmx",
+    "companyNames": [
+      "TMX Group"
+    ],
+    "discoveredFromQueries": [
+      "\"TMX\" \"myworkdayjobs.com\""
+    ],
+    "searchResultUrls": [
+      "https://www.trimedx.com/careers"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [],
+    "matchedReasons": [
+      "workday_search_term_host_hint"
+    ],
+    "knownStatus": null,
+    "url": "https://trimedx.wd1.myworkdayjobs.com/tmx"
+  },
+  {
+    "boardUrl": "https://usbank.wd1.myworkdayjobs.com/us_bank_careers",
+    "sourceKey": "workday:usbank.wd1.myworkdayjobs.com|usbank|us_bank_careers",
+    "connectorName": "workday",
+    "token": "usbank.wd1.myworkdayjobs.com|usbank|us_bank_careers",
+    "companyNames": [
+      "CN Rail"
+    ],
+    "discoveredFromQueries": [
+      "\"CN\" \"myworkdayjobs.com\""
+    ],
+    "searchResultUrls": [
+      "https://askai.glarity.app/zh-CN/search/%E5%A6%82%E4%BD%95%E5%9C%A8MyWorkdayJobs%E7%BD%91%E7%AB%99%E4%B8%8A%E7%94%B3%E8%AF%B7%E8%BD%AF%E4%BB%B6%E5%BC%80%E5%8F%91%E5%B7%A5%E7%A8%8B%E5%B8%88%E8%81%8C%E4%BD%8D"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [],
+    "matchedReasons": [
+      "workday_search_term_host_hint"
+    ],
+    "knownStatus": null,
+    "url": "https://usbank.wd1.myworkdayjobs.com/us_bank_careers"
+  },
+  {
+    "boardUrl": "https://volarisgroup.wd3.myworkdayjobs.com/volaris",
+    "sourceKey": "workday:volarisgroup.wd3.myworkdayjobs.com|volarisgroup|volaris",
+    "connectorName": "workday",
+    "token": "volarisgroup.wd3.myworkdayjobs.com|volarisgroup|volaris",
+    "companyNames": [
+      "CN Rail"
+    ],
+    "discoveredFromQueries": [
+      "\"CN\" \"myworkdayjobs.com\""
+    ],
+    "searchResultUrls": [
+      "https://askai.glarity.app/zh-CN/search/%E5%9C%A8%E7%BE%8E%E5%9B%BD-%E5%A6%82%E4%BD%95%E9%80%9A%E8%BF%87myworkdayjobs-com%E7%94%B3%E8%AF%B7%E8%BD%AF%E4%BB%B6%E5%BC%80%E5%8F%91%E8%81%8C%E4%BD%8D"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [],
+    "matchedReasons": [
+      "workday_search_term_host_hint"
+    ],
+    "knownStatus": null,
+    "url": "https://volarisgroup.wd3.myworkdayjobs.com/volaris"
+  },
+  {
+    "boardUrl": "https://walmart.wd5.myworkdayjobs.com/walmartexternal",
+    "sourceKey": "workday:walmart.wd5.myworkdayjobs.com|walmart|walmartexternal",
+    "connectorName": "workday",
+    "token": "walmart.wd5.myworkdayjobs.com|walmart|walmartexternal",
+    "companyNames": [
+      "CN Rail"
+    ],
+    "discoveredFromQueries": [
+      "\"CN\" \"myworkdayjobs.com\""
+    ],
+    "searchResultUrls": [
+      "https://askai.glarity.app/zh-CN/search/%E5%A6%82%E4%BD%95%E5%9C%A8MyWorkdayJobs%E7%BD%91%E7%AB%99%E4%B8%8A%E7%94%B3%E8%AF%B7%E8%BD%AF%E4%BB%B6%E5%BC%80%E5%8F%91%E5%B7%A5%E7%A8%8B%E5%B8%88%E8%81%8C%E4%BD%8D"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [],
+    "matchedReasons": [
+      "workday_search_term_host_hint"
+    ],
+    "knownStatus": null,
+    "url": "https://walmart.wd5.myworkdayjobs.com/walmartexternal"
+  },
+  {
+    "boardUrl": "https://westernunion.wd5.myworkdayjobs.com/westernunionjobs",
+    "sourceKey": "workday:westernunion.wd5.myworkdayjobs.com|westernunion|westernunionjobs",
+    "connectorName": "workday",
+    "token": "westernunion.wd5.myworkdayjobs.com|westernunion|westernunionjobs",
+    "companyNames": [
+      "CN Rail"
+    ],
+    "discoveredFromQueries": [
+      "\"CN\" \"myworkdayjobs.com\""
+    ],
+    "searchResultUrls": [
+      "https://askai.glarity.app/zh-CN/search/%E5%A6%82%E4%BD%95%E5%9C%A8MyWorkdayJobs%E7%BD%91%E7%AB%99%E4%B8%8A%E7%94%B3%E8%AF%B7%E8%BD%AF%E4%BB%B6%E5%BC%80%E5%8F%91%E5%B7%A5%E7%A8%8B%E5%B8%88%E8%81%8C%E4%BD%8D"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [],
+    "matchedReasons": [
+      "workday_search_term_host_hint"
+    ],
+    "knownStatus": null,
+    "url": "https://westernunion.wd5.myworkdayjobs.com/westernunionjobs"
+  },
+  {
+    "boardUrl": "https://zendesk.wd1.myworkdayjobs.com/zendesk",
+    "sourceKey": "workday:zendesk.wd1.myworkdayjobs.com|zendesk|zendesk",
+    "connectorName": "workday",
+    "token": "zendesk.wd1.myworkdayjobs.com|zendesk|zendesk",
+    "companyNames": [
+      "Telus"
+    ],
+    "discoveredFromQueries": [
+      "site:myworkdayjobs.com \"Telus\" jobs"
+    ],
+    "searchResultUrls": [
+      "https://telus.getro.com/jobs"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [],
+    "matchedReasons": [
+      "workday_company_name_jobs"
+    ],
+    "knownStatus": null,
+    "url": "https://zendesk.wd1.myworkdayjobs.com/zendesk"
+  }
+]

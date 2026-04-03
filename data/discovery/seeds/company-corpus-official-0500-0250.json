@@ -1,0 +1,797 @@
+[
+  {
+    "boardUrl": "https://jobs.lever.co/achievers",
+    "sourceKey": "lever:achievers",
+    "connectorName": "lever",
+    "token": "achievers",
+    "companyNames": [
+      "Achievers"
+    ],
+    "careerPageUrls": [
+      "https://www.achievers.com/company/careers/"
+    ],
+    "directAtsUrls": [
+      "https://jobs.lever.co/achievers"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link",
+      "career_page_scan"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "input": "https://jobs.lever.co/achievers",
+      "connectorName": "lever",
+      "token": "achievers",
+      "sourceKey": "lever:achievers",
+      "sourceName": "Lever:achievers",
+      "boardUrl": "https://jobs.lever.co/achievers",
+      "source": "token",
+      "pageTitle": "Achievers",
+      "fetchedCount": 23,
+      "acceptedCount": 11,
+      "acceptedCanadaCount": 11,
+      "acceptedCanadaRemoteCount": 0,
+      "previewCreatedCount": 10,
+      "previewCreatedCanadaCount": 10,
+      "previewCreatedCanadaRemoteCount": 0,
+      "previewUpdatedCount": 1,
+      "dedupedCount": 1,
+      "rejectedCount": 12,
+      "existingRawCount": 0,
+      "existingActiveMappingCount": 0,
+      "existingLiveCanonicalCount": 0,
+      "sampleTitles": [
+        "Accounts Receivable Reporting Analyst",
+        "Communications & Positioning Manager",
+        "Data Scientist",
+        "Director of Product, Platform Intelligence ⭐",
+        "Enterprise Account Executive ⭐"
+      ],
+      "sampleLocations": [
+        "Toronto",
+        "Toronto",
+        "Toronto",
+        "Toronto",
+        "France"
+      ]
+    },
+    "recommendedPromotion": true,
+    "promotionReason": "canada_heavy_created_volume"
+  },
+  {
+    "boardUrl": "https://job-boards.greenhouse.io/bitgo",
+    "sourceKey": "greenhouse:bitgo",
+    "connectorName": "greenhouse",
+    "token": "bitgo",
+    "companyNames": [
+      "BitGo"
+    ],
+    "careerPageUrls": [
+      "https://www.bitgo.com/company/careers/"
+    ],
+    "directAtsUrls": [
+      "https://job-boards.greenhouse.io/bitgo"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link",
+      "career_page_scan"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "input": "https://job-boards.greenhouse.io/bitgo",
+      "connectorName": "greenhouse",
+      "token": "bitgo",
+      "sourceKey": "greenhouse:bitgo",
+      "sourceName": "Greenhouse:bitgo",
+      "boardUrl": "https://job-boards.greenhouse.io/bitgo",
+      "source": "token",
+      "pageTitle": "Jobs at BitGo",
+      "fetchedCount": 67,
+      "acceptedCount": 28,
+      "acceptedCanadaCount": 8,
+      "acceptedCanadaRemoteCount": 0,
+      "previewCreatedCount": 28,
+      "previewCreatedCanadaCount": 8,
+      "previewCreatedCanadaRemoteCount": 0,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 39,
+      "existingRawCount": 0,
+      "existingActiveMappingCount": 0,
+      "existingLiveCanonicalCount": 0,
+      "sampleTitles": [
+        "Application Security Engineer",
+        "Associate - Listings & Ecosystem Development",
+        "Backend Engineer E2 - Trade",
+        "Backend Engineer E3 - Financing",
+        "Business Development Representative - Ecosystem"
+      ],
+      "sampleLocations": [
+        "India",
+        "New York, United States",
+        "India",
+        "India",
+        "New York, United States"
+      ]
+    },
+    "recommendedPromotion": true,
+    "promotionReason": "canada_heavy_created_volume"
+  },
+  {
+    "boardUrl": "https://jobs.ashbyhq.com/hiive",
+    "sourceKey": "ashby:hiive",
+    "connectorName": "ashby",
+    "token": "hiive",
+    "companyNames": [
+      "Hiive"
+    ],
+    "careerPageUrls": [
+      "https://www.hiive.com/careers"
+    ],
+    "directAtsUrls": [
+      "https://jobs.ashbyhq.com/hiive"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link",
+      "career_page_scan"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "input": "https://jobs.ashbyhq.com/hiive",
+      "connectorName": "ashby",
+      "token": "hiive",
+      "sourceKey": "ashby:hiive",
+      "sourceName": "Ashby:hiive",
+      "boardUrl": "https://jobs.ashbyhq.com/hiive",
+      "source": "token",
+      "pageTitle": "Hiive Jobs",
+      "fetchedCount": 21,
+      "acceptedCount": 11,
+      "acceptedCanadaCount": 9,
+      "acceptedCanadaRemoteCount": 5,
+      "previewCreatedCount": 10,
+      "previewCreatedCanadaCount": 8,
+      "previewCreatedCanadaRemoteCount": 4,
+      "previewUpdatedCount": 1,
+      "dedupedCount": 1,
+      "rejectedCount": 10,
+      "existingRawCount": 0,
+      "existingActiveMappingCount": 0,
+      "existingLiveCanonicalCount": 0,
+      "sampleTitles": [
+        "AI Builder",
+        "Analyst/Senior Analyst, Execution Services",
+        "Analyst/Senior Analyst, Transaction Services",
+        "Analyst/Senior Analyst, Treasury and Settlement Operations",
+        "Associate General Counsel"
+      ],
+      "sampleLocations": [
+        "Vancouver, BC (HQ)",
+        "Vancouver, BC (HQ)",
+        "Vancouver, BC (HQ)",
+        "Vancouver, BC (HQ)",
+        "Vancouver, BC (HQ), Remote (Canada), Remote (US)"
+      ]
+    },
+    "recommendedPromotion": true,
+    "promotionReason": "canada_heavy_created_volume"
+  },
+  {
+    "boardUrl": "https://jobs.lever.co/arcteryx.com",
+    "sourceKey": "lever:arcteryx.com",
+    "connectorName": "lever",
+    "token": "arcteryx.com",
+    "companyNames": [
+      "Arc'Teryx"
+    ],
+    "careerPageUrls": [
+      "https://arcteryx.com/ca/en/careers/corporate-opportunities",
+      "https://arcteryx.com/us/en/careers/manufacturing-opportunities",
+      "https://arcteryx.com/us/en/careers/retail-opportunities"
+    ],
+    "directAtsUrls": [
+      "https://jobs.lever.co/arcteryx.com"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link",
+      "career_page_scan"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "input": "https://jobs.lever.co/arcteryx.com",
+      "connectorName": "lever",
+      "token": "arcteryx.com",
+      "sourceKey": "lever:arcteryx.com",
+      "sourceName": "Lever:arcteryx.com",
+      "boardUrl": "https://jobs.lever.co/arcteryx.com",
+      "source": "token",
+      "pageTitle": "ARC'TERYX",
+      "fetchedCount": 100,
+      "acceptedCount": 6,
+      "acceptedCanadaCount": 5,
+      "acceptedCanadaRemoteCount": 0,
+      "previewCreatedCount": 6,
+      "previewCreatedCanadaCount": 5,
+      "previewCreatedCanadaRemoteCount": 0,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 94,
+      "existingRawCount": 0,
+      "existingActiveMappingCount": 0,
+      "existingLiveCanonicalCount": 0,
+      "sampleTitles": [
+        "Abiturientenprogramm Handelsfachwirt (m/w/d)",
+        "Allocations Analyst",
+        "Application Engineer, Corporate Services Technology",
+        "Area Sales Manager FTW Nordic & UK (m/w/d)",
+        "Assistant Store Manager - Parndorf (m/w/d)"
+      ],
+      "sampleLocations": [
+        "Munich",
+        "North Vancouver, BC (Corporate)",
+        "North Vancouver, BC (Corporate)",
+        "Oslo, Norway",
+        "Parndorf, Austria"
+      ]
+    },
+    "recommendedPromotion": true,
+    "promotionReason": "canada_heavy_created_volume"
+  },
+  {
+    "boardUrl": "https://genesys.wd1.myworkdayjobs.com/genesys",
+    "sourceKey": "workday:genesys.wd1.myworkdayjobs.com|genesys|genesys",
+    "connectorName": "workday",
+    "token": "genesys.wd1.myworkdayjobs.com|genesys|genesys",
+    "companyNames": [
+      "Genesys"
+    ],
+    "careerPageUrls": [
+      "https://www.genesys.com/company/careers"
+    ],
+    "directAtsUrls": [
+      "https://genesys.wd1.myworkdayjobs.com/genesys"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link",
+      "career_page_scan"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "input": "https://genesys.wd1.myworkdayjobs.com/genesys",
+      "connectorName": "workday",
+      "token": "genesys.wd1.myworkdayjobs.com|genesys|genesys",
+      "sourceKey": "workday:genesys.wd1.myworkdayjobs.com|genesys|genesys",
+      "sourceName": "Workday:genesys.wd1.myworkdayjobs.com|genesys|genesys",
+      "boardUrl": "https://genesys.wd1.myworkdayjobs.com/genesys",
+      "source": "token",
+      "pageTitle": null,
+      "fetchedCount": 100,
+      "acceptedCount": 10,
+      "acceptedCanadaCount": 3,
+      "acceptedCanadaRemoteCount": 0,
+      "previewCreatedCount": 10,
+      "previewCreatedCanadaCount": 3,
+      "previewCreatedCanadaRemoteCount": 0,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 90,
+      "existingRawCount": 0,
+      "existingActiveMappingCount": 0,
+      "existingLiveCanonicalCount": 0,
+      "sampleTitles": [
+        "Sr. PS Consultant",
+        "Senior Software Developer, Analytics",
+        "Telecom Operations Specialist",
+        "Product Marketing Manager",
+        "Specialist, Receivables Management"
+      ],
+      "sampleLocations": [
+        "Virtual Office (Telangana), India",
+        "Virtual Office (Ontario), Canada",
+        "Virtual Office (Ontario), Canada",
+        "Toronto, Canada",
+        "Virtual Office (Illinois), United States of America"
+      ]
+    },
+    "recommendedPromotion": true,
+    "promotionReason": "canada_heavy_created_volume"
+  },
+  {
+    "boardUrl": "https://jobs.smartrecruiters.com/flintcorp1",
+    "sourceKey": "smartrecruiters:flintcorp1",
+    "connectorName": "smartrecruiters",
+    "token": "flintcorp1",
+    "companyNames": [
+      "FLINT"
+    ],
+    "careerPageUrls": [
+      "https://flintcorp.com/careers/apply/"
+    ],
+    "directAtsUrls": [
+      "https://jobs.smartrecruiters.com/flintcorp1"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link",
+      "career_page_scan"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "input": "https://jobs.smartrecruiters.com/flintcorp1",
+      "connectorName": "smartrecruiters",
+      "token": "flintcorp1",
+      "sourceKey": "smartrecruiters:flintcorp1",
+      "sourceName": "SmartRecruiters:flintcorp1",
+      "boardUrl": "https://jobs.smartrecruiters.com/flintcorp1",
+      "source": "token",
+      "pageTitle": "Careers at FLINT Corp.",
+      "fetchedCount": 83,
+      "acceptedCount": 4,
+      "acceptedCanadaCount": 4,
+      "acceptedCanadaRemoteCount": 2,
+      "previewCreatedCount": 3,
+      "previewCreatedCanadaCount": 3,
+      "previewCreatedCanadaRemoteCount": 2,
+      "previewUpdatedCount": 1,
+      "dedupedCount": 1,
+      "rejectedCount": 79,
+      "existingRawCount": 0,
+      "existingActiveMappingCount": 0,
+      "existingLiveCanonicalCount": 0,
+      "sampleTitles": [
+        "Journeyperson and Apprentice Electrician",
+        "HR Business Partner",
+        "FT Coordinator",
+        "Fuel & Lube Technician",
+        "Project Controls"
+      ],
+      "sampleLocations": [
+        "Red Deer, AB, Canada",
+        "Calgary, AB, Canada",
+        "Sherwood Park, AB, Canada",
+        "Fort McMurray, AB, Canada",
+        "Sherwood Park, AB, Canada"
+      ]
+    },
+    "recommendedPromotion": true,
+    "promotionReason": "canada_heavy_created_volume"
+  },
+  {
+    "boardUrl": "https://finning.wd3.myworkdayjobs.com/external",
+    "sourceKey": "workday:finning.wd3.myworkdayjobs.com|finning|external",
+    "connectorName": "workday",
+    "token": "finning.wd3.myworkdayjobs.com|finning|external",
+    "companyNames": [
+      "Finning"
+    ],
+    "careerPageUrls": [
+      "https://finning.wd3.myworkdayjobs.com/External"
+    ],
+    "directAtsUrls": [
+      "https://finning.wd3.myworkdayjobs.com/external"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link",
+      "career_page_scan"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "input": "https://finning.wd3.myworkdayjobs.com/external",
+      "connectorName": "workday",
+      "token": "finning.wd3.myworkdayjobs.com|finning|external",
+      "sourceKey": "workday:finning.wd3.myworkdayjobs.com|finning|external",
+      "sourceName": "Workday:finning.wd3.myworkdayjobs.com|finning|external",
+      "boardUrl": "https://finning.wd3.myworkdayjobs.com/external",
+      "source": "token",
+      "pageTitle": null,
+      "fetchedCount": 100,
+      "acceptedCount": 3,
+      "acceptedCanadaCount": 3,
+      "acceptedCanadaRemoteCount": 0,
+      "previewCreatedCount": 2,
+      "previewCreatedCanadaCount": 2,
+      "previewCreatedCanadaRemoteCount": 0,
+      "previewUpdatedCount": 1,
+      "dedupedCount": 1,
+      "rejectedCount": 97,
+      "existingRawCount": 0,
+      "existingActiveMappingCount": 0,
+      "existingLiveCanonicalCount": 0,
+      "sampleTitles": [
+        "Heavy Duty Mechanic - Integrated Mining Team",
+        "Calling All Kamloops Mechanics!",
+        "Journeyperson Parts - IMT Mining",
+        "Parts Apprentice - 2nd Year",
+        "Warehouse Person - 7x7 Day Shift (Temporary Summer Student)"
+      ],
+      "sampleLocations": [
+        "Prince George - IMT, Canada",
+        "Kamloops, BC, CA, Canada",
+        "Canada",
+        "Williams Lake, BC, CA, Canada",
+        "Edmonton, AB, CA, Canada"
+      ]
+    },
+    "recommendedPromotion": true,
+    "promotionReason": "canada_dense_small_board"
+  },
+  {
+    "boardUrl": "https://galderma.wd3.myworkdayjobs.com/external",
+    "sourceKey": "workday:galderma.wd3.myworkdayjobs.com|galderma|external",
+    "connectorName": "workday",
+    "token": "galderma.wd3.myworkdayjobs.com|galderma|external",
+    "companyNames": [
+      "Galderma"
+    ],
+    "careerPageUrls": [
+      "https://www.galderma.com/careers"
+    ],
+    "directAtsUrls": [
+      "https://galderma.wd3.myworkdayjobs.com/external"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link",
+      "career_page_scan"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "input": "https://galderma.wd3.myworkdayjobs.com/external",
+      "connectorName": "workday",
+      "token": "galderma.wd3.myworkdayjobs.com|galderma|external",
+      "sourceKey": "workday:galderma.wd3.myworkdayjobs.com|galderma|external",
+      "sourceName": "Workday:galderma.wd3.myworkdayjobs.com|galderma|external",
+      "boardUrl": "https://galderma.wd3.myworkdayjobs.com/external",
+      "source": "token",
+      "pageTitle": null,
+      "fetchedCount": 100,
+      "acceptedCount": 2,
+      "acceptedCanadaCount": 2,
+      "acceptedCanadaRemoteCount": 0,
+      "previewCreatedCount": 2,
+      "previewCreatedCanadaCount": 2,
+      "previewCreatedCanadaRemoteCount": 0,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 98,
+      "existingRawCount": 0,
+      "existingActiveMappingCount": 0,
+      "existingLiveCanonicalCount": 0,
+      "sampleTitles": [
+        "National Sales Manager - HCP Channel",
+        "Alternant en Assurance Qualité - Fabrication",
+        "Head of Finance - Global Product Strategy and Innovation",
+        "Gerente de Estratégia de Acesso - Imuno",
+        "Dermatological Sales Professional - Grand Rapids, MI"
+      ],
+      "sampleLocations": [
+        "Metro Manila, Philippines",
+        "Alby, France",
+        "London, United Kingdom",
+        "São Paulo, Brazil",
+        "Boston, United States of America"
+      ]
+    },
+    "recommendedPromotion": true,
+    "promotionReason": "canada_dense_small_board"
+  },
+  {
+    "boardUrl": "https://cnx.wd1.myworkdayjobs.com/external_global",
+    "sourceKey": "workday:cnx.wd1.myworkdayjobs.com|cnx|external_global",
+    "connectorName": "workday",
+    "token": "cnx.wd1.myworkdayjobs.com|cnx|external_global",
+    "companyNames": [
+      "Concentrix"
+    ],
+    "careerPageUrls": [
+      "https://jobs.concentrix.com/"
+    ],
+    "directAtsUrls": [
+      "https://cnx.wd1.myworkdayjobs.com/external_global"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link",
+      "career_page_scan"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "input": "https://cnx.wd1.myworkdayjobs.com/external_global",
+      "connectorName": "workday",
+      "token": "cnx.wd1.myworkdayjobs.com|cnx|external_global",
+      "sourceKey": "workday:cnx.wd1.myworkdayjobs.com|cnx|external_global",
+      "sourceName": "Workday:cnx.wd1.myworkdayjobs.com|cnx|external_global",
+      "boardUrl": "https://cnx.wd1.myworkdayjobs.com/external_global",
+      "source": "token",
+      "pageTitle": null,
+      "fetchedCount": 100,
+      "acceptedCount": 5,
+      "acceptedCanadaCount": 1,
+      "acceptedCanadaRemoteCount": 0,
+      "previewCreatedCount": 5,
+      "previewCreatedCanadaCount": 1,
+      "previewCreatedCanadaRemoteCount": 0,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 95,
+      "existingRawCount": 0,
+      "existingActiveMappingCount": 0,
+      "existingLiveCanonicalCount": 0,
+      "sampleTitles": [
+        "JANITOR",
+        "Associate, WFM Real Time Management Onsite",
+        "Team Leader, Operations",
+        "Personal de Limpieza",
+        "Personal de Limpieza"
+      ],
+      "sampleLocations": [
+        "PER Lima - Av Primavera 1013, Peru",
+        "USA, Lake Mary, FL, United States of America",
+        "PER Lima - Av Primavera 1013, Peru",
+        "CRI San Jose - US Embassy, Costa Rica",
+        "CRI San Jose - US Embassy, Costa Rica"
+      ]
+    },
+    "recommendedPromotion": false,
+    "promotionReason": "insufficient_canada_weighted_yield"
+  },
+  {
+    "boardUrl": "https://job-boards.greenhouse.io/elationhealth",
+    "sourceKey": "greenhouse:elationhealth",
+    "connectorName": "greenhouse",
+    "token": "elationhealth",
+    "companyNames": [
+      "Elation Health"
+    ],
+    "careerPageUrls": [
+      "https://www.elationhealth.com/about-us/careers/"
+    ],
+    "directAtsUrls": [
+      "https://job-boards.greenhouse.io/elationhealth"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link",
+      "career_page_scan"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "input": "https://job-boards.greenhouse.io/elationhealth",
+      "connectorName": "greenhouse",
+      "token": "elationhealth",
+      "sourceKey": "greenhouse:elationhealth",
+      "sourceName": "Greenhouse:elationhealth",
+      "boardUrl": "https://job-boards.greenhouse.io/elationhealth",
+      "source": "token",
+      "pageTitle": "Careers at Elation Health",
+      "fetchedCount": 8,
+      "acceptedCount": 3,
+      "acceptedCanadaCount": 2,
+      "acceptedCanadaRemoteCount": 2,
+      "previewCreatedCount": 2,
+      "previewCreatedCanadaCount": 1,
+      "previewCreatedCanadaRemoteCount": 1,
+      "previewUpdatedCount": 1,
+      "dedupedCount": 1,
+      "rejectedCount": 5,
+      "existingRawCount": 0,
+      "existingActiveMappingCount": 0,
+      "existingLiveCanonicalCount": 0,
+      "sampleTitles": [
+        "Account Executive, Small Group",
+        "Account Executive, Small Group Sales (Canada)",
+        "Accounts Receivable Analyst",
+        "Enterprise Solutions & GTM Partner",
+        "Growth Analyst"
+      ],
+      "sampleLocations": [
+        "US-Remote",
+        "Canada - Remote",
+        "Canada - REMOTE",
+        "US - Remote",
+        "US - Remote"
+      ]
+    },
+    "recommendedPromotion": true,
+    "promotionReason": "canada_dense_small_board"
+  },
+  {
+    "boardUrl": "https://bci.wd10.myworkdayjobs.com/bci_careers",
+    "sourceKey": "workday:bci.wd10.myworkdayjobs.com|bci|bci_careers",
+    "connectorName": "workday",
+    "token": "bci.wd10.myworkdayjobs.com|bci|bci_careers",
+    "companyNames": [
+      "BCI"
+    ],
+    "careerPageUrls": [
+      "https://www.bci.ca/",
+      "https://www.bci.ca/people/careers/"
+    ],
+    "directAtsUrls": [
+      "https://bci.wd10.myworkdayjobs.com/bci_careers"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link",
+      "career_page_scan"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "input": "https://bci.wd10.myworkdayjobs.com/bci_careers",
+      "connectorName": "workday",
+      "token": "bci.wd10.myworkdayjobs.com|bci|bci_careers",
+      "sourceKey": "workday:bci.wd10.myworkdayjobs.com|bci|bci_careers",
+      "sourceName": "Workday:bci.wd10.myworkdayjobs.com|bci|bci_careers",
+      "boardUrl": "https://bci.wd10.myworkdayjobs.com/bci_careers",
+      "source": "token",
+      "pageTitle": null,
+      "fetchedCount": 7,
+      "acceptedCount": 2,
+      "acceptedCanadaCount": 2,
+      "acceptedCanadaRemoteCount": 0,
+      "previewCreatedCount": 1,
+      "previewCreatedCanadaCount": 1,
+      "previewCreatedCanadaRemoteCount": 0,
+      "previewUpdatedCount": 1,
+      "dedupedCount": 1,
+      "rejectedCount": 5,
+      "existingRawCount": 0,
+      "existingActiveMappingCount": 0,
+      "existingLiveCanonicalCount": 0,
+      "sampleTitles": [
+        "Senior Advisor, People Insights and Workforce Intelligence",
+        "Associate, Credit Risk Management",
+        "Analyst, Investment Accounting",
+        "Manager, HR Technology Operations",
+        "Senior Manager, Financial Reporting (20-month fixed term)"
+      ],
+      "sampleLocations": [
+        "CA Victoria, Canada",
+        "CA Victoria, Canada",
+        "CA Victoria, Canada",
+        "CA Victoria, Canada",
+        "CA Victoria, Canada"
+      ]
+    },
+    "recommendedPromotion": true,
+    "promotionReason": "canada_dense_small_board"
+  },
+  {
+    "boardUrl": "https://jobs.ashbyhq.com/customuse",
+    "sourceKey": "ashby:customuse",
+    "connectorName": "ashby",
+    "token": "customuse",
+    "companyNames": [
+      "Custom Decorators"
+    ],
+    "careerPageUrls": [
+      "https://customuse.com/"
+    ],
+    "directAtsUrls": [
+      "https://jobs.ashbyhq.com/customuse"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link",
+      "career_page_scan"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "input": "https://jobs.ashbyhq.com/customuse",
+      "connectorName": "ashby",
+      "token": "customuse",
+      "sourceKey": "ashby:customuse",
+      "sourceName": "Ashby:customuse",
+      "boardUrl": "https://jobs.ashbyhq.com/customuse",
+      "source": "token",
+      "pageTitle": "Customuse Jobs",
+      "fetchedCount": 1,
+      "acceptedCount": 0,
+      "acceptedCanadaCount": 0,
+      "acceptedCanadaRemoteCount": 0,
+      "previewCreatedCount": 0,
+      "previewCreatedCanadaCount": 0,
+      "previewCreatedCanadaRemoteCount": 0,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 1,
+      "existingRawCount": 0,
+      "existingActiveMappingCount": 0,
+      "existingLiveCanonicalCount": 0,
+      "sampleTitles": [
+        "Influencer Marketing"
+      ],
+      "sampleLocations": [
+        "London"
+      ]
+    },
+    "recommendedPromotion": false,
+    "promotionReason": "insufficient_canada_weighted_yield"
+  },
+  {
+    "boardUrl": "https://jobs.smartrecruiters.com/my-applications",
+    "sourceKey": "smartrecruiters:my-applications",
+    "connectorName": "smartrecruiters",
+    "token": "my-applications",
+    "companyNames": [
+      "Egis Group"
+    ],
+    "careerPageUrls": [
+      "https://jobs.egis-group.com/"
+    ],
+    "directAtsUrls": [
+      "https://jobs.smartrecruiters.com/my-applications"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link",
+      "career_page_scan"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "input": "https://jobs.smartrecruiters.com/my-applications",
+      "connectorName": "smartrecruiters",
+      "token": "my-applications",
+      "sourceKey": "smartrecruiters:my-applications",
+      "sourceName": "SmartRecruiters:my-applications",
+      "boardUrl": "https://jobs.smartrecruiters.com/my-applications",
+      "source": "token",
+      "pageTitle": "Application Status • undefined",
+      "fetchedCount": 0,
+      "acceptedCount": 0,
+      "acceptedCanadaCount": 0,
+      "acceptedCanadaRemoteCount": 0,
+      "previewCreatedCount": 0,
+      "previewCreatedCanadaCount": 0,
+      "previewCreatedCanadaRemoteCount": 0,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 0,
+      "existingRawCount": 0,
+      "existingActiveMappingCount": 0,
+      "existingLiveCanonicalCount": 0,
+      "sampleTitles": [],
+      "sampleLocations": []
+    },
+    "recommendedPromotion": false,
+    "promotionReason": "insufficient_canada_weighted_yield"
+  },
+  {
+    "boardUrl": "https://jobs.egis-group.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+    "sourceKey": "successfactors:jobs.egis-group.com",
+    "connectorName": "successfactors",
+    "token": "jobs.egis-group.com",
+    "companyNames": [
+      "Egis Group"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [
+      "https://jobs.egis-group.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "input": "https://jobs.egis-group.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+      "connectorName": "successfactors",
+      "token": "jobs.egis-group.com",
+      "sourceKey": "successfactors:jobs.egis-group.com",
+      "sourceName": "SuccessFactors:jobs.egis-group.com",
+      "boardUrl": "https://jobs.egis-group.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+      "source": "token",
+      "pageTitle": null,
+      "fetchedCount": 0,
+      "acceptedCount": 0,
+      "acceptedCanadaCount": 0,
+      "acceptedCanadaRemoteCount": 0,
+      "previewCreatedCount": 0,
+      "previewCreatedCanadaCount": 0,
+      "previewCreatedCanadaRemoteCount": 0,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 0,
+      "existingRawCount": 0,
+      "existingActiveMappingCount": 0,
+      "existingLiveCanonicalCount": 0,
+      "sampleTitles": [],
+      "sampleLocations": [],
+      "error": "SuccessFactors fetch failed for https://jobs.egis-group.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc: 404 Not Found"
+    },
+    "recommendedPromotion": false,
+    "promotionReason": "SuccessFactors fetch failed for https://jobs.egis-group.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc: 404 Not Found"
+  }
+]

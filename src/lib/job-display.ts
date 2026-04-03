@@ -246,12 +246,20 @@ export function getSourceShortName(sourceName: string | null): string | null {
   if (!sourceName) return null;
   if (sourceName.startsWith("Ashby:")) return "AY";
   if (sourceName.startsWith("Greenhouse:")) return "GH";
+  if (sourceName.startsWith("Himalayas:")) return "HM";
+  if (sourceName.startsWith("Jobicy:")) return "JY";
   if (sourceName.startsWith("iCIMS:")) return "IC";
   if (sourceName.startsWith("Lever:")) return "LV";
+  if (sourceName.startsWith("Remotive:")) return "RM";
   if (sourceName.startsWith("Recruitee:")) return "RQ";
   if (sourceName.startsWith("SuccessFactors:")) return "SF";
   if (sourceName.startsWith("Workday:")) return "WD";
   if (sourceName.startsWith("SmartRecruiters:")) return "SR";
   if (sourceName.startsWith("Taleo:")) return "TL";
+  if (sourceName.startsWith("TheMuse:")) return "TM";
+  if (sourceName.startsWith("Adzuna:")) return "AZ";
+  if (sourceName.startsWith("RemoteOK:")) return "RO";
+  if (sourceName.startsWith("USAJobs:")) return "UJ";
+  if (sourceName.startsWith("Workable:")) return "WB";
   return null;
 }

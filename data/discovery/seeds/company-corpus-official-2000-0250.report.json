@@ -1,0 +1,80 @@
+{
+  "generatedAt": "2026-03-30T14:58:40.865Z",
+  "corpusCount": 4000,
+  "batchOffset": 2000,
+  "batchLimit": 250,
+  "companiesProcessed": 250,
+  "companiesResolved": 250,
+  "companiesUnresolved": 0,
+  "domainsSeeded": 250,
+  "careerPagesDetected": 530,
+  "directAtsUrlsDetected": 17,
+  "candidatesDiscovered": 17,
+  "newCandidates": 14,
+  "skippedKnownCandidates": 3,
+  "promotedSources": [],
+  "rejectedSources": [
+    {
+      "sourceKey": "lever:jito",
+      "connectorName": "lever",
+      "companyNames": [
+        "Jito Labs"
+      ],
+      "boardUrl": "https://jobs.lever.co/jito",
+      "error": null,
+      "previewCreatedCount": 0,
+      "acceptedCanadaCount": 0
+    },
+    {
+      "sourceKey": "successfactors:careers.cleanharbors.com",
+      "connectorName": "successfactors",
+      "companyNames": [
+        "Clean Harbors"
+      ],
+      "boardUrl": "https://careers.cleanharbors.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+      "error": "no_structured_listing: Board did not expose structured SuccessFactors listing data on the public search page.",
+      "previewCreatedCount": 0,
+      "acceptedCanadaCount": 0
+    },
+    {
+      "sourceKey": "workable:multimediallc",
+      "connectorName": "workable",
+      "companyNames": [
+        "Mayo Clinic"
+      ],
+      "boardUrl": "https://apply.workable.com/multimediallc/",
+      "error": null,
+      "previewCreatedCount": 0,
+      "acceptedCanadaCount": 0
+    },
+    {
+      "sourceKey": "workday:groupon.wd5.myworkdayjobs.com|groupon|jobs",
+      "connectorName": "workday",
+      "companyNames": [
+        "Group 1001"
+      ],
+      "boardUrl": "https://groupon.wd5.myworkdayjobs.com/jobs",
+      "error": null,
+      "previewCreatedCount": 0,
+      "acceptedCanadaCount": 0
+    },
+    {
+      "sourceKey": "workday:hbpublishing.wd1.myworkdayjobs.com|hbpublishing|careers",
+      "connectorName": "workday",
+      "companyNames": [
+        "Interview Kickstart"
+      ],
+      "boardUrl": "https://hbpublishing.wd1.myworkdayjobs.com/careers",
+      "error": null,
+      "previewCreatedCount": 0,
+      "acceptedCanadaCount": 0
+    }
+  ],
+  "ingestSummaries": [],
+  "resolutionSummary": {
+    "catalog": 0,
+    "cache": 0,
+    "search": 250,
+    "unresolved": 0
+  }
+}

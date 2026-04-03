@@ -1,0 +1,124 @@
+[
+  {
+    "boardUrl": "https://jobs.lever.co/pointclickcare",
+    "sourceKey": "lever:pointclickcare",
+    "connectorName": "lever",
+    "token": "pointclickcare",
+    "companyNames": [
+      "PointClickCare"
+    ],
+    "discoveredFromQueries": [],
+    "searchResultUrls": [],
+    "careerPageUrls": [],
+    "directAtsUrls": [
+      "https://jobs.lever.co/pointclickcare"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "fetchedCount": 68,
+      "acceptedCount": 28,
+      "previewCreatedCount": 28,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 40,
+      "sampleTitles": [
+        "(Canada) Customer Success Manager - 12 Month Contract",
+        "(Canada) Learning Program Manager",
+        "(Canada) Principal Program Manager",
+        "(Canada) Product Marketing Manager - EHR for Practice Groups",
+        "(Canada) Project Manager - Great Lakes"
+      ],
+      "sampleLocations": [
+        "Remote or Mississauga",
+        "Remote or Mississauga",
+        "Mississauga",
+        "Mississauga",
+        "Mississauga"
+      ]
+    },
+    "recommendedPromotion": true
+  },
+  {
+    "boardUrl": "https://cibc.wd3.myworkdayjobs.com/campus",
+    "sourceKey": "workday:cibc.wd3.myworkdayjobs.com|cibc|campus",
+    "connectorName": "workday",
+    "token": "cibc.wd3.myworkdayjobs.com|cibc|campus",
+    "companyNames": [
+      "CIBC"
+    ],
+    "discoveredFromQueries": [],
+    "searchResultUrls": [],
+    "careerPageUrls": [],
+    "directAtsUrls": [
+      "https://cibc.wd3.myworkdayjobs.com/campus"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "fetchedCount": 9,
+      "acceptedCount": 2,
+      "previewCreatedCount": 0,
+      "previewUpdatedCount": 2,
+      "dedupedCount": 2,
+      "rejectedCount": 7,
+      "sampleTitles": [
+        "2026 Summer Intern - Software Engineer",
+        "2026 Summer Intern - Payment Operations",
+        "2026 Global Leveraged Finance Summer Analyst (Houston)",
+        "Direct Applicant Portal - Summer 2026",
+        "2027 Corporate Banking Summer Analyst"
+      ],
+      "sampleLocations": [
+        "IL-70 W Madison St, 8th Fl, United States of America",
+        "IL-70 W Madison St, 9th Fl, United States of America",
+        "TX-1001 Fannin St, United States of America",
+        "Toronto-81 Bay, 33rd Floor, Canada",
+        "NY-300 Madison Ave., 8th Floor, United States of America"
+      ]
+    },
+    "recommendedPromotion": false
+  },
+  {
+    "boardUrl": "https://bb.wd3.myworkdayjobs.com/student",
+    "sourceKey": "workday:bb.wd3.myworkdayjobs.com|bb|student",
+    "connectorName": "workday",
+    "token": "bb.wd3.myworkdayjobs.com|bb|student",
+    "companyNames": [
+      "BlackBerry"
+    ],
+    "discoveredFromQueries": [],
+    "searchResultUrls": [],
+    "careerPageUrls": [],
+    "directAtsUrls": [
+      "https://bb.wd3.myworkdayjobs.com/student"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "fetchedCount": 3,
+      "acceptedCount": 0,
+      "previewCreatedCount": 0,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 3,
+      "sampleTitles": [
+        "Web Design Student",
+        "Cybersecurity Laboratory &amp; SOC Intern",
+        "Marketing Intern"
+      ],
+      "sampleLocations": [
+        "Waterloo, Ontario, Canada",
+        "Cyberjaya, MCMC Centre of Excellence (CoE), Malaysia",
+        "Cyberjaya, MCMC Centre of Excellence (CoE), Malaysia"
+      ]
+    },
+    "recommendedPromotion": false
+  }
+]

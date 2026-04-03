@@ -1,0 +1,46 @@
+[
+  {
+    "boardUrl": "https://icon.wd3.myworkdayjobs.com/broadbean_external",
+    "sourceKey": "workday:icon.wd3.myworkdayjobs.com|icon|broadbean_external",
+    "connectorName": "workday",
+    "token": "icon.wd3.myworkdayjobs.com|icon|broadbean_external",
+    "companyNames": [
+      "Telus"
+    ],
+    "discoveredFromQueries": [
+      "\"Telus\" \"myworkdayjobs.com\""
+    ],
+    "searchResultUrls": [
+      "https://icon.wd3.myworkdayjobs.com/en-US/broadbean_external/job/Senior-CRA_JR145071"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [],
+    "matchedReasons": [
+      "workday_company_name_host_hint"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "fetchedCount": 100,
+      "acceptedCount": 1,
+      "previewCreatedCount": 1,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 99,
+      "sampleTitles": [
+        "Study Start Up Associate I (Regulatory - Office with Flex)",
+        "Clinical Research Coordinator Nurse",
+        "Clinical Research Coordinator 2",
+        "Clinical Research Coordinator",
+        "Clinical Research Coordinator 2"
+      ],
+      "sampleLocations": [
+        "Argentina",
+        "United States of America",
+        "United States of America",
+        "United States of America",
+        "United States of America"
+      ]
+    },
+    "recommendedPromotion": false
+  }
+]

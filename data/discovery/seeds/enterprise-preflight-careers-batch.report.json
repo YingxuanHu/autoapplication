@@ -1,0 +1,736 @@
+{
+  "generatedAt": "2026-03-28T04:34:47.805Z",
+  "families": [
+    "workday",
+    "successfactors"
+  ],
+  "discoveryMode": "careers",
+  "limitCompanies": 50,
+  "previewLimit": 100,
+  "threshold": 5,
+  "searchSummary": null,
+  "careerPageSummary": {
+    "companiesSelected": [
+      "BDO Canada",
+      "CGI",
+      "Stantec",
+      "Telus",
+      "WSP",
+      "AtkinsRéalis",
+      "Export Development Canada",
+      "iA Financial Group",
+      "OpenText",
+      "Shopify",
+      "Air Canada",
+      "Bank of Canada",
+      "Rogers",
+      "TMX Group",
+      "CAE",
+      "CN Rail",
+      "CPKC (CP Rail)",
+      "Nutrien",
+      "Cameco",
+      "FortisBC",
+      "NAV CANADA",
+      "Questrade",
+      "Teck",
+      "Toronto Hydro"
+    ],
+    "domainsSeeded": 24,
+    "initialUrls": 229,
+    "pagesFetched": 192,
+    "careerPagesDetected": 57,
+    "directAtsUrlsDetected": 18,
+    "candidatesDiscovered": 11,
+    "newCandidates": 6,
+    "skippedKnownCandidates": 5,
+    "reports": [
+      {
+        "companyName": "BDO Canada",
+        "domains": [
+          "bdo.ca"
+        ],
+        "initialUrls": [
+          "https://bdo.ca/",
+          "https://careers.bdo.ca/",
+          "https://jobs.bdo.ca/",
+          "https://bdo.ca/careers",
+          "https://bdo.ca/jobs",
+          "https://bdo.ca/careers/jobs",
+          "https://bdo.ca/join-us",
+          "https://bdo.ca/work-with-us",
+          "https://bdo.ca/careers/search"
+        ],
+        "pagesFetched": 8,
+        "careerPagesDetected": 3,
+        "directAtsUrlsDetected": 1,
+        "errors": [
+          "https://careers.bdo.ca/: fetch failed",
+          "https://jobs.bdo.ca/: fetch failed"
+        ]
+      },
+      {
+        "companyName": "CGI",
+        "domains": [
+          "cgi.com"
+        ],
+        "initialUrls": [
+          "https://www.cgi.com/en/careers",
+          "https://cgi.com/",
+          "https://careers.cgi.com/",
+          "https://jobs.cgi.com/",
+          "https://cgi.com/careers",
+          "https://cgi.com/jobs",
+          "https://cgi.com/careers/jobs",
+          "https://cgi.com/join-us",
+          "https://cgi.com/work-with-us",
+          "https://cgi.com/careers/search"
+        ],
+        "pagesFetched": 8,
+        "careerPagesDetected": 2,
+        "directAtsUrlsDetected": 0,
+        "errors": [
+          "https://careers.cgi.com/: fetch failed",
+          "https://cgi.com/jobs: 404 Not Found",
+          "https://cgi.com/join-us: 404 Not Found"
+        ]
+      },
+      {
+        "companyName": "Stantec",
+        "domains": [
+          "stantec.com"
+        ],
+        "initialUrls": [
+          "https://careers.stantec.com/",
+          "https://stantec.com/",
+          "https://jobs.stantec.com/",
+          "https://stantec.com/careers",
+          "https://stantec.com/jobs",
+          "https://stantec.com/careers/jobs",
+          "https://stantec.com/join-us",
+          "https://stantec.com/work-with-us",
+          "https://stantec.com/careers/search"
+        ],
+        "pagesFetched": 8,
+        "careerPagesDetected": 3,
+        "directAtsUrlsDetected": 0,
+        "errors": [
+          "https://jobs.stantec.com/: fetch failed"
+        ]
+      },
+      {
+        "companyName": "Telus",
+        "domains": [
+          "telus.com"
+        ],
+        "initialUrls": [
+          "https://careers.telus.com/",
+          "https://telus.com/",
+          "https://jobs.telus.com/",
+          "https://telus.com/careers",
+          "https://telus.com/jobs",
+          "https://telus.com/careers/jobs",
+          "https://telus.com/join-us",
+          "https://telus.com/work-with-us",
+          "https://telus.com/careers/search"
+        ],
+        "pagesFetched": 8,
+        "careerPagesDetected": 3,
+        "directAtsUrlsDetected": 5,
+        "errors": [
+          "https://jobs.telus.com/: fetch failed",
+          "https://telus.com/jobs: 404 Not Found",
+          "https://telus.com/careers/jobs: 404 Not Found",
+          "https://telus.com/join-us: 404 Not Found",
+          "https://telus.com/work-with-us: 404 Not Found"
+        ]
+      },
+      {
+        "companyName": "WSP",
+        "domains": [
+          "wsp.com"
+        ],
+        "initialUrls": [
+          "https://www.wsp.com/en-ca/careers",
+          "https://wsp.com/",
+          "https://careers.wsp.com/",
+          "https://jobs.wsp.com/",
+          "https://wsp.com/careers",
+          "https://wsp.com/jobs",
+          "https://wsp.com/careers/jobs",
+          "https://wsp.com/join-us",
+          "https://wsp.com/work-with-us",
+          "https://wsp.com/careers/search"
+        ],
+        "pagesFetched": 8,
+        "careerPagesDetected": 0,
+        "directAtsUrlsDetected": 0,
+        "errors": [
+          "https://www.wsp.com/en-ca/careers: 403 Forbidden",
+          "https://wsp.com/: 403 Forbidden",
+          "https://careers.wsp.com/: fetch failed",
+          "https://jobs.wsp.com/: fetch failed",
+          "https://wsp.com/careers: 403 Forbidden",
+          "https://wsp.com/jobs: 403 Forbidden",
+          "https://wsp.com/careers/jobs: 403 Forbidden",
+          "https://wsp.com/join-us: 403 Forbidden"
+        ]
+      },
+      {
+        "companyName": "AtkinsRéalis",
+        "domains": [
+          "atkinsrealis.com"
+        ],
+        "initialUrls": [
+          "https://www.atkinsrealis.com/en/careers",
+          "https://atkinsrealis.com/",
+          "https://careers.atkinsrealis.com/",
+          "https://jobs.atkinsrealis.com/",
+          "https://atkinsrealis.com/careers",
+          "https://atkinsrealis.com/jobs",
+          "https://atkinsrealis.com/careers/jobs",
+          "https://atkinsrealis.com/join-us",
+          "https://atkinsrealis.com/work-with-us",
+          "https://atkinsrealis.com/careers/search"
+        ],
+        "pagesFetched": 8,
+        "careerPagesDetected": 2,
+        "directAtsUrlsDetected": 0,
+        "errors": [
+          "https://jobs.atkinsrealis.com/: fetch failed",
+          "https://atkinsrealis.com/jobs: 404 Not Found",
+          "https://atkinsrealis.com/careers/jobs: 404 Not Found",
+          "https://atkinsrealis.com/join-us: 404 Not Found"
+        ]
+      },
+      {
+        "companyName": "Export Development Canada",
+        "domains": [
+          "edc.ca"
+        ],
+        "initialUrls": [
+          "https://www.edc.ca/en/about-us/careers.html",
+          "https://edc.ca/",
+          "https://careers.edc.ca/",
+          "https://jobs.edc.ca/",
+          "https://edc.ca/careers",
+          "https://edc.ca/jobs",
+          "https://edc.ca/careers/jobs",
+          "https://edc.ca/join-us",
+          "https://edc.ca/work-with-us",
+          "https://edc.ca/careers/search"
+        ],
+        "pagesFetched": 8,
+        "careerPagesDetected": 0,
+        "directAtsUrlsDetected": 0,
+        "errors": [
+          "https://www.edc.ca/en/about-us/careers.html: fetch failed",
+          "https://edc.ca/: fetch failed",
+          "https://careers.edc.ca/: fetch failed",
+          "https://jobs.edc.ca/: fetch failed",
+          "https://edc.ca/careers: fetch failed",
+          "https://edc.ca/jobs: fetch failed",
+          "https://edc.ca/careers/jobs: fetch failed",
+          "https://edc.ca/join-us: fetch failed"
+        ]
+      },
+      {
+        "companyName": "iA Financial Group",
+        "domains": [
+          "ia.ca"
+        ],
+        "initialUrls": [
+          "https://www.ia.ca/careers",
+          "https://ia.ca/",
+          "https://careers.ia.ca/",
+          "https://jobs.ia.ca/",
+          "https://ia.ca/careers",
+          "https://ia.ca/jobs",
+          "https://ia.ca/careers/jobs",
+          "https://ia.ca/join-us",
+          "https://ia.ca/work-with-us",
+          "https://ia.ca/careers/search"
+        ],
+        "pagesFetched": 8,
+        "careerPagesDetected": 3,
+        "directAtsUrlsDetected": 0,
+        "errors": [
+          "https://jobs.ia.ca/: fetch failed",
+          "https://ia.ca/careers/jobs: 404 Not Found",
+          "https://ia.ca/join-us: 404 Not Found"
+        ]
+      },
+      {
+        "companyName": "OpenText",
+        "domains": [
+          "opentext.com"
+        ],
+        "initialUrls": [
+          "https://careers.opentext.com/",
+          "https://opentext.com/",
+          "https://jobs.opentext.com/",
+          "https://opentext.com/careers",
+          "https://opentext.com/jobs",
+          "https://opentext.com/careers/jobs",
+          "https://opentext.com/join-us",
+          "https://opentext.com/work-with-us",
+          "https://opentext.com/careers/search"
+        ],
+        "pagesFetched": 8,
+        "careerPagesDetected": 2,
+        "directAtsUrlsDetected": 0,
+        "errors": [
+          "https://jobs.opentext.com/: fetch failed",
+          "https://opentext.com/jobs: 490 Unknown",
+          "https://opentext.com/careers/jobs: 490 Unknown",
+          "https://opentext.com/join-us: 490 Unknown",
+          "https://opentext.com/work-with-us: 490 Unknown"
+        ]
+      },
+      {
+        "companyName": "Shopify",
+        "domains": [
+          "shopify.com"
+        ],
+        "initialUrls": [
+          "https://www.shopify.com/careers",
+          "https://shopify.com/",
+          "https://careers.shopify.com/",
+          "https://jobs.shopify.com/",
+          "https://shopify.com/careers",
+          "https://shopify.com/jobs",
+          "https://shopify.com/careers/jobs",
+          "https://shopify.com/join-us",
+          "https://shopify.com/work-with-us",
+          "https://shopify.com/careers/search"
+        ],
+        "pagesFetched": 8,
+        "careerPagesDetected": 2,
+        "directAtsUrlsDetected": 0,
+        "errors": [
+          "https://jobs.shopify.com/: 404 Not Found",
+          "https://shopify.com/careers/jobs: 404 Not Found",
+          "https://shopify.com/join-us: 404 Not Found"
+        ]
+      },
+      {
+        "companyName": "Air Canada",
+        "domains": [
+          "aircanada.com"
+        ],
+        "initialUrls": [
+          "https://careers.aircanada.com/",
+          "https://aircanada.com/",
+          "https://jobs.aircanada.com/",
+          "https://aircanada.com/careers",
+          "https://aircanada.com/jobs",
+          "https://aircanada.com/careers/jobs",
+          "https://aircanada.com/join-us",
+          "https://aircanada.com/work-with-us",
+          "https://aircanada.com/careers/search"
+        ],
+        "pagesFetched": 8,
+        "careerPagesDetected": 2,
+        "directAtsUrlsDetected": 0,
+        "errors": [
+          "https://jobs.aircanada.com/: 400 Bad Request",
+          "https://aircanada.com/jobs: 404 Not Found",
+          "https://aircanada.com/careers/jobs: 404 Not Found",
+          "https://aircanada.com/join-us: 404 Not Found",
+          "https://aircanada.com/work-with-us: 404 Not Found"
+        ]
+      },
+      {
+        "companyName": "Bank of Canada",
+        "domains": [
+          "bankofcanada.ca"
+        ],
+        "initialUrls": [
+          "https://bankofcanada.ca/",
+          "https://careers.bankofcanada.ca/",
+          "https://jobs.bankofcanada.ca/",
+          "https://bankofcanada.ca/careers",
+          "https://bankofcanada.ca/jobs",
+          "https://bankofcanada.ca/careers/jobs",
+          "https://bankofcanada.ca/join-us",
+          "https://bankofcanada.ca/work-with-us",
+          "https://bankofcanada.ca/careers/search"
+        ],
+        "pagesFetched": 8,
+        "careerPagesDetected": 3,
+        "directAtsUrlsDetected": 1,
+        "errors": [
+          "https://jobs.bankofcanada.ca/: fetch failed",
+          "https://bankofcanada.ca/jobs: 404 Not Found",
+          "https://bankofcanada.ca/careers/jobs: 404 Not Found",
+          "https://bankofcanada.ca/join-us: 404 Not Found",
+          "https://bankofcanada.ca/work-with-us: 404 Not Found"
+        ]
+      },
+      {
+        "companyName": "Rogers",
+        "domains": [
+          "rogers.com"
+        ],
+        "initialUrls": [
+          "https://jobs.rogers.com/",
+          "https://rogers.com/",
+          "https://careers.rogers.com/",
+          "https://rogers.com/careers",
+          "https://rogers.com/jobs",
+          "https://rogers.com/careers/jobs",
+          "https://rogers.com/join-us",
+          "https://rogers.com/work-with-us",
+          "https://rogers.com/careers/search"
+        ],
+        "pagesFetched": 8,
+        "careerPagesDetected": 1,
+        "directAtsUrlsDetected": 0,
+        "errors": [
+          "https://rogers.com/: fetch failed",
+          "https://careers.rogers.com/: fetch failed",
+          "https://rogers.com/careers: fetch failed",
+          "https://rogers.com/jobs: fetch failed",
+          "https://rogers.com/careers/jobs: fetch failed",
+          "https://rogers.com/join-us: fetch failed",
+          "https://rogers.com/work-with-us: fetch failed"
+        ]
+      },
+      {
+        "companyName": "TMX Group",
+        "domains": [
+          "tmx.com"
+        ],
+        "initialUrls": [
+          "https://careers.tmx.com/",
+          "https://tmx.com/",
+          "https://jobs.tmx.com/",
+          "https://tmx.com/careers",
+          "https://tmx.com/jobs",
+          "https://tmx.com/careers/jobs",
+          "https://tmx.com/join-us",
+          "https://tmx.com/work-with-us",
+          "https://tmx.com/careers/search"
+        ],
+        "pagesFetched": 8,
+        "careerPagesDetected": 2,
+        "directAtsUrlsDetected": 4,
+        "errors": [
+          "https://careers.tmx.com/: fetch failed",
+          "https://jobs.tmx.com/: fetch failed",
+          "https://tmx.com/jobs: 404 Not Found",
+          "https://tmx.com/join-us: 404 Not Found",
+          "https://tmx.com/work-with-us: 404 Not Found"
+        ]
+      },
+      {
+        "companyName": "CAE",
+        "domains": [
+          "cae.com"
+        ],
+        "initialUrls": [
+          "https://cae.com/",
+          "https://careers.cae.com/",
+          "https://jobs.cae.com/",
+          "https://cae.com/careers",
+          "https://cae.com/jobs",
+          "https://cae.com/careers/jobs",
+          "https://cae.com/join-us",
+          "https://cae.com/work-with-us",
+          "https://cae.com/careers/search"
+        ],
+        "pagesFetched": 8,
+        "careerPagesDetected": 2,
+        "directAtsUrlsDetected": 1,
+        "errors": [
+          "https://jobs.cae.com/: fetch failed",
+          "https://cae.com/jobs: 404 Not Found",
+          "https://cae.com/careers/jobs: 404 Not Found",
+          "https://cae.com/join-us: 404 Not Found",
+          "https://cae.com/work-with-us: 404 Not Found"
+        ]
+      },
+      {
+        "companyName": "CN Rail",
+        "domains": [
+          "cn.ca"
+        ],
+        "initialUrls": [
+          "https://www.cn.ca/en/careers/",
+          "https://cn.ca/",
+          "https://careers.cn.ca/",
+          "https://jobs.cn.ca/",
+          "https://cn.ca/careers",
+          "https://cn.ca/jobs",
+          "https://cn.ca/careers/jobs",
+          "https://cn.ca/join-us",
+          "https://cn.ca/work-with-us",
+          "https://cn.ca/careers/search"
+        ],
+        "pagesFetched": 8,
+        "careerPagesDetected": 5,
+        "directAtsUrlsDetected": 0,
+        "errors": [
+          "https://careers.cn.ca/: fetch failed",
+          "https://cn.ca/careers/jobs: 404 Not Found",
+          "https://cn.ca/join-us: 404 Not Found"
+        ]
+      },
+      {
+        "companyName": "CPKC (CP Rail)",
+        "domains": [
+          "cpkcr.com"
+        ],
+        "initialUrls": [
+          "https://www.cpkcr.com/en/careers",
+          "https://cpkcr.com/",
+          "https://careers.cpkcr.com/",
+          "https://jobs.cpkcr.com/",
+          "https://cpkcr.com/careers",
+          "https://cpkcr.com/jobs",
+          "https://cpkcr.com/careers/jobs",
+          "https://cpkcr.com/join-us",
+          "https://cpkcr.com/work-with-us",
+          "https://cpkcr.com/careers/search"
+        ],
+        "pagesFetched": 8,
+        "careerPagesDetected": 3,
+        "directAtsUrlsDetected": 0,
+        "errors": [
+          "https://careers.cpkcr.com/: fetch failed",
+          "https://jobs.cpkcr.com/: fetch failed",
+          "https://cpkcr.com/jobs: 404 Not Found",
+          "https://cpkcr.com/careers/jobs: 404 Not Found",
+          "https://cpkcr.com/join-us: 404 Not Found"
+        ]
+      },
+      {
+        "companyName": "Nutrien",
+        "domains": [
+          "nutrien.com"
+        ],
+        "initialUrls": [
+          "https://www.nutrien.com/careers",
+          "https://nutrien.com/",
+          "https://careers.nutrien.com/",
+          "https://jobs.nutrien.com/",
+          "https://nutrien.com/careers",
+          "https://nutrien.com/jobs",
+          "https://nutrien.com/careers/jobs",
+          "https://nutrien.com/join-us",
+          "https://nutrien.com/work-with-us",
+          "https://nutrien.com/careers/search"
+        ],
+        "pagesFetched": 8,
+        "careerPagesDetected": 3,
+        "directAtsUrlsDetected": 1,
+        "errors": [
+          "https://careers.nutrien.com/: fetch failed",
+          "https://nutrien.com/careers/jobs: 404 Not Found",
+          "https://nutrien.com/join-us: 404 Not Found"
+        ]
+      },
+      {
+        "companyName": "Cameco",
+        "domains": [
+          "cameco.com"
+        ],
+        "initialUrls": [
+          "https://www.cameco.com/careers",
+          "https://cameco.com/",
+          "https://careers.cameco.com/",
+          "https://jobs.cameco.com/",
+          "https://cameco.com/careers",
+          "https://cameco.com/jobs",
+          "https://cameco.com/careers/jobs",
+          "https://cameco.com/join-us",
+          "https://cameco.com/work-with-us",
+          "https://cameco.com/careers/search"
+        ],
+        "pagesFetched": 8,
+        "careerPagesDetected": 3,
+        "directAtsUrlsDetected": 0,
+        "errors": [
+          "https://careers.cameco.com/: fetch failed",
+          "https://jobs.cameco.com/: fetch failed"
+        ]
+      },
+      {
+        "companyName": "FortisBC",
+        "domains": [
+          "fortisbc.com"
+        ],
+        "initialUrls": [
+          "https://www.fortisbc.com/about-us/careers",
+          "https://fortisbc.com/",
+          "https://careers.fortisbc.com/",
+          "https://jobs.fortisbc.com/",
+          "https://fortisbc.com/careers",
+          "https://fortisbc.com/jobs",
+          "https://fortisbc.com/careers/jobs",
+          "https://fortisbc.com/join-us",
+          "https://fortisbc.com/work-with-us",
+          "https://fortisbc.com/careers/search"
+        ],
+        "pagesFetched": 8,
+        "careerPagesDetected": 2,
+        "directAtsUrlsDetected": 1,
+        "errors": [
+          "https://www.fortisbc.com/about-us/careers: 404 Not Found",
+          "https://jobs.fortisbc.com/: fetch failed",
+          "https://fortisbc.com/jobs: 404 Not Found",
+          "https://fortisbc.com/careers/jobs: 404 Not Found",
+          "https://fortisbc.com/join-us: 404 Not Found"
+        ]
+      },
+      {
+        "companyName": "NAV CANADA",
+        "domains": [
+          "navcanada.ca"
+        ],
+        "initialUrls": [
+          "https://navcanada.ca/",
+          "https://careers.navcanada.ca/",
+          "https://jobs.navcanada.ca/",
+          "https://navcanada.ca/careers",
+          "https://navcanada.ca/jobs",
+          "https://navcanada.ca/careers/jobs",
+          "https://navcanada.ca/join-us",
+          "https://navcanada.ca/work-with-us",
+          "https://navcanada.ca/careers/search"
+        ],
+        "pagesFetched": 8,
+        "careerPagesDetected": 2,
+        "directAtsUrlsDetected": 1,
+        "errors": [
+          "https://careers.navcanada.ca/: fetch failed",
+          "https://jobs.navcanada.ca/: fetch failed",
+          "https://navcanada.ca/jobs: 404 Not Found",
+          "https://navcanada.ca/careers/jobs: 404 Not Found",
+          "https://navcanada.ca/join-us: 404 Not Found",
+          "https://navcanada.ca/work-with-us: 404 Not Found"
+        ]
+      },
+      {
+        "companyName": "Questrade",
+        "domains": [
+          "questrade.com"
+        ],
+        "initialUrls": [
+          "https://www.questrade.com/about-questrade/careers",
+          "https://questrade.com/",
+          "https://careers.questrade.com/",
+          "https://jobs.questrade.com/",
+          "https://questrade.com/careers",
+          "https://questrade.com/jobs",
+          "https://questrade.com/careers/jobs",
+          "https://questrade.com/join-us",
+          "https://questrade.com/work-with-us",
+          "https://questrade.com/careers/search"
+        ],
+        "pagesFetched": 8,
+        "careerPagesDetected": 3,
+        "directAtsUrlsDetected": 0,
+        "errors": [
+          "https://careers.questrade.com/: fetch failed",
+          "https://jobs.questrade.com/: fetch failed"
+        ]
+      },
+      {
+        "companyName": "Teck",
+        "domains": [
+          "teck.com"
+        ],
+        "initialUrls": [
+          "https://careers.teck.com/",
+          "https://teck.com/",
+          "https://jobs.teck.com/",
+          "https://teck.com/careers",
+          "https://teck.com/jobs",
+          "https://teck.com/careers/jobs",
+          "https://teck.com/join-us",
+          "https://teck.com/work-with-us",
+          "https://teck.com/careers/search"
+        ],
+        "pagesFetched": 8,
+        "careerPagesDetected": 3,
+        "directAtsUrlsDetected": 2,
+        "errors": [
+          "https://careers.teck.com/: fetch failed",
+          "https://teck.com/jobs: 404 Not Found",
+          "https://teck.com/careers/jobs: 404 Not Found",
+          "https://teck.com/join-us: 404 Not Found",
+          "https://teck.com/work-with-us: 404 Not Found"
+        ]
+      },
+      {
+        "companyName": "Toronto Hydro",
+        "domains": [
+          "torontohydro.com"
+        ],
+        "initialUrls": [
+          "https://www.torontohydro.com/about-us/careers",
+          "https://torontohydro.com/",
+          "https://careers.torontohydro.com/",
+          "https://jobs.torontohydro.com/",
+          "https://torontohydro.com/careers",
+          "https://torontohydro.com/jobs",
+          "https://torontohydro.com/careers/jobs",
+          "https://torontohydro.com/join-us",
+          "https://torontohydro.com/work-with-us",
+          "https://torontohydro.com/careers/search"
+        ],
+        "pagesFetched": 8,
+        "careerPagesDetected": 3,
+        "directAtsUrlsDetected": 1,
+        "errors": [
+          "https://www.torontohydro.com/about-us/careers: 404 ",
+          "https://careers.torontohydro.com/: fetch failed",
+          "https://torontohydro.com/jobs: 404 ",
+          "https://torontohydro.com/careers/jobs: 404 ",
+          "https://torontohydro.com/join-us: 404 "
+        ]
+      }
+    ]
+  },
+  "previewedCount": 6,
+  "recommendedPromotions": [
+    {
+      "sourceKey": "successfactors:careers.telus.com",
+      "companyNames": [],
+      "connectorName": "successfactors",
+      "previewCreatedCount": 25,
+      "acceptedCount": 25,
+      "boardUrl": "https://careers.telus.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+      "matchedReasons": [
+        "career_page_direct_ats_link"
+      ]
+    },
+    {
+      "sourceKey": "successfactors:careers.fortisbc.com",
+      "companyNames": [
+        "FortisBC"
+      ],
+      "connectorName": "successfactors",
+      "previewCreatedCount": 18,
+      "acceptedCount": 18,
+      "boardUrl": "https://careers.fortisbc.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+      "matchedReasons": [
+        "career_page_direct_ats_link"
+      ]
+    },
+    {
+      "sourceKey": "successfactors:careers.bankofcanada.ca",
+      "companyNames": [
+        "Bank of Canada"
+      ],
+      "connectorName": "successfactors",
+      "previewCreatedCount": 6,
+      "acceptedCount": 6,
+      "boardUrl": "https://careers.bankofcanada.ca/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+      "matchedReasons": [
+        "career_page_direct_ats_link"
+      ]
+    }
+  ]
+}

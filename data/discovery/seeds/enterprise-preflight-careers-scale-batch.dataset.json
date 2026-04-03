@@ -1,0 +1,62 @@
+[
+  {
+    "boardUrl": "https://jobs.lever.co/pointclickcare",
+    "sourceKey": "lever:pointclickcare",
+    "connectorName": "lever",
+    "token": "pointclickcare",
+    "companyNames": [
+      "PointClickCare"
+    ],
+    "discoveredFromQueries": [],
+    "searchResultUrls": [],
+    "careerPageUrls": [],
+    "directAtsUrls": [
+      "https://jobs.lever.co/pointclickcare"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link"
+    ],
+    "knownStatus": null,
+    "url": "https://jobs.lever.co/pointclickcare"
+  },
+  {
+    "boardUrl": "https://bb.wd3.myworkdayjobs.com/student",
+    "sourceKey": "workday:bb.wd3.myworkdayjobs.com|bb|student",
+    "connectorName": "workday",
+    "token": "bb.wd3.myworkdayjobs.com|bb|student",
+    "companyNames": [
+      "BlackBerry"
+    ],
+    "discoveredFromQueries": [],
+    "searchResultUrls": [],
+    "careerPageUrls": [],
+    "directAtsUrls": [
+      "https://bb.wd3.myworkdayjobs.com/student"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link"
+    ],
+    "knownStatus": null,
+    "url": "https://bb.wd3.myworkdayjobs.com/student"
+  },
+  {
+    "boardUrl": "https://cibc.wd3.myworkdayjobs.com/campus",
+    "sourceKey": "workday:cibc.wd3.myworkdayjobs.com|cibc|campus",
+    "connectorName": "workday",
+    "token": "cibc.wd3.myworkdayjobs.com|cibc|campus",
+    "companyNames": [
+      "CIBC"
+    ],
+    "discoveredFromQueries": [],
+    "searchResultUrls": [],
+    "careerPageUrls": [],
+    "directAtsUrls": [
+      "https://cibc.wd3.myworkdayjobs.com/campus"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link"
+    ],
+    "knownStatus": null,
+    "url": "https://cibc.wd3.myworkdayjobs.com/campus"
+  }
+]

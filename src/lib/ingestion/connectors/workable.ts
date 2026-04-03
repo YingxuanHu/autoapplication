@@ -63,9 +63,15 @@ export function createWorkableConnector({
       );
 
       if (!response.ok) {
-        throw new Error(
-          `Workable fetch failed for ${accountToken}: ${response.status} ${response.statusText}`
-        );
+        console.log(`[workable:${accountToken}] API error ${response.status} ${response.statusText}`);
+        return {
+          jobs: [],
+          metadata: {
+            accountToken,
+            error: `${response.status} ${response.statusText}`,
+            fetchedAt: options.now.toISOString(),
+          },
+        };
       }
 
       const text = await response.text();

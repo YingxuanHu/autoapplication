@@ -1,0 +1,567 @@
+[
+  {
+    "boardUrl": "https://intelcomgroup.wd3.myworkdayjobs.com/intelcom",
+    "sourceKey": "workday:intelcomgroup.wd3.myworkdayjobs.com|intelcomgroup|intelcom",
+    "connectorName": "workday",
+    "token": "intelcomgroup.wd3.myworkdayjobs.com|intelcomgroup|intelcom",
+    "companyNames": [
+      "Intelcom"
+    ],
+    "careerPageUrls": [
+      "https://intelcom.ca/en/careers/",
+      "https://intelcom.ca/fr/"
+    ],
+    "directAtsUrls": [
+      "https://intelcomgroup.wd3.myworkdayjobs.com/intelcom"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link",
+      "career_page_scan"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "input": "https://intelcomgroup.wd3.myworkdayjobs.com/intelcom",
+      "connectorName": "workday",
+      "token": "intelcomgroup.wd3.myworkdayjobs.com|intelcomgroup|intelcom",
+      "sourceKey": "workday:intelcomgroup.wd3.myworkdayjobs.com|intelcomgroup|intelcom",
+      "sourceName": "Workday:intelcomgroup.wd3.myworkdayjobs.com|intelcomgroup|intelcom",
+      "boardUrl": "https://intelcomgroup.wd3.myworkdayjobs.com/intelcom",
+      "source": "token",
+      "pageTitle": null,
+      "fetchedCount": 62,
+      "acceptedCount": 23,
+      "acceptedCanadaCount": 23,
+      "acceptedCanadaRemoteCount": 0,
+      "previewCreatedCount": 23,
+      "previewCreatedCanadaCount": 23,
+      "previewCreatedCanadaRemoteCount": 0,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 39,
+      "existingRawCount": 0,
+      "existingActiveMappingCount": 0,
+      "existingLiveCanonicalCount": 0,
+      "sampleTitles": [
+        "Operations Coordinator",
+        "Operations Supervisor",
+        "Package Handler-Warehouse Clerk",
+        "Package Handler – Warehouse Clerk",
+        "Lead Hand"
+      ],
+      "sampleLocations": [
+        "Quebec, Canada",
+        "Calgary North, Canada",
+        "Sherbrooke, Canada",
+        "Lévis, Canada",
+        "Red Deer, Canada"
+      ]
+    },
+    "recommendedPromotion": true,
+    "promotionReason": "canada_heavy_created_volume"
+  },
+  {
+    "boardUrl": "https://irvingoil.wd3.myworkdayjobs.com/iol_careers_primary",
+    "sourceKey": "workday:irvingoil.wd3.myworkdayjobs.com|irvingoil|iol_careers_primary",
+    "connectorName": "workday",
+    "token": "irvingoil.wd3.myworkdayjobs.com|irvingoil|iol_careers_primary",
+    "companyNames": [
+      "Irving Business Services"
+    ],
+    "careerPageUrls": [
+      "https://www.irvingoil.com/en-CA/careers/careers"
+    ],
+    "directAtsUrls": [
+      "https://irvingoil.wd3.myworkdayjobs.com/iol_careers_primary"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link",
+      "career_page_scan"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "input": "https://irvingoil.wd3.myworkdayjobs.com/iol_careers_primary",
+      "connectorName": "workday",
+      "token": "irvingoil.wd3.myworkdayjobs.com|irvingoil|iol_careers_primary",
+      "sourceKey": "workday:irvingoil.wd3.myworkdayjobs.com|irvingoil|iol_careers_primary",
+      "sourceName": "Workday:irvingoil.wd3.myworkdayjobs.com|irvingoil|iol_careers_primary",
+      "boardUrl": "https://irvingoil.wd3.myworkdayjobs.com/iol_careers_primary",
+      "source": "token",
+      "pageTitle": null,
+      "fetchedCount": 39,
+      "acceptedCount": 8,
+      "acceptedCanadaCount": 8,
+      "acceptedCanadaRemoteCount": 0,
+      "previewCreatedCount": 8,
+      "previewCreatedCanadaCount": 8,
+      "previewCreatedCanadaRemoteCount": 0,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 31,
+      "existingRawCount": 0,
+      "existingActiveMappingCount": 0,
+      "existingLiveCanonicalCount": 0,
+      "sampleTitles": [
+        "Front Office Administrative Assistant",
+        "Evening Fuel Delivery Driver",
+        "Load Builder",
+        "Seasonal Fuel Delivery Driver (Sign on Bonus)",
+        "Tractor Trailer Driver ($5000 Sign-on Bonus)"
+      ],
+      "sampleLocations": [
+        "West Lebanon, NH, United States of America",
+        "Claremont, NH, United States of America",
+        "West Lebanon, NH, United States of America",
+        "Barre, VT, United States of America",
+        "Moncton, NB, Canada"
+      ]
+    },
+    "recommendedPromotion": true,
+    "promotionReason": "canada_heavy_created_volume"
+  },
+  {
+    "boardUrl": "https://irvingoil.wd3.myworkdayjobs.com/iolcareers_allotherpositions",
+    "sourceKey": "workday:irvingoil.wd3.myworkdayjobs.com|irvingoil|iolcareers_allotherpositions",
+    "connectorName": "workday",
+    "token": "irvingoil.wd3.myworkdayjobs.com|irvingoil|iolcareers_allotherpositions",
+    "companyNames": [
+      "Irving Business Services"
+    ],
+    "careerPageUrls": [
+      "https://www.irvingoil.com/en-CA/careers/careers"
+    ],
+    "directAtsUrls": [
+      "https://irvingoil.wd3.myworkdayjobs.com/iolcareers_allotherpositions"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link",
+      "career_page_scan"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "input": "https://irvingoil.wd3.myworkdayjobs.com/iolcareers_allotherpositions",
+      "connectorName": "workday",
+      "token": "irvingoil.wd3.myworkdayjobs.com|irvingoil|iolcareers_allotherpositions",
+      "sourceKey": "workday:irvingoil.wd3.myworkdayjobs.com|irvingoil|iolcareers_allotherpositions",
+      "sourceName": "Workday:irvingoil.wd3.myworkdayjobs.com|irvingoil|iolcareers_allotherpositions",
+      "boardUrl": "https://irvingoil.wd3.myworkdayjobs.com/iolcareers_allotherpositions",
+      "source": "token",
+      "pageTitle": null,
+      "fetchedCount": 31,
+      "acceptedCount": 7,
+      "acceptedCanadaCount": 7,
+      "acceptedCanadaRemoteCount": 0,
+      "previewCreatedCount": 7,
+      "previewCreatedCanadaCount": 7,
+      "previewCreatedCanadaRemoteCount": 0,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 24,
+      "existingRawCount": 0,
+      "existingActiveMappingCount": 0,
+      "existingLiveCanonicalCount": 0,
+      "sampleTitles": [
+        "Load Builder",
+        "Bilingual Territory Sales Representative",
+        "Driver Helper",
+        "Senior Civil/Structural Field Engineer",
+        "Regulatory Compliance Partner (EHS)"
+      ],
+      "sampleLocations": [
+        "West Lebanon, NH, United States of America",
+        "Edmundston, NB, Canada",
+        "Halifax, NS, Canada",
+        "Saint John, NB, Canada",
+        "Saint John, NB, Canada"
+      ]
+    },
+    "recommendedPromotion": true,
+    "promotionReason": "canada_heavy_created_volume"
+  },
+  {
+    "boardUrl": "https://quadreal.wd10.myworkdayjobs.com/quadreal",
+    "sourceKey": "workday:quadreal.wd10.myworkdayjobs.com|quadreal|quadreal",
+    "connectorName": "workday",
+    "token": "quadreal.wd10.myworkdayjobs.com|quadreal|quadreal",
+    "companyNames": [
+      "QuadReal Property Group"
+    ],
+    "careerPageUrls": [
+      "https://quadreal.com/",
+      "https://quadreal.com/careers/"
+    ],
+    "directAtsUrls": [
+      "https://quadreal.wd10.myworkdayjobs.com/quadreal"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link",
+      "career_page_scan"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "input": "https://quadreal.wd10.myworkdayjobs.com/quadreal",
+      "connectorName": "workday",
+      "token": "quadreal.wd10.myworkdayjobs.com|quadreal|quadreal",
+      "sourceKey": "workday:quadreal.wd10.myworkdayjobs.com|quadreal|quadreal",
+      "sourceName": "Workday:quadreal.wd10.myworkdayjobs.com|quadreal|quadreal",
+      "boardUrl": "https://quadreal.wd10.myworkdayjobs.com/quadreal",
+      "source": "token",
+      "pageTitle": null,
+      "fetchedCount": 35,
+      "acceptedCount": 6,
+      "acceptedCanadaCount": 6,
+      "acceptedCanadaRemoteCount": 0,
+      "previewCreatedCount": 6,
+      "previewCreatedCanadaCount": 6,
+      "previewCreatedCanadaRemoteCount": 0,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 29,
+      "existingRawCount": 0,
+      "existingActiveMappingCount": 0,
+      "existingLiveCanonicalCount": 0,
+      "sampleTitles": [
+        "Building Operator, Level 3",
+        "Principal Engineer",
+        "Marketing Manager",
+        "Real Estate Sales &amp; Marketing Specialist",
+        "Senior Business Analyst"
+      ],
+      "sampleLocations": [
+        "Vancouver, Canada",
+        "Toronto, Canada",
+        "Vancouver, Canada",
+        "Toronto, Canada",
+        "Vancouver, Canada"
+      ]
+    },
+    "recommendedPromotion": true,
+    "promotionReason": "canada_heavy_created_volume"
+  },
+  {
+    "boardUrl": "https://irvingoil.wd3.myworkdayjobs.com/iolcareers_refineryoperationsandengineers",
+    "sourceKey": "workday:irvingoil.wd3.myworkdayjobs.com|irvingoil|iolcareers_refineryoperationsandengineers",
+    "connectorName": "workday",
+    "token": "irvingoil.wd3.myworkdayjobs.com|irvingoil|iolcareers_refineryoperationsandengineers",
+    "companyNames": [
+      "Irving Business Services"
+    ],
+    "careerPageUrls": [
+      "https://www.irvingoil.com/en-CA/careers/careers"
+    ],
+    "directAtsUrls": [
+      "https://irvingoil.wd3.myworkdayjobs.com/iolcareers_refineryoperationsandengineers"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link",
+      "career_page_scan"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "input": "https://irvingoil.wd3.myworkdayjobs.com/iolcareers_refineryoperationsandengineers",
+      "connectorName": "workday",
+      "token": "irvingoil.wd3.myworkdayjobs.com|irvingoil|iolcareers_refineryoperationsandengineers",
+      "sourceKey": "workday:irvingoil.wd3.myworkdayjobs.com|irvingoil|iolcareers_refineryoperationsandengineers",
+      "sourceName": "Workday:irvingoil.wd3.myworkdayjobs.com|irvingoil|iolcareers_refineryoperationsandengineers",
+      "boardUrl": "https://irvingoil.wd3.myworkdayjobs.com/iolcareers_refineryoperationsandengineers",
+      "source": "token",
+      "pageTitle": null,
+      "fetchedCount": 8,
+      "acceptedCount": 3,
+      "acceptedCanadaCount": 3,
+      "acceptedCanadaRemoteCount": 0,
+      "previewCreatedCount": 3,
+      "previewCreatedCanadaCount": 3,
+      "previewCreatedCanadaRemoteCount": 0,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 5,
+      "existingRawCount": 0,
+      "existingActiveMappingCount": 0,
+      "existingLiveCanonicalCount": 0,
+      "sampleTitles": [
+        "Senior Civil/Structural Field Engineer",
+        "Senior Pipe Stress Engineer",
+        "Laboratory Technician",
+        "Senior Project Development Engineer",
+        "Laboratory Technician (Fixed Term)"
+      ],
+      "sampleLocations": [
+        "Saint John, NB, Canada",
+        "Saint John, Canada",
+        "Saint John, NB, Canada",
+        "Saint John, NB, Canada",
+        "Saint John, NB, Canada"
+      ]
+    },
+    "recommendedPromotion": true,
+    "promotionReason": "canada_heavy_created_volume"
+  },
+  {
+    "boardUrl": "https://jobs.ashbyhq.com/lawdepot",
+    "sourceKey": "ashby:lawdepot",
+    "connectorName": "ashby",
+    "token": "lawdepot",
+    "companyNames": [
+      "LawDepot"
+    ],
+    "careerPageUrls": [
+      "https://www.lawdepot.ca/career/"
+    ],
+    "directAtsUrls": [
+      "https://jobs.ashbyhq.com/lawdepot"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link",
+      "career_page_scan"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "input": "https://jobs.ashbyhq.com/lawdepot",
+      "connectorName": "ashby",
+      "token": "lawdepot",
+      "sourceKey": "ashby:lawdepot",
+      "sourceName": "Ashby:lawdepot",
+      "boardUrl": "https://jobs.ashbyhq.com/lawdepot",
+      "source": "token",
+      "pageTitle": "LawDepot Jobs",
+      "fetchedCount": 9,
+      "acceptedCount": 3,
+      "acceptedCanadaCount": 3,
+      "acceptedCanadaRemoteCount": 3,
+      "previewCreatedCount": 2,
+      "previewCreatedCanadaCount": 2,
+      "previewCreatedCanadaRemoteCount": 2,
+      "previewUpdatedCount": 1,
+      "dedupedCount": 1,
+      "rejectedCount": 6,
+      "existingRawCount": 0,
+      "existingActiveMappingCount": 0,
+      "existingLiveCanonicalCount": 0,
+      "sampleTitles": [
+        "Accountant (Part-Time)",
+        "Business Data Analyst",
+        "Content Implementation Specialist",
+        "Data Scientist",
+        "Product Specialist (French)"
+      ],
+      "sampleLocations": [
+        "Edmonton, Onsite",
+        "Edmonton, Hybrid",
+        "Edmonton, Hybrid",
+        "Edmonton, Hybrid",
+        "Canada, Remote"
+      ]
+    },
+    "recommendedPromotion": true,
+    "promotionReason": "canada_dense_small_board"
+  },
+  {
+    "boardUrl": "https://jobs.lever.co/lillio",
+    "sourceKey": "lever:lillio",
+    "connectorName": "lever",
+    "token": "lillio",
+    "companyNames": [
+      "Lillio"
+    ],
+    "careerPageUrls": [
+      "https://www.lillio.com/careers"
+    ],
+    "directAtsUrls": [
+      "https://jobs.lever.co/lillio"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link",
+      "career_page_scan"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "input": "https://jobs.lever.co/lillio",
+      "connectorName": "lever",
+      "token": "lillio",
+      "sourceKey": "lever:lillio",
+      "sourceName": "Lever:lillio",
+      "boardUrl": "https://jobs.lever.co/lillio",
+      "source": "token",
+      "pageTitle": null,
+      "fetchedCount": 0,
+      "acceptedCount": 0,
+      "acceptedCanadaCount": 0,
+      "acceptedCanadaRemoteCount": 0,
+      "previewCreatedCount": 0,
+      "previewCreatedCanadaCount": 0,
+      "previewCreatedCanadaRemoteCount": 0,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 0,
+      "existingRawCount": 0,
+      "existingActiveMappingCount": 0,
+      "existingLiveCanonicalCount": 0,
+      "sampleTitles": [],
+      "sampleLocations": [],
+      "error": "Lever fetch failed for lillio: 404 Not Found"
+    },
+    "recommendedPromotion": false,
+    "promotionReason": "Lever fetch failed for lillio: 404 Not Found"
+  },
+  {
+    "boardUrl": "https://apply.workable.com/meal/",
+    "sourceKey": "workable:meal",
+    "connectorName": "workable",
+    "token": "meal",
+    "companyNames": [
+      "MealSuite"
+    ],
+    "careerPageUrls": [
+      "https://www.mealsuite.com/careers"
+    ],
+    "directAtsUrls": [
+      "https://apply.workable.com/meal/"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link",
+      "career_page_scan"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "input": "https://apply.workable.com/meal/",
+      "connectorName": "workable",
+      "token": "meal",
+      "sourceKey": "workable:meal",
+      "sourceName": "Workable:meal",
+      "boardUrl": "https://apply.workable.com/meal/",
+      "source": "token",
+      "pageTitle": "Meal - Current Openings",
+      "fetchedCount": 0,
+      "acceptedCount": 0,
+      "acceptedCanadaCount": 0,
+      "acceptedCanadaRemoteCount": 0,
+      "previewCreatedCount": 0,
+      "previewCreatedCanadaCount": 0,
+      "previewCreatedCanadaRemoteCount": 0,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 0,
+      "existingRawCount": 0,
+      "existingActiveMappingCount": 0,
+      "existingLiveCanonicalCount": 0,
+      "sampleTitles": [],
+      "sampleLocations": []
+    },
+    "recommendedPromotion": false,
+    "promotionReason": "insufficient_canada_weighted_yield"
+  },
+  {
+    "boardUrl": "https://apply.workable.com/mealsuite/",
+    "sourceKey": "workable:mealsuite",
+    "connectorName": "workable",
+    "token": "mealsuite",
+    "companyNames": [
+      "MealSuite"
+    ],
+    "careerPageUrls": [
+      "https://www.mealsuite.com/careers"
+    ],
+    "directAtsUrls": [
+      "https://apply.workable.com/mealsuite/"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link",
+      "career_page_scan"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "input": "https://apply.workable.com/mealsuite/",
+      "connectorName": "workable",
+      "token": "mealsuite",
+      "sourceKey": "workable:mealsuite",
+      "sourceName": "Workable:mealsuite",
+      "boardUrl": "https://apply.workable.com/mealsuite/",
+      "source": "token",
+      "pageTitle": "MealSuite - Current Openings",
+      "fetchedCount": 31,
+      "acceptedCount": 0,
+      "acceptedCanadaCount": 0,
+      "acceptedCanadaRemoteCount": 0,
+      "previewCreatedCount": 0,
+      "previewCreatedCanadaCount": 0,
+      "previewCreatedCanadaRemoteCount": 0,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 31,
+      "existingRawCount": 0,
+      "existingActiveMappingCount": 0,
+      "existingLiveCanonicalCount": 0,
+      "sampleTitles": [
+        "Account Executive",
+        "Account Executive",
+        "Account Executive",
+        "Account Manager",
+        "CFO (Chief Financial Officer)"
+      ],
+      "sampleLocations": [
+        "Texas",
+        "Ontario",
+        "Ontario",
+        "Ontario",
+        "Ontario"
+      ]
+    },
+    "recommendedPromotion": false,
+    "promotionReason": "insufficient_canada_weighted_yield"
+  },
+  {
+    "boardUrl": "https://apply.workable.com/tentree/",
+    "sourceKey": "workable:tentree",
+    "connectorName": "workable",
+    "token": "tentree",
+    "companyNames": [
+      "tentree"
+    ],
+    "careerPageUrls": [
+      "https://www.tentree.ca/"
+    ],
+    "directAtsUrls": [
+      "https://apply.workable.com/tentree/"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link",
+      "career_page_scan"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "input": "https://apply.workable.com/tentree/",
+      "connectorName": "workable",
+      "token": "tentree",
+      "sourceKey": "workable:tentree",
+      "sourceName": "Workable:tentree",
+      "boardUrl": "https://apply.workable.com/tentree/",
+      "source": "token",
+      "pageTitle": "tentree - Current Openings",
+      "fetchedCount": 3,
+      "acceptedCount": 0,
+      "acceptedCanadaCount": 0,
+      "acceptedCanadaRemoteCount": 0,
+      "previewCreatedCount": 0,
+      "previewCreatedCanadaCount": 0,
+      "previewCreatedCanadaRemoteCount": 0,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 3,
+      "existingRawCount": 0,
+      "existingActiveMappingCount": 0,
+      "existingLiveCanonicalCount": 0,
+      "sampleTitles": [
+        "Marketing Manager (18-Month Maternity Leave Contract)",
+        "Merchant",
+        "Part-time Customer Care Associate"
+      ],
+      "sampleLocations": [
+        "British Columbia",
+        "British Columbia",
+        "British Columbia"
+      ]
+    },
+    "recommendedPromotion": false,
+    "promotionReason": "insufficient_canada_weighted_yield"
+  }
+]

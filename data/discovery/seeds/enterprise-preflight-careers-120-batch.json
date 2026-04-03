@@ -1,0 +1,32 @@
+[
+  {
+    "boardUrl": "https://careers.telusdigital.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+    "sourceKey": "successfactors:careers.telusdigital.com",
+    "connectorName": "successfactors",
+    "token": "careers.telusdigital.com",
+    "companyNames": [
+      "Telus International"
+    ],
+    "discoveredFromQueries": [],
+    "searchResultUrls": [],
+    "careerPageUrls": [],
+    "directAtsUrls": [
+      "https://careers.telusdigital.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "fetchedCount": 0,
+      "acceptedCount": 0,
+      "previewCreatedCount": 0,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 0,
+      "sampleTitles": [],
+      "sampleLocations": []
+    },
+    "recommendedPromotion": false
+  }
+]

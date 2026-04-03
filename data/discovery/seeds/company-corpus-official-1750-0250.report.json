@@ -1,0 +1,74 @@
+{
+  "generatedAt": "2026-03-30T14:54:14.658Z",
+  "corpusCount": 4000,
+  "batchOffset": 1750,
+  "batchLimit": 250,
+  "companiesProcessed": 250,
+  "companiesResolved": 250,
+  "companiesUnresolved": 0,
+  "domainsSeeded": 251,
+  "careerPagesDetected": 506,
+  "directAtsUrlsDetected": 10,
+  "candidatesDiscovered": 10,
+  "newCandidates": 9,
+  "skippedKnownCandidates": 1,
+  "promotedSources": [
+    {
+      "sourceKey": "greenhouse:hatchcareers",
+      "connectorName": "greenhouse",
+      "companyNames": [
+        "Hatch"
+      ],
+      "previewCreatedCount": 3,
+      "previewCreatedCanadaCount": 3,
+      "acceptedCount": 3,
+      "acceptedCanadaCount": 3,
+      "boardUrl": "https://job-boards.greenhouse.io/hatchcareers",
+      "promotionReason": "canada_heavy_created_volume"
+    }
+  ],
+  "rejectedSources": [
+    {
+      "sourceKey": "greenhouse:bitmex",
+      "connectorName": "greenhouse",
+      "companyNames": [
+        "BitMEX"
+      ],
+      "boardUrl": "https://job-boards.greenhouse.io/bitmex",
+      "error": null,
+      "previewCreatedCount": 0,
+      "acceptedCanadaCount": 0
+    },
+    {
+      "sourceKey": "greenhouse:hatchhirescontractors",
+      "connectorName": "greenhouse",
+      "companyNames": [
+        "Hatch"
+      ],
+      "boardUrl": "https://job-boards.greenhouse.io/hatchhirescontractors",
+      "error": null,
+      "previewCreatedCount": 0,
+      "acceptedCanadaCount": 0
+    }
+  ],
+  "ingestSummaries": [
+    {
+      "sourceKey": "greenhouse:hatchcareers",
+      "connectorKey": "greenhouse:hatchcareers",
+      "sourceName": "Greenhouse:hatchcareers",
+      "fetchedCount": 4,
+      "acceptedCount": 3,
+      "canonicalCreatedCount": 2,
+      "canonicalUpdatedCount": 1,
+      "dedupedCount": 1,
+      "canonicalCreatedCanadaCount": 2,
+      "canonicalCreatedCanadaRemoteCount": 2
+    }
+  ],
+  "resolutionSummary": {
+    "catalog": 0,
+    "cache": 0,
+    "search": 250,
+    "unresolved": 0
+  }
+}

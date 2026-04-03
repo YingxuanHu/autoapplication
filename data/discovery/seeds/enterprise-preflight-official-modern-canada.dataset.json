@@ -1,0 +1,48 @@
+[
+  {
+    "boardUrl": "https://jobs.ashbyhq.com/float",
+    "sourceKey": "ashby:float",
+    "connectorName": "ashby",
+    "token": "float",
+    "companyNames": [
+      "Float Financial"
+    ],
+    "discoveredFromQueries": [],
+    "searchResultUrls": [],
+    "careerPageUrls": [
+      "https://floatfinancial.com/careers/"
+    ],
+    "directAtsUrls": [
+      "https://jobs.ashbyhq.com/float"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link",
+      "career_page_scan"
+    ],
+    "knownStatus": null,
+    "url": "https://jobs.ashbyhq.com/float"
+  },
+  {
+    "boardUrl": "https://job-boards.greenhouse.io/alayacare",
+    "sourceKey": "greenhouse:alayacare",
+    "connectorName": "greenhouse",
+    "token": "alayacare",
+    "companyNames": [
+      "AlayaCare"
+    ],
+    "discoveredFromQueries": [],
+    "searchResultUrls": [],
+    "careerPageUrls": [
+      "https://alayacare.com/careers/"
+    ],
+    "directAtsUrls": [
+      "https://job-boards.greenhouse.io/alayacare"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link",
+      "career_page_scan"
+    ],
+    "knownStatus": null,
+    "url": "https://job-boards.greenhouse.io/alayacare"
+  }
+]

@@ -1,0 +1,2823 @@
+[
+  {
+    "displayName": "Scotiabank",
+    "aliases": [
+      "Scotiabank"
+    ],
+    "totalLiveCount": 450,
+    "canadaRelevantCount": 284,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": "Scotiabank",
+    "score": 2993
+  },
+  {
+    "displayName": "RBC",
+    "aliases": [
+      "0000050007 Royal Bank of Canada",
+      "Royal Bank of Canada"
+    ],
+    "totalLiveCount": 222,
+    "canadaRelevantCount": 221,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": "RBC",
+    "score": 2165
+  },
+  {
+    "displayName": "Capital One",
+    "aliases": [
+      "Capital One",
+      "Capitalone"
+    ],
+    "totalLiveCount": 793,
+    "canadaRelevantCount": 25,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": "Capital One",
+    "score": 1399.5
+  },
+  {
+    "displayName": "Huawei Technologies Canada Co.,",
+    "aliases": [
+      "Huawei Technologies Canada Co.,",
+      "Huawei Technologies Canada Co., Ltd."
+    ],
+    "totalLiveCount": 107,
+    "canadaRelevantCount": 107,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": null,
+    "score": 1016.5
+  },
+  {
+    "displayName": "Bank of Montreal",
+    "aliases": [
+      "Bank of Montreal"
+    ],
+    "totalLiveCount": 105,
+    "canadaRelevantCount": 104,
+    "canadaRemoteCount": 2,
+    "matchedCatalogName": null,
+    "score": 1000.5
+  },
+  {
+    "displayName": "AtkinsRéalis",
+    "aliases": [
+      "AtkinsRéalis Canada",
+      "AtkinsRéalis Canada Inc."
+    ],
+    "totalLiveCount": 80,
+    "canadaRelevantCount": 80,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": "AtkinsRéalis",
+    "score": 806
+  },
+  {
+    "displayName": "Telus",
+    "aliases": [
+      "TELUS"
+    ],
+    "totalLiveCount": 48,
+    "canadaRelevantCount": 48,
+    "canadaRemoteCount": 18,
+    "matchedCatalogName": "Telus",
+    "score": 570
+  },
+  {
+    "displayName": "Affirm",
+    "aliases": [
+      "Affirm"
+    ],
+    "totalLiveCount": 98,
+    "canadaRelevantCount": 37,
+    "canadaRemoteCount": 37,
+    "matchedCatalogName": null,
+    "score": 559
+  },
+  {
+    "displayName": "Dropbox",
+    "aliases": [
+      "Dropbox"
+    ],
+    "totalLiveCount": 66,
+    "canadaRelevantCount": 28,
+    "canadaRemoteCount": 25,
+    "matchedCatalogName": null,
+    "score": 403
+  },
+  {
+    "displayName": "Lyft",
+    "aliases": [
+      "Lyft"
+    ],
+    "totalLiveCount": 75,
+    "canadaRelevantCount": 31,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": "Lyft",
+    "score": 370.5
+  },
+  {
+    "displayName": "Intact Financial",
+    "aliases": [
+      "Intact Financial",
+      "Intact Financial Corporation"
+    ],
+    "totalLiveCount": 33,
+    "canadaRelevantCount": 33,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": "Intact Financial",
+    "score": 353.5
+  },
+  {
+    "displayName": "Amazon",
+    "aliases": [
+      "Amazon"
+    ],
+    "totalLiveCount": 94,
+    "canadaRelevantCount": 22,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": "Amazon",
+    "score": 347
+  },
+  {
+    "displayName": "Candu Energy",
+    "aliases": [
+      "Candu Energy",
+      "Candu Energy Inc."
+    ],
+    "totalLiveCount": 36,
+    "canadaRelevantCount": 36,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": null,
+    "score": 342
+  },
+  {
+    "displayName": "The Manufacturers Life Insurance",
+    "aliases": [
+      "Company 1 - The Manufacturers Life Insurance Company",
+      "The Manufacturers Life Insurance"
+    ],
+    "totalLiveCount": 36,
+    "canadaRelevantCount": 35,
+    "canadaRemoteCount": 1,
+    "matchedCatalogName": null,
+    "score": 342
+  },
+  {
+    "displayName": "Meta",
+    "aliases": [
+      "Meta"
+    ],
+    "totalLiveCount": 199,
+    "canadaRelevantCount": 1,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": "Meta",
+    "score": 336.5
+  },
+  {
+    "displayName": "Canadian Imperial Bank of Commerce",
+    "aliases": [
+      "Canadian Imperial Bank of Commerce",
+      "Canadian Imperial Bank of Commerce (Canada)"
+    ],
+    "totalLiveCount": 33,
+    "canadaRelevantCount": 33,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": null,
+    "score": 313.5
+  },
+  {
+    "displayName": "Okta",
+    "aliases": [
+      "Okta"
+    ],
+    "totalLiveCount": 64,
+    "canadaRelevantCount": 18,
+    "canadaRemoteCount": 4,
+    "matchedCatalogName": "Okta",
+    "score": 304
+  },
+  {
+    "displayName": "GitLab",
+    "aliases": [
+      "GitLab"
+    ],
+    "totalLiveCount": 50,
+    "canadaRelevantCount": 21,
+    "canadaRemoteCount": 18,
+    "matchedCatalogName": null,
+    "score": 302
+  },
+  {
+    "displayName": "PointClickCare",
+    "aliases": [
+      "PointClickCare",
+      "Pointclickcare"
+    ],
+    "totalLiveCount": 38,
+    "canadaRelevantCount": 21,
+    "canadaRemoteCount": 10,
+    "matchedCatalogName": "PointClickCare",
+    "score": 300
+  },
+  {
+    "displayName": "Relay Financial",
+    "aliases": [
+      "Relayfi"
+    ],
+    "totalLiveCount": 22,
+    "canadaRelevantCount": 18,
+    "canadaRemoteCount": 17,
+    "matchedCatalogName": "Relay Financial",
+    "score": 293
+  },
+  {
+    "displayName": "TD Bank",
+    "aliases": [
+      "TD Bank"
+    ],
+    "totalLiveCount": 26,
+    "canadaRelevantCount": 23,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": "TD Bank",
+    "score": 287
+  },
+  {
+    "displayName": "Bell",
+    "aliases": [
+      "Bell"
+    ],
+    "totalLiveCount": 32,
+    "canadaRelevantCount": 24,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": "Bell",
+    "score": 280
+  },
+  {
+    "displayName": "StackAdapt",
+    "aliases": [
+      "StackAdapt"
+    ],
+    "totalLiveCount": 26,
+    "canadaRelevantCount": 15,
+    "canadaRemoteCount": 14,
+    "matchedCatalogName": "StackAdapt",
+    "score": 266
+  },
+  {
+    "displayName": "PricewaterhouseCoopers",
+    "aliases": [
+      "PricewaterhouseCoopers",
+      "PricewaterhouseCoopers LLP"
+    ],
+    "totalLiveCount": 26,
+    "canadaRelevantCount": 26,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": null,
+    "score": 247
+  },
+  {
+    "displayName": "Themis Solutions",
+    "aliases": [
+      "Themis Solutions",
+      "Themis Solutions Inc."
+    ],
+    "totalLiveCount": 26,
+    "canadaRelevantCount": 25,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": null,
+    "score": 239
+  },
+  {
+    "displayName": "Samsara",
+    "aliases": [
+      "Samsara"
+    ],
+    "totalLiveCount": 71,
+    "canadaRelevantCount": 16,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": null,
+    "score": 234.5
+  },
+  {
+    "displayName": "The Toronto-Dominion Bank",
+    "aliases": [
+      "The Toronto-Dominion Bank",
+      "The Toronto-Dominion Bank (Canada)"
+    ],
+    "totalLiveCount": 18,
+    "canadaRelevantCount": 18,
+    "canadaRemoteCount": 18,
+    "matchedCatalogName": null,
+    "score": 230
+  },
+  {
+    "displayName": "Wealthsimple",
+    "aliases": [
+      "Wealthsimple"
+    ],
+    "totalLiveCount": 13,
+    "canadaRelevantCount": 13,
+    "canadaRemoteCount": 11,
+    "matchedCatalogName": "Wealthsimple",
+    "score": 221.5
+  },
+  {
+    "displayName": "League",
+    "aliases": [
+      "League",
+      "League Inc."
+    ],
+    "totalLiveCount": 15,
+    "canadaRelevantCount": 12,
+    "canadaRemoteCount": 10,
+    "matchedCatalogName": "League",
+    "score": 208.5
+  },
+  {
+    "displayName": "BDO Canada",
+    "aliases": [
+      "BDO Canada",
+      "BDO Canada LLP"
+    ],
+    "totalLiveCount": 16,
+    "canadaRelevantCount": 16,
+    "canadaRemoteCount": 4,
+    "matchedCatalogName": "BDO Canada",
+    "score": 204
+  },
+  {
+    "displayName": "SAP",
+    "aliases": [
+      "SAP"
+    ],
+    "totalLiveCount": 34,
+    "canadaRelevantCount": 14,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": "SAP",
+    "score": 197
+  },
+  {
+    "displayName": "Robinhood",
+    "aliases": [
+      "Robinhood"
+    ],
+    "totalLiveCount": 64,
+    "canadaRelevantCount": 12,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": null,
+    "score": 192
+  },
+  {
+    "displayName": "Cohere",
+    "aliases": [
+      "Cohere"
+    ],
+    "totalLiveCount": 38,
+    "canadaRelevantCount": 12,
+    "canadaRemoteCount": 11,
+    "matchedCatalogName": null,
+    "score": 191
+  },
+  {
+    "displayName": "BMO",
+    "aliases": [
+      "BMO"
+    ],
+    "totalLiveCount": 15,
+    "canadaRelevantCount": 13,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": "BMO",
+    "score": 190.5
+  },
+  {
+    "displayName": "Desjardins",
+    "aliases": [
+      "Federation Caisses Desjardins"
+    ],
+    "totalLiveCount": 10,
+    "canadaRelevantCount": 10,
+    "canadaRemoteCount": 10,
+    "matchedCatalogName": "Desjardins",
+    "score": 189
+  },
+  {
+    "displayName": "AtkinsRéalis",
+    "aliases": [
+      "Slihrms"
+    ],
+    "totalLiveCount": 15,
+    "canadaRelevantCount": 15,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": "AtkinsRéalis",
+    "score": 188.5
+  },
+  {
+    "displayName": "CGI",
+    "aliases": [
+      "CGI"
+    ],
+    "totalLiveCount": 17,
+    "canadaRelevantCount": 15,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": "CGI",
+    "score": 187.5
+  },
+  {
+    "displayName": "Coinbase",
+    "aliases": [
+      "Coinbase"
+    ],
+    "totalLiveCount": 71,
+    "canadaRelevantCount": 7,
+    "canadaRemoteCount": 6,
+    "matchedCatalogName": null,
+    "score": 185.5
+  },
+  {
+    "displayName": "FortisBC",
+    "aliases": [
+      "FortisBC"
+    ],
+    "totalLiveCount": 15,
+    "canadaRelevantCount": 15,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": "FortisBC",
+    "score": 184.5
+  },
+  {
+    "displayName": "Deloitte",
+    "aliases": [
+      "Deloitte"
+    ],
+    "totalLiveCount": 26,
+    "canadaRelevantCount": 11,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": "Deloitte",
+    "score": 179
+  },
+  {
+    "displayName": "Float Financial",
+    "aliases": [
+      "Float"
+    ],
+    "totalLiveCount": 9,
+    "canadaRelevantCount": 9,
+    "canadaRemoteCount": 9,
+    "matchedCatalogName": "Float Financial",
+    "score": 177.5
+  },
+  {
+    "displayName": "Manulife",
+    "aliases": [
+      "Manulife"
+    ],
+    "totalLiveCount": 14,
+    "canadaRelevantCount": 14,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": "Manulife",
+    "score": 173
+  },
+  {
+    "displayName": "Ontario Teachers",
+    "aliases": [
+      "Ontario Teachers' Pension Plan Board"
+    ],
+    "totalLiveCount": 13,
+    "canadaRelevantCount": 13,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": "Ontario Teachers",
+    "score": 163.5
+  },
+  {
+    "displayName": "KPMG",
+    "aliases": [
+      "KPMG"
+    ],
+    "totalLiveCount": 15,
+    "canadaRelevantCount": 11,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": "KPMG",
+    "score": 162.5
+  },
+  {
+    "displayName": "Aecon",
+    "aliases": [
+      "Aecon"
+    ],
+    "totalLiveCount": 23,
+    "canadaRelevantCount": 10,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": "Aecon",
+    "score": 160.5
+  },
+  {
+    "displayName": "Interac",
+    "aliases": [
+      "Interac",
+      "Interac Corp."
+    ],
+    "totalLiveCount": 12,
+    "canadaRelevantCount": 12,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": "Interac",
+    "score": 154
+  },
+  {
+    "displayName": "Mastercard",
+    "aliases": [
+      "Mastercard"
+    ],
+    "totalLiveCount": 23,
+    "canadaRelevantCount": 8,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": "Mastercard",
+    "score": 150.5
+  },
+  {
+    "displayName": "100 Intel",
+    "aliases": [
+      "100 Intel",
+      "100 Intel Corporation"
+    ],
+    "totalLiveCount": 95,
+    "canadaRelevantCount": 1,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": null,
+    "score": 150.5
+  },
+  {
+    "displayName": "RBC Dominion Securities",
+    "aliases": [
+      "0000050599 RBC Dominion Securities Inc.",
+      "RBC Dominion Securities"
+    ],
+    "totalLiveCount": 17,
+    "canadaRelevantCount": 15,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": null,
+    "score": 145.5
+  },
+  {
+    "displayName": "TD",
+    "aliases": [
+      "TD"
+    ],
+    "totalLiveCount": 15,
+    "canadaRelevantCount": 15,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": null,
+    "score": 142.5
+  },
+  {
+    "displayName": "Desjardins",
+    "aliases": [
+      "Desjardins Securities"
+    ],
+    "totalLiveCount": 6,
+    "canadaRelevantCount": 6,
+    "canadaRemoteCount": 6,
+    "matchedCatalogName": "Desjardins",
+    "score": 139
+  },
+  {
+    "displayName": "Workday",
+    "aliases": [
+      "Workday",
+      "Workday,",
+      "Workday, Inc."
+    ],
+    "totalLiveCount": 21,
+    "canadaRelevantCount": 10,
+    "canadaRemoteCount": 7,
+    "matchedCatalogName": null,
+    "score": 137.5
+  },
+  {
+    "displayName": "Mastercard",
+    "aliases": [
+      "Canada: Mastercard Canada ULC, MCI",
+      "Mastercard Canada ULC, MCI"
+    ],
+    "totalLiveCount": 9,
+    "canadaRelevantCount": 9,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": "Mastercard",
+    "score": 137.5
+  },
+  {
+    "displayName": "Scale AI",
+    "aliases": [
+      "Scale AI"
+    ],
+    "totalLiveCount": 80,
+    "canadaRelevantCount": 1,
+    "canadaRemoteCount": 1,
+    "matchedCatalogName": null,
+    "score": 136
+  },
+  {
+    "displayName": "Sun Life",
+    "aliases": [
+      "Sun Life"
+    ],
+    "totalLiveCount": 10,
+    "canadaRelevantCount": 10,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": "Sun Life",
+    "score": 135
+  },
+  {
+    "displayName": "Magna International",
+    "aliases": [
+      "Magna International",
+      "Magna International,",
+      "Magna International, Inc"
+    ],
+    "totalLiveCount": 14,
+    "canadaRelevantCount": 14,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": null,
+    "score": 133
+  },
+  {
+    "displayName": "TSX",
+    "aliases": [
+      "TSX",
+      "TSX Inc."
+    ],
+    "totalLiveCount": 14,
+    "canadaRelevantCount": 14,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": null,
+    "score": 133
+  },
+  {
+    "displayName": "Asana",
+    "aliases": [
+      "Asana"
+    ],
+    "totalLiveCount": 35,
+    "canadaRelevantCount": 10,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": null,
+    "score": 132.5
+  },
+  {
+    "displayName": "Google",
+    "aliases": [
+      "Google"
+    ],
+    "totalLiveCount": 52,
+    "canadaRelevantCount": 3,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": "Google",
+    "score": 132
+  },
+  {
+    "displayName": "PwC",
+    "aliases": [
+      "PwC"
+    ],
+    "totalLiveCount": 21,
+    "canadaRelevantCount": 6,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": "PwC",
+    "score": 131.5
+  },
+  {
+    "displayName": "Thomson Reuters",
+    "aliases": [
+      "Thomson Reuters",
+      "Thomsonreuters"
+    ],
+    "totalLiveCount": 11,
+    "canadaRelevantCount": 8,
+    "canadaRemoteCount": 3,
+    "matchedCatalogName": "Thomson Reuters",
+    "score": 129.5
+  },
+  {
+    "displayName": "Reddit",
+    "aliases": [
+      "Reddit"
+    ],
+    "totalLiveCount": 37,
+    "canadaRelevantCount": 6,
+    "canadaRemoteCount": 6,
+    "matchedCatalogName": null,
+    "score": 126.5
+  },
+  {
+    "displayName": "Desjardins",
+    "aliases": [
+      "Desjardins Technology Group"
+    ],
+    "totalLiveCount": 5,
+    "canadaRelevantCount": 5,
+    "canadaRemoteCount": 5,
+    "matchedCatalogName": "Desjardins",
+    "score": 126.5
+  },
+  {
+    "displayName": "BlackBerry",
+    "aliases": [
+      "2000 BlackBerry Limited",
+      "BlackBerry"
+    ],
+    "totalLiveCount": 9,
+    "canadaRelevantCount": 9,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": "BlackBerry",
+    "score": 125.5
+  },
+  {
+    "displayName": "Vancouver Coastal Health",
+    "aliases": [
+      "Vancouver Coastal Health"
+    ],
+    "totalLiveCount": 17,
+    "canadaRelevantCount": 12,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": null,
+    "score": 121.5
+  },
+  {
+    "displayName": "Brex",
+    "aliases": [
+      "Brex"
+    ],
+    "totalLiveCount": 35,
+    "canadaRelevantCount": 7,
+    "canadaRemoteCount": 2,
+    "matchedCatalogName": null,
+    "score": 119.5
+  },
+  {
+    "displayName": "Canadian Tire",
+    "aliases": [
+      "Canadian Tire Corporation,",
+      "Canadian Tire Corporation, Limited"
+    ],
+    "totalLiveCount": 8,
+    "canadaRelevantCount": 8,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": "Canadian Tire",
+    "score": 116
+  },
+  {
+    "displayName": "Canadian Tire",
+    "aliases": [
+      "Canadian Tire",
+      "Canadian Tire Corporation"
+    ],
+    "totalLiveCount": 8,
+    "canadaRelevantCount": 8,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": "Canadian Tire",
+    "score": 116
+  },
+  {
+    "displayName": "Salesforce",
+    "aliases": [
+      "Salesforce"
+    ],
+    "totalLiveCount": 26,
+    "canadaRelevantCount": 3,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": "Salesforce",
+    "score": 115
+  },
+  {
+    "displayName": "Canada Pension Plan Investment Board",
+    "aliases": [
+      "Canada Pension Plan Investment Board"
+    ],
+    "totalLiveCount": 12,
+    "canadaRelevantCount": 12,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": null,
+    "score": 114
+  },
+  {
+    "displayName": "Marqeta",
+    "aliases": [
+      "Marqeta"
+    ],
+    "totalLiveCount": 15,
+    "canadaRelevantCount": 8,
+    "canadaRemoteCount": 7,
+    "matchedCatalogName": null,
+    "score": 112.5
+  },
+  {
+    "displayName": "AtkinsRéalis",
+    "aliases": [
+      "AtkinsRéalis"
+    ],
+    "totalLiveCount": 7,
+    "canadaRelevantCount": 7,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": "AtkinsRéalis",
+    "score": 112.5
+  },
+  {
+    "displayName": "Kinaxis",
+    "aliases": [
+      "Kinaxis",
+      "Kinaxis Inc."
+    ],
+    "totalLiveCount": 15,
+    "canadaRelevantCount": 6,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": "Kinaxis",
+    "score": 110.5
+  },
+  {
+    "displayName": "Stantec",
+    "aliases": [
+      "Stantec"
+    ],
+    "totalLiveCount": 8,
+    "canadaRelevantCount": 6,
+    "canadaRemoteCount": 1,
+    "matchedCatalogName": "Stantec",
+    "score": 109
+  },
+  {
+    "displayName": "Sardine",
+    "aliases": [
+      "Sardine"
+    ],
+    "totalLiveCount": 10,
+    "canadaRelevantCount": 8,
+    "canadaRemoteCount": 8,
+    "matchedCatalogName": null,
+    "score": 108
+  },
+  {
+    "displayName": "Vanta",
+    "aliases": [
+      "Vanta"
+    ],
+    "totalLiveCount": 32,
+    "canadaRelevantCount": 5,
+    "canadaRemoteCount": 5,
+    "matchedCatalogName": null,
+    "score": 108
+  },
+  {
+    "displayName": "Vention",
+    "aliases": [
+      "Vention"
+    ],
+    "totalLiveCount": 5,
+    "canadaRelevantCount": 5,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": "Vention",
+    "score": 107.5
+  },
+  {
+    "displayName": "DoorDash",
+    "aliases": [
+      "DoorDash"
+    ],
+    "totalLiveCount": 42,
+    "canadaRelevantCount": 5,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": "DoorDash",
+    "score": 107
+  },
+  {
+    "displayName": "Arista Networks",
+    "aliases": [
+      "Arista Networks"
+    ],
+    "totalLiveCount": 22,
+    "canadaRelevantCount": 2,
+    "canadaRemoteCount": 1,
+    "matchedCatalogName": "Arista Networks",
+    "score": 105
+  },
+  {
+    "displayName": "10 CAE Canada",
+    "aliases": [
+      "10 CAE Canada",
+      "10 CAE Canada Inc"
+    ],
+    "totalLiveCount": 11,
+    "canadaRelevantCount": 11,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": null,
+    "score": 104.5
+  },
+  {
+    "displayName": "BMO Nesbitt Burns",
+    "aliases": [
+      "BMO Nesbitt Burns",
+      "BMO Nesbitt Burns Inc."
+    ],
+    "totalLiveCount": 11,
+    "canadaRelevantCount": 11,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": null,
+    "score": 104.5
+  },
+  {
+    "displayName": "NVIDIA Canada Dev.",
+    "aliases": [
+      "CA01 NVIDIA Canada Dev. Inc.",
+      "NVIDIA Canada Dev."
+    ],
+    "totalLiveCount": 11,
+    "canadaRelevantCount": 11,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": null,
+    "score": 104.5
+  },
+  {
+    "displayName": "WSP Canada",
+    "aliases": [
+      "WSP Canada"
+    ],
+    "totalLiveCount": 11,
+    "canadaRelevantCount": 11,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": null,
+    "score": 104.5
+  },
+  {
+    "displayName": "Ramp",
+    "aliases": [
+      "Ramp"
+    ],
+    "totalLiveCount": 28,
+    "canadaRelevantCount": 5,
+    "canadaRemoteCount": 5,
+    "matchedCatalogName": null,
+    "score": 102
+  },
+  {
+    "displayName": "Desjardins",
+    "aliases": [
+      "Desjardins"
+    ],
+    "totalLiveCount": 3,
+    "canadaRelevantCount": 3,
+    "canadaRemoteCount": 3,
+    "matchedCatalogName": "Desjardins",
+    "score": 101.5
+  },
+  {
+    "displayName": "Autodesk",
+    "aliases": [
+      "Autodesk"
+    ],
+    "totalLiveCount": 14,
+    "canadaRelevantCount": 9,
+    "canadaRemoteCount": 1,
+    "matchedCatalogName": null,
+    "score": 101
+  },
+  {
+    "displayName": "Bank of Canada",
+    "aliases": [
+      "Bank of Canada"
+    ],
+    "totalLiveCount": 6,
+    "canadaRelevantCount": 6,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": "Bank of Canada",
+    "score": 97
+  },
+  {
+    "displayName": "WSP",
+    "aliases": [
+      "WSP"
+    ],
+    "totalLiveCount": 7,
+    "canadaRelevantCount": 5,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": "WSP",
+    "score": 96.5
+  },
+  {
+    "displayName": "Relay Financial",
+    "aliases": [
+      "Relay"
+    ],
+    "totalLiveCount": 3,
+    "canadaRelevantCount": 3,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": "Relay Financial",
+    "score": 93.5
+  },
+  {
+    "displayName": "Uber",
+    "aliases": [
+      "Uber"
+    ],
+    "totalLiveCount": 26,
+    "canadaRelevantCount": 3,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": "Uber",
+    "score": 93
+  },
+  {
+    "displayName": "Telus International",
+    "aliases": [
+      "TELUS Digital (Cda)",
+      "TELUS Digital (Cda) Inc."
+    ],
+    "totalLiveCount": 3,
+    "canadaRelevantCount": 3,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": "Telus International",
+    "score": 92.5
+  },
+  {
+    "displayName": "Mastercard",
+    "aliases": [
+      "Canada: Mastercard Technologies Canada ULC",
+      "Mastercard Technologies Canada"
+    ],
+    "totalLiveCount": 4,
+    "canadaRelevantCount": 4,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": "Mastercard",
+    "score": 90
+  },
+  {
+    "displayName": "Top Hat",
+    "aliases": [
+      "Top Hat"
+    ],
+    "totalLiveCount": 2,
+    "canadaRelevantCount": 2,
+    "canadaRemoteCount": 2,
+    "matchedCatalogName": "Top Hat",
+    "score": 90
+  },
+  {
+    "displayName": "Desjardins",
+    "aliases": [
+      "Caisse Desjardins de la Chaudière"
+    ],
+    "totalLiveCount": 2,
+    "canadaRelevantCount": 2,
+    "canadaRemoteCount": 2,
+    "matchedCatalogName": "Desjardins",
+    "score": 89
+  },
+  {
+    "displayName": "Rogers",
+    "aliases": [
+      "Rogers"
+    ],
+    "totalLiveCount": 3,
+    "canadaRelevantCount": 3,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": "Rogers",
+    "score": 88.5
+  },
+  {
+    "displayName": "Harvey",
+    "aliases": [
+      "Harvey"
+    ],
+    "totalLiveCount": 32,
+    "canadaRelevantCount": 3,
+    "canadaRemoteCount": 3,
+    "matchedCatalogName": null,
+    "score": 86
+  },
+  {
+    "displayName": "Plaid",
+    "aliases": [
+      "Plaid"
+    ],
+    "totalLiveCount": 42,
+    "canadaRelevantCount": 2,
+    "canadaRemoteCount": 1,
+    "matchedCatalogName": "Plaid",
+    "score": 86
+  },
+  {
+    "displayName": "Sun Life Assurance Company of Canada",
+    "aliases": [
+      "Sun Life Assurance Company of Canada"
+    ],
+    "totalLiveCount": 9,
+    "canadaRelevantCount": 9,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": null,
+    "score": 85.5
+  },
+  {
+    "displayName": "ContactMonkey",
+    "aliases": [
+      "ContactMonkey"
+    ],
+    "totalLiveCount": 2,
+    "canadaRelevantCount": 2,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": "ContactMonkey",
+    "score": 84
+  },
+  {
+    "displayName": "Plusgrade",
+    "aliases": [
+      "Plusgrade"
+    ],
+    "totalLiveCount": 2,
+    "canadaRelevantCount": 2,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": "Plusgrade",
+    "score": 84
+  },
+  {
+    "displayName": "Geotab",
+    "aliases": [
+      "Geotab"
+    ],
+    "totalLiveCount": 3,
+    "canadaRelevantCount": 2,
+    "canadaRemoteCount": 1,
+    "matchedCatalogName": "Geotab",
+    "score": 83.5
+  },
+  {
+    "displayName": "CIBC",
+    "aliases": [
+      "CIBC"
+    ],
+    "totalLiveCount": 2,
+    "canadaRelevantCount": 2,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": "CIBC",
+    "score": 83
+  },
+  {
+    "displayName": "Lifeworks / TELUS Health",
+    "aliases": [
+      "CO121 TELUS Health Technology Solutions Ltd.",
+      "TELUS Health Technology Solutions"
+    ],
+    "totalLiveCount": 2,
+    "canadaRelevantCount": 2,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": "Lifeworks / TELUS Health",
+    "score": 83
+  },
+  {
+    "displayName": "Lifeworks / TELUS Health",
+    "aliases": [
+      "CO101 TELUS Health (Canada) Ltd.",
+      "TELUS Health"
+    ],
+    "totalLiveCount": 2,
+    "canadaRelevantCount": 2,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": "Lifeworks / TELUS Health",
+    "score": 83
+  },
+  {
+    "displayName": "Linear",
+    "aliases": [
+      "Linear"
+    ],
+    "totalLiveCount": 7,
+    "canadaRelevantCount": 6,
+    "canadaRemoteCount": 6,
+    "matchedCatalogName": null,
+    "score": 81.5
+  },
+  {
+    "displayName": "EY",
+    "aliases": [
+      "EY"
+    ],
+    "totalLiveCount": 9,
+    "canadaRelevantCount": 2,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": "EY",
+    "score": 81.5
+  },
+  {
+    "displayName": "Telus International",
+    "aliases": [
+      "TELUS Digital"
+    ],
+    "totalLiveCount": 6,
+    "canadaRelevantCount": 1,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": "Telus International",
+    "score": 81
+  },
+  {
+    "displayName": "Equinix Canada",
+    "aliases": [
+      "00102 Equinix Canada Ltd.",
+      "Equinix Canada"
+    ],
+    "totalLiveCount": 6,
+    "canadaRelevantCount": 6,
+    "canadaRemoteCount": 6,
+    "matchedCatalogName": null,
+    "score": 80
+  },
+  {
+    "displayName": "Guidewire Software Canada",
+    "aliases": [
+      "Guidewire Software Canada",
+      "Guidewire Software Canada ULC"
+    ],
+    "totalLiveCount": 6,
+    "canadaRelevantCount": 6,
+    "canadaRemoteCount": 6,
+    "matchedCatalogName": null,
+    "score": 80
+  },
+  {
+    "displayName": "iA Financial Group",
+    "aliases": [
+      "IA Financial Services",
+      "IA Financial Services Inc."
+    ],
+    "totalLiveCount": 4,
+    "canadaRelevantCount": 4,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": "iA Financial Group",
+    "score": 80
+  },
+  {
+    "displayName": "MDA Space",
+    "aliases": [
+      "MDA Space Canada"
+    ],
+    "totalLiveCount": 2,
+    "canadaRelevantCount": 2,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": "MDA Space",
+    "score": 79
+  },
+  {
+    "displayName": "Stripe",
+    "aliases": [
+      "Stripe"
+    ],
+    "totalLiveCount": 7,
+    "canadaRelevantCount": 2,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": "Stripe",
+    "score": 78.5
+  },
+  {
+    "displayName": "Bank of Canada",
+    "aliases": [
+      "Business Devel. Bank of Canada"
+    ],
+    "totalLiveCount": 4,
+    "canadaRelevantCount": 4,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": "Bank of Canada",
+    "score": 78
+  },
+  {
+    "displayName": "Enbridge",
+    "aliases": [
+      "Enbridge",
+      "Enbridge Inc."
+    ],
+    "totalLiveCount": 4,
+    "canadaRelevantCount": 4,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": "Enbridge",
+    "score": 78
+  },
+  {
+    "displayName": "Riskfuel",
+    "aliases": [
+      "Riskfuel"
+    ],
+    "totalLiveCount": 1,
+    "canadaRelevantCount": 1,
+    "canadaRemoteCount": 1,
+    "matchedCatalogName": "Riskfuel",
+    "score": 77.5
+  },
+  {
+    "displayName": "Rippling",
+    "aliases": [
+      "Rippling"
+    ],
+    "totalLiveCount": 46,
+    "canadaRelevantCount": 1,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": null,
+    "score": 77
+  },
+  {
+    "displayName": "Nagarro",
+    "aliases": [
+      "Nagarro"
+    ],
+    "totalLiveCount": 33,
+    "canadaRelevantCount": 2,
+    "canadaRemoteCount": 2,
+    "matchedCatalogName": null,
+    "score": 76.5
+  },
+  {
+    "displayName": "Desjardins",
+    "aliases": [
+      "Caisse Desjardins du Val-Saint-François"
+    ],
+    "totalLiveCount": 1,
+    "canadaRelevantCount": 1,
+    "canadaRemoteCount": 1,
+    "matchedCatalogName": "Desjardins",
+    "score": 76.5
+  },
+  {
+    "displayName": "Desjardins",
+    "aliases": [
+      "Caisse Desjardins Canadienne Italienne"
+    ],
+    "totalLiveCount": 1,
+    "canadaRelevantCount": 1,
+    "canadaRemoteCount": 1,
+    "matchedCatalogName": "Desjardins",
+    "score": 76.5
+  },
+  {
+    "displayName": "Desjardins",
+    "aliases": [
+      "Caisse Desjardins de Cap-Rouge - Saint-Augustin",
+      "Caisse Desjardins de Cap-Rouge Saint-Augustin"
+    ],
+    "totalLiveCount": 1,
+    "canadaRelevantCount": 1,
+    "canadaRemoteCount": 1,
+    "matchedCatalogName": "Desjardins",
+    "score": 76.5
+  },
+  {
+    "displayName": "Desjardins",
+    "aliases": [
+      "Desjardins Global Asset Management"
+    ],
+    "totalLiveCount": 1,
+    "canadaRelevantCount": 1,
+    "canadaRemoteCount": 1,
+    "matchedCatalogName": "Desjardins",
+    "score": 76.5
+  },
+  {
+    "displayName": "Desjardins",
+    "aliases": [
+      "Caisse Desjardins de Rivière-du-Loup"
+    ],
+    "totalLiveCount": 1,
+    "canadaRelevantCount": 1,
+    "canadaRemoteCount": 1,
+    "matchedCatalogName": "Desjardins",
+    "score": 76.5
+  },
+  {
+    "displayName": "Desjardins",
+    "aliases": [
+      "Caisse Desjardins de La Côte-de-Beaupré"
+    ],
+    "totalLiveCount": 1,
+    "canadaRelevantCount": 1,
+    "canadaRemoteCount": 1,
+    "matchedCatalogName": "Desjardins",
+    "score": 76.5
+  },
+  {
+    "displayName": "Desjardins",
+    "aliases": [
+      "Caisse Desjardins de la Manicouagan"
+    ],
+    "totalLiveCount": 1,
+    "canadaRelevantCount": 1,
+    "canadaRemoteCount": 1,
+    "matchedCatalogName": "Desjardins",
+    "score": 76.5
+  },
+  {
+    "displayName": "Desjardins",
+    "aliases": [
+      "Caisse Desjardins de La Nouvelle-Beauce"
+    ],
+    "totalLiveCount": 1,
+    "canadaRelevantCount": 1,
+    "canadaRemoteCount": 1,
+    "matchedCatalogName": "Desjardins",
+    "score": 76.5
+  },
+  {
+    "displayName": "Desjardins",
+    "aliases": [
+      "Caisse Desjardins des Technologies"
+    ],
+    "totalLiveCount": 1,
+    "canadaRelevantCount": 1,
+    "canadaRemoteCount": 1,
+    "matchedCatalogName": "Desjardins",
+    "score": 76.5
+  },
+  {
+    "displayName": "Desjardins",
+    "aliases": [
+      "Caisse Desjardins du Carrefour des lacs"
+    ],
+    "totalLiveCount": 1,
+    "canadaRelevantCount": 1,
+    "canadaRemoteCount": 1,
+    "matchedCatalogName": "Desjardins",
+    "score": 76.5
+  },
+  {
+    "displayName": "Desjardins",
+    "aliases": [
+      "Caisse Desjardins Bordeaux-Cartierville-Saint-Laurent"
+    ],
+    "totalLiveCount": 1,
+    "canadaRelevantCount": 1,
+    "canadaRemoteCount": 1,
+    "matchedCatalogName": "Desjardins",
+    "score": 76.5
+  },
+  {
+    "displayName": "Desjardins",
+    "aliases": [
+      "Caisse Desjardins Haut-Richelieu"
+    ],
+    "totalLiveCount": 1,
+    "canadaRelevantCount": 1,
+    "canadaRemoteCount": 1,
+    "matchedCatalogName": "Desjardins",
+    "score": 76.5
+  },
+  {
+    "displayName": "Desjardins",
+    "aliases": [
+      "Caisse Desjardins du Centre-Nord de Montréal"
+    ],
+    "totalLiveCount": 1,
+    "canadaRelevantCount": 1,
+    "canadaRemoteCount": 1,
+    "matchedCatalogName": "Desjardins",
+    "score": 76.5
+  },
+  {
+    "displayName": "Desjardins",
+    "aliases": [
+      "Caisse Desjardins de Bellechasse"
+    ],
+    "totalLiveCount": 1,
+    "canadaRelevantCount": 1,
+    "canadaRemoteCount": 1,
+    "matchedCatalogName": "Desjardins",
+    "score": 76.5
+  },
+  {
+    "displayName": "Desjardins",
+    "aliases": [
+      "Caisse Desjardins de Lachine"
+    ],
+    "totalLiveCount": 1,
+    "canadaRelevantCount": 1,
+    "canadaRemoteCount": 1,
+    "matchedCatalogName": "Desjardins",
+    "score": 76.5
+  },
+  {
+    "displayName": "Desjardins",
+    "aliases": [
+      "Desjardins General Insurance Group"
+    ],
+    "totalLiveCount": 1,
+    "canadaRelevantCount": 1,
+    "canadaRemoteCount": 1,
+    "matchedCatalogName": "Desjardins",
+    "score": 76.5
+  },
+  {
+    "displayName": "Desjardins",
+    "aliases": [
+      "Caisse Desjardins du Coeur-de-la-Côte-Nord"
+    ],
+    "totalLiveCount": 1,
+    "canadaRelevantCount": 1,
+    "canadaRemoteCount": 1,
+    "matchedCatalogName": "Desjardins",
+    "score": 76.5
+  },
+  {
+    "displayName": "Desjardins",
+    "aliases": [
+      "Caisse Desjardins de Chibougamau"
+    ],
+    "totalLiveCount": 1,
+    "canadaRelevantCount": 1,
+    "canadaRemoteCount": 1,
+    "matchedCatalogName": "Desjardins",
+    "score": 76.5
+  },
+  {
+    "displayName": "Desjardins",
+    "aliases": [
+      "Caisse Desjardins de Vaudreuil-Soulanges"
+    ],
+    "totalLiveCount": 1,
+    "canadaRelevantCount": 1,
+    "canadaRemoteCount": 1,
+    "matchedCatalogName": "Desjardins",
+    "score": 76.5
+  },
+  {
+    "displayName": "Loblaw Companies",
+    "aliases": [
+      "Loblaw Companies"
+    ],
+    "totalLiveCount": 8,
+    "canadaRelevantCount": 8,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": null,
+    "score": 76
+  },
+  {
+    "displayName": "OMERS Administration",
+    "aliases": [
+      "OMERS Administration",
+      "OMERS Administration Corporation"
+    ],
+    "totalLiveCount": 8,
+    "canadaRelevantCount": 8,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": null,
+    "score": 76
+  },
+  {
+    "displayName": "University Health Network",
+    "aliases": [
+      "University Health Network"
+    ],
+    "totalLiveCount": 8,
+    "canadaRelevantCount": 8,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": null,
+    "score": 76
+  },
+  {
+    "displayName": "BMO Bank N.A.",
+    "aliases": [
+      "BMO Bank N.A."
+    ],
+    "totalLiveCount": 40,
+    "canadaRelevantCount": 2,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": null,
+    "score": 76
+  },
+  {
+    "displayName": "Airbnb",
+    "aliases": [
+      "Airbnb"
+    ],
+    "totalLiveCount": 40,
+    "canadaRelevantCount": 1,
+    "canadaRemoteCount": 1,
+    "matchedCatalogName": null,
+    "score": 76
+  },
+  {
+    "displayName": "Abnormal",
+    "aliases": [
+      "Abnormal"
+    ],
+    "totalLiveCount": 32,
+    "canadaRelevantCount": 2,
+    "canadaRemoteCount": 2,
+    "matchedCatalogName": null,
+    "score": 75
+  },
+  {
+    "displayName": "Benevity",
+    "aliases": [
+      "Benevity"
+    ],
+    "totalLiveCount": 1,
+    "canadaRelevantCount": 1,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": "Benevity",
+    "score": 74.5
+  },
+  {
+    "displayName": "Jane App",
+    "aliases": [
+      "Jane"
+    ],
+    "totalLiveCount": 1,
+    "canadaRelevantCount": 1,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": "Jane App",
+    "score": 74.5
+  },
+  {
+    "displayName": "Jobber",
+    "aliases": [
+      "Jobber"
+    ],
+    "totalLiveCount": 1,
+    "canadaRelevantCount": 1,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": "Jobber",
+    "score": 74.5
+  },
+  {
+    "displayName": "TouchBistro",
+    "aliases": [
+      "TouchBistro"
+    ],
+    "totalLiveCount": 1,
+    "canadaRelevantCount": 1,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": "TouchBistro",
+    "score": 74.5
+  },
+  {
+    "displayName": "RTX",
+    "aliases": [
+      "RTX"
+    ],
+    "totalLiveCount": 11,
+    "canadaRelevantCount": 7,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": null,
+    "score": 72.5
+  },
+  {
+    "displayName": "Capital Power",
+    "aliases": [
+      "Capital Power",
+      "Capital Power Corporation"
+    ],
+    "totalLiveCount": 3,
+    "canadaRelevantCount": 3,
+    "canadaRemoteCount": 1,
+    "matchedCatalogName": "Capital Power",
+    "score": 71.5
+  },
+  {
+    "displayName": "Mastercard",
+    "aliases": [
+      "Belgium: Mastercard Europe SA"
+    ],
+    "totalLiveCount": 2,
+    "canadaRelevantCount": 2,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": "Mastercard",
+    "score": 71
+  },
+  {
+    "displayName": "iA Financial Group",
+    "aliases": [
+      "iA Financial Group"
+    ],
+    "totalLiveCount": 3,
+    "canadaRelevantCount": 3,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": "iA Financial Group",
+    "score": 70.5
+  },
+  {
+    "displayName": "AlayaCare",
+    "aliases": [
+      "AlayaCare"
+    ],
+    "totalLiveCount": 1,
+    "canadaRelevantCount": 1,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": "AlayaCare",
+    "score": 69.5
+  },
+  {
+    "displayName": "Coveo",
+    "aliases": [
+      "Coveo"
+    ],
+    "totalLiveCount": 1,
+    "canadaRelevantCount": 1,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": "Coveo",
+    "score": 69.5
+  },
+  {
+    "displayName": "Definity Financial",
+    "aliases": [
+      "Definity"
+    ],
+    "totalLiveCount": 1,
+    "canadaRelevantCount": 1,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": "Definity Financial",
+    "score": 69.5
+  },
+  {
+    "displayName": "Telesat",
+    "aliases": [
+      "Telesat"
+    ],
+    "totalLiveCount": 1,
+    "canadaRelevantCount": 1,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": "Telesat",
+    "score": 69.5
+  },
+  {
+    "displayName": "ENMAX",
+    "aliases": [
+      "Enmax"
+    ],
+    "totalLiveCount": 3,
+    "canadaRelevantCount": 3,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": "ENMAX",
+    "score": 68.5
+  },
+  {
+    "displayName": "Manulife",
+    "aliases": [
+      "Company 58 - Manulife Bank of Canada",
+      "Manulife Bank of Canada"
+    ],
+    "totalLiveCount": 3,
+    "canadaRelevantCount": 3,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": "Manulife",
+    "score": 68.5
+  },
+  {
+    "displayName": "Northland Power",
+    "aliases": [
+      "NPI Northland Power",
+      "NPI Northland Power Inc."
+    ],
+    "totalLiveCount": 3,
+    "canadaRelevantCount": 3,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": "Northland Power",
+    "score": 68.5
+  },
+  {
+    "displayName": "Canada Workday",
+    "aliases": [
+      "Canada Workday",
+      "Canada Workday ULC"
+    ],
+    "totalLiveCount": 5,
+    "canadaRelevantCount": 5,
+    "canadaRemoteCount": 5,
+    "matchedCatalogName": null,
+    "score": 67.5
+  },
+  {
+    "displayName": "CAPREIT",
+    "aliases": [
+      "CAPREIT"
+    ],
+    "totalLiveCount": 7,
+    "canadaRelevantCount": 7,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": null,
+    "score": 66.5
+  },
+  {
+    "displayName": "Hydro One",
+    "aliases": [
+      "Hydro One Networks",
+      "Hydro One Networks Inc"
+    ],
+    "totalLiveCount": 3,
+    "canadaRelevantCount": 2,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": "Hydro One",
+    "score": 66.5
+  },
+  {
+    "displayName": "Autodesk Canada",
+    "aliases": [
+      "Autodesk Canada",
+      "Autodesk Canada Co."
+    ],
+    "totalLiveCount": 6,
+    "canadaRelevantCount": 6,
+    "canadaRemoteCount": 1,
+    "matchedCatalogName": null,
+    "score": 65
+  },
+  {
+    "displayName": "Thomson Reuters",
+    "aliases": [
+      "CAN002 Thomson Reuters Canada Ltd",
+      "Thomson Reuters Canada"
+    ],
+    "totalLiveCount": 2,
+    "canadaRelevantCount": 2,
+    "canadaRemoteCount": 2,
+    "matchedCatalogName": "Thomson Reuters",
+    "score": 65
+  },
+  {
+    "displayName": "Enbridge",
+    "aliases": [
+      "Enbridge Employee Services CAN"
+    ],
+    "totalLiveCount": 2,
+    "canadaRelevantCount": 2,
+    "canadaRemoteCount": 1,
+    "matchedCatalogName": "Enbridge",
+    "score": 62
+  },
+  {
+    "displayName": "iA Financial Group",
+    "aliases": [
+      "Industrial Alliance, Auto and Home Insurance",
+      "Industrial Alliance, Auto and Home Insurance Inc."
+    ],
+    "totalLiveCount": 2,
+    "canadaRelevantCount": 2,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": "iA Financial Group",
+    "score": 61
+  },
+  {
+    "displayName": "iA Financial Group",
+    "aliases": [
+      "Industrial Alliance Investment Management",
+      "Industrial Alliance Investment Management Inc."
+    ],
+    "totalLiveCount": 2,
+    "canadaRelevantCount": 2,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": "iA Financial Group",
+    "score": 61
+  },
+  {
+    "displayName": "Jerry.ai",
+    "aliases": [
+      "Jerry.ai"
+    ],
+    "totalLiveCount": 11,
+    "canadaRelevantCount": 4,
+    "canadaRemoteCount": 2,
+    "matchedCatalogName": null,
+    "score": 59.5
+  },
+  {
+    "displayName": "Bank of Canada",
+    "aliases": [
+      "Business Development Bank of Canada"
+    ],
+    "totalLiveCount": 2,
+    "canadaRelevantCount": 2,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": "Bank of Canada",
+    "score": 59
+  },
+  {
+    "displayName": "Canadian Tire",
+    "aliases": [
+      "Canadian Tire Bank"
+    ],
+    "totalLiveCount": 2,
+    "canadaRelevantCount": 2,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": "Canadian Tire",
+    "score": 59
+  },
+  {
+    "displayName": "TC Energy",
+    "aliases": [
+      "TC Energy"
+    ],
+    "totalLiveCount": 2,
+    "canadaRelevantCount": 2,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": "TC Energy",
+    "score": 59
+  },
+  {
+    "displayName": "NerdWallet",
+    "aliases": [
+      "NerdWallet"
+    ],
+    "totalLiveCount": 6,
+    "canadaRelevantCount": 4,
+    "canadaRemoteCount": 4,
+    "matchedCatalogName": null,
+    "score": 58
+  },
+  {
+    "displayName": "Genetec",
+    "aliases": [
+      "Genetec"
+    ],
+    "totalLiveCount": 6,
+    "canadaRelevantCount": 6,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": null,
+    "score": 57
+  },
+  {
+    "displayName": "Figma",
+    "aliases": [
+      "Figma"
+    ],
+    "totalLiveCount": 27,
+    "canadaRelevantCount": 1,
+    "canadaRemoteCount": 1,
+    "matchedCatalogName": null,
+    "score": 56.5
+  },
+  {
+    "displayName": "Sobeys",
+    "aliases": [
+      "Sobeys"
+    ],
+    "totalLiveCount": 1,
+    "canadaRelevantCount": 1,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": "Sobeys",
+    "score": 55.5
+  },
+  {
+    "displayName": "Ample Insight",
+    "aliases": [
+      "Ample Insight",
+      "Ample Insight Inc."
+    ],
+    "totalLiveCount": 4,
+    "canadaRelevantCount": 4,
+    "canadaRemoteCount": 4,
+    "matchedCatalogName": null,
+    "score": 55
+  },
+  {
+    "displayName": "Mercury",
+    "aliases": [
+      "Mercury"
+    ],
+    "totalLiveCount": 26,
+    "canadaRelevantCount": 1,
+    "canadaRemoteCount": 1,
+    "matchedCatalogName": null,
+    "score": 55
+  },
+  {
+    "displayName": "Questrade",
+    "aliases": [
+      "Questrade Financial Group"
+    ],
+    "totalLiveCount": 1,
+    "canadaRelevantCount": 1,
+    "canadaRemoteCount": 1,
+    "matchedCatalogName": "Questrade",
+    "score": 54.5
+  },
+  {
+    "displayName": "Xsolla",
+    "aliases": [
+      "Xsolla"
+    ],
+    "totalLiveCount": 5,
+    "canadaRelevantCount": 4,
+    "canadaRemoteCount": 3,
+    "matchedCatalogName": null,
+    "score": 53.5
+  },
+  {
+    "displayName": "Enbridge",
+    "aliases": [
+      "Enbridge Gas Distribution",
+      "Enbridge Gas Distribution Inc."
+    ],
+    "totalLiveCount": 1,
+    "canadaRelevantCount": 1,
+    "canadaRemoteCount": 1,
+    "matchedCatalogName": "Enbridge",
+    "score": 52.5
+  },
+  {
+    "displayName": "Fortinet",
+    "aliases": [
+      "Fortinet"
+    ],
+    "totalLiveCount": 4,
+    "canadaRelevantCount": 4,
+    "canadaRemoteCount": 1,
+    "matchedCatalogName": "Fortinet",
+    "score": 51
+  },
+  {
+    "displayName": "Bank of Canada",
+    "aliases": [
+      "Fairstone Bank of Canada"
+    ],
+    "totalLiveCount": 1,
+    "canadaRelevantCount": 1,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": "Bank of Canada",
+    "score": 49.5
+  },
+  {
+    "displayName": "BDO Canada",
+    "aliases": [
+      "BDO"
+    ],
+    "totalLiveCount": 1,
+    "canadaRelevantCount": 1,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": "BDO Canada",
+    "score": 49.5
+  },
+  {
+    "displayName": "Brookfield",
+    "aliases": [
+      "Brookfield Infrastructure",
+      "Brookfield Infrastructure Holdings (Canada) Inc"
+    ],
+    "totalLiveCount": 1,
+    "canadaRelevantCount": 1,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": "Brookfield",
+    "score": 49.5
+  },
+  {
+    "displayName": "Brookfield",
+    "aliases": [
+      "Brookfield Asset Management Private Institutional Capital Adviser (Canada), LP",
+      "Brookfield Asset Management Private Institutional Capital Adviser ,"
+    ],
+    "totalLiveCount": 1,
+    "canadaRelevantCount": 1,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": "Brookfield",
+    "score": 49.5
+  },
+  {
+    "displayName": "Brookfield",
+    "aliases": [
+      "Brookfield Asset Manager (UK) Holdco",
+      "Brookfield Asset Manager (UK) Holdco Limited"
+    ],
+    "totalLiveCount": 1,
+    "canadaRelevantCount": 1,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": "Brookfield",
+    "score": 49.5
+  },
+  {
+    "displayName": "Brookfield",
+    "aliases": [
+      "Brookfield Asset Management",
+      "Brookfield Asset Management ULC"
+    ],
+    "totalLiveCount": 1,
+    "canadaRelevantCount": 1,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": "Brookfield",
+    "score": 49.5
+  },
+  {
+    "displayName": "Bruce Power",
+    "aliases": [
+      "BPLP Bruce Power L.P."
+    ],
+    "totalLiveCount": 1,
+    "canadaRelevantCount": 1,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": "Bruce Power",
+    "score": 49.5
+  },
+  {
+    "displayName": "Lightspeed",
+    "aliases": [
+      "Lightspeed Commerce"
+    ],
+    "totalLiveCount": 1,
+    "canadaRelevantCount": 1,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": "Lightspeed",
+    "score": 49.5
+  },
+  {
+    "displayName": "NAV CANADA",
+    "aliases": [
+      "NAV CANADA"
+    ],
+    "totalLiveCount": 1,
+    "canadaRelevantCount": 1,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": "NAV CANADA",
+    "score": 49.5
+  },
+  {
+    "displayName": "Northland Power",
+    "aliases": [
+      "Northland Power"
+    ],
+    "totalLiveCount": 1,
+    "canadaRelevantCount": 1,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": "Northland Power",
+    "score": 49.5
+  },
+  {
+    "displayName": "Stelco",
+    "aliases": [
+      "Stelco",
+      "Stelco Inc."
+    ],
+    "totalLiveCount": 1,
+    "canadaRelevantCount": 1,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": "Stelco",
+    "score": 49.5
+  },
+  {
+    "displayName": "IHS MARKIT CANADA",
+    "aliases": [
+      "1804 IHS MARKIT CANADA ULC",
+      "IHS MARKIT CANADA"
+    ],
+    "totalLiveCount": 4,
+    "canadaRelevantCount": 4,
+    "canadaRemoteCount": 2,
+    "matchedCatalogName": null,
+    "score": 49
+  },
+  {
+    "displayName": "Procurify",
+    "aliases": [
+      "Procurify"
+    ],
+    "totalLiveCount": 4,
+    "canadaRelevantCount": 4,
+    "canadaRemoteCount": 2,
+    "matchedCatalogName": null,
+    "score": 49
+  },
+  {
+    "displayName": "S&P Global",
+    "aliases": [
+      "1803 S&amp;P GLOBAL CANADA CORP.",
+      "S&P GLOBAL CANADA"
+    ],
+    "totalLiveCount": 4,
+    "canadaRelevantCount": 4,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": "S&P Global",
+    "score": 48
+  },
+  {
+    "displayName": "Moneris",
+    "aliases": [
+      "Moneris"
+    ],
+    "totalLiveCount": 5,
+    "canadaRelevantCount": 5,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": null,
+    "score": 47.5
+  },
+  {
+    "displayName": "OPGI Management Limited Partnership",
+    "aliases": [
+      "OPGI Management Limited Partnership"
+    ],
+    "totalLiveCount": 5,
+    "canadaRelevantCount": 5,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": null,
+    "score": 47.5
+  },
+  {
+    "displayName": "Paladin Security",
+    "aliases": [
+      "Paladin Security"
+    ],
+    "totalLiveCount": 5,
+    "canadaRelevantCount": 5,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": null,
+    "score": 47.5
+  },
+  {
+    "displayName": "Ross Video",
+    "aliases": [
+      "Ross Video"
+    ],
+    "totalLiveCount": 5,
+    "canadaRelevantCount": 5,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": null,
+    "score": 47.5
+  },
+  {
+    "displayName": "Sun Life of Canada Corporate",
+    "aliases": [
+      "Sun Life of Canada - Corporate",
+      "Sun Life of Canada Corporate"
+    ],
+    "totalLiveCount": 5,
+    "canadaRelevantCount": 5,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": null,
+    "score": 47.5
+  },
+  {
+    "displayName": "Suncor Energy",
+    "aliases": [
+      "1160 Suncor Energy Inc.",
+      "Suncor Energy"
+    ],
+    "totalLiveCount": 5,
+    "canadaRelevantCount": 5,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": null,
+    "score": 47.5
+  },
+  {
+    "displayName": "ThermoFisher Scientific",
+    "aliases": [
+      "Thermo Fisher Scientific",
+      "ThermoFisher Scientific"
+    ],
+    "totalLiveCount": 9,
+    "canadaRelevantCount": 4,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": null,
+    "score": 45.5
+  },
+  {
+    "displayName": "Sierra",
+    "aliases": [
+      "Sierra"
+    ],
+    "totalLiveCount": 25,
+    "canadaRelevantCount": 1,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": null,
+    "score": 45.5
+  },
+  {
+    "displayName": "RBC Capital Markets,",
+    "aliases": [
+      "0000050176 RBC Capital Markets, LLC",
+      "RBC Capital Markets,"
+    ],
+    "totalLiveCount": 19,
+    "canadaRelevantCount": 2,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": null,
+    "score": 44.5
+  },
+  {
+    "displayName": "Exacare",
+    "aliases": [
+      "Exacare",
+      "Exacare Inc"
+    ],
+    "totalLiveCount": 6,
+    "canadaRelevantCount": 3,
+    "canadaRemoteCount": 2,
+    "matchedCatalogName": null,
+    "score": 44
+  },
+  {
+    "displayName": "VeriPark",
+    "aliases": [
+      "VeriPark"
+    ],
+    "totalLiveCount": 4,
+    "canadaRelevantCount": 3,
+    "canadaRemoteCount": 3,
+    "matchedCatalogName": null,
+    "score": 44
+  },
+  {
+    "displayName": "Hitachi",
+    "aliases": [
+      "Hitachi"
+    ],
+    "totalLiveCount": 5,
+    "canadaRelevantCount": 3,
+    "canadaRemoteCount": 2,
+    "matchedCatalogName": null,
+    "score": 42.5
+  },
+  {
+    "displayName": "Equinix Services",
+    "aliases": [
+      "00491 Equinix (Canada) Services Ltd.",
+      "Equinix Services"
+    ],
+    "totalLiveCount": 3,
+    "canadaRelevantCount": 3,
+    "canadaRemoteCount": 3,
+    "matchedCatalogName": null,
+    "score": 42.5
+  },
+  {
+    "displayName": "Medfar",
+    "aliases": [
+      "Medfar"
+    ],
+    "totalLiveCount": 3,
+    "canadaRelevantCount": 3,
+    "canadaRemoteCount": 3,
+    "matchedCatalogName": null,
+    "score": 42.5
+  },
+  {
+    "displayName": "Vosyn",
+    "aliases": [
+      "Vosyn"
+    ],
+    "totalLiveCount": 3,
+    "canadaRelevantCount": 3,
+    "canadaRemoteCount": 3,
+    "matchedCatalogName": null,
+    "score": 42.5
+  },
+  {
+    "displayName": "Allstate",
+    "aliases": [
+      "Allstate Insurance Company of Canada - Permanent",
+      "Allstate Insurance Company of Canada Permanent"
+    ],
+    "totalLiveCount": 3,
+    "canadaRelevantCount": 3,
+    "canadaRemoteCount": 3,
+    "matchedCatalogName": "Allstate",
+    "score": 41.5
+  },
+  {
+    "displayName": "Chainguard",
+    "aliases": [
+      "Chainguard"
+    ],
+    "totalLiveCount": 17,
+    "canadaRelevantCount": 1,
+    "canadaRemoteCount": 1,
+    "matchedCatalogName": null,
+    "score": 41.5
+  },
+  {
+    "displayName": "GM",
+    "aliases": [
+      "GM"
+    ],
+    "totalLiveCount": 5,
+    "canadaRelevantCount": 4,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": null,
+    "score": 39.5
+  },
+  {
+    "displayName": "Alpaca",
+    "aliases": [
+      "Alpaca"
+    ],
+    "totalLiveCount": 5,
+    "canadaRelevantCount": 3,
+    "canadaRemoteCount": 1,
+    "matchedCatalogName": null,
+    "score": 39.5
+  },
+  {
+    "displayName": "7shifts",
+    "aliases": [
+      "7shifts"
+    ],
+    "totalLiveCount": 3,
+    "canadaRelevantCount": 3,
+    "canadaRemoteCount": 2,
+    "matchedCatalogName": null,
+    "score": 39.5
+  },
+  {
+    "displayName": "Clario",
+    "aliases": [
+      "Clario"
+    ],
+    "totalLiveCount": 3,
+    "canadaRelevantCount": 3,
+    "canadaRemoteCount": 2,
+    "matchedCatalogName": null,
+    "score": 39.5
+  },
+  {
+    "displayName": "Instacart",
+    "aliases": [
+      "Instacart",
+      "instacart"
+    ],
+    "totalLiveCount": 7,
+    "canadaRelevantCount": 2,
+    "canadaRemoteCount": 1,
+    "matchedCatalogName": "Instacart",
+    "score": 39.5
+  },
+  {
+    "displayName": "HERE Technologies",
+    "aliases": [
+      "HERE Technologies"
+    ],
+    "totalLiveCount": 15,
+    "canadaRelevantCount": 2,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": null,
+    "score": 38.5
+  },
+  {
+    "displayName": "Associated Engineering",
+    "aliases": [
+      "Associated Engineering"
+    ],
+    "totalLiveCount": 4,
+    "canadaRelevantCount": 4,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": null,
+    "score": 38
+  },
+  {
+    "displayName": "GFL Environmental",
+    "aliases": [
+      "GFL Environmental"
+    ],
+    "totalLiveCount": 4,
+    "canadaRelevantCount": 4,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": null,
+    "score": 38
+  },
+  {
+    "displayName": "PPI Management",
+    "aliases": [
+      "PPI Management",
+      "PPI Management Inc."
+    ],
+    "totalLiveCount": 4,
+    "canadaRelevantCount": 4,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": null,
+    "score": 38
+  },
+  {
+    "displayName": "Public Sector Pension Investment Board",
+    "aliases": [
+      "Public Sector Pension Investment Board"
+    ],
+    "totalLiveCount": 4,
+    "canadaRelevantCount": 4,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": null,
+    "score": 38
+  },
+  {
+    "displayName": "RBC Investor Services Trust",
+    "aliases": [
+      "0000055528 RBC Investor Services Trust",
+      "RBC Investor Services Trust"
+    ],
+    "totalLiveCount": 4,
+    "canadaRelevantCount": 4,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": null,
+    "score": 38
+  },
+  {
+    "displayName": "Seaspan Marine Transportation",
+    "aliases": [
+      "Seaspan Marine Transportation"
+    ],
+    "totalLiveCount": 4,
+    "canadaRelevantCount": 4,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": null,
+    "score": 38
+  },
+  {
+    "displayName": "University of British Columbia",
+    "aliases": [
+      "University of British Columbia"
+    ],
+    "totalLiveCount": 4,
+    "canadaRelevantCount": 4,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": null,
+    "score": 38
+  },
+  {
+    "displayName": "Best Buy Canada",
+    "aliases": [
+      "Best Buy Canada"
+    ],
+    "totalLiveCount": 3,
+    "canadaRelevantCount": 3,
+    "canadaRemoteCount": 1,
+    "matchedCatalogName": null,
+    "score": 36.5
+  },
+  {
+    "displayName": "Introhive",
+    "aliases": [
+      "Introhive"
+    ],
+    "totalLiveCount": 3,
+    "canadaRelevantCount": 3,
+    "canadaRemoteCount": 1,
+    "matchedCatalogName": null,
+    "score": 36.5
+  },
+  {
+    "displayName": "Kong",
+    "aliases": [
+      "Kong"
+    ],
+    "totalLiveCount": 3,
+    "canadaRelevantCount": 3,
+    "canadaRemoteCount": 1,
+    "matchedCatalogName": null,
+    "score": 36.5
+  },
+  {
+    "displayName": "MQ Referrals Only",
+    "aliases": [
+      "MQ Referrals Only"
+    ],
+    "totalLiveCount": 3,
+    "canadaRelevantCount": 3,
+    "canadaRemoteCount": 1,
+    "matchedCatalogName": null,
+    "score": 36.5
+  },
+  {
+    "displayName": "Narvar",
+    "aliases": [
+      "Narvar"
+    ],
+    "totalLiveCount": 3,
+    "canadaRelevantCount": 3,
+    "canadaRemoteCount": 1,
+    "matchedCatalogName": null,
+    "score": 36.5
+  },
+  {
+    "displayName": "Braze",
+    "aliases": [
+      "Braze"
+    ],
+    "totalLiveCount": 13,
+    "canadaRelevantCount": 2,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": null,
+    "score": 35.5
+  },
+  {
+    "displayName": "CIBC Bank USA",
+    "aliases": [
+      "CIBC Bank USA"
+    ],
+    "totalLiveCount": 18,
+    "canadaRelevantCount": 1,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": null,
+    "score": 35
+  },
+  {
+    "displayName": "Broadridge",
+    "aliases": [
+      "Broadridge"
+    ],
+    "totalLiveCount": 7,
+    "canadaRelevantCount": 3,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": null,
+    "score": 34.5
+  },
+  {
+    "displayName": "Cognizant",
+    "aliases": [
+      "Cognizant"
+    ],
+    "totalLiveCount": 7,
+    "canadaRelevantCount": 3,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": null,
+    "score": 34.5
+  },
+  {
+    "displayName": "Grafana Labs",
+    "aliases": [
+      "Grafana Labs"
+    ],
+    "totalLiveCount": 5,
+    "canadaRelevantCount": 2,
+    "canadaRemoteCount": 2,
+    "matchedCatalogName": null,
+    "score": 34.5
+  },
+  {
+    "displayName": "N3xt Jobs",
+    "aliases": [
+      "N3xt Jobs"
+    ],
+    "totalLiveCount": 5,
+    "canadaRelevantCount": 2,
+    "canadaRemoteCount": 2,
+    "matchedCatalogName": null,
+    "score": 34.5
+  },
+  {
+    "displayName": "Allied Universal",
+    "aliases": [
+      "Allied Universal"
+    ],
+    "totalLiveCount": 5,
+    "canadaRelevantCount": 3,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": null,
+    "score": 31.5
+  },
+  {
+    "displayName": "UNAVAILABLE",
+    "aliases": [
+      "UNAVAILABLE"
+    ],
+    "totalLiveCount": 5,
+    "canadaRelevantCount": 2,
+    "canadaRemoteCount": 1,
+    "matchedCatalogName": null,
+    "score": 31.5
+  },
+  {
+    "displayName": "Clickhouse",
+    "aliases": [
+      "Clickhouse"
+    ],
+    "totalLiveCount": 3,
+    "canadaRelevantCount": 2,
+    "canadaRemoteCount": 2,
+    "matchedCatalogName": null,
+    "score": 31.5
+  },
+  {
+    "displayName": "Carta",
+    "aliases": [
+      "Carta"
+    ],
+    "totalLiveCount": 10,
+    "canadaRelevantCount": 2,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": null,
+    "score": 31
+  },
+  {
+    "displayName": "Nokia Global",
+    "aliases": [
+      "Nokia Global"
+    ],
+    "totalLiveCount": 4,
+    "canadaRelevantCount": 3,
+    "canadaRemoteCount": 0,
+    "matchedCatalogName": null,
+    "score": 30
+  },
+  {
+    "displayName": "Thumbtack",
+    "aliases": [
+      "Thumbtack"
+    ],
+    "totalLiveCount": 4,
+    "canadaRelevantCount": 2,
+    "canadaRemoteCount": 1,
+    "matchedCatalogName": null,
+    "score": 30
+  },
+  {
+    "displayName": "TTEC Digital",
+    "aliases": [
+      "TTEC Digital"
+    ],
+    "totalLiveCount": 4,
+    "canadaRelevantCount": 2,
+    "canadaRemoteCount": 1,
+    "matchedCatalogName": null,
+    "score": 30
+  },
+  {
+    "displayName": "A.Team",
+    "aliases": [
+      "A.Team"
+    ],
+    "totalLiveCount": 2,
+    "canadaRelevantCount": 2,
+    "canadaRemoteCount": 2,
+    "matchedCatalogName": null,
+    "score": 30
+  },
+  {
+    "displayName": "Accesa & RaRo",
+    "aliases": [
+      "Accesa & RaRo"
+    ],
+    "totalLiveCount": 2,
+    "canadaRelevantCount": 2,
+    "canadaRemoteCount": 2,
+    "matchedCatalogName": null,
+    "score": 30
+  },
+  {
+    "displayName": "Alignerr",
+    "aliases": [
+      "Alignerr"
+    ],
+    "totalLiveCount": 2,
+    "canadaRelevantCount": 2,
+    "canadaRemoteCount": 2,
+    "matchedCatalogName": null,
+    "score": 30
+  },
+  {
+    "displayName": "Directive",
+    "aliases": [
+      "Directive"
+    ],
+    "totalLiveCount": 2,
+    "canadaRelevantCount": 2,
+    "canadaRemoteCount": 2,
+    "matchedCatalogName": null,
+    "score": 30
+  },
+  {
+    "displayName": "JLIConsulting",
+    "aliases": [
+      "JLIConsulting"
+    ],
+    "totalLiveCount": 2,
+    "canadaRelevantCount": 2,
+    "canadaRemoteCount": 2,
+    "matchedCatalogName": null,
+    "score": 30
+  },
+  {
+    "displayName": "Maximus Health",
+    "aliases": [
+      "Maximus Health",
+      "Maximus Health,",
+      "Maximus Health, Inc."
+    ],
+    "totalLiveCount": 2,
+    "canadaRelevantCount": 2,
+    "canadaRemoteCount": 2,
+    "matchedCatalogName": null,
+    "score": 30
+  },
+  {
+    "displayName": "Mitre Media",
+    "aliases": [
+      "Mitre Media"
+    ],
+    "totalLiveCount": 2,
+    "canadaRelevantCount": 2,
+    "canadaRemoteCount": 2,
+    "matchedCatalogName": null,
+    "score": 30
+  },
+  {
+    "displayName": "Nesto Cloud",
+    "aliases": [
+      "Nesto Cloud"
+    ],
+    "totalLiveCount": 2,
+    "canadaRelevantCount": 2,
+    "canadaRemoteCount": 2,
+    "matchedCatalogName": null,
+    "score": 30
+  },
+  {
+    "displayName": "Nesto Group",
+    "aliases": [
+      "Nesto Group"
+    ],
+    "totalLiveCount": 2,
+    "canadaRelevantCount": 2,
+    "canadaRemoteCount": 2,
+    "matchedCatalogName": null,
+    "score": 30
+  }
+]

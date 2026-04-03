@@ -3,6 +3,72 @@ import { DEMO_USER_ID, PAGE_SIZE } from "@/lib/constants";
 import type { Prisma } from "@/generated/prisma/client";
 import { DEMO_SOURCE_NAMES } from "@/lib/job-links";
 
+// ─── Full-text search ────────────────────────────────────────────────────────
+
+/**
+ * Convert a user search string into a PostgreSQL tsquery.
+ * Splits on whitespace, strips non-alphanumeric chars, joins with &.
+ * Each token is suffixed with :* for prefix matching ("eng" → "eng:*").
+ */
+function toTsQuery(raw: string): string {
+  const tokens = raw
+    .trim()
+    .split(/\s+/)
+    .map((t) => t.replace(/[^a-zA-Z0-9]/g, ""))
+    .filter((t) => t.length > 0);
+  if (tokens.length === 0) return "";
+  return tokens.map((t) => `${t}:*`).join(" & ");
+}
+
+/**
+ * Search for matching job IDs using PostgreSQL full-text search.
+ *
+ * Strategy:
+ *  1. Try tsvector full-text search first (fast, uses GIN index).
+ *  2. If no results or query is very short (≤2 chars), fall back to
+ *     trigram similarity on title and company (uses GIN trigram indexes).
+ *
+ * Returns up to `limit` matching job IDs, ordered by relevance.
+ */
+async function searchJobIds(
+  query: string,
+  limit: number = 5000
+): Promise<string[] | null> {
+  const tsQuery = toTsQuery(query);
+  if (!tsQuery) return null;
+
+  // Try full-text search first
+  const ftsResults = await prisma.$queryRawUnsafe<{ id: string }[]>(
+    `SELECT id FROM "JobCanonical"
+     WHERE "searchVector" @@ to_tsquery('english', $1)
+     ORDER BY ts_rank("searchVector", to_tsquery('english', $1)) DESC
+     LIMIT $2`,
+    tsQuery,
+    limit
+  );
+
+  if (ftsResults.length > 0) {
+    return ftsResults.map((r) => r.id);
+  }
+
+  // Fallback: trigram similarity for short queries or terms not in the
+  // English dictionary (acronyms, company names, etc.)
+  const likePattern = `%${query.replace(/[%_\\]/g, "\\$&")}%`;
+  const trigramResults = await prisma.$queryRawUnsafe<{ id: string }[]>(
+    `SELECT id FROM "JobCanonical"
+     WHERE title ILIKE $1
+        OR company ILIKE $1
+        OR "roleFamily" ILIKE $1
+     LIMIT $2`,
+    likePattern,
+    limit
+  );
+
+  return trigramResults.length > 0
+    ? trigramResults.map((r) => r.id)
+    : [];
+}
+
 // ─── Ranking ──────────────────────────────────────────────────────────────────
 
 type FeedPrefs = {
@@ -362,6 +428,21 @@ function toKey(value: string) {
 export { loadFeedPrefs, loadBehaviorProfile };
 export type { FeedPrefs, BehaviorProfile };
 
+/**
+ * Relevance-ranked job feed with in-memory scoring and diversification.
+ *
+ * To keep latency acceptable at scale (50K+ live jobs), we use a two-pass
+ * approach:
+ *  1. Count total for pagination display (cheap DB count).
+ *  2. Fetch a scoring window of the top N most-recent/highest-signal jobs
+ *     (DB pre-sorted by postedAt), score and diversify in memory, paginate.
+ *
+ * The SCORING_WINDOW_SIZE caps how many jobs we load for ranking. This means
+ * pages deep into the feed use DB-level newest-first ordering rather than
+ * full relevance scoring — an acceptable tradeoff for performance.
+ */
+const SCORING_WINDOW_SIZE = 2000;
+
 async function getJobsByRelevance(
   filters: JobFilterParams,
   where: Prisma.JobCanonicalWhereInput
@@ -369,7 +450,34 @@ async function getJobsByRelevance(
   const page = filters.page ?? 1;
   const skip = (page - 1) * PAGE_SIZE;
 
-  const [prefs, behavior, allJobs] = await Promise.all([
+  // If the user is requesting a deep page beyond the scoring window,
+  // fall back to simple newest-first ordering (fast DB query).
+  if (skip >= SCORING_WINDOW_SIZE) {
+    const [jobs, total] = await Promise.all([
+      prisma.jobCanonical.findMany({
+        where,
+        include: {
+          eligibility: true,
+          sourceMappings: true,
+          savedJobs: {
+            where: { userId: DEMO_USER_ID, status: "ACTIVE" },
+            select: { id: true },
+          },
+        },
+        orderBy: { postedAt: "desc" },
+        skip,
+        take: PAGE_SIZE,
+      }),
+      prisma.jobCanonical.count({ where }),
+    ]);
+    const data = jobs.map((job) => {
+      const { savedJobs, ...rest } = job;
+      return { ...rest, isSaved: savedJobs.length > 0 };
+    });
+    return { data, total, page, pageSize: PAGE_SIZE };
+  }
+
+  const [prefs, behavior, scoringJobs, total] = await Promise.all([
     loadFeedPrefs(),
     loadBehaviorProfile(),
     prisma.jobCanonical.findMany({
@@ -387,14 +495,15 @@ async function getJobsByRelevance(
           select: { sourceName: true },
         },
       },
+      orderBy: { postedAt: "desc" },
+      take: SCORING_WINDOW_SIZE,
     }),
+    prisma.jobCanonical.count({ where }),
   ]);
 
   // Score → diversify → paginate in memory.
-  // This keeps the feed from over-clustering on one company or near-identical
-  // titles while preserving freshness and trust as the dominant signals.
   const sorted = diversifyRankedJobs(
-    allJobs
+    scoringJobs
       .map((job) => ({
         id: job.id,
         title: job.title,
@@ -410,7 +519,6 @@ async function getJobsByRelevance(
       )
   );
 
-  const total = sorted.length;
   const pageIds = sorted.slice(skip, skip + PAGE_SIZE).map((job) => job.id);
 
   if (pageIds.length === 0) {
@@ -477,11 +585,14 @@ export async function getJobs(filters: JobFilterParams) {
   };
 
   if (filters.search) {
-    where.OR = [
-      { title: { contains: filters.search, mode: "insensitive" } },
-      { company: { contains: filters.search, mode: "insensitive" } },
-      { roleFamily: { contains: filters.search, mode: "insensitive" } },
-    ];
+    const matchingIds = await searchJobIds(filters.search);
+    if (matchingIds !== null) {
+      if (matchingIds.length === 0) {
+        // No search results — short-circuit to empty response
+        return { data: [], total: 0, page: filters.page ?? 1, pageSize: PAGE_SIZE };
+      }
+      where.id = { in: matchingIds };
+    }
   }
 
   if (filters.region) {

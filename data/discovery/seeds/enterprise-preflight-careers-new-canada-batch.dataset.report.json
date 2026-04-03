@@ -1,0 +1,41 @@
+{
+  "companiesSelected": [
+    "Benevity",
+    "Jobber",
+    "KOHO",
+    "Neo Financial",
+    "1Password",
+    "Float Financial",
+    "Jane App",
+    "Relay Financial",
+    "Wealthsimple",
+    "AlayaCare",
+    "Coveo",
+    "Definity Financial",
+    "Hootsuite",
+    "Sagen",
+    "Telesat",
+    "League",
+    "Softchoice",
+    "FreshBooks",
+    "ApplyBoard",
+    "MDA Space"
+  ],
+  "queryCount": 0,
+  "cacheHits": 0,
+  "cacheMisses": 0,
+  "resultUrlsFetched": 0,
+  "uniqueResultUrls": 646,
+  "pageUrlsScanned": 160,
+  "directSeedUrls": 0,
+  "candidatesDiscovered": 7,
+  "newCandidates": 6,
+  "skippedKnownCandidates": 1,
+  "candidatesByFamily": {
+    "ashby": 3,
+    "greenhouse": 1,
+    "successfactors": 1,
+    "workday": 1
+  },
+  "queryReports": []
+}

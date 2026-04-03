@@ -1,0 +1,47 @@
+{
+  "generatedAt": "2026-03-30T14:29:02.842Z",
+  "corpusCount": 3855,
+  "batchOffset": 1000,
+  "batchLimit": 250,
+  "companiesProcessed": 250,
+  "companiesResolved": 250,
+  "companiesUnresolved": 0,
+  "domainsSeeded": 251,
+  "careerPagesDetected": 506,
+  "directAtsUrlsDetected": 16,
+  "candidatesDiscovered": 14,
+  "newCandidates": 4,
+  "skippedKnownCandidates": 10,
+  "promotedSources": [],
+  "rejectedSources": [
+    {
+      "sourceKey": "icims:careers-amd",
+      "connectorName": "icims",
+      "companyNames": [
+        "AMD"
+      ],
+      "boardUrl": "https://careers-amd.icims.com/jobs/search",
+      "error": null,
+      "previewCreatedCount": 0,
+      "acceptedCanadaCount": 0
+    },
+    {
+      "sourceKey": "icims:internal-amd",
+      "connectorName": "icims",
+      "companyNames": [
+        "AMD"
+      ],
+      "boardUrl": "https://internal-amd.icims.com/jobs/search",
+      "error": null,
+      "previewCreatedCount": 0,
+      "acceptedCanadaCount": 0
+    }
+  ],
+  "ingestSummaries": [],
+  "resolutionSummary": {
+    "catalog": 0,
+    "cache": 195,
+    "search": 55,
+    "unresolved": 0
+  }
+}

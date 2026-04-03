@@ -1,0 +1,390 @@
+[
+  {
+    "boardUrl": "https://cadence.wd1.myworkdayjobs.com/external_careers",
+    "sourceKey": "workday:cadence.wd1.myworkdayjobs.com|cadence|external_careers",
+    "connectorName": "workday",
+    "token": "cadence.wd1.myworkdayjobs.com|cadence|external_careers",
+    "companyNames": [
+      "CAE"
+    ],
+    "discoveredFromQueries": [
+      "\"CAE\" \"myworkdayjobs.com\""
+    ],
+    "searchResultUrls": [
+      "https://cadence.wd1.myworkdayjobs.com/External_Careers"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [],
+    "matchedReasons": [
+      "workday_company_name_host_hint"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "fetchedCount": 100,
+      "acceptedCount": 28,
+      "previewCreatedCount": 28,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 72,
+      "sampleTitles": [
+        "Sr Application Engineer",
+        "Sr. Principal AE - Verification IP, HPC Protocols",
+        "Principal Analog IC Design Engineer, High Speed SerDes",
+        "IT - Sr Staff Systems Engineer (Active Directory and Windows Server Administration)",
+        "Executive Administrator"
+      ],
+      "sampleLocations": [
+        "SAN JOSE 09, United States of America",
+        "SAN JOSE 09, United States of America",
+        "SAN JOSE 08, United States of America",
+        "SAN JOSE 07, United States of America",
+        "SAN JOSE 11, United States of America"
+      ]
+    },
+    "recommendedPromotion": true
+  },
+  {
+    "boardUrl": "https://hyvee.wd1.myworkdayjobs.com/hyveecareers",
+    "sourceKey": "workday:hyvee.wd1.myworkdayjobs.com|hyvee|hyveecareers",
+    "connectorName": "workday",
+    "token": "hyvee.wd1.myworkdayjobs.com|hyvee|hyveecareers",
+    "companyNames": [
+      "iA Financial Group"
+    ],
+    "discoveredFromQueries": [
+      "\"iA\" \"myworkdayjobs.com\""
+    ],
+    "searchResultUrls": [
+      "https://hyvee.wd1.myworkdayjobs.com/HyVeeCareers"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [],
+    "matchedReasons": [
+      "workday_search_term_host_hint"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "fetchedCount": 100,
+      "acceptedCount": 5,
+      "previewCreatedCount": 5,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 95,
+      "sampleTitles": [
+        "PT Float Pharmacist",
+        "Night Stock Manager",
+        "Fast and fresh clerk",
+        "Frozen Department Manager",
+        "Night Stocker"
+      ],
+      "sampleLocations": [
+        "Maplewood, United States of America",
+        "Waukee, United States of America",
+        "Independence #1, United States of America",
+        "Waukee, United States of America",
+        "Cedar Falls, United States of America"
+      ]
+    },
+    "recommendedPromotion": true
+  },
+  {
+    "boardUrl": "https://tencent.wd1.myworkdayjobs.com/tencent_careers",
+    "sourceKey": "workday:tencent.wd1.myworkdayjobs.com|tencent|tencent_careers",
+    "connectorName": "workday",
+    "token": "tencent.wd1.myworkdayjobs.com|tencent|tencent_careers",
+    "companyNames": [
+      "CN Rail"
+    ],
+    "discoveredFromQueries": [
+      "\"CN\" \"myworkdayjobs.com\""
+    ],
+    "searchResultUrls": [
+      "https://tencent.wd1.myworkdayjobs.com/zh-CN/Tencent_Careers"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [],
+    "matchedReasons": [
+      "workday_search_term_host_hint"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "fetchedCount": 100,
+      "acceptedCount": 4,
+      "previewCreatedCount": 4,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 96,
+      "sampleTitles": [
+        "IT Application Developer (AI-Driven IT Ops) Intern",
+        "Senior Strategic Sales Executive",
+        "Hunyuan Multimodal Reinforcement Learning Research Intern",
+        "Lead Producer",
+        "シニアゲームエンジン開発エンジニア｜Senior Engine Engineer"
+      ],
+      "sampleLocations": [
+        "United States of America",
+        "United States of America",
+        "United States of America",
+        "United States of America",
+        "Japan"
+      ]
+    },
+    "recommendedPromotion": false
+  },
+  {
+    "boardUrl": "https://jobs.torontohydro.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+    "sourceKey": "successfactors:jobs.torontohydro.com",
+    "connectorName": "successfactors",
+    "token": "jobs.torontohydro.com",
+    "companyNames": [
+      "Toronto Hydro"
+    ],
+    "discoveredFromQueries": [
+      "\"torontohydro\" careers workday"
+    ],
+    "searchResultUrls": [
+      "https://jobs.torontohydro.com/job/Toronto-Engineer-ON/574239717/"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [],
+    "matchedReasons": [
+      "workday_tenant_term_careers_page"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "fetchedCount": 10,
+      "acceptedCount": 1,
+      "previewCreatedCount": 1,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 9,
+      "sampleTitles": [
+        "Contract, Senior Commercial Services Counsel (12-months)",
+        "Manager, Total Rewards",
+        "Contract, Capital & Maintenance Program Analyst (10-months)",
+        "Manager, Project Planning & Execution",
+        "Manager, Project Execution"
+      ],
+      "sampleLocations": [
+        "Toronto, ON, CA",
+        "Toronto, ON, CA",
+        "Toronto, ON, CA",
+        "Toronto, ON, CA",
+        "Toronto, ON, CA"
+      ]
+    },
+    "recommendedPromotion": false
+  },
+  {
+    "boardUrl": "https://icon.wd3.myworkdayjobs.com/broadbean_external",
+    "sourceKey": "workday:icon.wd3.myworkdayjobs.com|icon|broadbean_external",
+    "connectorName": "workday",
+    "token": "icon.wd3.myworkdayjobs.com|icon|broadbean_external",
+    "companyNames": [
+      "Telus"
+    ],
+    "discoveredFromQueries": [
+      "\"Telus\" \"myworkdayjobs.com\""
+    ],
+    "searchResultUrls": [
+      "https://icon.wd3.myworkdayjobs.com/en-US/broadbean_external/job/Senior-CRA_JR145071"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [],
+    "matchedReasons": [
+      "workday_company_name_host_hint"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "fetchedCount": 100,
+      "acceptedCount": 1,
+      "previewCreatedCount": 1,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 99,
+      "sampleTitles": [
+        "Study Start Up Associate I (Regulatory - Office with Flex)",
+        "Clinical Research Coordinator Nurse",
+        "Clinical Research Coordinator 2",
+        "Clinical Research Coordinator",
+        "Clinical Research Coordinator 2"
+      ],
+      "sampleLocations": [
+        "Argentina",
+        "United States of America",
+        "United States of America",
+        "United States of America",
+        "United States of America"
+      ]
+    },
+    "recommendedPromotion": false
+  },
+  {
+    "boardUrl": "https://cncbinternational.wd3.myworkdayjobs.com/cncbiexternalcareersite",
+    "sourceKey": "workday:cncbinternational.wd3.myworkdayjobs.com|cncbinternational|cncbiexternalcareersite",
+    "connectorName": "workday",
+    "token": "cncbinternational.wd3.myworkdayjobs.com|cncbinternational|cncbiexternalcareersite",
+    "companyNames": [
+      "CN Rail"
+    ],
+    "discoveredFromQueries": [
+      "\"CN\" careers workday"
+    ],
+    "searchResultUrls": [
+      "https://cncbinternational.wd3.myworkdayjobs.com/zh-CN/CNCBIExternalCareerSite"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [],
+    "matchedReasons": [
+      "workday_search_term_careers_page"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "fetchedCount": 67,
+      "acceptedCount": 0,
+      "previewCreatedCount": 0,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 67,
+      "sampleTitles": [
+        "System Analyst",
+        "Vice President, Leasing &amp; Cost Management",
+        "Manager, Operations Risk &amp; Control",
+        "Treasury IT Support, Business Control Management, Treasury &amp; Markets Group",
+        "Assistant Manager, Treasury Settlement Operations"
+      ],
+      "sampleLocations": [
+        "Hong Kong, Hong Kong",
+        "Hong Kong, Hong Kong",
+        "Hong Kong, Hong Kong",
+        "Hong Kong, Hong Kong",
+        "Hong Kong, Hong Kong"
+      ]
+    },
+    "recommendedPromotion": false
+  },
+  {
+    "boardUrl": "https://fph.wd3.myworkdayjobs.com/edc_careers",
+    "sourceKey": "workday:fph.wd3.myworkdayjobs.com|fph|edc_careers",
+    "connectorName": "workday",
+    "token": "fph.wd3.myworkdayjobs.com|fph|edc_careers",
+    "companyNames": [
+      "Export Development Canada"
+    ],
+    "discoveredFromQueries": [
+      "\"EDC\" careers workday"
+    ],
+    "searchResultUrls": [
+      "https://fph.wd3.myworkdayjobs.com/EDC_Careers",
+      "https://fph.wd3.myworkdayjobs.com/en-US/EDC_Careers/job/Engineer-Electrical---I-C-Design_JR00003797"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [],
+    "matchedReasons": [
+      "workday_search_term_careers_page"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "fetchedCount": 81,
+      "acceptedCount": 0,
+      "previewCreatedCount": 0,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 81,
+      "sampleTitles": [
+        "Lead - Road Safety Systems Development",
+        "Internal Auditor 1",
+        "Analyst-Financial",
+        "Lead-Data Operations",
+        "Senior Engineer-Electrical &amp; I/C Design"
+      ],
+      "sampleLocations": [
+        "EDC Rockwell Business Center Tower 3, Philippines",
+        "EDC Rockwell Business Center Tower 3, Philippines",
+        "EDC Rockwell Business Center Tower 3, Philippines",
+        "EDC Rockwell Business Center Tower 3, Philippines",
+        "EDC Rockwell Business Center Tower 3, Philippines"
+      ]
+    },
+    "recommendedPromotion": false
+  },
+  {
+    "boardUrl": "https://navcanada.wd10.myworkdayjobs.com/ats_career",
+    "sourceKey": "workday:navcanada.wd10.myworkdayjobs.com|navcanada|ats_career",
+    "connectorName": "workday",
+    "token": "navcanada.wd10.myworkdayjobs.com|navcanada|ats_career",
+    "companyNames": [
+      "NAV CANADA"
+    ],
+    "discoveredFromQueries": [
+      "\"NAV CANADA\" careers workday"
+    ],
+    "searchResultUrls": [
+      "https://navcanada.wd10.myworkdayjobs.com/ATS_Career"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [],
+    "matchedReasons": [
+      "workday_company_name_careers_page"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "fetchedCount": 0,
+      "acceptedCount": 0,
+      "previewCreatedCount": 0,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 0,
+      "sampleTitles": [],
+      "sampleLocations": []
+    },
+    "recommendedPromotion": false
+  },
+  {
+    "boardUrl": "https://rogersbh.wd1.myworkdayjobs.com/rbhcareer",
+    "sourceKey": "workday:rogersbh.wd1.myworkdayjobs.com|rogersbh|rbhcareer",
+    "connectorName": "workday",
+    "token": "rogersbh.wd1.myworkdayjobs.com|rogersbh|rbhcareer",
+    "companyNames": [
+      "Rogers"
+    ],
+    "discoveredFromQueries": [
+      "\"Rogers\" \"myworkdayjobs.com\"",
+      "\"Rogers\" careers workday"
+    ],
+    "searchResultUrls": [
+      "https://rogersbh.wd1.myworkdayjobs.com/RBHCareer",
+      "https://rogersbh.wd1.myworkdayjobs.com/en-US/RBHCareer/job/Patient-Care-Trainer---PRN_R5773"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [],
+    "matchedReasons": [
+      "workday_company_name_careers_page",
+      "workday_company_name_host_hint"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "fetchedCount": 100,
+      "acceptedCount": 0,
+      "previewCreatedCount": 0,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 100,
+      "sampleTitles": [
+        "Therapist - Residential - Pool",
+        "Registered Nurse - PRN",
+        "Rogers Behavioral Health Hiring Event: Multiple Positions - Brown Deer",
+        "Rogers Behavioral Health Hiring Event: Multiple Positions - West Allis",
+        "Rogers Behavioral Health Hiring Event: Multiple Positions - Oconomowoc"
+      ],
+      "sampleLocations": [
+        "United States of America",
+        "United States of America",
+        "United States of America",
+        "United States of America",
+        "United States of America"
+      ]
+    },
+    "recommendedPromotion": false
+  }
+]

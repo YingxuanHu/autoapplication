@@ -1,0 +1,242 @@
+[
+  {
+    "boardUrl": "https://jobs.ashbyhq.com/1password",
+    "sourceKey": "ashby:1password",
+    "connectorName": "ashby",
+    "token": "1password",
+    "companyNames": [
+      "1Password"
+    ],
+    "discoveredFromQueries": [],
+    "searchResultUrls": [],
+    "careerPageUrls": [],
+    "directAtsUrls": [
+      "https://jobs.ashbyhq.com/1password"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "fetchedCount": 78,
+      "acceptedCount": 38,
+      "previewCreatedCount": 38,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 40,
+      "sampleTitles": [
+        "Account Executive, Commercial",
+        "Account Executive, Enterprise",
+        "Account Executive, Enterprise — Future Opportunities (NYC & San Francisco)",
+        "Account Executive, SMB - Austin",
+        "Account Executive, SMB - Toronto"
+      ],
+      "sampleLocations": [
+        "Remote UK",
+        "New York, NY",
+        "New York, NY, San Francisco, CA",
+        "Austin, TX",
+        "Toronto, ON"
+      ]
+    },
+    "recommendedPromotion": true
+  },
+  {
+    "boardUrl": "https://jobs.ashbyhq.com/relayfi",
+    "sourceKey": "ashby:relayfi",
+    "connectorName": "ashby",
+    "token": "relayfi",
+    "companyNames": [
+      "Relay Financial"
+    ],
+    "discoveredFromQueries": [],
+    "searchResultUrls": [],
+    "careerPageUrls": [],
+    "directAtsUrls": [
+      "https://jobs.ashbyhq.com/relayfi"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "fetchedCount": 54,
+      "acceptedCount": 35,
+      "previewCreatedCount": 35,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 19,
+      "sampleTitles": [
+        "Account Based Marketing (ABM) Manager",
+        "Account Executive",
+        "Account Executive",
+        "Account Protection Analyst",
+        "Account Protection Analyst"
+      ],
+      "sampleLocations": [
+        "Toronto, ON, Vancouver, BC",
+        "Toronto, ON",
+        "Boston, MA",
+        "Vancouver, BC",
+        "Toronto, ON"
+      ]
+    },
+    "recommendedPromotion": true
+  },
+  {
+    "boardUrl": "https://job-boards.greenhouse.io/leagueinc",
+    "sourceKey": "greenhouse:leagueinc",
+    "connectorName": "greenhouse",
+    "token": "leagueinc",
+    "companyNames": [
+      "League"
+    ],
+    "discoveredFromQueries": [],
+    "searchResultUrls": [],
+    "careerPageUrls": [],
+    "directAtsUrls": [
+      "https://job-boards.greenhouse.io/leagueinc"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "fetchedCount": 39,
+      "acceptedCount": 22,
+      "previewCreatedCount": 22,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 17,
+      "sampleTitles": [
+        "AI Engineer (Co-op) - Spring/Summer Term",
+        "Associate, Marketing Operations",
+        "AVP, Total Rewards & People Operations",
+        "Build & Release Engineer (Western Canada)",
+        "Content Marketing Manager"
+      ],
+      "sampleLocations": [
+        "Toronto",
+        "Toronto",
+        "Toronto, ON (Onsite)",
+        "British Columbia/Alberta - Remote",
+        "USA - Remote"
+      ]
+    },
+    "recommendedPromotion": true
+  },
+  {
+    "boardUrl": "https://applyboard.wd3.myworkdayjobs.com/applyboardnh",
+    "sourceKey": "workday:applyboard.wd3.myworkdayjobs.com|applyboard|applyboardnh",
+    "connectorName": "workday",
+    "token": "applyboard.wd3.myworkdayjobs.com|applyboard|applyboardnh",
+    "companyNames": [
+      "ApplyBoard"
+    ],
+    "discoveredFromQueries": [],
+    "searchResultUrls": [],
+    "careerPageUrls": [],
+    "directAtsUrls": [
+      "https://applyboard.wd3.myworkdayjobs.com/applyboardnh"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "fetchedCount": 54,
+      "acceptedCount": 2,
+      "previewCreatedCount": 2,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 52,
+      "sampleTitles": [
+        "Acquisition and Activation Representative - Contractual",
+        "Partner Recruitment Representative/Manager (Sales)",
+        "Partner Recruitment Manager (Sales)",
+        "Partner Recruitment Manager (Sales)",
+        "Business Development Manager"
+      ],
+      "sampleLocations": [
+        "Gurgaon, India",
+        "Hanoi, Vietnam",
+        "Ahmedabad, India",
+        "Hyderabad, India",
+        "Yaoundé, Cameroon"
+      ]
+    },
+    "recommendedPromotion": false
+  },
+  {
+    "boardUrl": "https://jobs.ashbyhq.com/koho",
+    "sourceKey": "ashby:koho",
+    "connectorName": "ashby",
+    "token": "koho",
+    "companyNames": [
+      "KOHO"
+    ],
+    "discoveredFromQueries": [],
+    "searchResultUrls": [],
+    "careerPageUrls": [],
+    "directAtsUrls": [
+      "https://jobs.ashbyhq.com/koho"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "fetchedCount": 22,
+      "acceptedCount": 0,
+      "previewCreatedCount": 0,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 22,
+      "sampleTitles": [
+        "Analytics Engineer, Credit Risk",
+        "Analytics Engineer, Treasury & Payments",
+        "Data Scientist, Credit Risk",
+        "Director of Growth (Partnerships & Organic)",
+        "Financial Risk Strategy & Analytics Manager"
+      ],
+      "sampleLocations": [
+        "KOHO (CAN)",
+        "KOHO (CAN)",
+        "KOHO (CAN)",
+        "KOHO (CAN)",
+        "KOHO (CAN)"
+      ]
+    },
+    "recommendedPromotion": false
+  },
+  {
+    "boardUrl": "https://careers.definityfinancial.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+    "sourceKey": "successfactors:careers.definityfinancial.com",
+    "connectorName": "successfactors",
+    "token": "careers.definityfinancial.com",
+    "companyNames": [
+      "Definity Financial"
+    ],
+    "discoveredFromQueries": [],
+    "searchResultUrls": [],
+    "careerPageUrls": [],
+    "directAtsUrls": [
+      "https://careers.definityfinancial.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "fetchedCount": 0,
+      "acceptedCount": 0,
+      "previewCreatedCount": 0,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 0,
+      "sampleTitles": [],
+      "sampleLocations": []
+    },
+    "recommendedPromotion": false
+  }
+]

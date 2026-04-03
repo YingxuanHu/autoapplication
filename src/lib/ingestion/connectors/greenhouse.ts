@@ -46,9 +46,15 @@ export function createGreenhouseConnector({
       );
 
       if (!response.ok) {
-        throw new Error(
-          `Greenhouse fetch failed for ${boardToken}: ${response.status} ${response.statusText}`
-        );
+        console.log(`[greenhouse:${boardToken}] API error ${response.status} ${response.statusText}`);
+        return {
+          jobs: [],
+          metadata: {
+            boardToken,
+            error: `${response.status} ${response.statusText}`,
+            fetchedAt: options.now.toISOString(),
+          },
+        };
       }
 
       const payload = (await response.json()) as GreenhouseApiResponse;

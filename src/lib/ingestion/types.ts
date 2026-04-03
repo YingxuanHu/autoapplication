@@ -34,11 +34,18 @@ export type SourceConnectorJob = {
 export type SourceConnectorFetchOptions = {
   now: Date;
   limit?: number;
+  signal?: AbortSignal;
+  deadlineAt?: Date;
+  maxRuntimeMs?: number;
+  checkpoint?: Prisma.InputJsonValue | null;
+  onCheckpoint?: (checkpoint: Prisma.InputJsonValue | null) => Promise<void> | void;
 };
 
 export type SourceConnectorFetchResult = {
   jobs: SourceConnectorJob[];
   metadata?: Prisma.InputJsonValue;
+  checkpoint?: Prisma.InputJsonValue | null;
+  exhausted?: boolean;
 };
 
 export type SourceConnector = {
@@ -108,10 +115,14 @@ export type IngestionSummary = {
   freshnessMode: ConnectorFreshnessMode;
   fetchedCount: number;
   acceptedCount: number;
+  acceptedCanadaCount: number;
+  acceptedCanadaRemoteCount: number;
   rejectedCount: number;
   rawCreatedCount: number;
   rawUpdatedCount: number;
   canonicalCreatedCount: number;
+  canonicalCreatedCanadaCount: number;
+  canonicalCreatedCanadaRemoteCount: number;
   canonicalUpdatedCount: number;
   dedupedCount: number;
   sourceMappingCreatedCount: number;
@@ -122,6 +133,8 @@ export type IngestionSummary = {
   expiredCount: number;
   removedCount: number;
   skippedReasons: Record<string, number>;
+  checkpoint?: Prisma.InputJsonValue | null;
+  checkpointExhausted?: boolean;
 };
 
 export type IngestionRunListItem = {

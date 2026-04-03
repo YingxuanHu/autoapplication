@@ -1,0 +1,1634 @@
+[
+  {
+    "boardUrl": "https://generalmotors.wd5.myworkdayjobs.com/careers_gm",
+    "sourceKey": "workday:generalmotors.wd5.myworkdayjobs.com|generalmotors|careers_gm",
+    "connectorName": "workday",
+    "token": "generalmotors.wd5.myworkdayjobs.com|generalmotors|careers_gm",
+    "companyNames": [
+      "CN Rail"
+    ],
+    "discoveredFromQueries": [
+      "\"CN\" \"myworkdayjobs.com\""
+    ],
+    "searchResultUrls": [
+      "https://askai.glarity.app/zh-CN/search/%E5%9C%A8%E7%BE%8E%E5%9B%BD-%E5%A6%82%E4%BD%95%E9%80%9A%E8%BF%87myworkdayjobs-com%E7%94%B3%E8%AF%B7%E8%BD%AF%E4%BB%B6%E5%BC%80%E5%8F%91%E8%81%8C%E4%BD%8D"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [],
+    "matchedReasons": [
+      "workday_search_term_host_hint"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "fetchedCount": 100,
+      "acceptedCount": 50,
+      "previewCreatedCount": 50,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 50,
+      "sampleTitles": [
+        "Ingeniero de Servicio GSC",
+        "Rosario Plant Finance Supervisor",
+        "OnStar Marketing Coordinator Pacific",
+        "Fire Protection Specialist",
+        "Treasury Specialist"
+      ],
+      "sampleLocations": [
+        "Chile",
+        "Argentina",
+        "Colombia",
+        "Argentina",
+        "Argentina"
+      ]
+    },
+    "recommendedPromotion": true
+  },
+  {
+    "boardUrl": "https://job-boards.greenhouse.io/stackadapt",
+    "sourceKey": "greenhouse:stackadapt",
+    "connectorName": "greenhouse",
+    "token": "stackadapt",
+    "companyNames": [
+      "StackAdapt"
+    ],
+    "discoveredFromQueries": [],
+    "searchResultUrls": [],
+    "careerPageUrls": [
+      "https://www.stackadapt.com/",
+      "https://www.stackadapt.com/careers"
+    ],
+    "directAtsUrls": [
+      "https://job-boards.greenhouse.io/stackadapt"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link",
+      "career_page_scan"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "fetchedCount": 100,
+      "acceptedCount": 34,
+      "previewCreatedCount": 34,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 66,
+      "sampleTitles": [
+        "Account-Based Marketing Manager",
+        "Account Director",
+        "Account Executive, B2B Sales (Central)",
+        "Account Executive (Florida)",
+        "Account Executive (GA, MS, LA, AL)"
+      ],
+      "sampleLocations": [
+        "Canada; United States",
+        "Singapore",
+        "United States",
+        "Florida",
+        "United States"
+      ]
+    },
+    "recommendedPromotion": true
+  },
+  {
+    "boardUrl": "https://abbott.wd5.myworkdayjobs.com/abbottcareers2",
+    "sourceKey": "workday:abbott.wd5.myworkdayjobs.com|abbott|abbottcareers2",
+    "connectorName": "workday",
+    "token": "abbott.wd5.myworkdayjobs.com|abbott|abbottcareers2",
+    "companyNames": [
+      "CN Rail"
+    ],
+    "discoveredFromQueries": [
+      "\"CN\" \"myworkdayjobs.com\""
+    ],
+    "searchResultUrls": [
+      "https://askai.glarity.app/zh-CN/search/%E5%9C%A8%E7%BE%8E%E5%9B%BD-%E5%A6%82%E4%BD%95%E9%80%9A%E8%BF%87myworkdayjobs-com%E7%94%B3%E8%AF%B7%E8%BD%AF%E4%BB%B6%E5%BC%80%E5%8F%91%E8%81%8C%E4%BD%8D"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [],
+    "matchedReasons": [
+      "workday_search_term_host_hint"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "fetchedCount": 100,
+      "acceptedCount": 30,
+      "previewCreatedCount": 30,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 70,
+      "sampleTitles": [
+        "Technical Consultant - Baltimore, Maryland",
+        "Technical Consultant - Denver, CO",
+        "Instrument Operations Engineer",
+        "QC Technologist- (Monday to Friday 8:00 AM - 5:00 PM)",
+        "Confirmation Instrument Technician - (Monday to Friday 10:00 am-6:30 PM)"
+      ],
+      "sampleLocations": [
+        "United States of America : Remote, United States of America",
+        "United States of America : Remote, United States of America",
+        "United States &gt; Lake Forest : J55, United States of America",
+        "United States &gt; Gretna : 1111 Newton Street, United States of America",
+        "United States &gt; Gretna : 1111 Newton Street, United States of America"
+      ]
+    },
+    "recommendedPromotion": true
+  },
+  {
+    "boardUrl": "https://ghr.wd1.myworkdayjobs.com/lateral-us",
+    "sourceKey": "workday:ghr.wd1.myworkdayjobs.com|ghr|lateral-us",
+    "connectorName": "workday",
+    "token": "ghr.wd1.myworkdayjobs.com|ghr|lateral-us",
+    "companyNames": [
+      "iA Financial Group"
+    ],
+    "discoveredFromQueries": [
+      "\"Industrial Alliance\" \"myworkdayjobs.com\"",
+      "\"iA Financial Group\" \"myworkdayjobs.com\""
+    ],
+    "searchResultUrls": [
+      "https://us.trabajo.org/jobs-%22Fulcrum+Financial+Management+LLC%22+%22Performance+Gap%22+%22Central+Maryland%22"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [],
+    "matchedReasons": [
+      "workday_company_name_host_hint",
+      "workday_search_term_host_hint"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "fetchedCount": 100,
+      "acceptedCount": 26,
+      "previewCreatedCount": 26,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 74,
+      "sampleTitles": [
+        "Life Services Financial Solutions Advisor (Series 7 &amp; 66 required) - Lincoln, RI",
+        "Life Services Financial Solutions Advisor (Series 7 &amp; 66 required) - Charlotte, NC",
+        "Life Services Financial Solutions Advisor (Series 7 &amp; 66 required) - Jacksonville, FL",
+        "Life Services Financial Solutions Advisor (Series 7 &amp; 66 required) - Pennington, NJ",
+        "Consumer Investments Preferred Banking Specialist - Fort Worth, Texas"
+      ],
+      "sampleLocations": [
+        "Lincoln, United States of America",
+        "Charlotte, United States of America",
+        "Jacksonville, United States of America",
+        "Pennington, United States of America",
+        "Fort Worth, United States of America"
+      ]
+    },
+    "recommendedPromotion": true
+  },
+  {
+    "boardUrl": "https://abbott.wd5.myworkdayjobs.com/abbottcareers",
+    "sourceKey": "workday:abbott.wd5.myworkdayjobs.com|abbott|abbottcareers",
+    "connectorName": "workday",
+    "token": "abbott.wd5.myworkdayjobs.com|abbott|abbottcareers",
+    "companyNames": [
+      "CN Rail"
+    ],
+    "discoveredFromQueries": [
+      "\"CN\" \"myworkdayjobs.com\""
+    ],
+    "searchResultUrls": [
+      "https://askai.glarity.app/zh-CN/search/%E5%9C%A8%E7%BE%8E%E5%9B%BD-%E5%A6%82%E4%BD%95%E9%80%9A%E8%BF%87myworkdayjobs-com%E7%94%B3%E8%AF%B7%E8%BD%AF%E4%BB%B6%E5%BC%80%E5%8F%91%E8%81%8C%E4%BD%8D"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [],
+    "matchedReasons": [
+      "workday_search_term_host_hint"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "fetchedCount": 100,
+      "acceptedCount": 15,
+      "previewCreatedCount": 15,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 85,
+      "sampleTitles": [
+        "Field Technical Specialist",
+        "Senior Field Technical Engineer",
+        "Financial Analyst lV",
+        "Machine Shop Technician II",
+        "Quality Release Technician I"
+      ],
+      "sampleLocations": [
+        "Australia &gt; East Brisbane : 12 Mowbray Terrace, Australia",
+        "Saudi Arabia &gt; Riyadh : NCCI Tower, Saudi Arabia",
+        "Costa Rica &gt; Alajuela : Parque Industrial, Zona Franca Coyol S.A Edificio #44B, Call0, Avendia 2, Costa Rica",
+        "Costa Rica &gt; Alajuela : Parque Industrial, Zona Franca Coyol S.A Edificio #44B, Call0, Avendia 2, Costa Rica",
+        "Costa Rica &gt; Alajuela : Parque Industrial, Zona Franca Coyol S.A Edificio #44B, Call0, Avendia 2, Costa Rica"
+      ]
+    },
+    "recommendedPromotion": true
+  },
+  {
+    "boardUrl": "https://redhat.wd5.myworkdayjobs.com/jobs",
+    "sourceKey": "workday:redhat.wd5.myworkdayjobs.com|redhat|jobs",
+    "connectorName": "workday",
+    "token": "redhat.wd5.myworkdayjobs.com|redhat|jobs",
+    "companyNames": [
+      "CN Rail"
+    ],
+    "discoveredFromQueries": [
+      "\"CN\" \"myworkdayjobs.com\""
+    ],
+    "searchResultUrls": [
+      "https://askai.glarity.app/zh-CN/search/%E5%A6%82%E4%BD%95%E5%9C%A8MyWorkdayJobs%E7%BD%91%E7%AB%99%E4%B8%8A%E7%94%B3%E8%AF%B7%E8%BD%AF%E4%BB%B6%E5%BC%80%E5%8F%91%E5%B7%A5%E7%A8%8B%E5%B8%88%E8%81%8C%E4%BD%8D"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [],
+    "matchedReasons": [
+      "workday_search_term_host_hint"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "fetchedCount": 100,
+      "acceptedCount": 12,
+      "previewCreatedCount": 12,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 88,
+      "sampleTitles": [
+        "OpenShift Sales Specialist - SEAK",
+        "Senior Partner Sales Account Manager - Global System Integrators (CENE Region)",
+        "Customer Success Executive",
+        "Senior Consultant- TS/SCI + Polygraph Clearance Requir",
+        "Senior Consultant, OCP Infrastructure - Top Secret SCI Poly"
+      ],
+      "sampleLocations": [
+        "Singapore",
+        "Sweden",
+        "Brazil",
+        "United States of America",
+        "United States of America"
+      ]
+    },
+    "recommendedPromotion": true
+  },
+  {
+    "boardUrl": "https://illumina.wd1.myworkdayjobs.com/illumina-careers",
+    "sourceKey": "workday:illumina.wd1.myworkdayjobs.com|illumina|illumina-careers",
+    "connectorName": "workday",
+    "token": "illumina.wd1.myworkdayjobs.com|illumina|illumina-careers",
+    "companyNames": [
+      "OpenText"
+    ],
+    "discoveredFromQueries": [
+      "\"OpenText\" \"myworkdayjobs.com\""
+    ],
+    "searchResultUrls": [
+      "https://bugspotter.in/it-companies-career-page/"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [],
+    "matchedReasons": [
+      "workday_company_name_host_hint"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "fetchedCount": 100,
+      "acceptedCount": 11,
+      "previewCreatedCount": 11,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 89,
+      "sampleTitles": [
+        "Staff Software Engineer - Full Stack",
+        "Business Title: Sr. Manager, Sourcing &amp; Procurement Process Improvement &amp; Digitalization",
+        "Software Engineer",
+        "Sr. Sales Operations Analyst",
+        "Associate Director, Global Marketing Performance &amp; Strategy Enablement"
+      ],
+      "sampleLocations": [
+        "Singapore - Woodlands - NorthCoast, Singapore",
+        "US - California - San Diego - HQ, United States of America",
+        "US - California - San Diego - HQ, United States of America",
+        "US - California - San Diego - HQ, United States of America",
+        "US - California - San Diego - HQ, United States of America"
+      ]
+    },
+    "recommendedPromotion": true
+  },
+  {
+    "boardUrl": "https://mpc.wd1.myworkdayjobs.com/mpccareers",
+    "sourceKey": "workday:mpc.wd1.myworkdayjobs.com|mpc|mpccareers",
+    "connectorName": "workday",
+    "token": "mpc.wd1.myworkdayjobs.com|mpc|mpccareers",
+    "companyNames": [
+      "CN Rail"
+    ],
+    "discoveredFromQueries": [
+      "\"CN\" \"myworkdayjobs.com\""
+    ],
+    "searchResultUrls": [
+      "https://askai.glarity.app/zh-CN/search/%E5%A6%82%E4%BD%95%E5%9C%A8MyWorkdayJobs%E7%BD%91%E7%AB%99%E4%B8%8A%E7%94%B3%E8%AF%B7%E8%BD%AF%E4%BB%B6%E5%BC%80%E5%8F%91%E5%B7%A5%E7%A8%8B%E5%B8%88%E8%81%8C%E4%BD%8D"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [],
+    "matchedReasons": [
+      "workday_search_term_host_hint"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "fetchedCount": 80,
+      "acceptedCount": 11,
+      "previewCreatedCount": 11,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 69,
+      "sampleTitles": [
+        "Intern/Co-op - Midstream Natural Gas and NGL Services Chemistry Lab (Summer 2026)",
+        "Senior Commercial Sourcing Advisor",
+        "Thrift &amp; Retirement Analyst (Part-Time)",
+        "Territory Manager",
+        "Lead Product Manager - Observability"
+      ],
+      "sampleLocations": [
+        "Canonsburg PA, United States of America",
+        "Findlay OH Main Bldg, United States of America",
+        "Findlay OH Main Bldg, United States of America",
+        "Home - MI, United States of America",
+        "San Antonio TX, United States of America"
+      ]
+    },
+    "recommendedPromotion": true
+  },
+  {
+    "boardUrl": "https://westernunion.wd5.myworkdayjobs.com/westernunionjobs",
+    "sourceKey": "workday:westernunion.wd5.myworkdayjobs.com|westernunion|westernunionjobs",
+    "connectorName": "workday",
+    "token": "westernunion.wd5.myworkdayjobs.com|westernunion|westernunionjobs",
+    "companyNames": [
+      "CN Rail"
+    ],
+    "discoveredFromQueries": [
+      "\"CN\" \"myworkdayjobs.com\""
+    ],
+    "searchResultUrls": [
+      "https://askai.glarity.app/zh-CN/search/%E5%A6%82%E4%BD%95%E5%9C%A8MyWorkdayJobs%E7%BD%91%E7%AB%99%E4%B8%8A%E7%94%B3%E8%AF%B7%E8%BD%AF%E4%BB%B6%E5%BC%80%E5%8F%91%E5%B7%A5%E7%A8%8B%E5%B8%88%E8%81%8C%E4%BD%8D"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [],
+    "matchedReasons": [
+      "workday_search_term_host_hint"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "fetchedCount": 100,
+      "acceptedCount": 9,
+      "previewCreatedCount": 9,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 91,
+      "sampleTitles": [
+        "Director, Digital Product - Europe",
+        "Core Financial Technology Support Specialist – Vilnius, Lithuania",
+        "Regulatory Compliance Senior Manager",
+        "Bilingual Teller in Los Angeles, CA at West 8th St",
+        "Part-Time Bilingual Teller in Los Angeles, CA at Beverly Blvd"
+      ],
+      "sampleLocations": [
+        "United Kingdom",
+        "Lithuania",
+        "Austria",
+        "United States of America",
+        "United States of America"
+      ]
+    },
+    "recommendedPromotion": true
+  },
+  {
+    "boardUrl": "https://jci.wd5.myworkdayjobs.com/jci_confidential",
+    "sourceKey": "workday:jci.wd5.myworkdayjobs.com|jci|jci_confidential",
+    "connectorName": "workday",
+    "token": "jci.wd5.myworkdayjobs.com|jci|jci_confidential",
+    "companyNames": [
+      "CN Rail"
+    ],
+    "discoveredFromQueries": [
+      "\"CN\" \"myworkdayjobs.com\""
+    ],
+    "searchResultUrls": [
+      "https://askai.glarity.app/zh-CN/search/%E5%A6%82%E4%BD%95%E5%9C%A8MyWorkdayJobs%E7%BD%91%E7%AB%99%E4%B8%8A%E7%94%B3%E8%AF%B7%E8%BD%AF%E4%BB%B6%E5%BC%80%E5%8F%91%E5%B7%A5%E7%A8%8B%E5%B8%88%E8%81%8C%E4%BD%8D"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [],
+    "matchedReasons": [
+      "workday_search_term_host_hint"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "fetchedCount": 100,
+      "acceptedCount": 8,
+      "previewCreatedCount": 8,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 92,
+      "sampleTitles": [
+        "Ctrls Systems Engineer Intern",
+        "BEST - Technical Sales - Security Systems - New York City",
+        "ACE Technical Sales - Fire Suppression - FL or TX (Bilingual - Spanish)",
+        "BEST Technical Sales Intern, HVAC Controls - Wilkes-Barre, PA",
+        "Fire Suppression Install Leader (m/w/d)"
+      ],
+      "sampleLocations": [
+        "Seattle WA Branch, United States of America",
+        "New York NY Svc &amp; TMobile, United States of America",
+        "JCI HQ Glendale, United States of America",
+        "Wilkes Barre PA Branch, United States of America",
+        "DEU Kesselsdorf, Germany"
+      ]
+    },
+    "recommendedPromotion": true
+  },
+  {
+    "boardUrl": "https://jobs.lever.co/caseware",
+    "sourceKey": "lever:caseware",
+    "connectorName": "lever",
+    "token": "caseware",
+    "companyNames": [
+      "Caseware"
+    ],
+    "discoveredFromQueries": [],
+    "searchResultUrls": [],
+    "careerPageUrls": [
+      "https://www.caseware.com/",
+      "https://www.caseware.com/careers"
+    ],
+    "directAtsUrls": [
+      "https://jobs.lever.co/caseware"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link",
+      "career_page_scan"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "fetchedCount": 39,
+      "acceptedCount": 7,
+      "previewCreatedCount": 7,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 32,
+      "sampleTitles": [
+        "Account Executive",
+        "Account Executive",
+        "Account Executive (m/w/d)",
+        "Account Manager",
+        "Account Manager APAC"
+      ],
+      "sampleLocations": [
+        "Apeldoorn, Netherlands",
+        "Copenhagen, Denmark",
+        "Düsseldorf, Germany, Stuttgart, Germany",
+        "Singapore",
+        "Australia"
+      ]
+    },
+    "recommendedPromotion": true
+  },
+  {
+    "boardUrl": "https://isu.wd1.myworkdayjobs.com/iowastatejobs",
+    "sourceKey": "workday:isu.wd1.myworkdayjobs.com|isu|iowastatejobs",
+    "connectorName": "workday",
+    "token": "isu.wd1.myworkdayjobs.com|isu|iowastatejobs",
+    "companyNames": [
+      "iA Financial Group"
+    ],
+    "discoveredFromQueries": [
+      "\"iA\" \"myworkdayjobs.com\""
+    ],
+    "searchResultUrls": [
+      "https://vetmed.iastate.edu/vdl/about/veterinary-diagnostic-laboratory-job-openings/"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [],
+    "matchedReasons": [
+      "workday_search_term_host_hint"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "fetchedCount": 89,
+      "acceptedCount": 7,
+      "previewCreatedCount": 7,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 82,
+      "sampleTitles": [
+        "Administrative Assistant I",
+        "Engineer I",
+        "Residence Hall Coordinator",
+        "R&amp;D Engineer IV - Digital Ag",
+        "R&amp;D Engineer III - Digital Ag"
+      ],
+      "sampleLocations": [
+        "LAGOMAR - Lagomarcino Hall, United States of America",
+        "BLACK - Black Engineering Bldg, United States of America",
+        "Iowa State University, United States of America",
+        "RES P13 - Research Park 13, United States of America",
+        "RES P13 - Research Park 13, United States of America"
+      ]
+    },
+    "recommendedPromotion": true
+  },
+  {
+    "boardUrl": "https://poet.wd1.myworkdayjobs.com/poet",
+    "sourceKey": "workday:poet.wd1.myworkdayjobs.com|poet|poet",
+    "connectorName": "workday",
+    "token": "poet.wd1.myworkdayjobs.com|poet|poet",
+    "companyNames": [
+      "Export Development Canada"
+    ],
+    "discoveredFromQueries": [
+      "\"EDC\" \"myworkdayjobs.com\""
+    ],
+    "searchResultUrls": [
+      "https://www.obriencounty.com/jobs/poet-temporary-facilities-laborer-2"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [],
+    "matchedReasons": [
+      "workday_search_term_host_hint"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "fetchedCount": 88,
+      "acceptedCount": 7,
+      "previewCreatedCount": 7,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 81,
+      "sampleTitles": [
+        "Compliance and Assurance Intern",
+        "Custodian",
+        "Plant Technician",
+        "Regional Fleet Manager",
+        "Laboratory Technician"
+      ],
+      "sampleLocations": [
+        "Sioux Falls, SD, United States of America",
+        "Hudson, SD, United States of America",
+        "Marion, OH, United States of America",
+        "Macon, MO, United States of America",
+        "Hanlontown, IA, United States of America"
+      ]
+    },
+    "recommendedPromotion": true
+  },
+  {
+    "boardUrl": "https://walmart.wd5.myworkdayjobs.com/walmartexternal",
+    "sourceKey": "workday:walmart.wd5.myworkdayjobs.com|walmart|walmartexternal",
+    "connectorName": "workday",
+    "token": "walmart.wd5.myworkdayjobs.com|walmart|walmartexternal",
+    "companyNames": [
+      "CN Rail"
+    ],
+    "discoveredFromQueries": [
+      "\"CN\" \"myworkdayjobs.com\""
+    ],
+    "searchResultUrls": [
+      "https://askai.glarity.app/zh-CN/search/%E5%A6%82%E4%BD%95%E5%9C%A8MyWorkdayJobs%E7%BD%91%E7%AB%99%E4%B8%8A%E7%94%B3%E8%AF%B7%E8%BD%AF%E4%BB%B6%E5%BC%80%E5%8F%91%E5%B7%A5%E7%A8%8B%E5%B8%88%E8%81%8C%E4%BD%8D"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [],
+    "matchedReasons": [
+      "workday_search_term_host_hint"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "fetchedCount": 79,
+      "acceptedCount": 6,
+      "previewCreatedCount": 6,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 73,
+      "sampleTitles": [
+        "(CAN) Consumables Associate",
+        "(USA) Freight Flow Associate",
+        "Merchandising Lead",
+        "(USA) Member Team Lead",
+        "(CAN) Asset Protection Associate Part Time"
+      ],
+      "sampleLocations": [
+        "(CAN) AB MEDICINE HAT 03150 WM SUPERCENTER, Canada",
+        "(USA) CO ARVADA 06630 SAM'S CLUB, United States of America",
+        "(USA) AL TRUSSVILLE 04817 SAM'S CLUB, United States of America",
+        "(USA) MD TIMONIUM 06239 SAM'S CLUB, United States of America",
+        "(CAN) ON THUNDER BAY 01166 WM SUPERCENTER, Canada"
+      ]
+    },
+    "recommendedPromotion": true
+  },
+  {
+    "boardUrl": "https://hyvee.wd1.myworkdayjobs.com/hyveecareers",
+    "sourceKey": "workday:hyvee.wd1.myworkdayjobs.com|hyvee|hyveecareers",
+    "connectorName": "workday",
+    "token": "hyvee.wd1.myworkdayjobs.com|hyvee|hyveecareers",
+    "companyNames": [
+      "iA Financial Group"
+    ],
+    "discoveredFromQueries": [
+      "\"iA\" \"myworkdayjobs.com\""
+    ],
+    "searchResultUrls": [
+      "https://hyvee.wd1.myworkdayjobs.com/HyVeeCareers"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [],
+    "matchedReasons": [
+      "workday_search_term_host_hint"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "fetchedCount": 100,
+      "acceptedCount": 4,
+      "previewCreatedCount": 4,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 96,
+      "sampleTitles": [
+        "Deli Clerk",
+        "Part Time stocker",
+        "checker",
+        "Garden Center Clerk",
+        "Part time Meat Clerk"
+      ],
+      "sampleLocations": [
+        "Topeka, United States of America",
+        "Tea, United States of America",
+        "Tea, United States of America",
+        "Ankeny #1, United States of America",
+        "Tea, United States of America"
+      ]
+    },
+    "recommendedPromotion": false
+  },
+  {
+    "boardUrl": "https://imf.wd5.myworkdayjobs.com/imf",
+    "sourceKey": "workday:imf.wd5.myworkdayjobs.com|imf|imf",
+    "connectorName": "workday",
+    "token": "imf.wd5.myworkdayjobs.com|imf|imf",
+    "companyNames": [
+      "CN Rail"
+    ],
+    "discoveredFromQueries": [
+      "\"CN\" \"myworkdayjobs.com\""
+    ],
+    "searchResultUrls": [
+      "https://career.uibe.edu.cn/front/showContent.jspa?contentId=109136&channelId=1679"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [],
+    "matchedReasons": [
+      "workday_search_term_host_hint"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "fetchedCount": 18,
+      "acceptedCount": 4,
+      "previewCreatedCount": 4,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 14,
+      "sampleTitles": [
+        "Division Chief (Language Services) - CSF",
+        "Consulting Counsel / Senior Consulting Counsel (Contractual) - LEGGA",
+        "Director - European Department (EUR)",
+        "Communications Officer - MCDRS",
+        "Resident Advisor in Financial Sector Regulation and Supervision (AFRITAC East, AFE) (MCMTA)"
+      ],
+      "sampleLocations": [
+        "IMF Headquarters 2, United States",
+        "IMF Headquarters 1, United States",
+        "IMF Headquarters 2, United States",
+        "IMF Headquarters 1, United States",
+        "East Africa Regional Technical Assistance Center (AFRITAC East), Tanzania"
+      ]
+    },
+    "recommendedPromotion": false
+  },
+  {
+    "boardUrl": "https://nexstar.wd5.myworkdayjobs.com/nexstar",
+    "sourceKey": "workday:nexstar.wd5.myworkdayjobs.com|nexstar|nexstar",
+    "connectorName": "workday",
+    "token": "nexstar.wd5.myworkdayjobs.com|nexstar|nexstar",
+    "companyNames": [
+      "Export Development Canada",
+      "iA Financial Group"
+    ],
+    "discoveredFromQueries": [
+      "\"EDC\" \"myworkdayjobs.com\"",
+      "\"iA\" \"myworkdayjobs.com\""
+    ],
+    "searchResultUrls": [
+      "https://ibna.org/news/job-postings/",
+      "https://www.showbizjobs.com/search?searchstring=kit+packs"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [],
+    "matchedReasons": [
+      "workday_search_term_host_hint"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "fetchedCount": 100,
+      "acceptedCount": 3,
+      "previewCreatedCount": 3,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 97,
+      "sampleTitles": [
+        "Intern I, News",
+        "Newscast Producer",
+        "Traffic Coordinator",
+        "Programming Coordinator",
+        "Traffic Coordinator"
+      ],
+      "sampleLocations": [
+        "KS-Topeka;6835 Northwest Hwy 24 (Nexstar - KSNT), United States of America",
+        "KS-Topeka;6835 Northwest Hwy 24 (Nexstar - KSNT), United States of America",
+        "FL-Tampa;200 South Parker Street (Nexstar - WFLA), United States of America",
+        "IN-Indianapolis;6910 Network Place (Nexstar - IHUB), United States of America",
+        "UT-Salt Lake City;2175 West 1700 South (Nexstar - KTVX), United States of America"
+      ]
+    },
+    "recommendedPromotion": false
+  },
+  {
+    "boardUrl": "https://jobs.ashbyhq.com/top-hat",
+    "sourceKey": "ashby:top-hat",
+    "connectorName": "ashby",
+    "token": "top-hat",
+    "companyNames": [
+      "Top Hat"
+    ],
+    "discoveredFromQueries": [],
+    "searchResultUrls": [],
+    "careerPageUrls": [
+      "https://tophat.com/company/work-with-us/"
+    ],
+    "directAtsUrls": [
+      "https://jobs.ashbyhq.com/top-hat"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link",
+      "career_page_scan"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "fetchedCount": 4,
+      "acceptedCount": 2,
+      "previewCreatedCount": 2,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 2,
+      "sampleTitles": [
+        "Platform Engineer",
+        "Product Design Lead",
+        "Sales Representative (Account Executive) - Denver",
+        "Sales Representative (Account Executive) - Salt Lake City"
+      ],
+      "sampleLocations": [
+        "Canada",
+        "Canada",
+        "Denver, CO",
+        "Salt Lake City, UT"
+      ]
+    },
+    "recommendedPromotion": false
+  },
+  {
+    "boardUrl": "https://job-boards.greenhouse.io/contactmonkey",
+    "sourceKey": "greenhouse:contactmonkey",
+    "connectorName": "greenhouse",
+    "token": "contactmonkey",
+    "companyNames": [
+      "ContactMonkey"
+    ],
+    "discoveredFromQueries": [],
+    "searchResultUrls": [],
+    "careerPageUrls": [
+      "https://www.contactmonkey.com/careers"
+    ],
+    "directAtsUrls": [
+      "https://job-boards.greenhouse.io/contactmonkey"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link",
+      "career_page_scan"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "fetchedCount": 4,
+      "acceptedCount": 2,
+      "previewCreatedCount": 2,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 2,
+      "sampleTitles": [
+        "Manager, Customer Success - SMB",
+        "Marketing Coordinator",
+        "Senior AI Engineer",
+        "Staff Software Engineer - Software Testing"
+      ],
+      "sampleLocations": [
+        "Toronto, Ontario",
+        "Toronto",
+        "Toronto",
+        "Toronto"
+      ]
+    },
+    "recommendedPromotion": false
+  },
+  {
+    "boardUrl": "https://prysmiangroup.wd3.myworkdayjobs.com/careers",
+    "sourceKey": "workday:prysmiangroup.wd3.myworkdayjobs.com|prysmiangroup|careers",
+    "connectorName": "workday",
+    "token": "prysmiangroup.wd3.myworkdayjobs.com|prysmiangroup|careers",
+    "companyNames": [
+      "CN Rail"
+    ],
+    "discoveredFromQueries": [
+      "\"CN\" \"myworkdayjobs.com\""
+    ],
+    "searchResultUrls": [
+      "https://cn.prysmian.com/careers/what-we-offer/graduate-program"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [],
+    "matchedReasons": [
+      "workday_search_term_host_hint"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "fetchedCount": 100,
+      "acceptedCount": 2,
+      "previewCreatedCount": 2,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 98,
+      "sampleTitles": [
+        "Machine Operator",
+        "Electrician",
+        "Landscaper",
+        "Custodian",
+        "Mechanic"
+      ],
+      "sampleLocations": [
+        "McKinney Plant 7, United States of America",
+        "McKinney Facilities, United States of America",
+        "McKinney Facilities, United States of America",
+        "McKinney Facilities, United States of America",
+        "McKinney Facilities, United States of America"
+      ]
+    },
+    "recommendedPromotion": false
+  },
+  {
+    "boardUrl": "https://volarisgroup.wd3.myworkdayjobs.com/volaris",
+    "sourceKey": "workday:volarisgroup.wd3.myworkdayjobs.com|volarisgroup|volaris",
+    "connectorName": "workday",
+    "token": "volarisgroup.wd3.myworkdayjobs.com|volarisgroup|volaris",
+    "companyNames": [
+      "CN Rail"
+    ],
+    "discoveredFromQueries": [
+      "\"CN\" \"myworkdayjobs.com\""
+    ],
+    "searchResultUrls": [
+      "https://askai.glarity.app/zh-CN/search/%E5%9C%A8%E7%BE%8E%E5%9B%BD-%E5%A6%82%E4%BD%95%E9%80%9A%E8%BF%87myworkdayjobs-com%E7%94%B3%E8%AF%B7%E8%BD%AF%E4%BB%B6%E5%BC%80%E5%8F%91%E8%81%8C%E4%BD%8D"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [],
+    "matchedReasons": [
+      "workday_search_term_host_hint"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "fetchedCount": 26,
+      "acceptedCount": 2,
+      "previewCreatedCount": 2,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 24,
+      "sampleTitles": [
+        "Business Development Manager M&amp;A",
+        "HR Manager",
+        "Instructor/Consultant",
+        "M&amp;A Analyst Intern-1",
+        "M&amp;A Analyst Intern"
+      ],
+      "sampleLocations": [
+        "Canada - Ontario, Canada",
+        "Birmingham, Coleshill, United Kingdom",
+        "United States - North Dakota, United States of America",
+        "Canada - Ontario, Canada",
+        "Canada - Ontario, Canada"
+      ]
+    },
+    "recommendedPromotion": false
+  },
+  {
+    "boardUrl": "https://job-boards.greenhouse.io/touchbistro",
+    "sourceKey": "greenhouse:touchbistro",
+    "connectorName": "greenhouse",
+    "token": "touchbistro",
+    "companyNames": [
+      "TouchBistro"
+    ],
+    "discoveredFromQueries": [],
+    "searchResultUrls": [],
+    "careerPageUrls": [
+      "https://www.touchbistro.com/careers/"
+    ],
+    "directAtsUrls": [
+      "https://job-boards.greenhouse.io/touchbistro"
+    ],
+    "matchedReasons": [
+      "career_page_direct_ats_link",
+      "career_page_scan"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "fetchedCount": 3,
+      "acceptedCount": 1,
+      "previewCreatedCount": 1,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 2,
+      "sampleTitles": [
+        "Marketing Operations Specialist",
+        "Senior Manager, CS Systems & Optimization",
+        "Territory Partner Account Manager"
+      ],
+      "sampleLocations": [
+        "Toronto, Ontario, Canada",
+        "Toronto, Ontario, Canada",
+        "Remote - Florida; Remote - North Carolina; Remote - Texas; USA  - Remote"
+      ]
+    },
+    "recommendedPromotion": false
+  },
+  {
+    "boardUrl": "https://icon.wd3.myworkdayjobs.com/broadbean_external",
+    "sourceKey": "workday:icon.wd3.myworkdayjobs.com|icon|broadbean_external",
+    "connectorName": "workday",
+    "token": "icon.wd3.myworkdayjobs.com|icon|broadbean_external",
+    "companyNames": [
+      "Telus"
+    ],
+    "discoveredFromQueries": [
+      "\"Telus\" \"myworkdayjobs.com\""
+    ],
+    "searchResultUrls": [
+      "https://icon.wd3.myworkdayjobs.com/en-US/broadbean_external/job/Senior-CRA_JR145071"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [],
+    "matchedReasons": [
+      "workday_company_name_host_hint"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "fetchedCount": 100,
+      "acceptedCount": 1,
+      "previewCreatedCount": 1,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 99,
+      "sampleTitles": [
+        "Study Start Up Associate I (Regulatory - Office with Flex)",
+        "Clinical Research Coordinator Nurse",
+        "Clinical Research Coordinator 2",
+        "Clinical Research Coordinator",
+        "Clinical Research Coordinator 2"
+      ],
+      "sampleLocations": [
+        "Argentina",
+        "United States of America",
+        "United States of America",
+        "United States of America",
+        "United States of America"
+      ]
+    },
+    "recommendedPromotion": false
+  },
+  {
+    "boardUrl": "https://lcbo.wd3.myworkdayjobs.com/lcbocareersite",
+    "sourceKey": "workday:lcbo.wd3.myworkdayjobs.com|lcbo|lcbocareersite",
+    "connectorName": "workday",
+    "token": "lcbo.wd3.myworkdayjobs.com|lcbo|lcbocareersite",
+    "companyNames": [
+      "Telus"
+    ],
+    "discoveredFromQueries": [
+      "\"Telus\" \"myworkdayjobs.com\""
+    ],
+    "searchResultUrls": [
+      "https://www.leapforjobs.ca/?post_type=awsm_job_openings&p=15842"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [],
+    "matchedReasons": [
+      "workday_company_name_host_hint"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "fetchedCount": 13,
+      "acceptedCount": 1,
+      "previewCreatedCount": 1,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 12,
+      "sampleTitles": [
+        "Warehouse Worker",
+        "Supervisor, Operations",
+        "Senior Manager, Enterprise Data Governance",
+        "Agile Coach",
+        "Summer Customer Service Representative"
+      ],
+      "sampleLocations": [
+        "Canada",
+        "Canada",
+        "Canada",
+        "Canada",
+        "Canada"
+      ]
+    },
+    "recommendedPromotion": false
+  },
+  {
+    "boardUrl": "https://marshallmedical.wd1.myworkdayjobs.com/mmc",
+    "sourceKey": "workday:marshallmedical.wd1.myworkdayjobs.com|marshallmedical|mmc",
+    "connectorName": "workday",
+    "token": "marshallmedical.wd1.myworkdayjobs.com|marshallmedical|mmc",
+    "companyNames": [
+      "Export Development Canada"
+    ],
+    "discoveredFromQueries": [
+      "\"EDC\" \"myworkdayjobs.com\""
+    ],
+    "searchResultUrls": [
+      "https://business.eldoradocounty.org/jobs/"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [],
+    "matchedReasons": [
+      "workday_search_term_host_hint"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "fetchedCount": 41,
+      "acceptedCount": 1,
+      "previewCreatedCount": 1,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 40,
+      "sampleTitles": [
+        "Manager, Care Coordination",
+        "Pharmacy Technician",
+        "Pharmacy Technician",
+        "Staff RN- Diagnostic Imaging",
+        "Patient Service Representative 2 - Sierra Primary Medicine"
+      ],
+      "sampleLocations": [
+        "3581 Palmer Drive, United States of America",
+        "1100 Marshall Way, United States of America",
+        "1100 Marshall Way, United States of America",
+        "1100 Marshall Way, United States of America",
+        "4341 Golden Center, United States of America"
+      ]
+    },
+    "recommendedPromotion": false
+  },
+  {
+    "boardUrl": "https://careers.cpr.ca/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+    "sourceKey": "successfactors:careers.cpr.ca",
+    "connectorName": "successfactors",
+    "token": "careers.cpr.ca",
+    "companyNames": [
+      "CPKC (CP Rail)"
+    ],
+    "discoveredFromQueries": [
+      "\"CP Rail\" careers workday",
+      "\"CPKC\" careers workday",
+      "\"Canadian Pacific Kansas City\" careers workday",
+      "site:myworkdayjobs.com \"CP Rail\" careers",
+      "site:myworkdayjobs.com \"CPKC\" careers"
+    ],
+    "searchResultUrls": [
+      "http://kcsouthern-careers.silkroad.com/",
+      "https://careers.cpr.ca/",
+      "https://careers.cpr.ca/viewalljobs/?locale=en_US",
+      "https://kcsouthernenglishcareers.silkroad.com/"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [],
+    "matchedReasons": [
+      "workday_name_segment_careers_page",
+      "workday_name_segment_direct",
+      "workday_search_term_careers_page",
+      "workday_search_term_direct"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "fetchedCount": 0,
+      "acceptedCount": 0,
+      "previewCreatedCount": 0,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 0,
+      "sampleTitles": [],
+      "sampleLocations": []
+    },
+    "recommendedPromotion": false
+  },
+  {
+    "boardUrl": "https://careers.telusdigital.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+    "sourceKey": "successfactors:careers.telusdigital.com",
+    "connectorName": "successfactors",
+    "token": "careers.telusdigital.com",
+    "companyNames": [
+      "Telus"
+    ],
+    "discoveredFromQueries": [
+      "\"Telus\" careers workday",
+      "site:myworkdayjobs.com \"Telus\" careers",
+      "site:myworkdayjobs.com \"Telus\" jobs"
+    ],
+    "searchResultUrls": [
+      "https://www.telusdigital.com/careers"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [],
+    "matchedReasons": [
+      "workday_company_name_careers_page",
+      "workday_company_name_direct",
+      "workday_company_name_jobs"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "fetchedCount": 0,
+      "acceptedCount": 0,
+      "previewCreatedCount": 0,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 0,
+      "sampleTitles": [],
+      "sampleLocations": []
+    },
+    "recommendedPromotion": false
+  },
+  {
+    "boardUrl": "https://jobs.hydro.com/search/?createNewAlert=false&q=&locationsearch=&sortColumn=referencedate&sortDirection=desc",
+    "sourceKey": "successfactors:jobs.hydro.com",
+    "connectorName": "successfactors",
+    "token": "jobs.hydro.com",
+    "companyNames": [
+      "Toronto Hydro"
+    ],
+    "discoveredFromQueries": [
+      "\"Toronto Hydro\" careers workday",
+      "site:myworkdayjobs.com \"Toronto Hydro\" careers"
+    ],
+    "searchResultUrls": [
+      "https://www.hydro.com/en-CA/global/careers/vacancies2/"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [],
+    "matchedReasons": [
+      "workday_company_name_careers_page",
+      "workday_company_name_direct"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "fetchedCount": 100,
+      "acceptedCount": 0,
+      "previewCreatedCount": 0,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 100,
+      "sampleTitles": [
+        "Ferialjob Produktion 2026 (w/m/d)",
+        "Benefits Analyst",
+        "Elektroniker (m/w/d)",
+        "Procurement Analyst",
+        "Responsable Achats (F/H/X)"
+      ],
+      "sampleLocations": [
+        "Nenzing, AT, 6710",
+        "Rosemont, IL, US, 60018",
+        "Achim-Uphusen, DE, 28832",
+        "Lodz, PL, 93-428 <small class=\"nobr\">+20 more&hellip;</small>",
+        "FR, 83480 <small class=\"nobr\">+1 more&hellip;</small>"
+      ]
+    },
+    "recommendedPromotion": false
+  },
+  {
+    "boardUrl": "https://adobe.wd5.myworkdayjobs.com/adobecareers",
+    "sourceKey": "workday:adobe.wd5.myworkdayjobs.com|adobe|adobecareers",
+    "connectorName": "workday",
+    "token": "adobe.wd5.myworkdayjobs.com|adobe|adobecareers",
+    "companyNames": [
+      "OpenText"
+    ],
+    "discoveredFromQueries": [
+      "\"OpenText\" \"myworkdayjobs.com\""
+    ],
+    "searchResultUrls": [
+      "https://bugspotter.in/it-companies-career-page/"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [],
+    "matchedReasons": [
+      "workday_company_name_host_hint"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "fetchedCount": 0,
+      "acceptedCount": 0,
+      "previewCreatedCount": 0,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 0,
+      "sampleTitles": [],
+      "sampleLocations": []
+    },
+    "recommendedPromotion": false
+  },
+  {
+    "boardUrl": "https://cncbinternational.wd3.myworkdayjobs.com/cncbiexternalcareersite",
+    "sourceKey": "workday:cncbinternational.wd3.myworkdayjobs.com|cncbinternational|cncbiexternalcareersite",
+    "connectorName": "workday",
+    "token": "cncbinternational.wd3.myworkdayjobs.com|cncbinternational|cncbiexternalcareersite",
+    "companyNames": [
+      "CN Rail"
+    ],
+    "discoveredFromQueries": [
+      "\"CN\" careers workday"
+    ],
+    "searchResultUrls": [
+      "https://cncbinternational.wd3.myworkdayjobs.com/zh-CN/CNCBIExternalCareerSite"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [],
+    "matchedReasons": [
+      "workday_search_term_careers_page"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "fetchedCount": 67,
+      "acceptedCount": 0,
+      "previewCreatedCount": 0,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 67,
+      "sampleTitles": [
+        "System Analyst",
+        "Vice President, Leasing &amp; Cost Management",
+        "Manager, Operations Risk &amp; Control",
+        "Treasury IT Support, Business Control Management, Treasury &amp; Markets Group",
+        "Assistant Manager, Treasury Settlement Operations"
+      ],
+      "sampleLocations": [
+        "Hong Kong, Hong Kong",
+        "Hong Kong, Hong Kong",
+        "Hong Kong, Hong Kong",
+        "Hong Kong, Hong Kong",
+        "Hong Kong, Hong Kong"
+      ]
+    },
+    "recommendedPromotion": false
+  },
+  {
+    "boardUrl": "https://discover.wd5.myworkdayjobs.com/discover",
+    "sourceKey": "workday:discover.wd5.myworkdayjobs.com|discover|discover",
+    "connectorName": "workday",
+    "token": "discover.wd5.myworkdayjobs.com|discover|discover",
+    "companyNames": [
+      "CN Rail"
+    ],
+    "discoveredFromQueries": [
+      "\"CN\" \"myworkdayjobs.com\""
+    ],
+    "searchResultUrls": [
+      "https://askai.glarity.app/zh-CN/search/%E5%9C%A8%E7%BE%8E%E5%9B%BD-%E5%A6%82%E4%BD%95%E9%80%9A%E8%BF%87myworkdayjobs-com%E7%94%B3%E8%AF%B7%E8%BD%AF%E4%BB%B6%E5%BC%80%E5%8F%91%E8%81%8C%E4%BD%8D"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [],
+    "matchedReasons": [
+      "workday_search_term_host_hint"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "fetchedCount": 0,
+      "acceptedCount": 0,
+      "previewCreatedCount": 0,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 0,
+      "sampleTitles": [],
+      "sampleLocations": []
+    },
+    "recommendedPromotion": false
+  },
+  {
+    "boardUrl": "https://fph.wd3.myworkdayjobs.com/edc_careers",
+    "sourceKey": "workday:fph.wd3.myworkdayjobs.com|fph|edc_careers",
+    "connectorName": "workday",
+    "token": "fph.wd3.myworkdayjobs.com|fph|edc_careers",
+    "companyNames": [
+      "Export Development Canada"
+    ],
+    "discoveredFromQueries": [
+      "\"EDC\" careers workday"
+    ],
+    "searchResultUrls": [
+      "https://fph.wd3.myworkdayjobs.com/EDC_Careers",
+      "https://fph.wd3.myworkdayjobs.com/en-US/EDC_Careers/job/Engineer-Electrical---I-C-Design_JR00003797"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [],
+    "matchedReasons": [
+      "workday_search_term_careers_page"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "fetchedCount": 81,
+      "acceptedCount": 0,
+      "previewCreatedCount": 0,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 81,
+      "sampleTitles": [
+        "Lead - Road Safety Systems Development",
+        "Internal Auditor 1",
+        "Analyst-Financial",
+        "Lead-Data Operations",
+        "Senior Engineer-Electrical &amp; I/C Design"
+      ],
+      "sampleLocations": [
+        "EDC Rockwell Business Center Tower 3, Philippines",
+        "EDC Rockwell Business Center Tower 3, Philippines",
+        "EDC Rockwell Business Center Tower 3, Philippines",
+        "EDC Rockwell Business Center Tower 3, Philippines",
+        "EDC Rockwell Business Center Tower 3, Philippines"
+      ]
+    },
+    "recommendedPromotion": false
+  },
+  {
+    "boardUrl": "https://lendlease.wd3.myworkdayjobs.com/lendleasecareers",
+    "sourceKey": "workday:lendlease.wd3.myworkdayjobs.com|lendlease|lendleasecareers",
+    "connectorName": "workday",
+    "token": "lendlease.wd3.myworkdayjobs.com|lendlease|lendleasecareers",
+    "companyNames": [
+      "CN Rail"
+    ],
+    "discoveredFromQueries": [
+      "\"CN\" \"myworkdayjobs.com\""
+    ],
+    "searchResultUrls": [
+      "https://www.lendlease.com/cn/careers/careers-faqs/"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [],
+    "matchedReasons": [
+      "workday_search_term_host_hint"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "fetchedCount": 45,
+      "acceptedCount": 0,
+      "previewCreatedCount": 0,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 45,
+      "sampleTitles": [
+        "Lendlease 2027 Graduate Program",
+        "Senior Manager, New Business",
+        "Project Manager",
+        "Compliance Manager (Retail)",
+        "Senior Design Manager"
+      ],
+      "sampleLocations": [
+        "Sydney - CBD, Australia",
+        "Sydney - CBD, Australia",
+        "Melbourne, Australia",
+        "Singapore, Singapore",
+        "Brisbane, Australia"
+      ]
+    },
+    "recommendedPromotion": false
+  },
+  {
+    "boardUrl": "https://rogersbh.wd1.myworkdayjobs.com/rbhcareer",
+    "sourceKey": "workday:rogersbh.wd1.myworkdayjobs.com|rogersbh|rbhcareer",
+    "connectorName": "workday",
+    "token": "rogersbh.wd1.myworkdayjobs.com|rogersbh|rbhcareer",
+    "companyNames": [
+      "Rogers"
+    ],
+    "discoveredFromQueries": [
+      "\"Rogers\" \"myworkdayjobs.com\"",
+      "\"Rogers\" careers workday"
+    ],
+    "searchResultUrls": [
+      "https://rogersbh.wd1.myworkdayjobs.com/RBHCareer",
+      "https://rogersbh.wd1.myworkdayjobs.com/en-US/RBHCareer/job/Patient-Care-Trainer---PRN_R5773"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [],
+    "matchedReasons": [
+      "workday_company_name_careers_page",
+      "workday_company_name_host_hint"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "fetchedCount": 100,
+      "acceptedCount": 0,
+      "previewCreatedCount": 0,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 100,
+      "sampleTitles": [
+        "Therapist - Residential - Pool",
+        "Registered Nurse - PRN",
+        "Rogers Behavioral Health Hiring Event: Multiple Positions - Brown Deer",
+        "Rogers Behavioral Health Hiring Event: Multiple Positions - West Allis",
+        "Rogers Behavioral Health Hiring Event: Multiple Positions - Oconomowoc"
+      ],
+      "sampleLocations": [
+        "United States of America",
+        "United States of America",
+        "United States of America",
+        "United States of America",
+        "United States of America"
+      ]
+    },
+    "recommendedPromotion": false
+  },
+  {
+    "boardUrl": "https://sbdinc.wd1.myworkdayjobs.com/stanley_black_decker_career_site",
+    "sourceKey": "workday:sbdinc.wd1.myworkdayjobs.com|sbdinc|stanley_black_decker_career_site",
+    "connectorName": "workday",
+    "token": "sbdinc.wd1.myworkdayjobs.com|sbdinc|stanley_black_decker_career_site",
+    "companyNames": [
+      "CN Rail"
+    ],
+    "discoveredFromQueries": [
+      "\"CN\" \"myworkdayjobs.com\""
+    ],
+    "searchResultUrls": [
+      "https://askai.glarity.app/zh-CN/search/%E5%9C%A8%E7%BE%8E%E5%9B%BD-%E5%A6%82%E4%BD%95%E9%80%9A%E8%BF%87myworkdayjobs-com%E7%94%B3%E8%AF%B7%E8%BD%AF%E4%BB%B6%E5%BC%80%E5%8F%91%E8%81%8C%E4%BD%8D"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [],
+    "matchedReasons": [
+      "workday_search_term_host_hint"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "fetchedCount": 0,
+      "acceptedCount": 0,
+      "previewCreatedCount": 0,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 0,
+      "sampleTitles": [],
+      "sampleLocations": []
+    },
+    "recommendedPromotion": false
+  },
+  {
+    "boardUrl": "https://tencent.wd1.myworkdayjobs.com/tencent_careers",
+    "sourceKey": "workday:tencent.wd1.myworkdayjobs.com|tencent|tencent_careers",
+    "connectorName": "workday",
+    "token": "tencent.wd1.myworkdayjobs.com|tencent|tencent_careers",
+    "companyNames": [
+      "CN Rail"
+    ],
+    "discoveredFromQueries": [
+      "\"CN\" \"myworkdayjobs.com\""
+    ],
+    "searchResultUrls": [
+      "https://tencent.wd1.myworkdayjobs.com/zh-CN/Tencent_Careers"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [],
+    "matchedReasons": [
+      "workday_search_term_host_hint"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "fetchedCount": 0,
+      "acceptedCount": 0,
+      "previewCreatedCount": 0,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 0,
+      "sampleTitles": [],
+      "sampleLocations": []
+    },
+    "recommendedPromotion": false
+  },
+  {
+    "boardUrl": "https://trimedx.wd1.myworkdayjobs.com/tmx",
+    "sourceKey": "workday:trimedx.wd1.myworkdayjobs.com|trimedx|tmx",
+    "connectorName": "workday",
+    "token": "trimedx.wd1.myworkdayjobs.com|trimedx|tmx",
+    "companyNames": [
+      "TMX Group"
+    ],
+    "discoveredFromQueries": [
+      "\"TMX\" \"myworkdayjobs.com\""
+    ],
+    "searchResultUrls": [
+      "https://www.trimedx.com/careers"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [],
+    "matchedReasons": [
+      "workday_search_term_host_hint"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "fetchedCount": 0,
+      "acceptedCount": 0,
+      "previewCreatedCount": 0,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 0,
+      "sampleTitles": [],
+      "sampleLocations": []
+    },
+    "recommendedPromotion": false
+  },
+  {
+    "boardUrl": "https://usbank.wd1.myworkdayjobs.com/us_bank_careers",
+    "sourceKey": "workday:usbank.wd1.myworkdayjobs.com|usbank|us_bank_careers",
+    "connectorName": "workday",
+    "token": "usbank.wd1.myworkdayjobs.com|usbank|us_bank_careers",
+    "companyNames": [
+      "CN Rail"
+    ],
+    "discoveredFromQueries": [
+      "\"CN\" \"myworkdayjobs.com\""
+    ],
+    "searchResultUrls": [
+      "https://askai.glarity.app/zh-CN/search/%E5%A6%82%E4%BD%95%E5%9C%A8MyWorkdayJobs%E7%BD%91%E7%AB%99%E4%B8%8A%E7%94%B3%E8%AF%B7%E8%BD%AF%E4%BB%B6%E5%BC%80%E5%8F%91%E5%B7%A5%E7%A8%8B%E5%B8%88%E8%81%8C%E4%BD%8D"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [],
+    "matchedReasons": [
+      "workday_search_term_host_hint"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "fetchedCount": 0,
+      "acceptedCount": 0,
+      "previewCreatedCount": 0,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 0,
+      "sampleTitles": [],
+      "sampleLocations": []
+    },
+    "recommendedPromotion": false
+  },
+  {
+    "boardUrl": "https://zendesk.wd1.myworkdayjobs.com/zendesk",
+    "sourceKey": "workday:zendesk.wd1.myworkdayjobs.com|zendesk|zendesk",
+    "connectorName": "workday",
+    "token": "zendesk.wd1.myworkdayjobs.com|zendesk|zendesk",
+    "companyNames": [
+      "Telus"
+    ],
+    "discoveredFromQueries": [
+      "site:myworkdayjobs.com \"Telus\" jobs"
+    ],
+    "searchResultUrls": [
+      "https://telus.getro.com/jobs"
+    ],
+    "careerPageUrls": [],
+    "directAtsUrls": [],
+    "matchedReasons": [
+      "workday_company_name_jobs"
+    ],
+    "knownStatus": null,
+    "preview": {
+      "fetchedCount": 0,
+      "acceptedCount": 0,
+      "previewCreatedCount": 0,
+      "previewUpdatedCount": 0,
+      "dedupedCount": 0,
+      "rejectedCount": 0,
+      "sampleTitles": [],
+      "sampleLocations": []
+    },
+    "recommendedPromotion": false
+  }
+]
