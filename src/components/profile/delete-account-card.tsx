@@ -6,14 +6,21 @@ import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { ConfirmActionDialog } from "@/components/ui/confirm-action-dialog";
 import { Input } from "@/components/ui/input";
+import {
+  queueFlashNotification,
+  useNotifications,
+} from "@/components/ui/notification-provider";
 
 export function DeleteAccountCard({ email }: { email: string }) {
   const router = useRouter();
+  const { notify } = useNotifications();
   const [password, setPassword] = useState("");
   const [confirmation, setConfirmation] = useState("");
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
   const ready = password.length >= 8 && confirmation === "DELETE";
 
@@ -24,11 +31,10 @@ export function DeleteAccountCard({ email }: { email: string }) {
       return;
     }
 
-    const confirmed = window.confirm(
-      `Delete the account for ${email}? This permanently removes auth, profile data, tracker records, reminders, and documents.`
-    );
-    if (!confirmed) return;
+    setConfirmOpen(true);
+  }
 
+  async function confirmDelete() {
     setPending(true);
     setError(null);
 
@@ -40,9 +46,20 @@ export function DeleteAccountCard({ email }: { email: string }) {
     if (result.error) {
       setError(result.error.message ?? "Unable to delete account.");
       setPending(false);
+      notify({
+        tone: "error",
+        title: "Delete failed",
+        message: result.error.message ?? "Unable to delete account.",
+      });
       return;
     }
 
+    setConfirmOpen(false);
+    queueFlashNotification({
+      tone: "success",
+      title: "Account deleted",
+      message: "Your account and workspace data have been removed.",
+    });
     router.push("/");
     router.refresh();
   }
@@ -89,6 +106,16 @@ export function DeleteAccountCard({ email }: { email: string }) {
             <p className="text-xs text-muted-foreground">This action cannot be undone.</p>
           </div>
         </form>
+        <ConfirmActionDialog
+          confirmLabel={pending ? "Deleting..." : "Delete account"}
+          description={`Delete the account for ${email}? This permanently removes auth, profile data, tracker records, reminders, and documents.`}
+          destructive
+          onConfirm={() => void confirmDelete()}
+          onOpenChange={setConfirmOpen}
+          open={confirmOpen}
+          pending={pending}
+          title="Delete account?"
+        />
       </CardContent>
     </Card>
   );

@@ -74,9 +74,12 @@ function parseDateTime(rawValue: FormDataEntryValue | null) {
 }
 
 function revalidateTrackerPaths(applicationId?: string) {
+  revalidatePath("/applications");
+  revalidatePath("/applications/history");
   revalidatePath("/dashboard");
   revalidatePath("/notifications");
   if (applicationId) {
+    revalidatePath(`/applications/${applicationId}`);
     revalidatePath(`/dashboard/${applicationId}`);
   }
 }
@@ -174,7 +177,7 @@ export async function deleteTrackedApplicationAction(formData: FormData) {
     console.error("deleteTrackedApplicationAction failed:", error);
   }
 
-  redirect("/dashboard");
+  redirect("/applications");
 }
 
 export async function saveTrackedTagsAction(formData: FormData) {

@@ -27,6 +27,7 @@ export default async function NotificationsPage() {
 
     await markAllNotificationsRead();
     revalidatePath("/notifications");
+    revalidatePath("/applications");
     revalidatePath("/dashboard");
   }
 
@@ -38,31 +39,32 @@ export default async function NotificationsPage() {
 
     await markNotificationRead(notificationId);
     revalidatePath("/notifications");
+    revalidatePath("/applications");
     revalidatePath("/dashboard");
   }
 
   const { notifications, unreadCount } = await getNotificationCenterData();
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
-      <div className="flex flex-wrap items-start justify-between gap-4 pb-6">
+    <div className="app-page space-y-6">
+      <div className="page-header">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Notifications</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
+          <h1 className="page-title">Notifications</h1>
+          <p className="page-description">
             Deadline reminders and tracker updates.
           </p>
         </div>
-        <div className="flex items-center gap-3 text-sm text-muted-foreground">
-          <Link href="/dashboard" className="hover:text-foreground">
-            Tracker
+        <div className="page-actions">
+          <Link href="/applications">
+            Applications
           </Link>
-          <Link href="/settings" className="hover:text-foreground">
+          <Link href="/settings">
             Settings
           </Link>
         </div>
       </div>
 
-      <section className="rounded-lg border border-border bg-card p-4">
+      <section className="surface-panel p-4 sm:p-5">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <p className="text-sm text-muted-foreground">
             {unreadCount > 0 ? `${unreadCount} unread` : "All caught up"}
@@ -71,7 +73,7 @@ export default async function NotificationsPage() {
             <form action={markAllAction}>
               <button
                 type="submit"
-                className="h-9 rounded-lg border border-border px-4 text-sm font-medium"
+                className="h-9 rounded-lg border border-border/70 bg-background/60 px-4 text-sm font-medium"
               >
                 Mark all as read
               </button>
@@ -80,11 +82,19 @@ export default async function NotificationsPage() {
         </div>
 
         {notifications.length === 0 ? (
-          <p className="mt-4 text-sm text-muted-foreground">No notifications yet.</p>
+          <div className="mt-4 rounded-2xl border border-dashed border-border/70 bg-background/50 px-4 py-10 text-center">
+            <p className="text-sm font-medium text-foreground">No notifications yet</p>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Deadline reminders and tracker activity will appear here.
+            </p>
+          </div>
         ) : (
-          <div className="mt-4 divide-y divide-border/60">
+          <div className="mt-4 space-y-3">
             {notifications.map((notification) => (
-              <article key={notification.id} className="py-3 first:pt-0 last:pb-0">
+              <article
+                key={notification.id}
+                className="rounded-2xl border border-border/60 bg-background/50 p-4"
+              >
                 {notification.readAt ? (
                   <div className="flex items-start justify-between gap-3">
                     <div>
@@ -107,7 +117,7 @@ export default async function NotificationsPage() {
                     <input type="hidden" name="notificationId" value={notification.id} />
                     <button
                       type="submit"
-                      className="w-full rounded-lg p-2 text-left transition hover:bg-muted/40"
+                      className="w-full rounded-xl px-1 py-1 text-left transition hover:bg-muted/40"
                     >
                       <div className="flex items-start justify-between gap-3">
                         <div>

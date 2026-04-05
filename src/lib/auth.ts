@@ -49,9 +49,7 @@ export const auth = betterAuth({
           });
 
           if (profile) {
-            await Promise.allSettled(
-              profile.documents.map((doc) => deleteFile(doc.storageKey))
-            );
+            await Promise.allSettled(profile.documents.map((doc) => deleteFile(doc.storageKey)));
           }
 
           return true;

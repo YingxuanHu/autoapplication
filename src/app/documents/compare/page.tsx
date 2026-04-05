@@ -26,8 +26,8 @@ export default async function DocumentComparePage() {
           <Link href="/profile" className="hover:text-foreground">
             Profile
           </Link>
-          <Link href="/dashboard" className="hover:text-foreground">
-            Tracker
+          <Link href="/applications" className="hover:text-foreground">
+            Applications
           </Link>
         </div>
       </div>

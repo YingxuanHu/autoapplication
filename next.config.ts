@@ -5,6 +5,12 @@ const nextConfig: NextConfig = {
     maxInactiveAge: 15 * 1000,
     pagesBufferLength: 1,
   },
+  serverExternalPackages: [
+    "mammoth",
+    "pdf-parse",
+    "pdfjs-dist",
+    "word-extractor",
+  ],
   turbopack: {
     root: process.cwd(),
   },

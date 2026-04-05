@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+import { AuthShell } from "@/components/auth/auth-shell";
 import { SignInForm } from "@/components/auth/sign-in-form";
 
 type SignInScreenProps = {
@@ -12,8 +14,24 @@ export function SignInScreen({
   justVerified = false,
 }: SignInScreenProps) {
   return (
-    <main className="mx-auto flex min-h-screen max-w-7xl items-center justify-center px-4 py-10">
+    <AuthShell
+      contextTitle="Search, apply, and track from one quiet workspace."
+      contextDescription="Keep your job feed, application tracker, profile data, resumes, and AI-assisted materials connected without adding friction to the workflow."
+      highlights={[
+        "Review the live job pool before acting.",
+        "Keep application history and deadlines in sync automatically.",
+        "Store resumes and cover letters alongside structured profile data.",
+      ]}
+      footer={
+        <>
+          Need an account?{" "}
+          <Link className="text-foreground underline-offset-4 hover:underline" href="/sign-up">
+            Create one
+          </Link>
+        </>
+      }
+    >
       <SignInForm callbackUrl={callbackUrl} justVerified={justVerified} />
-    </main>
+    </AuthShell>
   );
 }

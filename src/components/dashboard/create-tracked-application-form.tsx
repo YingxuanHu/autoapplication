@@ -13,7 +13,7 @@ function SubmitButton() {
 
   return (
     <Button type="submit" disabled={pending}>
-      {pending ? "Saving..." : "Add tracked application"}
+      {pending ? "Saving..." : "Add application"}
     </Button>
   );
 }
@@ -57,7 +57,7 @@ export function CreateTrackedApplicationForm() {
           <select
             name="status"
             defaultValue="WISHLIST"
-            className="h-9 rounded-lg border border-input bg-background px-3 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
+            className="h-9 rounded-lg border border-input/80 bg-background/70 px-3 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
           >
             <option value="WISHLIST">Wishlist</option>
             <option value="APPLIED">Applied</option>
@@ -84,8 +84,8 @@ export function CreateTrackedApplicationForm() {
           </span>
           <Textarea
             name="notes"
-            rows={2}
-            className="min-h-20"
+            rows={1}
+            className="h-9 min-h-9 resize-y py-2"
             placeholder="Why this role matters, next step, recruiter contact..."
           />
         </label>

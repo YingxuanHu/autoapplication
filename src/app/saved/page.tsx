@@ -45,62 +45,55 @@ export default async function SavedPage({ searchParams }: SavedPageProps) {
   const shortlistItems = savedJobs.map(serializeSavedJob);
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
-      {/* Header */}
-      <div className="flex items-center justify-between pb-4">
+    <div className="app-page space-y-6">
+      <div className="page-header">
         <div>
-          <h1 className="text-xl font-semibold tracking-tight">Saved</h1>
-          <p className="mt-0.5 text-sm text-muted-foreground">
+          <h1 className="page-title">Saved</h1>
+          <p className="page-description">
             {allSavedJobs.length} saved job{allSavedJobs.length !== 1 ? "s" : ""} total
             {activeCount > 0 ? ` · ${activeCount} active` : ""}
             {appliedCount > 0 ? ` · ${appliedCount} in applications` : ""}
           </p>
         </div>
-        <div className="flex items-center gap-3">
-          <Link
-            href="/applications"
-            className="text-sm text-muted-foreground hover:text-foreground"
-          >
+        <div className="page-actions">
+          <Link href="/applications">
             Applications
           </Link>
-          <Link
-            href="/jobs"
-            className="text-sm text-muted-foreground hover:text-foreground"
-          >
+          <Link href="/jobs">
             Feed
           </Link>
         </div>
       </div>
 
-      {/* Status filter pills */}
-      <div className="flex items-center gap-1.5 border-b border-border pb-3">
-        {counts.map((filter) => (
-          <Link
-            key={filter.value}
-            href={filter.value === "ACTIVE" ? "/saved" : `/saved?status=${filter.value}`}
-            className={`inline-flex h-7 items-center rounded-md px-2.5 text-sm font-medium transition-colors ${
-              selectedStatus === filter.value
-                ? "bg-foreground text-background"
-                : "text-muted-foreground hover:bg-muted hover:text-foreground"
-            }`}
-          >
-            {filter.label}
-            {filter.count > 0 ? (
-              <span className="ml-1.5 text-xs opacity-60">{filter.count}</span>
-            ) : null}
-          </Link>
-        ))}
-      </div>
+      <section className="surface-panel p-4 sm:p-5">
+        <div className="flex flex-wrap items-center gap-2">
+          {counts.map((filter) => (
+            <Link
+              key={filter.value}
+              href={filter.value === "ACTIVE" ? "/saved" : `/saved?status=${filter.value}`}
+              className={`inline-flex h-8 items-center rounded-lg px-3 text-sm font-medium transition-colors ${
+                selectedStatus === filter.value
+                  ? "bg-foreground text-background"
+                  : "bg-background/70 text-muted-foreground hover:bg-muted hover:text-foreground"
+              }`}
+            >
+              {filter.label}
+              {filter.count > 0 ? (
+                <span className="ml-1.5 text-xs opacity-60">{filter.count}</span>
+              ) : null}
+            </Link>
+          ))}
+        </div>
+      </section>
 
-      {/* List */}
-      <div className="pt-1">
+      <section className="surface-panel p-4 sm:p-5">
         <SavedJobsList
           key={selectedStatus}
           initialSavedJobs={shortlistItems}
           statusFilter={selectedStatus}
           emptyHref={selectedStatus === "ACTIVE" ? "/jobs" : "/saved?status=ACTIVE"}
         />
-      </div>
+      </section>
     </div>
   );
 }

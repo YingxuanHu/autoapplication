@@ -16,7 +16,7 @@ type JobsPageProps = {
 };
 
 const SELECT_CLASS =
-  "h-8 rounded-md border border-input bg-background px-2.5 text-sm text-foreground outline-none focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/40";
+  "h-9 rounded-lg border border-input/80 bg-background/70 px-3 text-sm text-foreground outline-none focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/40";
 
 const EXPERIENCE_LEVEL_GROUPS: Array<{ label: string; value: string }> = [
   { label: "Entry", value: "ENTRY" },
@@ -72,267 +72,286 @@ export default async function JobsPage({ searchParams }: JobsPageProps) {
   const navigationKey = buildSearchParamSignature(resolvedSearchParams);
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
-      {/* Header row */}
-      <div className="pb-4">
-        <h1 className="text-xl font-semibold tracking-tight">Jobs</h1>
-        <p className="mt-0.5 text-sm text-muted-foreground">
-          {jobsResult.total} live job{jobsResult.total !== 1 ? "s" : ""}
-          {activeFilterCount > 0 ? " matching filters" : ""}
-        </p>
-        {ingestionStatus.lastUpdatedAt ? (
-          <p className="mt-0.5 text-xs text-muted-foreground/50">
-            Updated {formatPostedAge(ingestionStatus.lastUpdatedAt)}
-            {ingestionStatus.activeSourceCount > 0
-              ? ` · ${ingestionStatus.activeSourceCount} connector${ingestionStatus.activeSourceCount !== 1 ? "s" : ""} active`
-              : ""}
-            {ingestionStatus.liveJobCount > jobsResult.total
-              ? ` · ${ingestionStatus.liveJobCount} total in pool`
-              : ""}
+    <div className="app-page space-y-6">
+      <header className="page-header">
+        <div>
+          <h1 className="page-title">Jobs</h1>
+          <p className="page-description">
+            Review the live job pool first, then move the strongest matches into saved, review, or apply flows.
           </p>
-        ) : null}
-      </div>
-
-      {/* Stats bar */}
-      <div className="mb-4 grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-5">
-        <StatCard
-          label="Live jobs"
-          value={feedStats.totalLive.toLocaleString()}
-          detail={feedStats.newLast24h > 0 ? `+${feedStats.newLast24h.toLocaleString()} today` : undefined}
-          accentClass="text-foreground"
-        />
-        <StatCard
-          label="Auto-apply"
-          value={feedStats.autoEligibleCount.toLocaleString()}
-          detail="ready to submit"
-          accentClass="text-emerald-600"
-        />
-        <StatCard
-          label="Review"
-          value={feedStats.reviewRequiredCount.toLocaleString()}
-          detail="needs review"
-          accentClass="text-amber-600"
-        />
-        <StatCard
-          label="Saved"
-          value={feedStats.savedCount.toLocaleString()}
-          detail={feedStats.savedEndingSoonCount > 0 ? `${feedStats.savedEndingSoonCount} ending soon` : undefined}
-          accentClass="text-blue-600"
-        />
-        <StatCard
-          label="Manual"
-          value={feedStats.manualOnlyCount.toLocaleString()}
-          detail="manual apply"
-          accentClass="text-muted-foreground"
-        />
-      </div>
-
-      {/* Category pills + sort controls */}
-      <div className="flex flex-wrap items-center gap-y-1.5 border-b border-border pb-3">
-        <div className="flex flex-1 flex-wrap items-center gap-1">
-          <FilterPill
-            label="All"
-            href={buildJobsHref(resolvedSearchParams, {
-              page: undefined,
-              submissionCategory: undefined,
-            })}
-            active={!filters.submissionCategory}
-          />
-          <FilterPill
-            label="Auto-apply"
-            href={buildJobsHref(resolvedSearchParams, {
-              page: undefined,
-              submissionCategory: "AUTO_SUBMIT_READY",
-            })}
-            active={filters.submissionCategory === "AUTO_SUBMIT_READY"}
-          />
-          <FilterPill
-            label="Review"
-            href={buildJobsHref(resolvedSearchParams, {
-              page: undefined,
-              submissionCategory: "AUTO_FILL_REVIEW",
-            })}
-            active={filters.submissionCategory === "AUTO_FILL_REVIEW"}
-          />
-          <FilterPill
-            label="Manual"
-            href={buildJobsHref(resolvedSearchParams, {
-              page: undefined,
-              submissionCategory: "MANUAL_ONLY",
-            })}
-            active={filters.submissionCategory === "MANUAL_ONLY"}
-          />
         </div>
+      </header>
 
-        {/* Sort controls — top-level, separate from filters */}
-        <div className="flex shrink-0 items-center gap-0.5">
-          <SortPill
-            label="Relevance"
-            href={buildJobsHref(resolvedSearchParams, {
-              page: undefined,
-              sortBy: undefined,
-            })}
-            active={!filters.sortBy || filters.sortBy === "relevance"}
-          />
-          <SortPill
-            label="Newest"
-            href={buildJobsHref(resolvedSearchParams, {
-              page: undefined,
-              sortBy: "newest",
-            })}
-            active={filters.sortBy === "newest"}
-          />
-          <SortPill
-            label="Salary"
-            href={buildJobsHref(resolvedSearchParams, {
-              page: undefined,
-              sortBy: "salary",
-            })}
-            active={filters.sortBy === "salary"}
-          />
-        </div>
-      </div>
-
-      {/* Role-family pills */}
-      <div className="flex flex-wrap items-center gap-x-1 gap-y-1 border-b border-border py-2.5">
-        <FilterPill
-          label="All roles"
-          href={buildJobsHref(resolvedSearchParams, {
-            page: undefined,
-            roleFamily: undefined,
-          })}
-          active={!filters.roleFamily}
-        />
-        {ROLE_FAMILY_GROUPS.map((group) => (
-          <FilterPill
-            key={group.value}
-            label={group.label}
-            href={buildJobsHref(resolvedSearchParams, {
-              page: undefined,
-              roleFamily: group.value,
-            })}
-            active={filters.roleFamily === group.value}
-          />
-        ))}
-      </div>
-
-      {/* Experience-level pills */}
-      <div className="flex flex-wrap items-center gap-x-1 gap-y-1 border-b border-border py-2.5">
-        <FilterPill
-          label="All levels"
-          href={buildJobsHref(resolvedSearchParams, {
-            page: undefined,
-            experienceLevel: undefined,
-          })}
-          active={!filters.experienceLevel}
-        />
-        {EXPERIENCE_LEVEL_GROUPS.map((group) => (
-          <FilterPill
-            key={group.value}
-            label={group.label}
-            href={buildJobsHref(resolvedSearchParams, {
-              page: undefined,
-              experienceLevel: group.value,
-            })}
-            active={filters.experienceLevel === group.value}
-          />
-        ))}
-      </div>
-
-      {/* Filters — collapsed by default, opens when any filter active */}
-      <details className="border-b border-border" open={activeFilterCount > 0}>
-        <summary className="flex cursor-pointer list-none items-center gap-2 py-2.5 text-sm text-muted-foreground hover:text-foreground">
-          Filters
-          {activeFilterCount > 0 ? (
-            <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-foreground text-[11px] font-medium text-background">
-              {activeFilterCount}
-            </span>
-          ) : null}
-        </summary>
-
-        <form className="space-y-2 pb-3">
-          {/* Preserve pill-selected params through form submission */}
-          {filters.submissionCategory ? (
-            <input type="hidden" name="submissionCategory" value={filters.submissionCategory} />
-          ) : null}
-          {filters.roleFamily ? (
-            <input type="hidden" name="roleFamily" value={filters.roleFamily} />
-          ) : null}
-          {filters.experienceLevel ? (
-            <input type="hidden" name="experienceLevel" value={filters.experienceLevel} />
-          ) : null}
-          {filters.sortBy ? (
-            <input type="hidden" name="sortBy" value={filters.sortBy} />
-          ) : null}
-          {/* Search + buttons */}
-          <div className="flex gap-2">
-            <Input
-              name="search"
-              placeholder="Search jobs…"
-              defaultValue={filters.search}
-              className="h-8 flex-1 text-sm"
-            />
-            <Button type="submit" size="sm">
-              Filter
-            </Button>
-            {activeFilterCount > 0 ? (
-              <Button variant="ghost" size="sm" render={<Link href="/jobs" />}>
-                <X className="h-3.5 w-3.5" />
-              </Button>
+      <section className="surface-panel p-4 sm:p-5">
+        <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_auto] xl:items-end">
+          <div>
+            <p className="text-sm text-muted-foreground">
+              {jobsResult.total} live job{jobsResult.total !== 1 ? "s" : ""}
+              {activeFilterCount > 0 ? " matching filters" : ""}
+            </p>
+            {ingestionStatus.lastUpdatedAt ? (
+              <p className="mt-1 text-xs text-muted-foreground">
+                Updated {formatPostedAge(ingestionStatus.lastUpdatedAt)}
+                {ingestionStatus.activeSourceCount > 0
+                  ? ` · ${ingestionStatus.activeSourceCount} connector${ingestionStatus.activeSourceCount !== 1 ? "s" : ""} active`
+                  : ""}
+                {ingestionStatus.liveJobCount > jobsResult.total
+                  ? ` · ${ingestionStatus.liveJobCount} total in pool`
+                  : ""}
+              </p>
             ) : null}
           </div>
 
-          {/* Basic selects */}
-          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-            <select name="workMode" defaultValue={filters.workMode ?? ""} className={SELECT_CLASS}>
-              <option value="">Work mode</option>
-              <option value="REMOTE">Remote</option>
-              <option value="HYBRID">Hybrid</option>
-              <option value="ONSITE">On-site</option>
-              <option value="FLEXIBLE">Flexible</option>
-            </select>
-
-            <select name="region" defaultValue={filters.region ?? ""} className={SELECT_CLASS}>
-              <option value="">Region</option>
-              <option value="US">US</option>
-              <option value="CA">Canada</option>
-            </select>
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-5">
+            <StatCard
+              label="Live jobs"
+              value={feedStats.totalLive.toLocaleString()}
+              detail={feedStats.newLast24h > 0 ? `+${feedStats.newLast24h.toLocaleString()} today` : undefined}
+              accentClass="text-foreground"
+            />
+            <StatCard
+              label="Auto-apply"
+              value={feedStats.autoEligibleCount.toLocaleString()}
+              detail="ready to submit"
+              accentClass="text-emerald-600"
+            />
+            <StatCard
+              label="Review"
+              value={feedStats.reviewRequiredCount.toLocaleString()}
+              detail="needs review"
+              accentClass="text-amber-600"
+            />
+            <StatCard
+              label="Saved"
+              value={feedStats.savedCount.toLocaleString()}
+              detail={feedStats.savedEndingSoonCount > 0 ? `${feedStats.savedEndingSoonCount} ending soon` : undefined}
+              accentClass="text-blue-600"
+            />
+            <StatCard
+              label="Manual"
+              value={feedStats.manualOnlyCount.toLocaleString()}
+              detail="manual apply"
+              accentClass="text-muted-foreground"
+            />
           </div>
+        </div>
 
-          {/* Advanced filters — inner disclosure */}
-          <details open={activeAdvancedCount > 0}>
-            <summary className="flex cursor-pointer list-none items-center gap-1.5 pt-0.5 text-xs text-muted-foreground/70 hover:text-muted-foreground">
-              More filters
-              {activeAdvancedCount > 0 ? (
-                <span className="text-xs font-medium text-foreground">({activeAdvancedCount})</span>
-              ) : null}
+        <div className="mt-5 space-y-4 border-t border-border/60 pt-4">
+          <FilterRow
+            label="Category"
+            actions={
+              <div className="flex flex-wrap items-center gap-1">
+                <SortPill
+                  label="Relevance"
+                  href={buildJobsHref(resolvedSearchParams, {
+                    page: undefined,
+                    sortBy: undefined,
+                  })}
+                  active={!filters.sortBy || filters.sortBy === "relevance"}
+                />
+                <SortPill
+                  label="Newest"
+                  href={buildJobsHref(resolvedSearchParams, {
+                    page: undefined,
+                    sortBy: "newest",
+                  })}
+                  active={filters.sortBy === "newest"}
+                />
+                <SortPill
+                  label="Salary"
+                  href={buildJobsHref(resolvedSearchParams, {
+                    page: undefined,
+                    sortBy: "salary",
+                  })}
+                  active={filters.sortBy === "salary"}
+                />
+              </div>
+            }
+          >
+            <FilterPill
+              label="All"
+              href={buildJobsHref(resolvedSearchParams, {
+                page: undefined,
+                submissionCategory: undefined,
+              })}
+              active={!filters.submissionCategory}
+            />
+            <FilterPill
+              label="Auto-apply"
+              href={buildJobsHref(resolvedSearchParams, {
+                page: undefined,
+                submissionCategory: "AUTO_SUBMIT_READY",
+              })}
+              active={filters.submissionCategory === "AUTO_SUBMIT_READY"}
+            />
+            <FilterPill
+              label="Review"
+              href={buildJobsHref(resolvedSearchParams, {
+                page: undefined,
+                submissionCategory: "AUTO_FILL_REVIEW",
+              })}
+              active={filters.submissionCategory === "AUTO_FILL_REVIEW"}
+            />
+            <FilterPill
+              label="Manual"
+              href={buildJobsHref(resolvedSearchParams, {
+                page: undefined,
+                submissionCategory: "MANUAL_ONLY",
+              })}
+              active={filters.submissionCategory === "MANUAL_ONLY"}
+            />
+          </FilterRow>
+
+          <FilterRow label="Role">
+            <FilterPill
+              label="All roles"
+              href={buildJobsHref(resolvedSearchParams, {
+                page: undefined,
+                roleFamily: undefined,
+              })}
+              active={!filters.roleFamily}
+            />
+            {ROLE_FAMILY_GROUPS.map((group) => (
+              <FilterPill
+                key={group.value}
+                label={group.label}
+                href={buildJobsHref(resolvedSearchParams, {
+                  page: undefined,
+                  roleFamily: group.value,
+                })}
+                active={filters.roleFamily === group.value}
+              />
+            ))}
+          </FilterRow>
+
+          <FilterRow label="Level">
+            <FilterPill
+              label="All levels"
+              href={buildJobsHref(resolvedSearchParams, {
+                page: undefined,
+                experienceLevel: undefined,
+              })}
+              active={!filters.experienceLevel}
+            />
+            {EXPERIENCE_LEVEL_GROUPS.map((group) => (
+              <FilterPill
+                key={group.value}
+                label={group.label}
+                href={buildJobsHref(resolvedSearchParams, {
+                  page: undefined,
+                  experienceLevel: group.value,
+                })}
+                active={filters.experienceLevel === group.value}
+              />
+            ))}
+          </FilterRow>
+
+          <details className="surface-panel-muted overflow-hidden" open={activeFilterCount > 0}>
+            <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 text-sm font-medium text-foreground">
+              <span>More filters</span>
+              <span className="text-xs text-muted-foreground">
+                {activeFilterCount > 0 ? `${activeFilterCount} active` : "Optional"}
+              </span>
             </summary>
 
-            <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-3">
-              <select
-                name="industry"
-                defaultValue={filters.industry ?? ""}
-                className={SELECT_CLASS}
-              >
-                <option value="">Industry</option>
-                <option value="TECH">Tech</option>
-                <option value="FINANCE">Finance</option>
-              </select>
+            <form className="space-y-3 border-t border-border/60 px-4 py-4">
+              {filters.submissionCategory ? (
+                <input
+                  type="hidden"
+                  name="submissionCategory"
+                  value={filters.submissionCategory}
+                />
+              ) : null}
+              {filters.roleFamily ? (
+                <input type="hidden" name="roleFamily" value={filters.roleFamily} />
+              ) : null}
+              {filters.experienceLevel ? (
+                <input
+                  type="hidden"
+                  name="experienceLevel"
+                  value={filters.experienceLevel}
+                />
+              ) : null}
+              {filters.sortBy ? (
+                <input type="hidden" name="sortBy" value={filters.sortBy} />
+              ) : null}
 
-              <Input
-                name="salaryMin"
-                type="number"
-                placeholder="Min salary"
-                defaultValue={filters.salaryMin ? String(filters.salaryMin) : ""}
-                className="h-8 text-sm"
-              />
-            </div>
+              <div className="flex flex-col gap-2 sm:flex-row">
+                <Input
+                  name="search"
+                  placeholder="Search jobs…"
+                  defaultValue={filters.search}
+                  className="flex-1 text-sm"
+                />
+                <Button type="submit" size="sm">
+                  Apply filters
+                </Button>
+                {activeFilterCount > 0 ? (
+                  <Button variant="ghost" size="sm" render={<Link href="/jobs" />}>
+                    <X className="h-3.5 w-3.5" />
+                    Clear
+                  </Button>
+                ) : null}
+              </div>
+
+              <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+                <select
+                  name="workMode"
+                  defaultValue={filters.workMode ?? ""}
+                  className={SELECT_CLASS}
+                >
+                  <option value="">Work mode</option>
+                  <option value="REMOTE">Remote</option>
+                  <option value="HYBRID">Hybrid</option>
+                  <option value="ONSITE">On-site</option>
+                  <option value="FLEXIBLE">Flexible</option>
+                </select>
+
+                <select
+                  name="region"
+                  defaultValue={filters.region ?? ""}
+                  className={SELECT_CLASS}
+                >
+                  <option value="">Region</option>
+                  <option value="US">US</option>
+                  <option value="CA">Canada</option>
+                </select>
+              </div>
+
+              <details open={activeAdvancedCount > 0}>
+                <summary className="flex cursor-pointer list-none items-center gap-1.5 pt-0.5 text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground hover:text-foreground">
+                  More filters
+                  {activeAdvancedCount > 0 ? (
+                    <span className="text-[11px] text-foreground">({activeAdvancedCount})</span>
+                  ) : null}
+                </summary>
+
+                <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-3">
+                  <select
+                    name="industry"
+                    defaultValue={filters.industry ?? ""}
+                    className={SELECT_CLASS}
+                  >
+                    <option value="">Industry</option>
+                    <option value="TECH">Tech</option>
+                    <option value="FINANCE">Finance</option>
+                  </select>
+
+                  <Input
+                    name="salaryMin"
+                    type="number"
+                    placeholder="Min salary"
+                    defaultValue={filters.salaryMin ? String(filters.salaryMin) : ""}
+                    className="text-sm"
+                  />
+                </div>
+              </details>
+            </form>
           </details>
-        </form>
-      </details>
+        </div>
+      </section>
 
-      {/* Feed */}
-      <div className="pt-1">
+      <section className="surface-panel p-4 sm:p-5">
         {jobCards.length === 0 ? (
           <div className="py-16 text-center">
             <p className="text-sm font-medium text-foreground">No jobs match these filters</p>
@@ -346,34 +365,33 @@ export default async function JobsPage({ searchParams }: JobsPageProps) {
         ) : (
           <JobsFeedList key={navigationKey} initialJobs={jobCards} />
         )}
-      </div>
 
-      {/* Pagination */}
-      {totalPages > 1 ? (
-        <div className="flex items-center justify-between border-t border-border pt-3 mt-2">
-          <p className="text-sm text-muted-foreground">
-            Page {currentPage} of {totalPages}
-          </p>
-          <div className="flex items-center gap-1.5">
-            <PaginationLink
-              href={buildJobsHref(resolvedSearchParams, {
-                page: currentPage > 1 ? String(currentPage - 1) : undefined,
-              })}
-              disabled={currentPage <= 1}
-            >
-              Previous
-            </PaginationLink>
-            <PaginationLink
-              href={buildJobsHref(resolvedSearchParams, {
-                page: currentPage < totalPages ? String(currentPage + 1) : undefined,
-              })}
-              disabled={currentPage >= totalPages}
-            >
-              Next
-            </PaginationLink>
+        {totalPages > 1 ? (
+          <div className="mt-5 flex flex-col gap-3 border-t border-border/60 pt-4 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-sm text-muted-foreground">
+              Page {currentPage} of {totalPages}
+            </p>
+            <div className="flex items-center gap-2">
+              <PaginationLink
+                href={buildJobsHref(resolvedSearchParams, {
+                  page: currentPage > 1 ? String(currentPage - 1) : undefined,
+                })}
+                disabled={currentPage <= 1}
+              >
+                Previous
+              </PaginationLink>
+              <PaginationLink
+                href={buildJobsHref(resolvedSearchParams, {
+                  page: currentPage < totalPages ? String(currentPage + 1) : undefined,
+                })}
+                disabled={currentPage >= totalPages}
+              >
+                Next
+              </PaginationLink>
+            </div>
           </div>
-        </div>
-      ) : null}
+        ) : null}
+      </section>
     </div>
   );
 }
@@ -384,10 +402,10 @@ function FilterPill({ active, href, label }: { active: boolean; href: string; la
   return (
     <Link
       href={href}
-      className={`inline-flex h-7 items-center rounded-md px-2.5 text-sm font-medium transition-colors ${
+      className={`inline-flex h-8 items-center rounded-lg px-3 text-sm font-medium transition-colors ${
         active
           ? "bg-foreground text-background"
-          : "text-muted-foreground hover:bg-muted hover:text-foreground"
+          : "bg-background/70 text-muted-foreground hover:bg-muted hover:text-foreground"
       }`}
     >
       {label}
@@ -399,10 +417,10 @@ function SortPill({ active, href, label }: { active: boolean; href: string; labe
   return (
     <Link
       href={href}
-      className={`inline-flex h-6 items-center rounded px-2 text-xs font-medium transition-colors ${
+      className={`inline-flex h-8 items-center rounded-lg px-3 text-sm font-medium transition-colors ${
         active
-          ? "text-foreground"
-          : "text-muted-foreground/60 hover:text-muted-foreground"
+          ? "bg-muted text-foreground"
+          : "text-muted-foreground hover:bg-muted/70 hover:text-foreground"
       }`}
     >
       {label}
@@ -430,7 +448,7 @@ function PaginationLink({
   return (
     <Link
       href={href}
-      className="inline-flex h-7 items-center rounded-md border border-input px-2.5 text-sm text-foreground hover:bg-muted"
+      className="inline-flex h-8 items-center rounded-lg border border-input/80 bg-background/70 px-3 text-sm text-foreground hover:bg-muted"
     >
       {children}
     </Link>
@@ -551,14 +569,36 @@ function StatCard({
   accentClass?: string;
 }) {
   return (
-    <div className="rounded-lg border border-border bg-card px-3 py-2">
-      <p className="text-xs text-muted-foreground">{label}</p>
-      <p className={`text-lg font-semibold tabular-nums ${accentClass ?? "text-foreground"}`}>
+    <div className="surface-panel-muted px-3 py-3">
+      <p className="text-[11px] font-medium uppercase tracking-[0.14em] text-muted-foreground">{label}</p>
+      <p className={`mt-1 text-lg font-semibold tabular-nums ${accentClass ?? "text-foreground"}`}>
         {value}
       </p>
       {detail ? (
-        <p className="text-xs text-muted-foreground">{detail}</p>
+        <p className="mt-1 text-xs text-muted-foreground">{detail}</p>
       ) : null}
+    </div>
+  );
+}
+
+function FilterRow({
+  label,
+  actions,
+  children,
+}: {
+  label: string;
+  actions?: React.ReactNode;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+      <div className="lg:w-20 lg:pt-2">
+        <p className="section-label">{label}</p>
+      </div>
+      <div className="min-w-0 flex-1">
+        <div className="flex flex-wrap gap-2">{children}</div>
+      </div>
+      {actions ? <div className="flex shrink-0 flex-wrap gap-2">{actions}</div> : null}
     </div>
   );
 }

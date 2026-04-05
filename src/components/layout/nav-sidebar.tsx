@@ -9,7 +9,6 @@ import {
   Database,
   FileCheck2,
   GitCompareArrows,
-  LayoutDashboard,
   Settings,
   User,
   Zap,
@@ -21,7 +20,6 @@ const NAV_ITEMS = [
   { href: "/jobs", label: "Jobs", icon: Briefcase },
   { href: "/saved", label: "Saved", icon: Bookmark },
   { href: "/applications", label: "Applications", icon: FileCheck2 },
-  { href: "/dashboard", label: "Tracker", icon: LayoutDashboard },
   { href: "/notifications", label: "Alerts", icon: Bell },
   { href: "/documents/compare", label: "Compare", icon: GitCompareArrows },
   { href: "/profile", label: "Profile", icon: User },
@@ -49,17 +47,23 @@ export function NavSidebar() {
   }
 
   return (
-    <aside className="hidden md:flex w-56 flex-col border-r bg-card">
-      {/* Brand */}
-      <div className="flex items-center gap-2 px-4 py-5 border-b">
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
-          <Zap className="h-4 w-4 text-primary-foreground" />
+    <aside className="hidden md:flex w-60 shrink-0 flex-col border-r border-border/70 bg-sidebar/80 backdrop-blur-sm">
+      <div className="px-4 py-5">
+        <p className="px-3 text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
+          Workspace
+        </p>
+        <div className="mt-3 flex items-center gap-3 px-3">
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-foreground text-background">
+            <Zap className="h-4 w-4" />
+          </div>
+          <div>
+            <p className="text-sm font-semibold tracking-tight text-foreground">AutoApplication</p>
+            <p className="text-xs text-muted-foreground">Search, apply, track</p>
+          </div>
         </div>
-        <span className="text-lg font-semibold tracking-tight">AutoApply</span>
       </div>
 
-      {/* Nav links */}
-      <nav className="flex-1 px-3 py-4 space-y-1">
+      <nav className="flex-1 px-3 pb-4">
         {NAV_ITEMS.map((item) => {
           const isActive =
             pathname === item.href || pathname.startsWith(item.href + "/");
@@ -68,24 +72,24 @@ export function NavSidebar() {
               key={item.href}
               href={item.href}
               className={cn(
-                "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors",
                 isActive
-                  ? "bg-accent text-accent-foreground"
-                  : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                  ? "bg-accent text-foreground"
+                  : "text-muted-foreground hover:bg-accent/70 hover:text-foreground"
               )}
             >
-              <item.icon className="h-4 w-4" />
+              <item.icon className={cn("h-4 w-4", isActive ? "text-foreground" : "text-muted-foreground")} />
               {item.label}
             </Link>
           );
         })}
       </nav>
 
-      {/* Footer */}
-      <div className="flex items-center justify-between border-t px-4 py-3">
-        <p className="text-xs text-muted-foreground">
-          AutoApplication v0.1
-        </p>
+      <div className="m-4 mt-0 flex items-center justify-between rounded-2xl border border-border/70 bg-background/60 px-3 py-2.5">
+        <div>
+          <p className="text-xs font-medium text-foreground">Theme</p>
+          <p className="text-[11px] text-muted-foreground">Display preference</p>
+        </div>
         <ThemeToggle />
       </div>
     </aside>

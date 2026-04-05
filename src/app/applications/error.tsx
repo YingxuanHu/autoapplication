@@ -21,7 +21,7 @@ export default function ApplicationsError({
         Failed to load applications
       </h2>
       <p className="mt-2 text-sm text-muted-foreground">
-        There was a problem loading your application history.
+        There was a problem loading your applications workspace.
       </p>
       <div className="mt-6 flex items-center gap-3">
         <Button onClick={reset} variant="outline" size="sm">

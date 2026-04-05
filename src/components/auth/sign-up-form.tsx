@@ -6,7 +6,7 @@ import { FormEvent, useState } from "react";
 import { LoaderCircle } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { authClient } from "@/lib/auth-client";
 
@@ -85,10 +85,11 @@ export function SignUpForm() {
   return (
     <Card className="w-full max-w-md">
       <CardHeader>
-        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-          AutoApplication
-        </p>
+        <p className="section-label">AutoApplication</p>
         <CardTitle className="mt-2 text-2xl">Create account</CardTitle>
+        <CardDescription>
+          Set up your workspace for the feed, tracker, documents, and reminders.
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <form className="space-y-4" onSubmit={onSubmit}>
@@ -117,7 +118,13 @@ export function SignUpForm() {
               type="password"
               value={password}
             />
-            <p className={password.length >= 8 ? "text-xs text-green-700 dark:text-green-400" : "text-xs text-destructive"}>
+            <p
+              className={
+                password.length >= 8
+                  ? "text-xs text-emerald-700 dark:text-emerald-400"
+                  : "text-xs text-destructive"
+              }
+            >
               Must contain at least 8 characters
             </p>
           </div>
@@ -145,7 +152,7 @@ export function SignUpForm() {
             <span>Email me deadline reminders</span>
           </label>
           {error ? (
-            <p className="rounded-md border border-destructive/30 bg-destructive/5 px-3 py-2 text-sm text-destructive">
+            <p className="rounded-lg border border-destructive/25 bg-destructive/5 px-3 py-2 text-sm text-destructive">
               {error}
             </p>
           ) : null}

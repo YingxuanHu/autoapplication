@@ -449,6 +449,141 @@ export async function createTrackedApplication(input: {
   return created;
 }
 
+const TRACKED_STATUS_NOTE: Record<TrackedApplicationStatus, string> = {
+  WISHLIST: "wishlist",
+  APPLIED: "applied",
+  SCREEN: "screen",
+  INTERVIEW: "interview",
+  OFFER: "offer",
+  REJECTED: "rejected",
+  WITHDRAWN: "withdrawn",
+};
+
+export async function upsertTrackedApplicationFromJob(input: {
+  canonicalJobId: string;
+  status: TrackedApplicationStatus;
+}) {
+  const [authUserId, profileId] = await Promise.all([
+    requireCurrentAuthUserId(),
+    requireCurrentProfileId(),
+  ]);
+
+  const [existing, job] = await Promise.all([
+    prisma.trackedApplication.findUnique({
+      where: {
+        userId_canonicalJobId: {
+          userId: authUserId,
+          canonicalJobId: input.canonicalJobId,
+        },
+      },
+      select: {
+        id: true,
+        status: true,
+        notes: true,
+        fitAnalysis: true,
+        jobDescription: true,
+      },
+    }),
+    prisma.jobCanonical.findUnique({
+      where: { id: input.canonicalJobId },
+      select: {
+        id: true,
+        company: true,
+        title: true,
+        applyUrl: true,
+        deadline: true,
+        description: true,
+        applicationPackages: {
+          where: { userId: profileId },
+          orderBy: { updatedAt: "desc" },
+          take: 1,
+          select: {
+            whyItMatches: true,
+            resumeVariant: {
+              select: {
+                documentId: true,
+              },
+            },
+          },
+        },
+      },
+    }),
+  ]);
+
+  if (!job) {
+    throw new Error("Job not found");
+  }
+
+  const latestPackage = job.applicationPackages[0] ?? null;
+  const tracked = existing
+    ? await prisma.trackedApplication.update({
+        where: { id: existing.id },
+        data: {
+          company: job.company,
+          roleTitle: job.title,
+          roleUrl: job.applyUrl,
+          deadline: job.deadline,
+          status: input.status,
+          jobDescription: existing.jobDescription ?? job.description,
+          fitAnalysis: existing.fitAnalysis ?? latestPackage?.whyItMatches ?? null,
+        },
+      })
+    : await prisma.trackedApplication.create({
+        data: {
+          userId: authUserId,
+          canonicalJobId: job.id,
+          company: job.company,
+          roleTitle: job.title,
+          roleUrl: job.applyUrl,
+          status: input.status,
+          deadline: job.deadline,
+          jobDescription: job.description,
+          fitAnalysis: latestPackage?.whyItMatches ?? null,
+        },
+      });
+
+  await prisma.trackedApplicationEvent.create({
+    data: {
+      trackedApplicationId: tracked.id,
+      type: statusToEventType(input.status),
+      note: existing
+        ? existing.status === input.status
+          ? `Application refreshed from the jobs feed as ${TRACKED_STATUS_NOTE[input.status]}.`
+          : `Status updated from the jobs feed to ${TRACKED_STATUS_NOTE[input.status]}.`
+        : input.status === "WISHLIST"
+          ? "Application added to tracker from the jobs feed."
+          : `Application added to tracker from the jobs feed as ${TRACKED_STATUS_NOTE[input.status]}.`,
+    },
+  });
+
+  const resumeDocumentId = latestPackage?.resumeVariant.documentId;
+  if (resumeDocumentId) {
+    await prisma.trackedApplicationDocument.upsert({
+      where: {
+        trackedApplicationId_slot: {
+          trackedApplicationId: tracked.id,
+          slot: "SENT_RESUME",
+        },
+      },
+      create: {
+        trackedApplicationId: tracked.id,
+        documentId: resumeDocumentId,
+        slot: "SENT_RESUME",
+      },
+      update: {
+        documentId: resumeDocumentId,
+      },
+    });
+  }
+
+  await checkSingleTrackedApplicationReminder(tracked.id);
+  return {
+    applicationId: tracked.id,
+    created: !existing,
+    status: tracked.status,
+  };
+}
+
 export async function updateTrackedApplication(input: {
   applicationId: string;
   company: string;

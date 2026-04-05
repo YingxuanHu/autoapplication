@@ -6,7 +6,7 @@ import { FormEvent, useState } from "react";
 import { LoaderCircle } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { authClient } from "@/lib/auth-client";
 
@@ -57,27 +57,28 @@ export function SignInForm({
   };
 
   return (
-    <Card className="w-full max-w-md">
+    <Card className="w-full">
       <CardHeader>
-        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-          AutoApplication
-        </p>
+        <p className="section-label">AutoApplication</p>
         <CardTitle className="mt-2 text-2xl">Sign in</CardTitle>
+        <CardDescription>
+          Continue to your job feed and application workspace.
+        </CardDescription>
       </CardHeader>
       <CardContent>
         {justVerified ? (
-          <p className="mb-4 rounded-md border border-green-500/30 bg-green-500/5 px-3 py-2 text-sm text-green-700 dark:text-green-400">
+          <p className="mb-4 rounded-lg border border-emerald-500/25 bg-emerald-500/5 px-3 py-2 text-sm text-emerald-700 dark:text-emerald-400">
             Email verified. You can now sign in.
           </p>
         ) : null}
         <form className="space-y-4" onSubmit={onSubmit}>
-          <div className="space-y-1">
+          <div className="space-y-1.5">
             <label className="text-sm font-medium" htmlFor="email">
               Email
             </label>
             <Input id="email" name="email" required type="email" />
           </div>
-          <div className="space-y-1">
+          <div className="space-y-1.5">
             <label className="text-sm font-medium" htmlFor="password">
               Password
             </label>
@@ -89,7 +90,7 @@ export function SignInForm({
             </Link>
           </div>
           {error ? (
-            <p className="rounded-md border border-destructive/30 bg-destructive/5 px-3 py-2 text-sm text-destructive">
+            <p className="rounded-lg border border-destructive/25 bg-destructive/5 px-3 py-2 text-sm text-destructive">
               {error}
             </p>
           ) : null}
@@ -109,7 +110,7 @@ export function SignInForm({
             )}
           </Button>
         </form>
-        <p className="mt-4 text-sm text-muted-foreground">
+        <p className="mt-4 text-sm text-muted-foreground lg:hidden">
           New here?{" "}
           <Link className="text-foreground underline-offset-4 hover:underline" href="/sign-up">
             Create account

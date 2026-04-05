@@ -1,6 +1,6 @@
 import { errorResponse } from "@/lib/api-utils";
-import { UnauthorizedError } from "@/lib/current-user";
-import { getDocument } from "@/lib/queries/documents";
+import { UnauthorizedError, requireCurrentProfileId } from "@/lib/current-user";
+import { prisma } from "@/lib/db";
 import { readStoredFile } from "@/lib/storage";
 
 export async function GET(
@@ -9,7 +9,19 @@ export async function GET(
 ) {
   try {
     const { id } = await params;
-    const document = await getDocument(id);
+    const userId = await requireCurrentProfileId();
+    const document = await prisma.document.findFirst({
+      where: {
+        id,
+        userId,
+      },
+      select: {
+        storageKey: true,
+        mimeType: true,
+        originalFileName: true,
+        filename: true,
+      },
+    });
 
     if (!document) {
       return errorResponse("Document not found", 404);
@@ -25,7 +37,7 @@ export async function GET(
       headers: {
         "Content-Type": document.mimeType,
         "Content-Length": String(file.byteLength),
-        "Content-Disposition": `attachment; filename*=UTF-8''${encodeURIComponent(document.filename)}`,
+        "Content-Disposition": `attachment; filename*=UTF-8''${encodeURIComponent(document.originalFileName ?? document.filename)}`,
       },
     });
   } catch (error) {

@@ -30,25 +30,25 @@ export default async function SettingsPage() {
   }
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
-      <div className="flex flex-wrap items-start justify-between gap-4 pb-6">
+    <div className="app-page space-y-6">
+      <div className="page-header">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Settings</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
+          <h1 className="page-title">Settings</h1>
+          <p className="page-description">
             Account and notification preferences for the merged tracker.
           </p>
         </div>
-        <div className="flex items-center gap-3 text-sm text-muted-foreground">
-          <Link href="/dashboard" className="hover:text-foreground">
-            Tracker
+        <div className="page-actions">
+          <Link href="/applications">
+            Applications
           </Link>
-          <Link href="/notifications" className="hover:text-foreground">
+          <Link href="/notifications">
             Notifications
           </Link>
         </div>
       </div>
 
-      <section className="rounded-lg border border-border bg-card p-4">
+      <section className="surface-panel p-4 sm:p-5">
         <h2 className="text-sm font-semibold text-foreground">Account</h2>
         <div className="mt-4 grid gap-4 sm:grid-cols-3">
           <div>
@@ -74,10 +74,10 @@ export default async function SettingsPage() {
         </div>
       </section>
 
-      <section className="mt-6 rounded-lg border border-border bg-card p-4">
+      <section className="surface-panel p-4 sm:p-5">
         <h2 className="text-sm font-semibold text-foreground">Notifications</h2>
         <form action={saveSettingsAction} className="mt-4 grid gap-4">
-          <label className="flex items-start gap-3 text-sm text-foreground">
+          <label className="flex items-start gap-3 rounded-xl border border-border/60 bg-background/60 px-4 py-4 text-sm text-foreground">
             <input
               type="checkbox"
               name="emailNotificationsEnabled"
@@ -103,14 +103,14 @@ export default async function SettingsPage() {
         </form>
       </section>
 
-      <section className="mt-6 rounded-lg border border-border bg-card p-4">
+      <section className="surface-panel p-4 sm:p-5">
         <h2 className="text-sm font-semibold text-foreground">Session</h2>
         <div className="mt-4">
           <SignOutButton />
         </div>
       </section>
 
-      <div className="mt-6">
+      <div>
         <DeleteAccountCard email={user.email} />
       </div>
     </div>

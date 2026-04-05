@@ -189,6 +189,11 @@ model UserProfile {
   automationMode    AutomationMode  @default(REVIEW_BEFORE_SUBMIT)
 
   // Structured profile data (rich JSON fields for AI ingestion and display)
+  contactJson     Json?
+  skillsText      String?
+  experienceText  String?
+  educationText   String?
+  projectsText    String?
   skillsJson      Json?   // string[] — e.g. ["TypeScript", "React", "PostgreSQL"]
   experiencesJson Json?   // Array<{ title, company, location, startDate, endDate, description }>
   educationsJson  Json?   // Array<{ school, degree, field, startDate, endDate, description }>
@@ -230,20 +235,39 @@ model Document {
   id            String       @id @default(cuid())
   userId        String
   type          DocumentType
+  title         String
+  originalFileName String
   filename      String
   mimeType      String
   sizeBytes     Int
   storageKey    String       @unique
+  isPrimary     Boolean      @default(false)
   extractedText String?
   extractedAt   DateTime?
   createdAt     DateTime     @default(now())
   updatedAt     DateTime     @updatedAt
 
   user          UserProfile   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  analysis      DocumentAnalysis?
   resumeVariant ResumeVariant?
   trackedApplicationLinks TrackedApplicationDocument[]
 
   @@index([userId, type])
+  @@index([userId, type, createdAt])
+  @@index([userId, type, isPrimary])
+}
+
+model DocumentAnalysis {
+  documentId            String   @id
+  extractedText         String
+  keywordsJson          Json
+  sectionsJson          Json
+  structuredProfileJson Json?
+  importSummaryJson     Json?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  document              Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
 }
 
 model JobRaw {

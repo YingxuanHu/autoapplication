@@ -42,8 +42,8 @@ export default async function TrackedApplicationPage({
     <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
       <div className="flex flex-wrap items-start justify-between gap-4 pb-6">
         <div>
-          <Link href="/dashboard" className="text-sm text-muted-foreground hover:text-foreground">
-            Back to tracker
+          <Link href="/applications" className="text-sm text-muted-foreground hover:text-foreground">
+            Back to applications
           </Link>
           <div className="mt-2 flex flex-wrap items-center gap-2">
             <h1 className="text-2xl font-semibold tracking-tight">

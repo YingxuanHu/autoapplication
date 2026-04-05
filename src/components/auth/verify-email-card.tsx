@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { authClient } from "@/lib/auth-client";
 
@@ -67,10 +67,11 @@ export function VerifyEmailCard({ defaultEmail = "" }: VerifyEmailCardProps) {
   return (
     <Card className="w-full max-w-md">
       <CardHeader>
-        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-          AutoApplication
-        </p>
+        <p className="section-label">AutoApplication</p>
         <CardTitle className="mt-2 text-2xl">Verify your email</CardTitle>
+        <CardDescription>
+          Confirm your address before accessing your feed, tracker, and saved documents.
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-3">
@@ -86,12 +87,12 @@ export function VerifyEmailCard({ defaultEmail = "" }: VerifyEmailCardProps) {
           />
         </div>
         {error ? (
-          <p className="mt-4 rounded-md border border-destructive/30 bg-destructive/5 px-3 py-2 text-sm text-destructive">
+          <p className="mt-4 rounded-lg border border-destructive/25 bg-destructive/5 px-3 py-2 text-sm text-destructive">
             {error}
           </p>
         ) : null}
         {message ? (
-          <p className="mt-4 rounded-md border border-green-500/30 bg-green-500/5 px-3 py-2 text-sm text-green-700 dark:text-green-400">
+          <p className="mt-4 rounded-lg border border-emerald-500/25 bg-emerald-500/5 px-3 py-2 text-sm text-emerald-700 dark:text-emerald-400">
             {message}
           </p>
         ) : null}

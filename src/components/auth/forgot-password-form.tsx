@@ -5,7 +5,7 @@ import { FormEvent, useState } from "react";
 import { LoaderCircle } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { authClient } from "@/lib/auth-client";
 
@@ -51,10 +51,11 @@ export function ForgotPasswordForm({ defaultEmail = "" }: ForgotPasswordFormProp
   return (
     <Card className="w-full max-w-md">
       <CardHeader>
-        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-          AutoApplication
-        </p>
+        <p className="section-label">AutoApplication</p>
         <CardTitle className="mt-2 text-2xl">Forgot password</CardTitle>
+        <CardDescription>
+          Enter your account email and we&apos;ll send you a reset link.
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <form className="space-y-4" onSubmit={onSubmit}>
@@ -65,12 +66,12 @@ export function ForgotPasswordForm({ defaultEmail = "" }: ForgotPasswordFormProp
             <Input defaultValue={defaultEmail} id="email" name="email" required type="email" />
           </div>
           {error ? (
-            <p className="rounded-md border border-destructive/30 bg-destructive/5 px-3 py-2 text-sm text-destructive">
+            <p className="rounded-lg border border-destructive/25 bg-destructive/5 px-3 py-2 text-sm text-destructive">
               {error}
             </p>
           ) : null}
           {message ? (
-            <p className="rounded-md border border-green-500/30 bg-green-500/5 px-3 py-2 text-sm text-green-700 dark:text-green-400">
+            <p className="rounded-lg border border-emerald-500/25 bg-emerald-500/5 px-3 py-2 text-sm text-emerald-700 dark:text-emerald-400">
               {message}
             </p>
           ) : null}

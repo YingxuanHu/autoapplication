@@ -102,13 +102,13 @@ function shouldSendScheduledEmail(
   );
 }
 
-function getDashboardUrl() {
+function getApplicationsUrl() {
   const baseUrl =
     process.env.BETTER_AUTH_URL?.trim() ||
     process.env.NEXT_PUBLIC_BETTER_AUTH_URL?.trim() ||
     "http://localhost:3000";
 
-  return `${baseUrl.replace(/\/$/, "")}/dashboard`;
+  return `${baseUrl.replace(/\/$/, "")}/applications`;
 }
 
 async function processTrackedApplicationReminder(
@@ -154,7 +154,7 @@ async function processTrackedApplicationReminder(
     },
   });
 
-  const dashboardUrl = getDashboardUrl();
+  const applicationsUrl = getApplicationsUrl();
   const shouldEmail = sendEmailImmediately
     ? application.user.emailNotificationsEnabled
     : shouldSendScheduledEmail(
@@ -166,11 +166,11 @@ async function processTrackedApplicationReminder(
     await sendEmail({
       to: application.user.email,
       subject: copy.title,
-      text: `${copy.message}\n\nOpen dashboard: ${dashboardUrl}`,
+      text: `${copy.message}\n\nOpen applications: ${applicationsUrl}`,
       html: `
         <p>Hello${application.user.name ? ` ${application.user.name}` : ""},</p>
         <p>${copy.message}</p>
-        <p><a href="${dashboardUrl}">Open dashboard</a></p>
+        <p><a href="${applicationsUrl}">Open applications</a></p>
       `,
     });
   }
@@ -274,11 +274,11 @@ export async function checkCustomReminders(now = new Date()) {
       await sendEmail({
         to: event.trackedApplication.user.email,
         subject: title,
-        text: `${message}\n\nOpen dashboard: ${getDashboardUrl()}`,
+        text: `${message}\n\nOpen applications: ${getApplicationsUrl()}`,
         html: `
           <p>Hello${event.trackedApplication.user.name ? ` ${event.trackedApplication.user.name}` : ""},</p>
           <p>${message}</p>
-          <p><a href="${getDashboardUrl()}">Open dashboard</a></p>
+          <p><a href="${getApplicationsUrl()}">Open applications</a></p>
         `,
       });
     }

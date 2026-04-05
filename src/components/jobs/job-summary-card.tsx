@@ -39,16 +39,14 @@ export function JobSummaryCard({
 
   return (
     <article
-      className={`border-b border-border/60 py-4 first:pt-0 last:border-b-0 last:pb-0 ${
+      className={`rounded-2xl border border-border/70 bg-background/45 p-4 transition-colors hover:bg-background/60 ${
         job.status === "EXPIRED" ? "opacity-60" : ""
       }`}
     >
-      <div className="flex items-start justify-between gap-4">
-        {/* Left: primary info */}
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div className="min-w-0 flex-1">
-          {/* Title + classification */}
-          <div className="flex items-baseline gap-2">
-            <h2 className="truncate text-[15px] font-semibold text-foreground">
+          <div className="flex flex-wrap items-baseline gap-2">
+            <h2 className="text-[15px] font-semibold text-foreground">
               <Link href={`/jobs/${job.id}`} className="hover:underline underline-offset-2">
                 {job.title}
               </Link>
@@ -60,8 +58,7 @@ export function JobSummaryCard({
             </span>
           </div>
 
-          {/* Meta: company (with inline ATS trust cue) · location · workMode · salary */}
-          <p className="mt-0.5 text-sm text-muted-foreground">
+          <p className="mt-1 text-sm text-muted-foreground">
             {job.company}
             {job.primaryExternalLink ? (
               <a
@@ -69,7 +66,7 @@ export function JobSummaryCard({
                 target="_blank"
                 rel="noreferrer"
                 title={`${job.primaryExternalLink.label} · ${job.primaryExternalLink.sourceName ?? "external source"}`}
-                className="ml-1 inline-flex items-center gap-0.5 align-middle opacity-40 transition-opacity hover:opacity-80"
+                className="ml-1 inline-flex items-center gap-0.5 align-middle opacity-50 transition-opacity hover:opacity-90"
               >
                 {sourceShortName ? (
                   <span className="text-[10px] font-semibold uppercase leading-none tracking-wide">
@@ -91,15 +88,13 @@ export function JobSummaryCard({
             ) : null}
           </p>
 
-          {/* Description snippet */}
           {snippet ? (
-            <p className="mt-1 line-clamp-2 text-[13px] leading-snug text-muted-foreground/80">
+            <p className="mt-2 line-clamp-2 max-w-3xl text-[13px] leading-6 text-muted-foreground/85">
               {snippet}
             </p>
           ) : null}
 
-          {/* Secondary: age · role family · lifecycle/deadline cues */}
-          <p className="mt-1 text-xs text-muted-foreground/70">
+          <p className="mt-3 text-xs text-muted-foreground/70">
             {formatPostedAge(job.postedAt)}
             <Sep />
             {job.roleFamily}
@@ -119,11 +114,10 @@ export function JobSummaryCard({
           </p>
         </div>
 
-        {/* Right: actions */}
-        <div className="flex shrink-0 items-center gap-1.5">
+        <div className="flex shrink-0 items-center gap-2 self-start">
           {primaryAction ??
             (canStartApplyFlow ? (
-              <Button size="sm" render={<Link href={`/jobs/${job.id}/apply`} />}>
+              <Button size="sm" render={<Link href={`/jobs/${job.id}/apply`} />} variant="secondary">
                 {job.eligibility?.submissionCategory === "MANUAL_ONLY" ? "Apply manually" : "Apply"}
               </Button>
             ) : null)}

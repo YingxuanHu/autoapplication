@@ -16,13 +16,12 @@
  */
 import { prisma } from "@/lib/db";
 import { DEMO_USER_ID } from "@/lib/constants";
-import { resolvePath } from "@/lib/storage";
+import { materializeStoredFile } from "@/lib/storage";
 import { createAutomationPage, disposeAutomationBrowser } from "./browser";
 import { resolveATSFiller } from "./fillers";
 import { ensureScreenshotDir } from "./screenshots";
 import type {
   AutomationRunMode,
-  ATSFillerResult,
   AutoApplyCandidate,
   AutoApplyRunResult,
   FillerProfile,
@@ -151,27 +150,31 @@ async function runSingleJob(
     const fillerResume = await buildFillerResume(profile);
     const fillerPackage = await buildFillerPackage(candidate.packageId);
 
-    const result = await filler.fill({
-      page: automationPage.page,
-      applyUrl: candidate.applyUrl,
-      jobTitle: candidate.jobTitle,
-      company: candidate.company,
-      profile: fillerProfile,
-      resume: fillerResume,
-      applicationPackage: fillerPackage,
-      mode,
-      screenshotDir,
-    });
+    try {
+      const result = await filler.fill({
+        page: automationPage.page,
+        applyUrl: candidate.applyUrl,
+        jobTitle: candidate.jobTitle,
+        company: candidate.company,
+        profile: fillerProfile,
+        resume: fillerResume,
+        applicationPackage: fillerPackage,
+        mode,
+        screenshotDir,
+      });
 
-    log(`    → ${result.status} | ${result.filledFields.length} filled, ${result.unfillableFields.length} unfillable, ${result.blockers.length} blockers | ${result.durationMs}ms`);
+      log(`    → ${result.status} | ${result.filledFields.length} filled, ${result.unfillableFields.length} unfillable, ${result.blockers.length} blockers | ${result.durationMs}ms`);
 
-    if (result.blockers.length > 0) {
-      for (const b of result.blockers) {
-        log(`    → Blocker: [${b.type}] ${b.detail}`);
+      if (result.blockers.length > 0) {
+        for (const b of result.blockers) {
+          log(`    → Blocker: [${b.type}] ${b.detail}`);
+        }
       }
-    }
 
-    return { jobId: candidate.jobId, fillerResult: result, error: null };
+      return { jobId: candidate.jobId, fillerResult: result, error: null };
+    } finally {
+      await fillerResume.cleanup?.();
+    }
   } catch (error) {
     const msg = error instanceof Error ? error.message : String(error);
     log(`    → ERROR: ${msg}`);
@@ -232,7 +235,7 @@ type ProfileData = {
     content: string | null;
     isDefault: boolean;
     targetRoleFamily: string | null;
-    document: { storageKey: string } | null;
+    document: { storageKey: string; filename: string } | null;
   }>;
 };
 
@@ -242,7 +245,7 @@ async function loadProfile(): Promise<ProfileData | null> {
     include: {
       resumeVariants: {
         orderBy: { createdAt: "desc" },
-        include: { document: { select: { storageKey: true } } },
+        include: { document: { select: { storageKey: true, filename: true } } },
       },
     },
   });
@@ -374,18 +377,26 @@ async function buildFillerResume(profile: ProfileData): Promise<FillerResume> {
     null;
 
   if (!defaultResume) {
-    return { label: "None", filePath: null, content: null };
+    return { label: "None", filePath: null, content: null, cleanup: null };
   }
 
-  // Prefer uploaded document file, fall back to legacy fileUrl
-  const filePath = defaultResume.document
-    ? resolvePath(defaultResume.document.storageKey)
-    : defaultResume.fileUrl;
+  let filePath = defaultResume.fileUrl;
+  let cleanup: (() => Promise<void>) | null = null;
+
+  if (defaultResume.document) {
+    const materializedFile = await materializeStoredFile(
+      defaultResume.document.storageKey,
+      defaultResume.document.filename
+    );
+    filePath = materializedFile?.filePath ?? null;
+    cleanup = materializedFile?.cleanup ?? null;
+  }
 
   return {
     label: defaultResume.label,
     filePath,
     content: defaultResume.content,
+    cleanup,
   };
 }
 

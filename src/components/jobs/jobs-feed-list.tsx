@@ -64,7 +64,7 @@ export function JobsFeedList({ initialJobs }: { initialJobs: JobCardData[] }) {
   }
 
   return (
-    <div>
+    <div className="space-y-3">
       {jobs.map((job) => (
         <div
           key={job.id}

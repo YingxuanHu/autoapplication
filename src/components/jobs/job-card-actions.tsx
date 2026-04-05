@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Ban, BookmarkCheck, BookmarkPlus, LoaderCircle, Trash2 } from "lucide-react";
+import { AddToApplicationMenu } from "@/components/jobs/add-to-application-menu";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -127,7 +128,8 @@ export function JobCardActions({
         align === "end" ? "items-end" : "items-start"
       )}
     >
-      <div className="flex items-center gap-1">
+      <div className="flex items-center gap-1.5">
+        <AddToApplicationMenu jobId={jobId} align={align} />
         <Button
           type="button"
           variant={isSaved ? "secondary" : "ghost"}
