@@ -1,10 +1,11 @@
 import { prisma } from "@/lib/db";
-import { DEMO_USER_ID } from "@/lib/constants";
+import { requireCurrentProfileId } from "@/lib/current-user";
 import type { Prisma } from "@/generated/prisma/client";
 
 export async function getProfile() {
+  const userId = await requireCurrentProfileId();
   return prisma.userProfile.findUnique({
-    where: { id: DEMO_USER_ID },
+    where: { id: userId },
     include: {
       resumeVariants: { orderBy: { createdAt: "desc" } },
       preferences: true,
@@ -38,15 +39,17 @@ export async function updateProfile(data: {
   educationsJson?: Prisma.InputJsonValue;
   projectsJson?: Prisma.InputJsonValue;
 }) {
+  const userId = await requireCurrentProfileId();
   return prisma.userProfile.update({
-    where: { id: DEMO_USER_ID },
+    where: { id: userId },
     data,
   });
 }
 
 export async function getResumes() {
+  const userId = await requireCurrentProfileId();
   return prisma.resumeVariant.findMany({
-    where: { userId: DEMO_USER_ID },
+    where: { userId },
     orderBy: { createdAt: "desc" },
   });
 }

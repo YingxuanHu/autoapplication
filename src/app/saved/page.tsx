@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { connection } from "next/server";
+import { redirect } from "next/navigation";
 import { SavedJobsList } from "@/components/jobs/saved-jobs-list";
 import { serializeJobCardData } from "@/lib/job-serialization";
+import { getOptionalSessionUser } from "@/lib/current-user";
 import { getSavedJobs } from "@/lib/queries/saved-jobs";
 import type { SavedJobListItem } from "@/types";
 
@@ -20,6 +22,11 @@ type SavedStatusFilter = (typeof SAVED_STATUS_FILTERS)[number]["value"];
 
 export default async function SavedPage({ searchParams }: SavedPageProps) {
   await connection();
+  const sessionUser = await getOptionalSessionUser();
+  if (!sessionUser) {
+    redirect("/sign-in");
+  }
+
   const resolvedSearchParams = await searchParams;
   const selectedStatus = getSavedStatus(resolvedSearchParams.status);
 
@@ -38,7 +45,7 @@ export default async function SavedPage({ searchParams }: SavedPageProps) {
   const shortlistItems = savedJobs.map(serializeSavedJob);
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-6 sm:px-6">
+    <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
       {/* Header */}
       <div className="flex items-center justify-between pb-4">
         <div>

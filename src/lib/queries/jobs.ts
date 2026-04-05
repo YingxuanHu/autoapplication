@@ -1,7 +1,8 @@
 import { prisma } from "@/lib/db";
-import { DEMO_USER_ID, PAGE_SIZE } from "@/lib/constants";
+import { PAGE_SIZE } from "@/lib/constants";
 import type { Prisma } from "@/generated/prisma/client";
 import { DEMO_SOURCE_NAMES } from "@/lib/job-links";
+import { getOptionalCurrentProfileId } from "@/lib/current-user";
 
 // ─── Full-text search ────────────────────────────────────────────────────────
 
@@ -12,6 +13,19 @@ import { DEMO_SOURCE_NAMES } from "@/lib/job-links";
  */
 const MAX_SEARCH_LENGTH = 200;
 const MAX_SEARCH_TOKENS = 12;
+const NO_VIEWER_PROFILE_ID = "__viewer_none__";
+const JOB_CARD_INCLUDE = (viewerProfileId: string | null) =>
+  ({
+    eligibility: true,
+    sourceMappings: true,
+    savedJobs: {
+      where: {
+        userId: viewerProfileId ?? NO_VIEWER_PROFILE_ID,
+        status: "ACTIVE",
+      },
+      select: { id: true },
+    },
+  }) satisfies Prisma.JobCanonicalInclude;
 
 function toTsQuery(raw: string): string {
   const tokens = raw
@@ -94,9 +108,16 @@ type BehaviorProfile = {
   boostedCompanies: Set<string>;
 };
 
-async function loadFeedPrefs(): Promise<FeedPrefs> {
+async function loadFeedPrefs(userId?: string | null): Promise<FeedPrefs> {
+  if (!userId) {
+    return {
+      roleFamilies: [],
+      workModes: [],
+    };
+  }
+
   const rows = await prisma.userPreference.findMany({
-    where: { userId: DEMO_USER_ID },
+    where: { userId },
     select: { key: true, value: true },
   });
   const map = Object.fromEntries(rows.map((r) => [r.key, r.value]));
@@ -117,12 +138,20 @@ async function loadFeedPrefs(): Promise<FeedPrefs> {
  * Looks at the last 90 days of SAVE, APPLY, and PASS actions. Joins through
  * to the canonical job to extract roleFamily, company, and workMode patterns.
  */
-async function loadBehaviorProfile(): Promise<BehaviorProfile> {
+async function loadBehaviorProfile(userId?: string | null): Promise<BehaviorProfile> {
+  if (!userId) {
+    return {
+      boostedRoleFamilies: new Set<string>(),
+      suppressedRoleFamilies: new Set<string>(),
+      boostedCompanies: new Set<string>(),
+    };
+  }
+
   const cutoff = new Date(Date.now() - 90 * 86_400_000);
 
   const signals = await prisma.userBehaviorSignal.findMany({
     where: {
-      userId: DEMO_USER_ID,
+      userId,
       action: { in: ["SAVE", "APPLY", "PASS"] },
       createdAt: { gte: cutoff },
     },
@@ -450,7 +479,8 @@ const SCORING_WINDOW_SIZE = 2000;
 
 async function getJobsByRelevance(
   filters: JobFilterParams,
-  where: Prisma.JobCanonicalWhereInput
+  where: Prisma.JobCanonicalWhereInput,
+  viewerProfileId: string | null
 ) {
   const page = filters.page ?? 1;
   const skip = (page - 1) * PAGE_SIZE;
@@ -461,14 +491,7 @@ async function getJobsByRelevance(
     const [jobs, total] = await Promise.all([
       prisma.jobCanonical.findMany({
         where,
-        include: {
-          eligibility: true,
-          sourceMappings: true,
-          savedJobs: {
-            where: { userId: DEMO_USER_ID, status: "ACTIVE" },
-            select: { id: true },
-          },
-        },
+        include: JOB_CARD_INCLUDE(viewerProfileId),
         orderBy: { postedAt: "desc" },
         skip,
         take: PAGE_SIZE,
@@ -483,8 +506,8 @@ async function getJobsByRelevance(
   }
 
   const [prefs, behavior, scoringJobs, total] = await Promise.all([
-    loadFeedPrefs(),
-    loadBehaviorProfile(),
+    loadFeedPrefs(viewerProfileId),
+    loadBehaviorProfile(viewerProfileId),
     prisma.jobCanonical.findMany({
       where,
       select: {
@@ -533,14 +556,7 @@ async function getJobsByRelevance(
   // Fetch full data for this page only
   const jobs = await prisma.jobCanonical.findMany({
     where: { id: { in: pageIds } },
-    include: {
-      eligibility: true,
-      sourceMappings: true,
-      savedJobs: {
-        where: { userId: DEMO_USER_ID, status: "ACTIVE" },
-        select: { id: true },
-      },
-    },
+    include: JOB_CARD_INCLUDE(viewerProfileId),
   });
 
   // Restore relevance order (Prisma doesn't preserve id-in ordering)
@@ -570,16 +586,11 @@ export type JobFilterParams = {
 };
 
 export async function getJobs(filters: JobFilterParams) {
+  const viewerProfileId = await getOptionalCurrentProfileId();
   const page = filters.page ?? 1;
   const skip = (page - 1) * PAGE_SIZE;
 
   const where: Prisma.JobCanonicalWhereInput = {
-    behaviorSignals: {
-      none: {
-        userId: DEMO_USER_ID,
-        action: "PASS",
-      },
-    },
     sourceMappings: {
       some: {
         sourceName: {
@@ -588,6 +599,15 @@ export async function getJobs(filters: JobFilterParams) {
       },
     },
   };
+
+  if (viewerProfileId) {
+    where.behaviorSignals = {
+      none: {
+        userId: viewerProfileId,
+        action: "PASS",
+      },
+    };
+  }
 
   if (filters.search) {
     const matchingIds = await searchJobIds(filters.search);
@@ -659,7 +679,7 @@ export async function getJobs(filters: JobFilterParams) {
 
   // Relevance sort: score-based ranking with user preference signals
   if (!filters.sortBy || filters.sortBy === "relevance") {
-    return getJobsByRelevance(filters, where);
+    return getJobsByRelevance(filters, where, viewerProfileId);
   }
 
   // Explicit sorts: salary or newest
@@ -673,14 +693,7 @@ export async function getJobs(filters: JobFilterParams) {
   const [jobs, total] = await Promise.all([
     prisma.jobCanonical.findMany({
       where,
-      include: {
-        eligibility: true,
-        sourceMappings: true,
-        savedJobs: {
-          where: { userId: DEMO_USER_ID, status: "ACTIVE" },
-          select: { id: true },
-        },
-      },
+      include: JOB_CARD_INCLUDE(viewerProfileId),
       orderBy,
       skip,
       take: PAGE_SIZE,
@@ -701,16 +714,10 @@ export async function getJobs(filters: JobFilterParams) {
 }
 
 export async function getJobById(id: string) {
+  const viewerProfileId = await getOptionalCurrentProfileId();
   const job = await prisma.jobCanonical.findUnique({
     where: { id },
-    include: {
-      eligibility: true,
-      sourceMappings: true,
-      savedJobs: {
-        where: { userId: DEMO_USER_ID, status: "ACTIVE" },
-        select: { id: true },
-      },
-    },
+    include: JOB_CARD_INCLUDE(viewerProfileId),
   });
 
   if (!job) return null;
@@ -723,6 +730,7 @@ export async function getJobById(id: string) {
 }
 
 export async function getFeedStats() {
+  const viewerProfileId = await getOptionalCurrentProfileId();
   const now = new Date();
   const oneDayAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
   const oneWeekOut = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
@@ -784,22 +792,26 @@ export async function getFeedStats() {
         eligibility: { submissionCategory: "MANUAL_ONLY" },
       },
     }),
-    prisma.savedJob.count({
-      where: { userId: DEMO_USER_ID, status: "ACTIVE" },
-    }),
-    prisma.savedJob.count({
-      where: {
-        userId: DEMO_USER_ID,
-        status: "ACTIVE",
-        canonicalJob: {
-          status: "LIVE",
-          deadline: {
-            gte: now,
-            lte: oneWeekOut,
+    viewerProfileId
+      ? prisma.savedJob.count({
+          where: { userId: viewerProfileId, status: "ACTIVE" },
+        })
+      : Promise.resolve(0),
+    viewerProfileId
+      ? prisma.savedJob.count({
+          where: {
+            userId: viewerProfileId,
+            status: "ACTIVE",
+            canonicalJob: {
+              status: "LIVE",
+              deadline: {
+                gte: now,
+                lte: oneWeekOut,
+              },
+            },
           },
-        },
-      },
-    }),
+        })
+      : Promise.resolve(0),
     prisma.jobCanonical.count({ where: withheldLiveWhere }),
   ]);
 

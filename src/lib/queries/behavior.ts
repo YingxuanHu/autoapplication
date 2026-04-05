@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/db";
-import { DEMO_USER_ID } from "@/lib/constants";
+import { requireCurrentProfileId } from "@/lib/current-user";
 import type { Prisma, UserAction } from "@/generated/prisma/client";
 
 export async function recordAction(
@@ -7,9 +7,10 @@ export async function recordAction(
   action: UserAction,
   metadata?: Prisma.InputJsonValue
 ) {
+  const userId = await requireCurrentProfileId();
   return prisma.userBehaviorSignal.create({
     data: {
-      userId: DEMO_USER_ID,
+      userId,
       canonicalJobId,
       action,
       metadata: metadata ?? undefined,

@@ -258,7 +258,7 @@ export function ResumeUpload({ documents: initialDocs, aiAvailable }: Props) {
 
       {!aiAvailable && initialDocs.length > 0 && (
         <p className="mt-2 text-xs text-muted-foreground">
-          Set ANTHROPIC_API_KEY in .env to enable AI-powered resume parsing.
+          Set OPENAI_API_KEY in .env to enable AI-powered resume parsing.
         </p>
       )}
     </div>

@@ -1,9 +1,11 @@
 import Link from "next/link";
 import { connection } from "next/server";
+import { redirect } from "next/navigation";
 import { X } from "lucide-react";
 import { JobsFeedList } from "@/components/jobs/jobs-feed-list";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { getOptionalSessionUser } from "@/lib/current-user";
 import { serializeJobCardData } from "@/lib/job-serialization";
 import { formatPostedAge } from "@/lib/job-display";
 import { getJobs, getFeedStats, type JobFilterParams } from "@/lib/queries/jobs";
@@ -36,6 +38,10 @@ const ROLE_FAMILY_GROUPS: Array<{ label: string; value: string }> = [
 
 export default async function JobsPage({ searchParams }: JobsPageProps) {
   await connection();
+  const sessionUser = await getOptionalSessionUser();
+  if (!sessionUser) {
+    redirect("/sign-in");
+  }
   const resolvedSearchParams = await searchParams;
   const filters = parseJobFilters(resolvedSearchParams);
 
@@ -66,7 +72,7 @@ export default async function JobsPage({ searchParams }: JobsPageProps) {
   const navigationKey = buildSearchParamSignature(resolvedSearchParams);
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-6 sm:px-6">
+    <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
       {/* Header row */}
       <div className="pb-4">
         <h1 className="text-xl font-semibold tracking-tight">Jobs</h1>

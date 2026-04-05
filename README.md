@@ -13,8 +13,8 @@ Current implemented slice:
 - profile editor at `/profile` — contact info, skills, experience, education, projects, preferences
 - profile completeness indicator — weighted score showing which fields improve auto-fill and AI quality
 - document upload — PDF/DOCX resume upload with text extraction; documents linked to resume variants
-- AI resume ingestion — parse an uploaded resume with Claude to populate structured profile fields
-- per-job AI workspace — fit analysis (score + strengths/gaps + keywords) and cover letter generation powered by Claude
+- AI resume ingestion — parse an uploaded resume with OpenAI to populate structured profile fields
+- per-job AI workspace — fit analysis (score + strengths/gaps + keywords) and cover letter generation powered by OpenAI
 - internal `/ops/ingestion` visibility page for recent runs, source coverage, schedule cadence, and lifecycle counts
 - cron-ready `/api/ingestion/schedule` route plus `npm run ingest:schedule` script for cadence-driven ingestion
 - ingestion pipeline with connector interface, normalization, stronger cross-source dedupe, lifecycle sweeps, removal handling, run tracking, and real Greenhouse + Lever + Recruitee + SmartRecruiters connectors
@@ -28,10 +28,12 @@ Current implemented slice:
 |---|---|---|
 | `DATABASE_URL` | Yes | PostgreSQL connection string |
 | `ADZUNA_APP_ID` / `ADZUNA_APP_KEY` | Optional | Adzuna job board API credentials |
-| `ANTHROPIC_API_KEY` | Optional | Unlocks AI features — resume parsing, fit analysis, cover letter generation. Get a key at [console.anthropic.com](https://console.anthropic.com/) |
-| `AI_MODEL` | Optional | Override the Claude model (default: `claude-sonnet-4-20250514`) |
+| `OPENAI_API_KEY` | Optional | Unlocks AI features — resume parsing, fit analysis, cover letter generation |
+| `OPENAI_STANDARD_MODEL` | Optional | Default model for structured analysis and generation (default: `gpt-4.1-mini`) |
+| `OPENAI_REASONING_MODEL` | Optional | Available for heavier AI tasks if you wire them in later (default: `gpt-5-mini`) |
+| `OPENAI_FAST_MODEL` | Optional | Available for low-latency AI tasks if you wire them in later (default: `gpt-4o-mini`) |
 
-Copy `.env.example` to `.env` and fill in your values. AI features degrade gracefully when `ANTHROPIC_API_KEY` is absent — all other functionality is unaffected.
+Copy `.env.example` to `.env` and fill in your values. AI features degrade gracefully when `OPENAI_API_KEY` is absent — all other functionality is unaffected.
 
 ## Local development
 

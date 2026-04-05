@@ -1,9 +1,10 @@
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { Bot, ExternalLink } from "lucide-react";
 import { ApplicationReviewActions } from "@/components/jobs/application-review-actions";
 import { AIWorkspace } from "@/components/jobs/ai-workspace";
 import { JobNotes } from "@/components/jobs/job-notes";
+import { getOptionalSessionUser } from "@/lib/current-user";
 import {
   APPLICATION_REVIEW_STATE_META,
   formatDisplayLabel,
@@ -20,6 +21,11 @@ type JobApplyPageProps = {
 };
 
 export default async function JobApplyPage({ params }: JobApplyPageProps) {
+  const sessionUser = await getOptionalSessionUser();
+  if (!sessionUser) {
+    redirect("/sign-in");
+  }
+
   const { id } = await params;
   const reviewData = await getApplicationReviewData(id);
 
@@ -59,7 +65,7 @@ export default async function JobApplyPage({ params }: JobApplyPageProps) {
     : "Not submitted";
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-6 sm:px-6">
+    <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
       {/* Breadcrumb + external link */}
       <div className="mb-3 flex items-center gap-3">
         <Link
@@ -172,7 +178,7 @@ export default async function JobApplyPage({ params }: JobApplyPageProps) {
       {/* AI workspace */}
       <div className="border-t border-border py-4">
         <p className="mb-3 text-xs text-muted-foreground">AI workspace</p>
-        {process.env.ANTHROPIC_API_KEY ? (
+        {process.env.OPENAI_API_KEY ? (
           <AIWorkspace
             jobId={job.id}
             jobTitle={job.title}
@@ -184,7 +190,7 @@ export default async function JobApplyPage({ params }: JobApplyPageProps) {
               AI features are not configured.
             </p>
             <p className="mt-1 text-xs text-muted-foreground">
-              Add <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">ANTHROPIC_API_KEY</code> to{" "}
+              Add <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">OPENAI_API_KEY</code> to{" "}
               <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">.env</code> to unlock:
             </p>
             <ul className="mt-2 space-y-1">
@@ -424,4 +430,3 @@ function AutomationLogSummary({ log }: { log: AutomationLog }) {
     </div>
   );
 }
-

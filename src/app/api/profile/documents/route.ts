@@ -1,4 +1,5 @@
 import { successResponse, errorResponse } from "@/lib/api-utils";
+import { requireCurrentProfileId, UnauthorizedError } from "@/lib/current-user";
 import { getDocuments, createDocumentWithVariant } from "@/lib/queries/documents";
 import { buildStorageKey, saveFile } from "@/lib/storage";
 import { extractText, isExtractionSupported, mimeTypeFromFilename } from "@/lib/documents/extract";
@@ -12,6 +13,9 @@ export async function GET(request: Request) {
     const docs = await getDocuments(type ?? undefined);
     return successResponse(docs);
   } catch (error) {
+    if (error instanceof UnauthorizedError) {
+      return errorResponse("Unauthorized", 401);
+    }
     console.error("GET /api/profile/documents error:", error);
     return errorResponse("Failed to fetch documents", 500);
   }
@@ -19,6 +23,7 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
+    const userId = await requireCurrentProfileId();
     const formData = await request.formData();
     const file = formData.get("file") as File | null;
     const docType = (formData.get("type") as string) || "RESUME";
@@ -49,8 +54,7 @@ export async function POST(request: Request) {
     const buffer = Buffer.from(await file.arrayBuffer());
 
     // Store file on disk
-    const { DEMO_USER_ID } = await import("@/lib/constants");
-    const storageKey = buildStorageKey(DEMO_USER_ID, file.name);
+    const storageKey = buildStorageKey(userId, file.name);
     await saveFile(storageKey, buffer);
 
     // Extract text
@@ -73,6 +77,9 @@ export async function POST(request: Request) {
 
     return successResponse(doc, 201);
   } catch (error) {
+    if (error instanceof UnauthorizedError) {
+      return errorResponse("Unauthorized", 401);
+    }
     console.error("POST /api/profile/documents error:", error);
     return errorResponse("Failed to upload document", 500);
   }

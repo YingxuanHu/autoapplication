@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { connection } from "next/server";
+import { redirect } from "next/navigation";
 import { ApplicationRowActions } from "@/components/jobs/application-row-actions";
 import { Button } from "@/components/ui/button";
 import {
@@ -8,6 +9,7 @@ import {
   getSubmissionMeta,
   submissionCategoryColor,
 } from "@/lib/job-display";
+import { getOptionalSessionUser } from "@/lib/current-user";
 import { getApplicationHistory } from "@/lib/queries/applications";
 import type { ApplicationHistoryItem, ApplicationHistoryStatus } from "@/types";
 
@@ -75,6 +77,10 @@ export default async function ApplicationsPage({
   searchParams,
 }: ApplicationsPageProps) {
   await connection();
+  const sessionUser = await getOptionalSessionUser();
+  if (!sessionUser) {
+    redirect("/sign-in");
+  }
 
   const resolvedSearchParams = await searchParams;
   const selectedFilter = getApplicationFilter(resolvedSearchParams.status);
@@ -91,7 +97,7 @@ export default async function ApplicationsPage({
   );
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-6 sm:px-6">
+    <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
       {/* Header */}
       <div className="flex items-center justify-between pb-4">
         <div>
@@ -103,6 +109,12 @@ export default async function ApplicationsPage({
           </p>
         </div>
         <div className="flex items-center gap-3">
+          <Link
+            href="/dashboard"
+            className="text-sm text-muted-foreground hover:text-foreground"
+          >
+            Tracker
+          </Link>
           <Link
             href="/saved"
             className="text-sm text-muted-foreground hover:text-foreground"

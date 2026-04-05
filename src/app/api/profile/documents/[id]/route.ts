@@ -1,4 +1,5 @@
 import { successResponse, errorResponse } from "@/lib/api-utils";
+import { UnauthorizedError } from "@/lib/current-user";
 import { getDocument, deleteDocument } from "@/lib/queries/documents";
 import { deleteFile } from "@/lib/storage";
 
@@ -12,6 +13,9 @@ export async function GET(
     if (!doc) return errorResponse("Document not found", 404);
     return successResponse(doc);
   } catch (error) {
+    if (error instanceof UnauthorizedError) {
+      return errorResponse("Unauthorized", 401);
+    }
     console.error("GET /api/profile/documents/[id] error:", error);
     return errorResponse("Failed to fetch document", 500);
   }
@@ -34,6 +38,9 @@ export async function DELETE(
 
     return successResponse({ deleted: true });
   } catch (error) {
+    if (error instanceof UnauthorizedError) {
+      return errorResponse("Unauthorized", 401);
+    }
     console.error("DELETE /api/profile/documents/[id] error:", error);
     return errorResponse("Failed to delete document", 500);
   }

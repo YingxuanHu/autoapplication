@@ -1,6 +1,6 @@
 export default function JobsLoading() {
   return (
-    <div className="mx-auto max-w-4xl px-4 py-6 sm:px-6">
+    <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
       {/* Header skeleton */}
       <div className="pb-4">
         <div className="h-6 w-16 animate-pulse rounded bg-muted" />

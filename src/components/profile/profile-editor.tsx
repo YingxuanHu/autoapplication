@@ -146,7 +146,7 @@ export function ProfileEditor({ profile }: Props) {
   const spinner = isPending ? <LoaderCircle className="h-3.5 w-3.5 animate-spin" /> : null;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 [&>div:first-child]:border-t-0 [&>div:first-child]:pt-0">
       {/* ── Contact & Identity ── */}
       <Section title="Contact information">
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">

@@ -1,9 +1,10 @@
 import { prisma } from "@/lib/db";
-import { DEMO_USER_ID } from "@/lib/constants";
+import { requireCurrentProfileId } from "@/lib/current-user";
 
 export async function getSavedJobs(status?: string) {
+  const userId = await requireCurrentProfileId();
   const where: { userId: string; status?: "ACTIVE" | "APPLIED" | "EXPIRED" | "DISMISSED" } = {
-    userId: DEMO_USER_ID,
+    userId,
   };
   if (status) {
     where.status = status as "ACTIVE" | "APPLIED" | "EXPIRED" | "DISMISSED";
@@ -26,15 +27,16 @@ export async function getSavedJobs(status?: string) {
 }
 
 export async function saveJob(canonicalJobId: string) {
+  const userId = await requireCurrentProfileId();
   return prisma.savedJob.upsert({
     where: {
       userId_canonicalJobId: {
-        userId: DEMO_USER_ID,
+        userId,
         canonicalJobId,
       },
     },
     create: {
-      userId: DEMO_USER_ID,
+      userId,
       canonicalJobId,
       status: "ACTIVE",
     },
@@ -45,10 +47,11 @@ export async function saveJob(canonicalJobId: string) {
 }
 
 export async function unsaveJob(canonicalJobId: string) {
+  const userId = await requireCurrentProfileId();
   return prisma.savedJob.delete({
     where: {
       userId_canonicalJobId: {
-        userId: DEMO_USER_ID,
+        userId,
         canonicalJobId,
       },
     },
@@ -56,10 +59,11 @@ export async function unsaveJob(canonicalJobId: string) {
 }
 
 export async function dismissSavedJob(canonicalJobId: string) {
+  const userId = await requireCurrentProfileId();
   const existing = await prisma.savedJob.findUnique({
     where: {
       userId_canonicalJobId: {
-        userId: DEMO_USER_ID,
+        userId,
         canonicalJobId,
       },
     },
@@ -71,7 +75,7 @@ export async function dismissSavedJob(canonicalJobId: string) {
   return prisma.savedJob.update({
     where: {
       userId_canonicalJobId: {
-        userId: DEMO_USER_ID,
+        userId,
         canonicalJobId,
       },
     },

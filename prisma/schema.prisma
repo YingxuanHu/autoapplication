@@ -106,12 +106,71 @@ enum IngestionRunMode {
 enum DocumentType {
   RESUME
   COVER_LETTER
+  RESUME_TEMPLATE
+}
+
+enum TrackedApplicationStatus {
+  WISHLIST
+  APPLIED
+  SCREEN
+  INTERVIEW
+  OFFER
+  REJECTED
+  WITHDRAWN
+}
+
+enum TrackedApplicationEventType {
+  APPLIED
+  SCREEN
+  INTERVIEW
+  OFFER
+  REJECTED
+  NOTE
+  REMINDER
+}
+
+enum TrackedApplicationDocumentSlot {
+  SENT_RESUME
+  SENT_COVER_LETTER
+}
+
+enum NotificationType {
+  DEADLINE_REMINDER
+  SYSTEM
+}
+
+enum DeadlineReminderType {
+  DEADLINE_D7
+  DEADLINE_D3
+  DEADLINE_D1
+  DEADLINE_TODAY
+  DEADLINE_OVERDUE_D1
 }
 
 // ─── Models ─────────────────────────────────────────────
 
+model User {
+  id                        String              @id @default(cuid())
+  email                     String              @unique
+  name                      String
+  emailVerified             Boolean             @default(false)
+  emailNotificationsEnabled Boolean             @default(true)
+  image                     String?
+  createdAt                 DateTime            @default(now())
+  updatedAt                 DateTime            @updatedAt
+
+  accounts            Account[]
+  sessions            Session[]
+  profile             UserProfile?
+  trackedApplications TrackedApplication[]
+  tags                Tag[]
+  notifications       Notification[]
+  reminderLogs        ReminderLog[]
+}
+
 model UserProfile {
   id                String          @id @default(cuid())
+  authUserId        String?         @unique
   email             String          @unique
   name              String
   phone             String?
@@ -138,6 +197,7 @@ model UserProfile {
   createdAt         DateTime        @default(now())
   updatedAt         DateTime        @updatedAt
 
+  authUser                User?                @relation(fields: [authUserId], references: [id], onDelete: Cascade)
   resumeVariants         ResumeVariant[]
   documents              Document[]
   preferences            UserPreference[]
@@ -181,6 +241,7 @@ model Document {
 
   user          UserProfile   @relation(fields: [userId], references: [id], onDelete: Cascade)
   resumeVariant ResumeVariant?
+  trackedApplicationLinks TrackedApplicationDocument[]
 
   @@index([userId, type])
 }
@@ -217,6 +278,7 @@ model JobCanonical {
   employmentType     EmploymentType
   experienceLevel    ExperienceLevel?
   description        String
+  searchVector       Unsupported("tsvector")?
   shortSummary       String
   industry           Industry
   roleFamily         String
@@ -239,6 +301,7 @@ model JobCanonical {
   applicationSubmissions ApplicationSubmission[]
   applicationPackages    ApplicationPackage[]
   behaviorSignals        UserBehaviorSignal[]
+  trackedApplications    TrackedApplication[]
 
   // ── Deduplication indexes ──
   @@index([duplicateClusterId])
@@ -426,4 +489,165 @@ model IngestionRun {
   @@index([sourceName, startedAt(sort: Desc)])
   @@index([status, startedAt(sort: Desc)])
   @@index([runMode, startedAt(sort: Desc)])
+}
+
+model TrackedApplication {
+  id             String                   @id @default(cuid())
+  userId         String
+  canonicalJobId String?
+  company        String
+  roleTitle      String
+  roleUrl        String?
+  status         TrackedApplicationStatus @default(WISHLIST)
+  deadline       DateTime?
+  jobDescription String?
+  fitAnalysis    String?
+  notes          String?
+  createdAt      DateTime                 @default(now())
+  updatedAt      DateTime                 @updatedAt
+
+  user          User                        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  canonicalJob  JobCanonical?               @relation(fields: [canonicalJobId], references: [id], onDelete: SetNull)
+  events        TrackedApplicationEvent[]
+  tags          TrackedApplicationTag[]
+  documentLinks TrackedApplicationDocument[]
+  notifications Notification[]
+  reminderLogs  ReminderLog[]
+
+  @@unique([userId, canonicalJobId])
+  @@index([userId])
+  @@index([status])
+  @@index([deadline])
+  @@index([canonicalJobId])
+}
+
+model TrackedApplicationEvent {
+  id                 String                       @id @default(cuid())
+  trackedApplicationId String
+  type               TrackedApplicationEventType
+  timestamp          DateTime                     @default(now())
+  note               String?
+  reminderAt         DateTime?
+  reminderNotifiedAt DateTime?
+
+  trackedApplication TrackedApplication @relation(fields: [trackedApplicationId], references: [id], onDelete: Cascade)
+
+  @@index([trackedApplicationId])
+  @@index([timestamp])
+  @@index([reminderAt])
+}
+
+model Tag {
+  id           String                 @id @default(cuid())
+  userId       String
+  name         String
+
+  user         User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  applications TrackedApplicationTag[]
+
+  @@unique([userId, name])
+  @@index([userId])
+}
+
+model TrackedApplicationTag {
+  trackedApplicationId String
+  tagId                String
+
+  trackedApplication TrackedApplication @relation(fields: [trackedApplicationId], references: [id], onDelete: Cascade)
+  tag                Tag                @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([trackedApplicationId, tagId])
+  @@index([tagId])
+}
+
+model TrackedApplicationDocument {
+  id                  String                         @id @default(cuid())
+  trackedApplicationId String
+  documentId          String
+  slot                TrackedApplicationDocumentSlot
+
+  trackedApplication TrackedApplication @relation(fields: [trackedApplicationId], references: [id], onDelete: Cascade)
+  document           Document           @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
+  @@unique([trackedApplicationId, slot])
+  @@index([documentId])
+}
+
+model Notification {
+  id                  String           @id @default(cuid())
+  userId              String
+  trackedApplicationId String?
+  type                NotificationType
+  title               String
+  message             String
+  readAt              DateTime?
+  createdAt           DateTime         @default(now())
+
+  user               User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  trackedApplication TrackedApplication? @relation(fields: [trackedApplicationId], references: [id], onDelete: SetNull)
+
+  @@index([userId, createdAt])
+  @@index([trackedApplicationId])
+  @@index([readAt])
+}
+
+model ReminderLog {
+  id                  String               @id @default(cuid())
+  userId              String
+  trackedApplicationId String
+  reminderType        DeadlineReminderType
+  deadlineDate        DateTime
+  createdAt           DateTime             @default(now())
+
+  user               User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  trackedApplication TrackedApplication @relation(fields: [trackedApplicationId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@index([trackedApplicationId])
+  @@unique([userId, trackedApplicationId, reminderType, deadlineDate])
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  expiresAt DateTime
+  ipAddress String?
+  userAgent String?
+  userId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model Account {
+  id                    String    @id @default(cuid())
+  accountId             String
+  providerId            String
+  userId                String
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([providerId, accountId])
+  @@index([userId])
+}
+
+model Verification {
+  id         String   @id @default(cuid())
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 }

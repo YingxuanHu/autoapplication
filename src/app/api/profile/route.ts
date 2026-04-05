@@ -1,4 +1,5 @@
 import { type NextRequest } from "next/server";
+import { UnauthorizedError } from "@/lib/current-user";
 import { getProfile, updateProfile } from "@/lib/queries/profile";
 import { successResponse, errorResponse } from "@/lib/api-utils";
 
@@ -8,6 +9,9 @@ export async function GET() {
     if (!profile) return errorResponse("Profile not found", 404);
     return successResponse(profile);
   } catch (error) {
+    if (error instanceof UnauthorizedError) {
+      return errorResponse("Unauthorized", 401);
+    }
     console.error("GET /api/profile error:", error);
     return errorResponse("Failed to fetch profile", 500);
   }
@@ -59,6 +63,9 @@ export async function PATCH(request: NextRequest) {
     const updated = await updateProfile(sanitized);
     return successResponse(updated);
   } catch (error) {
+    if (error instanceof UnauthorizedError) {
+      return errorResponse("Unauthorized", 401);
+    }
     console.error("PATCH /api/profile error:", error);
     return errorResponse("Failed to update profile", 500);
   }

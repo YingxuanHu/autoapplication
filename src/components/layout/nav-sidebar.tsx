@@ -2,7 +2,18 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Bookmark, Briefcase, Database, FileCheck2, User, Zap } from "lucide-react";
+import {
+  Bell,
+  Bookmark,
+  Briefcase,
+  Database,
+  FileCheck2,
+  GitCompareArrows,
+  LayoutDashboard,
+  Settings,
+  User,
+  Zap,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ThemeToggle } from "./theme-toggle";
 
@@ -10,12 +21,32 @@ const NAV_ITEMS = [
   { href: "/jobs", label: "Jobs", icon: Briefcase },
   { href: "/saved", label: "Saved", icon: Bookmark },
   { href: "/applications", label: "Applications", icon: FileCheck2 },
+  { href: "/dashboard", label: "Tracker", icon: LayoutDashboard },
+  { href: "/notifications", label: "Alerts", icon: Bell },
+  { href: "/documents/compare", label: "Compare", icon: GitCompareArrows },
   { href: "/profile", label: "Profile", icon: User },
+  { href: "/settings", label: "Settings", icon: Settings },
   { href: "/ops/ingestion", label: "Ops", icon: Database },
 ];
 
+const AUTH_ROUTES = new Set([
+  "/",
+  "/sign-in",
+  "/sign-up",
+  "/forgot-password",
+  "/reset-password",
+  "/verify-email-required",
+]);
+
 export function NavSidebar() {
   const pathname = usePathname();
+  const hideSidebar = Array.from(AUTH_ROUTES).some(
+    (route) => pathname === route || pathname.startsWith(route + "/")
+  );
+
+  if (hideSidebar) {
+    return null;
+  }
 
   return (
     <aside className="hidden md:flex w-56 flex-col border-r bg-card">

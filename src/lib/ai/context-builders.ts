@@ -3,7 +3,7 @@
  * Pulls from the DB so API routes stay thin.
  */
 import { prisma } from "@/lib/db";
-import { DEMO_USER_ID } from "@/lib/constants";
+import { requireCurrentProfileId } from "@/lib/current-user";
 import { parseSkills, parseExperiences, parseEducations } from "@/types/profile";
 import type { JobContext, ProfileContext } from "./job-fit";
 
@@ -41,8 +41,9 @@ export async function buildJobContext(jobId: string): Promise<JobContext | null>
 }
 
 export async function buildProfileContext(): Promise<ProfileContext | null> {
+  const userId = await requireCurrentProfileId();
   const profile = await prisma.userProfile.findUnique({
-    where: { id: DEMO_USER_ID },
+    where: { id: userId },
     select: {
       headline: true,
       summary: true,

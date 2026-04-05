@@ -86,6 +86,7 @@ export async function analyzeJobFit(
         content: `JOB:\n${jobText}\n\nCANDIDATE:\n${profileText}`,
       },
     ],
+    modelFlavor: "standard",
     maxTokens: 1024,
     temperature: 0,
   });

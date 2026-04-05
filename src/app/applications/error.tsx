@@ -16,7 +16,7 @@ export default function ApplicationsError({
   }, [error]);
 
   return (
-    <div className="mx-auto flex max-w-4xl flex-col items-center px-4 py-24 text-center sm:px-6">
+    <div className="mx-auto flex max-w-7xl flex-col items-center px-4 py-24 text-center sm:px-6">
       <h2 className="text-lg font-semibold text-foreground">
         Failed to load applications
       </h2>

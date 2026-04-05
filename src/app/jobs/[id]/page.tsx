@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { ExternalLink } from "lucide-react";
 import { JobDetailActions } from "@/components/jobs/job-detail-actions";
 import { Button } from "@/components/ui/button";
@@ -16,6 +16,7 @@ import {
   submissionCategoryColor,
   trustLevelColor,
 } from "@/lib/job-display";
+import { getOptionalSessionUser } from "@/lib/current-user";
 import { getApplicationReviewData } from "@/lib/queries/applications";
 
 type JobDetailPageProps = {
@@ -23,6 +24,11 @@ type JobDetailPageProps = {
 };
 
 export default async function JobDetailPage({ params }: JobDetailPageProps) {
+  const sessionUser = await getOptionalSessionUser();
+  if (!sessionUser) {
+    redirect("/sign-in");
+  }
+
   const { id } = await params;
   const detailData = await getApplicationReviewData(id);
 
@@ -43,7 +49,7 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
   const sourceShortName = getSourceShortName(job.primaryExternalLink?.sourceName ?? null);
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-6 sm:px-6">
+    <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
       {/* Breadcrumb */}
       <div className="mb-3">
         <Link href="/jobs" className="text-sm text-muted-foreground hover:text-foreground">
@@ -301,7 +307,7 @@ function parseDescriptionBlocks(raw: string): DescriptionBlock[] {
   if (!raw.trim()) return [];
 
   // Pre-clean: strip repeated boilerplate / duplicate headers
-  let cleaned = raw
+  const cleaned = raw
     // Remove common junk: "Apply now!", "Click here to apply", etc.
     .replace(/\b(click here to apply|apply now!?|submit your application today)\b[.!]*/gi, "")
     // Remove excessive separator lines (=== --- ***)
@@ -389,4 +395,3 @@ function parseDescriptionBlocks(raw: string): DescriptionBlock[] {
   flushBullets();
   return blocks;
 }
-

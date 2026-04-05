@@ -37,6 +37,7 @@ export async function generateCoverLetter(
         content: `Write a cover letter for this position:\n\nROLE: ${job.title} at ${job.company} (${job.location}, ${job.workMode})\n\nJOB DESCRIPTION:\n${job.description.slice(0, 2000)}\n\nCANDIDATE PROFILE:\n${profileText}`,
       },
     ],
+    modelFlavor: "standard",
     maxTokens: 512,
     temperature: 0.4,
   });

@@ -11,7 +11,7 @@ export default async function IngestionOpsPage() {
   const activeCanonicalCount = overview.liveCount + overview.staleCount;
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-6 sm:px-6">
+    <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
       {/* Header */}
       <div className="flex items-center justify-between pb-4">
         <div>

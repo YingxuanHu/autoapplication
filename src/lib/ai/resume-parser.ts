@@ -76,6 +76,7 @@ export async function parseResumeText(
         content: `Parse the following resume text:\n\n${trimmed}`,
       },
     ],
+    modelFlavor: "standard",
     maxTokens: 4096,
     temperature: 0,
   });

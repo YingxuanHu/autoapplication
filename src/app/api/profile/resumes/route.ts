@@ -1,3 +1,4 @@
+import { UnauthorizedError } from "@/lib/current-user";
 import { getResumes } from "@/lib/queries/profile";
 import { successResponse, errorResponse } from "@/lib/api-utils";
 
@@ -6,6 +7,9 @@ export async function GET() {
     const resumes = await getResumes();
     return successResponse(resumes);
   } catch (error) {
+    if (error instanceof UnauthorizedError) {
+      return errorResponse("Unauthorized", 401);
+    }
     console.error("GET /api/profile/resumes error:", error);
     return errorResponse("Failed to fetch resumes", 500);
   }

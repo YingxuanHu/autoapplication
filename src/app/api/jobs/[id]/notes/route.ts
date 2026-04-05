@@ -1,6 +1,6 @@
 import { successResponse, errorResponse } from "@/lib/api-utils";
 import { prisma } from "@/lib/db";
-import { DEMO_USER_ID } from "@/lib/constants";
+import { requireCurrentProfileId, UnauthorizedError } from "@/lib/current-user";
 
 /**
  * PATCH /api/jobs/[id]/notes
@@ -14,13 +14,14 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const userId = await requireCurrentProfileId();
     const { id: jobId } = await params;
     const body = await request.json().catch(() => null);
     const notes: string = typeof body?.notes === "string" ? body.notes.slice(0, 4000) : "";
 
     // Find existing package or create a stub
     const existing = await prisma.applicationPackage.findFirst({
-      where: { canonicalJobId: jobId, userId: DEMO_USER_ID },
+      where: { canonicalJobId: jobId, userId },
       orderBy: { updatedAt: "desc" },
     });
 
@@ -32,7 +33,7 @@ export async function PATCH(
     } else {
       // Need a resumeVariant to create a package — use the default one
       const defaultVariant = await prisma.resumeVariant.findFirst({
-        where: { userId: DEMO_USER_ID },
+        where: { userId },
         orderBy: [{ isDefault: "desc" }, { createdAt: "desc" }],
       });
 
@@ -43,7 +44,7 @@ export async function PATCH(
 
       await prisma.applicationPackage.create({
         data: {
-          userId: DEMO_USER_ID,
+          userId,
           canonicalJobId: jobId,
           resumeVariantId: defaultVariant.id,
           userNotes: notes || null,
@@ -53,6 +54,9 @@ export async function PATCH(
 
     return successResponse({ saved: true });
   } catch (error) {
+    if (error instanceof UnauthorizedError) {
+      return errorResponse("Unauthorized", 401);
+    }
     console.error("PATCH /api/jobs/[id]/notes error:", error);
     return errorResponse("Failed to save notes", 500);
   }

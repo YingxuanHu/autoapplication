@@ -1,4 +1,5 @@
 import { successResponse, errorResponse } from "@/lib/api-utils";
+import { UnauthorizedError } from "@/lib/current-user";
 import { getDocument } from "@/lib/queries/documents";
 import { prisma } from "@/lib/db";
 
@@ -16,9 +17,9 @@ export async function POST(
   try {
     const { id } = await params;
 
-    if (!process.env.ANTHROPIC_API_KEY) {
+    if (!process.env.OPENAI_API_KEY) {
       return errorResponse(
-        "AI features are not configured. Set ANTHROPIC_API_KEY in .env to enable resume parsing.",
+        "AI features are not configured. Set OPENAI_API_KEY in .env to enable resume parsing.",
         503
       );
     }
@@ -35,7 +36,7 @@ export async function POST(
       );
     }
 
-    // Lazy-import AI modules to keep the Anthropic SDK out of the shared bundle
+    // Lazy-import AI modules to keep the OpenAI SDK out of unrelated routes
     const { parseResumeText } = await import("@/lib/ai/resume-parser");
     const { mergeIntoProfile } = await import("@/lib/ai/profile-merge");
 
@@ -56,6 +57,9 @@ export async function POST(
       merge: mergeResult,
     });
   } catch (error) {
+    if (error instanceof UnauthorizedError) {
+      return errorResponse("Unauthorized", 401);
+    }
     console.error("POST /api/profile/documents/[id]/parse error:", error);
     const message =
       error instanceof Error ? error.message : "Failed to parse document";

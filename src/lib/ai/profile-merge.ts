@@ -6,7 +6,7 @@
  * to existing data, not replaced, with basic dedup by key fields.
  */
 import { prisma } from "@/lib/db";
-import { DEMO_USER_ID } from "@/lib/constants";
+import { requireCurrentProfileId } from "@/lib/current-user";
 import type { ParsedResumeData } from "./resume-parser";
 import type { Prisma } from "@/generated/prisma/client";
 import {
@@ -36,8 +36,9 @@ export type MergeResult = {
 export async function mergeIntoProfile(
   data: ParsedResumeData
 ): Promise<MergeResult> {
+  const userId = await requireCurrentProfileId();
   const profile = await prisma.userProfile.findUnique({
-    where: { id: DEMO_USER_ID },
+    where: { id: userId },
   });
 
   if (!profile) throw new Error("Profile not found");
@@ -123,7 +124,7 @@ export async function mergeIntoProfile(
   // ── Apply updates ──
   if (Object.keys(updates).length > 0) {
     await prisma.userProfile.update({
-      where: { id: DEMO_USER_ID },
+      where: { id: userId },
       data: updates,
     });
   }
