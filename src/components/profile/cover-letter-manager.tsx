@@ -16,7 +16,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ConfirmActionDialog } from "@/components/ui/confirm-action-dialog";
+import { FileInput } from "@/components/ui/file-input";
 import { Input } from "@/components/ui/input";
+import { useActionToast } from "@/components/ui/use-action-toast";
 
 type CoverLetterRecord = {
   id: string;
@@ -39,6 +41,10 @@ function CoverLetterRow({ coverLetter }: { coverLetter: CoverLetterRecord }) {
   const [deleteState, deleteAction] = useActionState(deleteProfileCoverLetter, {
     error: null,
     success: null,
+  });
+  useActionToast(deleteState, {
+    successTitle: "Cover letter updated",
+    errorTitle: "Could not update cover letter",
   });
 
   useEffect(() => {
@@ -112,6 +118,10 @@ function AddCoverLetterForm({
     error: null,
     success: null,
   });
+  useActionToast(state, {
+    successTitle: "Cover letter uploaded",
+    errorTitle: "Could not upload cover letter",
+  });
 
   useEffect(() => {
     if (state.success) {
@@ -139,13 +149,12 @@ function AddCoverLetterForm({
           <label className="text-xs font-medium text-muted-foreground" htmlFor="cl-file">
             File
           </label>
-          <Input
+          <FileInput
             accept=".pdf,.doc,.docx,.txt,.rtf"
             className="h-8 text-sm"
             id="cl-file"
             name="file"
             required
-            type="file"
           />
         </div>
         <div className="flex items-end gap-2">

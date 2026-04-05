@@ -2,6 +2,7 @@ import { type NextRequest } from "next/server";
 import { UnauthorizedError } from "@/lib/current-user";
 import { recordAction } from "@/lib/queries/behavior";
 import { dismissSavedJob } from "@/lib/queries/saved-jobs";
+import { removeTrackedWishlistFromJob } from "@/lib/queries/tracker";
 import { successResponse, errorResponse } from "@/lib/api-utils";
 
 export async function POST(
@@ -13,6 +14,7 @@ export async function POST(
     await Promise.all([
       recordAction(id, "PASS"),
       dismissSavedJob(id),
+      removeTrackedWishlistFromJob(id),
     ]);
     return successResponse({ success: true });
   } catch (error) {

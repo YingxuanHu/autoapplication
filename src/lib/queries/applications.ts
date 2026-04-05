@@ -172,9 +172,11 @@ export async function prepareApplicationReview(jobId: string) {
       : null,
     packageId: packageRecord.id,
     status: "READY",
-    submissionMethod: "review",
+    submissionMethod: isManualApplicationCategory(job.eligibility?.submissionCategory) ? "manual" : "review",
     submittedAt: null,
-    notes: "Prepared for review in the apply flow.",
+    notes: isManualApplicationCategory(job.eligibility?.submissionCategory)
+      ? "Prepared for manual application in the apply flow."
+      : "Prepared for auto-apply in the apply flow.",
   });
 
   return {
@@ -235,7 +237,7 @@ export async function submitApplicationReview(jobId: string) {
   });
 
   const submissionMethod =
-    job.eligibility?.submissionCategory === "MANUAL_ONLY" ? "manual" : "review";
+    isManualApplicationCategory(job.eligibility?.submissionCategory) ? "manual" : "review";
   const submittedAt = new Date();
 
   const submissionRecord = await upsertApplicationSubmission({
@@ -250,7 +252,7 @@ export async function submitApplicationReview(jobId: string) {
     notes:
       submissionMethod === "manual"
         ? "Marked submitted manually from the apply review flow."
-        : "Marked submitted from the apply review flow.",
+        : "Marked submitted from the auto-apply flow.",
   });
 
   await Promise.all([
@@ -709,9 +711,9 @@ function buildPackagePreview(
     savedAnswers,
     whyItMatches: buildPackageWhyItMatches(job, recommendedResume),
     coverLetterMode:
-      job.eligibility?.submissionCategory === "MANUAL_ONLY"
+      isManualApplicationCategory(job.eligibility?.submissionCategory)
         ? "No auto-generated cover letter. Manual tailoring is expected."
-        : "No custom cover letter yet. This review flow is resume-first.",
+        : "No custom cover letter yet. This auto-apply flow is resume-first.",
   };
 }
 
@@ -735,8 +737,14 @@ function buildPackageWhyItMatches(
 function getApplicationReviewState(job: JobDetailData): ApplicationReviewState {
   if (job.status !== "LIVE") return "NOT_ELIGIBLE";
   if (!job.eligibility) return "NOT_ELIGIBLE";
-  if (job.eligibility.submissionCategory === "MANUAL_ONLY") return "MANUAL_ONLY";
+  if (isManualApplicationCategory(job.eligibility.submissionCategory)) return "MANUAL_ONLY";
   return "READY_FOR_REVIEW";
+}
+
+function isManualApplicationCategory(
+  category: NonNullable<JobCardEligibility>["submissionCategory"] | null | undefined
+) {
+  return category === "MANUAL_ONLY" || category === "AUTO_FILL_REVIEW";
 }
 
 function jsonObjectToEntries(value: Prisma.JsonValue) {

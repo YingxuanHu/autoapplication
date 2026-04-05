@@ -19,7 +19,7 @@ export default async function DocumentComparePage() {
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">Compare Documents</h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Review the exact differences between stored resumes and cover letters.
+            Review the exact differences between stored resumes, cover letters, and templates.
           </p>
         </div>
         <div className="flex items-center gap-3 text-sm text-muted-foreground">

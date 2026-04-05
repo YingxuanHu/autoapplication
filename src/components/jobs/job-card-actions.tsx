@@ -1,15 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { Ban, BookmarkCheck, BookmarkPlus, LoaderCircle, Trash2 } from "lucide-react";
+import { Ban, BookmarkCheck, BookmarkPlus, LoaderCircle } from "lucide-react";
 import { AddToApplicationMenu } from "@/components/jobs/add-to-application-menu";
 import { Button } from "@/components/ui/button";
+import { useNotifications } from "@/components/ui/notification-provider";
 import { cn } from "@/lib/utils";
 
 type JobCardActionsProps = {
   jobId: string;
   initialSaved: boolean;
-  mode?: "feed" | "saved";
   align?: "start" | "end";
   onSavedChange?: (saved: boolean) => void;
   onPassed?: () => void;
@@ -18,11 +18,11 @@ type JobCardActionsProps = {
 export function JobCardActions({
   jobId,
   initialSaved,
-  mode = "feed",
   align = "start",
   onSavedChange,
   onPassed,
 }: JobCardActionsProps) {
+  const { notify } = useNotifications();
   const [isSaved, setIsSaved] = useState(initialSaved);
   const [error, setError] = useState<string | null>(null);
   const [inflightAction, setInflightAction] = useState<"save" | "pass" | null>(null);
@@ -30,7 +30,7 @@ export function JobCardActions({
   function handleSaveClick() {
     if (inflightAction === "save") return;
 
-    const nextSaved = mode === "saved" ? false : !isSaved;
+    const nextSaved = !isSaved;
     const previousSaved = isSaved;
 
     // Optimistic: flip immediately
@@ -44,6 +44,13 @@ export function JobCardActions({
     })
       .then((response) => {
         if (!response.ok) throw new Error("save failed");
+        notify({
+          title: nextSaved ? "Added to wishlist" : "Removed from wishlist",
+          message: nextSaved
+            ? "This job is now in your applications wishlist."
+            : "This job was removed from your wishlist.",
+          tone: "success",
+        });
       })
       .catch((actionError) => {
         console.error(actionError);
@@ -51,8 +58,17 @@ export function JobCardActions({
         setIsSaved(previousSaved);
         onSavedChange?.(previousSaved);
         setError(
-          nextSaved ? "Could not save this job right now." : "Could not update the shortlist."
+          nextSaved
+            ? "Could not add this job to your wishlist right now."
+            : "Could not update your wishlist."
         );
+        notify({
+          title: "Could not update wishlist",
+          message: nextSaved
+            ? "Could not add this job to your wishlist right now."
+            : "Could not update your wishlist.",
+          tone: "error",
+        });
       })
       .finally(() => {
         setInflightAction(null);
@@ -75,6 +91,11 @@ export function JobCardActions({
     fetch(`/api/jobs/${jobId}/pass`, { method: "POST" })
       .then((response) => {
         if (!response.ok) throw new Error("pass failed");
+        notify({
+          title: "Job dismissed",
+          message: "This job was removed from your feed.",
+          tone: "success",
+        });
       })
       .catch((actionError) => {
         console.error(actionError);
@@ -83,44 +104,17 @@ export function JobCardActions({
         // a soft signal (not destructive), we log and move on.
         // The job is already visually dismissed; showing it again
         // after a fade-out would be more jarring than losing a pass signal.
+        notify({
+          title: "Could not dismiss job",
+          message: "Your pass signal could not be saved right now.",
+          tone: "error",
+        });
       })
       .finally(() => {
         setInflightAction(null);
       });
   }
 
-  if (mode === "saved") {
-    return (
-      <div
-        className={cn(
-          "flex flex-col gap-2",
-          align === "end" ? "items-end" : "items-start"
-        )}
-      >
-        <Button
-          type="button"
-          variant="destructive"
-          size="sm"
-          onClick={handleSaveClick}
-          disabled={inflightAction === "save"}
-        >
-          {inflightAction === "save" ? (
-            <LoaderCircle className="h-3.5 w-3.5 animate-spin" />
-          ) : (
-            <Trash2 className="h-3.5 w-3.5" />
-          )}
-          Remove
-        </Button>
-        {error ? (
-          <p aria-live="polite" className="text-xs text-destructive">
-            {error}
-          </p>
-        ) : null}
-      </div>
-    );
-  }
-
-  // Feed mode: icon-only compact buttons — no spinners, instant feedback via icon change
   return (
     <div
       className={cn(
@@ -135,8 +129,8 @@ export function JobCardActions({
           variant={isSaved ? "secondary" : "ghost"}
           size="sm"
           onClick={handleSaveClick}
-          title={isSaved ? "Remove from saved" : "Save job"}
-          aria-label={isSaved ? "Remove from saved" : "Save job"}
+          title={isSaved ? "Remove from wishlist" : "Add to wishlist"}
+          aria-label={isSaved ? "Remove from wishlist" : "Add to wishlist"}
           disabled={inflightAction === "save"}
         >
           {isSaved ? (
@@ -162,10 +156,10 @@ export function JobCardActions({
         </Button>
       </div>
       {error ? (
-        <p aria-live="polite" className="text-xs text-destructive">
-          {error}
-        </p>
-      ) : null}
+          <p aria-live="polite" className="text-xs text-destructive">
+            {error}
+          </p>
+        ) : null}
     </div>
   );
 }

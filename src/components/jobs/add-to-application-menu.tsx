@@ -73,10 +73,16 @@ export function AddToApplicationMenu({
       }
 
       const nextStatus = payload?.status ?? status;
+      const createdMessage =
+        nextStatus === "WISHLIST"
+          ? "Added to wishlist from the jobs feed."
+          : `Added to applications as ${TRACKED_STATUS_LABEL[nextStatus]}.`;
+      const createdTitle =
+        nextStatus === "WISHLIST" ? "Added to wishlist" : "Added to applications";
       notify({
-        title: payload?.created ? "Added to applications" : "Application updated",
+        title: payload?.created ? createdTitle : "Application updated",
         message: payload?.created
-          ? `${TRACKED_STATUS_LABEL[nextStatus]} status saved from the jobs feed.`
+          ? createdMessage
           : `Application status updated to ${TRACKED_STATUS_LABEL[nextStatus]}.`,
         tone: "success",
       });

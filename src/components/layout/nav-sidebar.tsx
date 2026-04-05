@@ -4,7 +4,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   Bell,
-  Bookmark,
   Briefcase,
   Database,
   FileCheck2,
@@ -14,11 +13,9 @@ import {
   Zap,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { ThemeToggle } from "./theme-toggle";
 
 const NAV_ITEMS = [
   { href: "/jobs", label: "Jobs", icon: Briefcase },
-  { href: "/saved", label: "Saved", icon: Bookmark },
   { href: "/applications", label: "Applications", icon: FileCheck2 },
   { href: "/notifications", label: "Alerts", icon: Bell },
   { href: "/documents/compare", label: "Compare", icon: GitCompareArrows },
@@ -84,14 +81,6 @@ export function NavSidebar() {
           );
         })}
       </nav>
-
-      <div className="m-4 mt-0 flex items-center justify-between rounded-2xl border border-border/70 bg-background/60 px-3 py-2.5">
-        <div>
-          <p className="text-xs font-medium text-foreground">Theme</p>
-          <p className="text-[11px] text-muted-foreground">Display preference</p>
-        </div>
-        <ThemeToggle />
-      </div>
     </aside>
   );
 }

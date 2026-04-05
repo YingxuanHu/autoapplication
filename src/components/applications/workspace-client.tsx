@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { startTransition, useActionState, useEffect, useRef, useState } from "react";
 import { useFormStatus } from "react-dom";
+import { ChevronDown, ChevronRight } from "lucide-react";
 
 import {
   addTag,
@@ -20,6 +21,8 @@ import {
 import { importDocumentToProfile } from "@/app/profile/actions";
 import { JobAssistant } from "@/components/applications/job-assistant";
 import { Button } from "@/components/ui/button";
+import { ConfirmActionDialog } from "@/components/ui/confirm-action-dialog";
+import { FileInput } from "@/components/ui/file-input";
 import { Input } from "@/components/ui/input";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { Textarea } from "@/components/ui/textarea";
@@ -128,6 +131,8 @@ const statusBadgeClass: Record<string, string> = {
 
 const ACCEPT_RESUME = ".pdf,.doc,.docx,.txt,.rtf,.png,.jpg,.jpeg,.webp";
 const ACCEPT_COVER_LETTER = ".pdf,.doc,.docx,.txt,.rtf";
+const WORKSPACE_FIELD_TITLE_CLASS = "text-[0.95rem] font-semibold tracking-tight text-foreground";
+const DEFAULT_REMINDER_TIME = "09:00";
 const INITIAL_ACTION_STATE: ActionState = {
   error: null,
   success: null,
@@ -225,6 +230,21 @@ function isGeneratedStatusNote(event: TimelineEvent) {
   return event.note === `Status updated to ${TRACKED_STATUS_LABEL[eventStatus]}.`;
 }
 
+function isCreationEvent(event: TimelineEvent) {
+  if (event.type !== "NOTE" || !event.note) return false;
+
+  return (
+    event.note === "Application added to tracker." ||
+    event.note === "Application created." ||
+    event.note === "Application added to tracker from the jobs feed." ||
+    event.note === "Application created from the jobs feed." ||
+    event.note.startsWith("Application added to tracker with status ") ||
+    event.note.startsWith("Application created with status ") ||
+    event.note.startsWith("Application added to tracker from the jobs feed as ") ||
+    event.note.startsWith("Application created from the jobs feed as ")
+  );
+}
+
 function useActionNotifications(state: ActionState) {
   const { notify } = useNotifications();
   const lastMessageRef = useRef<string | null>(null);
@@ -269,7 +289,7 @@ function SubmitBtn({ label, saving }: { label: string; saving: string }) {
 function FieldLabel({ children, htmlFor }: { children: React.ReactNode; htmlFor?: string }) {
   return (
     <label
-      className="text-xs font-medium uppercase tracking-wide text-muted-foreground"
+      className="block text-xs font-medium uppercase tracking-wide text-muted-foreground"
       htmlFor={htmlFor}
     >
       {children}
@@ -303,7 +323,7 @@ function EditableField({
   return (
     <div className="rounded-xl border border-border/70 bg-background/50 p-4">
       <div className="flex items-center justify-between gap-3">
-        <h3 className="text-sm font-semibold text-foreground">{label}</h3>
+        <h3 className={WORKSPACE_FIELD_TITLE_CLASS}>{label}</h3>
         {!editing ? (
           <button
             className="rounded px-2 py-1 text-xs font-medium text-muted-foreground transition hover:bg-muted/70 hover:text-foreground"
@@ -379,10 +399,12 @@ function TagChip({ applicationId, tag }: { applicationId: string; tag: Tag }) {
 
 function TagsSection({
   applicationId,
+  children,
   tags,
   userTags,
 }: {
   applicationId: string;
+  children?: React.ReactNode;
   tags: Tag[];
   userTags: Tag[];
 }) {
@@ -422,6 +444,7 @@ function TagsSection({
         />
         <SubmitBtn label="+" saving="..." />
       </form>
+      {children}
     </div>
   );
 }
@@ -475,7 +498,6 @@ function DocumentSlot({
   documents: UserDocument[];
 }) {
   const [showUpload, setShowUpload] = useState(false);
-  const [fileName, setFileName] = useState("");
 
   const [linkState, linkAction] = useActionState(linkDocument, INITIAL_ACTION_STATE);
   const [unlinkState, unlinkAction] = useActionState(unlinkDocument, INITIAL_ACTION_STATE);
@@ -494,7 +516,7 @@ function DocumentSlot({
   return (
     <div className="rounded-xl border border-border/70 bg-background/50 p-4">
       <div className="flex items-center justify-between gap-2">
-        <h4 className="text-sm font-semibold text-foreground">{label}</h4>
+        <h4 className={WORKSPACE_FIELD_TITLE_CLASS}>{label}</h4>
         {!showUpload ? (
           <button
             className="rounded px-2 py-1 text-xs font-medium text-muted-foreground transition hover:bg-muted/70 hover:text-foreground"
@@ -511,7 +533,6 @@ function DocumentSlot({
           action={async (formData) => {
             await uploadAction(formData);
             setShowUpload(false);
-            setFileName("");
           }}
           className="mt-3 grid gap-2"
         >
@@ -532,16 +553,13 @@ function DocumentSlot({
             <label className="block text-xs text-muted-foreground" htmlFor={`upload-file-${slot}`}>
               File <span className="text-muted-foreground">({accept})</span>
             </label>
-            <input
+            <FileInput
               accept={accept}
-              className="block w-full cursor-pointer rounded-lg border border-border/70 bg-background px-3 py-2 text-sm text-foreground file:mr-3 file:cursor-pointer file:rounded-md file:border-0 file:bg-muted file:px-2 file:py-1 file:text-xs file:font-medium file:text-foreground hover:border-border"
+              className="hover:border-border"
               id={`upload-file-${slot}`}
               name="file"
-              onChange={(event) => setFileName(event.target.files?.[0]?.name ?? "")}
               required
-              type="file"
             />
-            {fileName ? <p className="text-xs text-muted-foreground">Selected: {fileName}</p> : null}
           </div>
           {uploadState.error ? (
             <p className="rounded-lg border border-destructive/20 bg-destructive/5 px-3 py-2 text-xs text-destructive">
@@ -554,7 +572,6 @@ function DocumentSlot({
               className="h-8 px-3 text-xs"
               onClick={() => {
                 setShowUpload(false);
-                setFileName("");
               }}
               size="sm"
               type="button"
@@ -630,47 +647,167 @@ function DocumentSlot({
   );
 }
 
-function AddEventForm({ applicationId }: { applicationId: string }) {
+function AddEventDropdown({ applicationId }: { applicationId: string }) {
   const [state, formAction] = useActionState(addTimelineEvent, INITIAL_ACTION_STATE);
   const [selectedType, setSelectedType] = useState<TrackedApplicationEventType>("NOTE");
+  const [open, setOpen] = useState(false);
+  const [reminderDate, setReminderDate] = useState("");
+  const [reminderTime, setReminderTime] = useState(DEFAULT_REMINDER_TIME);
+  const [reminderValue, setReminderValue] = useState("");
+  const [reminderError, setReminderError] = useState<string | null>(null);
   useActionNotifications(state);
 
+  function resetReminderDraft() {
+    setReminderDate("");
+    setReminderTime(DEFAULT_REMINDER_TIME);
+    setReminderValue("");
+    setReminderError(null);
+  }
+
+  function handleEventTypeChange(value: TrackedApplicationEventType) {
+    setSelectedType(value);
+    if (value !== "REMINDER") {
+      resetReminderDraft();
+    }
+  }
+
+  function handleSetReminder() {
+    if (!reminderDate || !reminderTime) {
+      setReminderError("Choose both a date and time first.");
+      return;
+    }
+
+    setReminderValue(`${reminderDate}T${reminderTime}`);
+    setReminderError(null);
+  }
+
   return (
-    <form action={formAction} className="rounded-xl border border-border/70 bg-background/50 p-4">
-      <h3 className="text-sm font-semibold text-foreground">Add event</h3>
-      <div className="mt-3 grid gap-3">
-        <div className="space-y-1">
-          <FieldLabel htmlFor="event-type">Type</FieldLabel>
-          <select
-            className="h-9 rounded-lg border border-border/70 bg-background px-3 text-sm text-foreground outline-none focus:border-ring focus:ring-2 focus:ring-ring/30"
-            defaultValue="NOTE"
-            id="event-type"
-            name="type"
-            onChange={(event) => setSelectedType(event.target.value as TrackedApplicationEventType)}
+    <div className="relative">
+      <Button
+        className="h-8 px-3 text-xs"
+        onClick={() => setOpen((current) => !current)}
+        size="sm"
+        type="button"
+      >
+        Add event
+      </Button>
+
+      {open ? (
+        <div className="absolute left-0 top-[calc(100%+0.5rem)] z-20 w-[min(21rem,calc(100vw-3rem))] rounded-xl border border-border/70 bg-background/98 p-3 shadow-[0_20px_45px_rgba(15,23,42,0.14)] backdrop-blur">
+          <form
+            action={async (formData) => {
+              await formAction(formData);
+              setOpen(false);
+              setSelectedType("NOTE");
+              resetReminderDraft();
+            }}
+            className="grid gap-3"
           >
-            {eventTypeOptions.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
+            <div className="flex items-center justify-between gap-3">
+              <h3 className="text-sm font-medium text-foreground">Add event</h3>
+              <button
+                className="rounded px-1.5 py-0.5 text-xs text-muted-foreground transition hover:bg-muted/70 hover:text-foreground"
+                onClick={() => setOpen(false)}
+                type="button"
+              >
+                Close
+              </button>
+            </div>
+
+            <div className="space-y-1">
+              <FieldLabel htmlFor="event-type">Type</FieldLabel>
+              <select
+                className="h-9 w-full rounded-lg border border-border/70 bg-background px-3 text-sm text-foreground outline-none focus:border-ring focus:ring-2 focus:ring-ring/30"
+                defaultValue="NOTE"
+                id="event-type"
+                name="type"
+                onChange={(event) => handleEventTypeChange(event.target.value as TrackedApplicationEventType)}
+              >
+                {eventTypeOptions.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {selectedType === "REMINDER" ? (
+              <div className="space-y-2">
+                <FieldLabel>Remind me at</FieldLabel>
+                <div className="grid gap-2 sm:grid-cols-[minmax(11rem,1.2fr)_minmax(8rem,0.8fr)]">
+                  <Input
+                    className="text-sm"
+                    id="event-reminder-date"
+                    onChange={(event) => {
+                      setReminderDate(event.target.value);
+                      setReminderValue("");
+                      setReminderError(null);
+                    }}
+                    type="date"
+                    value={reminderDate}
+                  />
+                  <Input
+                    className="text-sm"
+                    id="event-reminder-time"
+                    onChange={(event) => {
+                      setReminderTime(event.target.value);
+                      setReminderValue("");
+                      setReminderError(null);
+                    }}
+                    type="time"
+                    value={reminderTime}
+                  />
+                </div>
+                <div className="flex justify-start">
+                  <Button
+                    className="h-9 px-3 text-xs"
+                    onClick={handleSetReminder}
+                    size="sm"
+                    type="button"
+                    variant="secondary"
+                  >
+                    Set reminder
+                  </Button>
+                </div>
+                <input name="reminderAt" type="hidden" value={reminderValue} />
+                {reminderValue ? (
+                  <p className="text-xs text-muted-foreground">
+                    Reminder set for {formatDateTime(new Date(reminderValue))}
+                  </p>
+                ) : (
+                  <p className="text-xs text-muted-foreground">
+                    Pick a date and time, then click <span className="font-medium text-foreground">Set reminder</span>.
+                  </p>
+                )}
+                {reminderError ? (
+                  <p className="rounded-lg border border-destructive/20 bg-destructive/5 px-3 py-2 text-xs text-destructive">
+                    {reminderError}
+                  </p>
+                ) : null}
+              </div>
+            ) : null}
+
+            <div className="space-y-1">
+              <FieldLabel htmlFor="event-note">
+                {selectedType === "REMINDER" ? "What to remind about" : "Note"}
+              </FieldLabel>
+              <Textarea
+                className="min-h-[84px] resize-y text-sm"
+                id="event-note"
+                name="note"
+                placeholder={selectedType === "REMINDER" ? "What should this reminder cover?" : "Add a quick note..."}
+                rows={3}
+              />
+            </div>
+
+            <input name="applicationId" type="hidden" value={applicationId} />
+            <div className="flex justify-end">
+              <SubmitBtn label="Add event" saving="Adding..." />
+            </div>
+          </form>
         </div>
-        {selectedType === "REMINDER" ? (
-          <div className="space-y-1">
-            <FieldLabel htmlFor="event-reminder-at">Remind me at</FieldLabel>
-            <Input className="text-sm" id="event-reminder-at" name="reminderAt" required type="datetime-local" />
-          </div>
-        ) : null}
-        <div className="space-y-1">
-          <FieldLabel htmlFor="event-note">
-            {selectedType === "REMINDER" ? "What to remind about (optional)" : "Note (optional)"}
-          </FieldLabel>
-          <Textarea className="min-h-[60px] resize-y text-sm" id="event-note" name="note" rows={2} />
-        </div>
-        <input name="applicationId" type="hidden" value={applicationId} />
-        <SubmitBtn label="Add event" saving="Adding..." />
-      </div>
-    </form>
+      ) : null}
+    </div>
   );
 }
 
@@ -709,7 +846,7 @@ function JobDescriptionField({
   return (
     <div className="rounded-xl border border-border/70 bg-background/50 p-4">
       <div className="flex items-center justify-between gap-3">
-        <h3 className="text-sm font-semibold text-foreground">Job description</h3>
+        <h3 className={WORKSPACE_FIELD_TITLE_CLASS}>Job description</h3>
         <div className="flex items-center gap-1">
           {!editing && !showPaste && !summarizeActionState.fetchFailed ? (
             <button
@@ -851,33 +988,109 @@ function JobDescriptionField({
 
 function EventRow({ applicationId, event }: { applicationId: string; event: TimelineEvent }) {
   const [state, formAction] = useActionState(deleteTimelineEvent, INITIAL_ACTION_STATE);
+  const [open, setOpen] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
   useActionNotifications(state);
   const note = isGeneratedStatusNote(event) ? null : event.note;
   const isReminder = event.type === "REMINDER";
+  const typeLabel = isCreationEvent(event)
+    ? "Created"
+    : event.type.charAt(0) + event.type.slice(1).toLowerCase();
+  const headlineTimestamp = isReminder && event.reminderAt ? event.reminderAt : event.timestamp;
+  const summaryText = !isReminder ? note?.trim() || "No additional note." : null;
+
+  function dispatchDelete() {
+    const payload = new FormData();
+    payload.set("applicationId", applicationId);
+    payload.set("eventId", event.id);
+    setDeleteOpen(false);
+    startTransition(() => formAction(payload));
+  }
 
   return (
-    <div className="flex items-start justify-between gap-2 rounded-xl border border-border/70 bg-background px-3 py-2">
-      <div className="min-w-0 flex-1">
-        <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
-          <span
-            className={`inline-flex items-center rounded-full border px-1.5 py-0.5 text-xs font-medium ${statusBadgeClass[event.type] ?? statusBadgeClass.NOTE}`}
-          >
-            {event.type.charAt(0) + event.type.slice(1).toLowerCase()}
-          </span>
-          <span className="text-xs text-muted-foreground">{formatDateTime(event.timestamp)}</span>
-        </div>
-        {isReminder && event.reminderAt ? (
-          <p className="mt-1 text-xs font-medium text-violet-700 dark:text-violet-300">
-            Fires at: {formatDateTime(event.reminderAt)}
-          </p>
-        ) : null}
-        {note ? <p className="mt-1 text-sm text-foreground/80">{note}</p> : null}
+    <div className="rounded-xl border border-border/70 bg-background">
+      <div className="flex items-start justify-between gap-3 px-3 py-2.5">
+        <button
+          className="min-w-0 flex-1 text-left"
+          onClick={() => setOpen((current) => !current)}
+          type="button"
+        >
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+            <span
+              className={`inline-flex items-center rounded-full border px-1.5 py-0.5 text-xs font-medium ${statusBadgeClass[event.type] ?? statusBadgeClass.NOTE}`}
+            >
+              {typeLabel}
+            </span>
+            <span className="text-xs text-muted-foreground">{formatDateTime(headlineTimestamp)}</span>
+            {open ? (
+              <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
+            ) : (
+              <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" />
+            )}
+          </div>
+          {summaryText ? <p className="mt-2 truncate pr-3 text-sm text-foreground/85">{summaryText}</p> : null}
+        </button>
+
+        <Button
+          className="h-8 px-3 text-xs"
+          onClick={() => setDeleteOpen(true)}
+          size="sm"
+          type="button"
+        >
+          Delete
+        </Button>
       </div>
-      <form action={formAction}>
-        <input name="applicationId" type="hidden" value={applicationId} />
-        <input name="eventId" type="hidden" value={event.id} />
-        <SubmitBtn label="Delete" saving="..." />
-      </form>
+
+      {open ? (
+        <div className="border-t border-border/60 px-3 py-3">
+          <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-start">
+            <div className="grid gap-2">
+              <div>
+                <p className="text-[11px] font-medium uppercase tracking-[0.14em] text-muted-foreground">
+                  Type
+                </p>
+                <p className="mt-1 text-sm text-foreground/85">{typeLabel}</p>
+              </div>
+
+              {isReminder && event.reminderAt ? (
+                <div>
+                  <p className="text-[11px] font-medium uppercase tracking-[0.14em] text-muted-foreground">
+                    Detail
+                  </p>
+                  <p className="mt-1 text-sm font-medium text-violet-700 dark:text-violet-300">
+                    Reminder set for {formatDateTime(event.reminderAt)}
+                  </p>
+                </div>
+              ) : null}
+
+              <div>
+                <p className="text-[11px] font-medium uppercase tracking-[0.14em] text-muted-foreground">
+                  {isReminder && event.reminderAt ? "Created at" : "Logged at"}
+                </p>
+                <p className="mt-1 text-sm text-foreground/85">{formatDateTime(event.timestamp)}</p>
+              </div>
+
+              {note ? (
+                <div>
+                  <p className="text-[11px] font-medium uppercase tracking-[0.14em] text-muted-foreground">
+                    {isReminder ? "Reminder note" : "Note"}
+                  </p>
+                  <p className="mt-1 whitespace-pre-wrap text-sm text-foreground/85">{note}</p>
+                </div>
+              ) : null}
+            </div>
+          </div>
+        </div>
+      ) : null}
+      <ConfirmActionDialog
+        confirmLabel="Delete"
+        description={`Delete this ${typeLabel.toLowerCase()} event from the timeline?`}
+        destructive
+        onConfirm={dispatchDelete}
+        onOpenChange={setDeleteOpen}
+        open={deleteOpen}
+        title={`Delete ${typeLabel.toLowerCase()}?`}
+      />
     </div>
   );
 }
@@ -992,7 +1205,7 @@ function FitAnalysisSection({
   return (
     <div className="rounded-xl border border-border/70 bg-background/50 p-4">
       <div className="flex items-center justify-between gap-3">
-        <h3 className="text-sm font-semibold text-foreground">Fit analysis</h3>
+        <h3 className={WORKSPACE_FIELD_TITLE_CLASS}>Fit analysis</h3>
         {canAnalyze ? (
           <form action={formAction}>
             <input name="applicationId" type="hidden" value={applicationId} />
@@ -1068,7 +1281,9 @@ export function ApplicationWorkspaceClient({
               </a>
             ) : null}
 
-            <TagsSection applicationId={application.id} tags={tags} userTags={userTags} />
+            <TagsSection applicationId={application.id} tags={tags} userTags={userTags}>
+              <AddEventDropdown applicationId={application.id} />
+            </TagsSection>
           </div>
 
           <StatusSelector applicationId={application.id} currentStatus={application.status} />
@@ -1143,8 +1358,6 @@ export function ApplicationWorkspaceClient({
             <h2 className="text-base font-semibold text-foreground">Timeline</h2>
 
             <div className="mt-3 grid gap-3">
-              <AddEventForm applicationId={application.id} />
-
               {application.events.length === 0 ? (
                 <p className="py-4 text-center text-sm italic text-muted-foreground">
                   No events recorded yet.

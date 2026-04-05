@@ -51,10 +51,10 @@ export async function POST(
       create: {
         userId: profileId,
         canonicalJobId: id,
-        status: status === "WISHLIST" ? "ACTIVE" : "APPLIED",
+        status: tracked.status === "WISHLIST" ? "ACTIVE" : "APPLIED",
       },
       update: {
-        status: status === "WISHLIST" ? "ACTIVE" : "APPLIED",
+        status: tracked.status === "WISHLIST" ? "ACTIVE" : "APPLIED",
       },
     });
 

@@ -10,8 +10,10 @@ import {
   formatDisplayLabel,
   formatPostedAge,
   formatSalary,
+  getEligibilityReasonDescription,
   getSourceShortName,
   getSubmissionMeta,
+  shouldShowSubmissionMeta,
   submissionCategoryColor,
 } from "@/lib/job-display";
 import { getApplicationReviewData } from "@/lib/queries/applications";
@@ -51,6 +53,7 @@ export default async function JobApplyPage({ params }: JobApplyPageProps) {
   const reviewStateMeta = APPLICATION_REVIEW_STATE_META[reviewState];
   const canCreatePackage = recommendedResume !== null;
   const sourceShortName = getSourceShortName(job.primaryExternalLink?.sourceName ?? null);
+  const showSubmissionMeta = shouldShowSubmissionMeta(job);
 
   // Compact status strip values
   const packageState = latestPackage ? "Package ready" : "No package";
@@ -92,7 +95,7 @@ export default async function JobApplyPage({ params }: JobApplyPageProps) {
 
       {/* Header */}
       <div className="pb-3">
-        <p className="mb-0.5 text-xs text-muted-foreground">Apply review</p>
+        <p className="mb-0.5 text-xs text-muted-foreground">Application</p>
         <h1 className="text-xl font-semibold tracking-tight">{job.title}</h1>
         <p className="mt-0.5 text-sm text-muted-foreground">
           {job.company}
@@ -104,10 +107,14 @@ export default async function JobApplyPage({ params }: JobApplyPageProps) {
       {/* Compact status strip */}
       <div className="border-t border-border py-2.5">
         <p className="text-xs text-muted-foreground">
-          <span className={submissionCategoryColor(job.eligibility?.submissionCategory)}>
-            {submissionMeta.label}
-          </span>
-          <Sep />
+          {showSubmissionMeta ? (
+            <>
+              <span className={submissionCategoryColor(job.eligibility?.submissionCategory)}>
+                {submissionMeta.label}
+              </span>
+              <Sep />
+            </>
+          ) : null}
           {packageState}
           <Sep />
           {submissionState}
@@ -258,9 +265,7 @@ export default async function JobApplyPage({ params }: JobApplyPageProps) {
         </summary>
         <div className="space-y-2 pb-4">
           <p className="text-sm text-muted-foreground">{reviewStateMeta.description}</p>
-          {job.eligibility?.reasonDescription ? (
-            <p className="text-sm text-muted-foreground">{job.eligibility.reasonDescription}</p>
-          ) : null}
+          <p className="text-sm text-muted-foreground">{getEligibilityReasonDescription(job.eligibility)}</p>
           <p className="text-sm text-muted-foreground">{job.linkTrust.summary}</p>
         </div>
       </details>

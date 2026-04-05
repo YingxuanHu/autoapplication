@@ -9,7 +9,6 @@ import type {
   JobStatus,
   JobSourceMapping,
   Region,
-  SavedJobStatus,
   SubmissionCategory,
   WorkMode,
 } from "@/generated/prisma/client";
@@ -23,18 +22,6 @@ export type JobWithEligibility = JobCanonical & {
   eligibility: JobEligibility | null;
   sourceMappings: JobSourceMapping[];
   isSaved: boolean;
-};
-
-export type FeedStats = {
-  totalLive: number;
-  newLast24h: number;
-  expiredCount: number;
-  autoEligibleCount: number;
-  reviewRequiredCount: number;
-  manualOnlyCount: number;
-  savedCount: number;
-  savedEndingSoonCount: number;
-  withheldCount: number;
 };
 
 export type JobCardEligibility = {
@@ -163,14 +150,6 @@ export type ApplicationHistoryItem = {
   latestSubmission: ApplicationSubmissionSummary | null;
   latestStatus: ApplicationHistoryStatus;
   latestActivityAt: string;
-};
-
-export type SavedJobListItem = {
-  id: string;
-  status: SavedJobStatus;
-  notes: string | null;
-  createdAt: string;
-  canonicalJob: JobCardData;
 };
 
 export type JobFilters = {

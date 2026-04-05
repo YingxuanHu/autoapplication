@@ -9,6 +9,7 @@ import {
   getDeadlineUrgency,
   getSourceShortName,
   getSubmissionMeta,
+  shouldShowSubmissionMeta,
   submissionCategoryColor,
 } from "@/lib/job-display";
 import type { JobCardData } from "@/types";
@@ -29,6 +30,7 @@ export function JobSummaryCard({
   const sourceShortName = getSourceShortName(job.primaryExternalLink?.sourceName ?? null);
   const deadlineUrgency = getDeadlineUrgency(job.deadline);
   const snippet = buildDescriptionSnippet(job.shortSummary);
+  const showSubmissionMeta = shouldShowSubmissionMeta(job);
 
   // Apply is only available for live, eligible jobs
   const canStartApplyFlow =
@@ -51,11 +53,13 @@ export function JobSummaryCard({
                 {job.title}
               </Link>
             </h2>
-            <span
-              className={`shrink-0 text-xs font-medium ${submissionCategoryColor(job.eligibility?.submissionCategory)}`}
-            >
-              {submissionMeta.label}
-            </span>
+            {showSubmissionMeta ? (
+              <span
+                className={`shrink-0 text-xs font-medium ${submissionCategoryColor(job.eligibility?.submissionCategory)}`}
+              >
+                {submissionMeta.label}
+              </span>
+            ) : null}
           </div>
 
           <p className="mt-1 text-sm text-muted-foreground">
@@ -118,7 +122,9 @@ export function JobSummaryCard({
           {primaryAction ??
             (canStartApplyFlow ? (
               <Button size="sm" render={<Link href={`/jobs/${job.id}/apply`} />} variant="secondary">
-                {job.eligibility?.submissionCategory === "MANUAL_ONLY" ? "Apply manually" : "Apply"}
+                {job.eligibility?.submissionCategory === "AUTO_SUBMIT_READY"
+                  ? "Apply"
+                  : "Apply manually"}
               </Button>
             ) : null)}
           {footerActions}

@@ -1,32 +1,9 @@
 import { prisma } from "@/lib/db";
 import { requireCurrentProfileId } from "@/lib/current-user";
-
-export async function getSavedJobs(status?: string) {
-  const userId = await requireCurrentProfileId();
-  const where: { userId: string; status?: "ACTIVE" | "APPLIED" | "EXPIRED" | "DISMISSED" } = {
-    userId,
-  };
-  if (status) {
-    where.status = status as "ACTIVE" | "APPLIED" | "EXPIRED" | "DISMISSED";
-  }
-
-  const savedJobs = await prisma.savedJob.findMany({
-    where,
-    include: {
-      canonicalJob: {
-        include: {
-          eligibility: true,
-          sourceMappings: true,
-        },
-      },
-    },
-    orderBy: { createdAt: "desc" },
-  });
-
-  return savedJobs;
-}
-
-export async function saveJob(canonicalJobId: string) {
+export async function saveJob(
+  canonicalJobId: string,
+  status: "ACTIVE" | "APPLIED" | "EXPIRED" | "DISMISSED" = "ACTIVE"
+) {
   const userId = await requireCurrentProfileId();
   return prisma.savedJob.upsert({
     where: {
@@ -38,10 +15,10 @@ export async function saveJob(canonicalJobId: string) {
     create: {
       userId,
       canonicalJobId,
-      status: "ACTIVE",
+      status,
     },
     update: {
-      status: "ACTIVE",
+      status,
     },
   });
 }

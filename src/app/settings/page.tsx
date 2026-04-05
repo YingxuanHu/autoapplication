@@ -3,6 +3,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 import { SignOutButton } from "@/components/auth/sign-out-button";
+import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { DeleteAccountCard } from "@/components/profile/delete-account-card";
 import { getOptionalSessionUser } from "@/lib/current-user";
 import { getTrackerSettingsData, saveTrackerSettings } from "@/lib/queries/tracker";
@@ -71,6 +72,19 @@ export default async function SettingsPage() {
               {user.emailVerified ? "Verified" : "Pending"}
             </p>
           </div>
+        </div>
+      </section>
+
+      <section className="surface-panel p-4 sm:p-5">
+        <h2 className="text-sm font-semibold text-foreground">Appearance</h2>
+        <div className="mt-4 flex flex-col gap-4 rounded-xl border border-border/60 bg-background/60 px-4 py-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p className="text-sm font-medium text-foreground">Theme</p>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Choose light, dark, or system appearance for the workspace.
+            </p>
+          </div>
+          <ThemeToggle />
         </div>
       </section>
 

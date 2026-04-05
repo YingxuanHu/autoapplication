@@ -229,7 +229,7 @@ export type ScoringJobInput = {
  * Score a job for relevance ranking with full breakdown.
  *
  * Scoring bands:
- *   Eligibility:          0–20  (auto-submit > review > manual)
+ *   Eligibility:          0–20  (auto-submit only; everything else is manual)
  *   Freshness:          -16–20  (graduated by age, more strongly demotes very old jobs)
  *   Preference match:     0–15  (explicit user role-family prefs)
  *   Work mode pref:       0–10  (explicit user work-mode prefs)
@@ -258,7 +258,6 @@ export function scoreJobDetailed(
   // Eligibility (0-20)
   const cat = job.eligibility?.submissionCategory;
   if (cat === "AUTO_SUBMIT_READY") eligibility = 20;
-  else if (cat === "AUTO_FILL_REVIEW") eligibility = 10;
 
   // Freshness (-16 to 20): rewards recency, more strongly demotes very old live jobs
   if (job.postedAt) {
@@ -658,12 +657,34 @@ export async function getJobs(filters: JobFilterParams) {
   }
 
   if (filters.submissionCategory) {
-    where.eligibility = {
-      submissionCategory: filters.submissionCategory as
-        | "AUTO_SUBMIT_READY"
-        | "AUTO_FILL_REVIEW"
-        | "MANUAL_ONLY",
-    };
+    const selectedCategories = filters.submissionCategory
+      .split(",")
+      .map((entry) => entry.trim())
+      .filter(Boolean);
+    const expandedCategories = new Set<"AUTO_SUBMIT_READY" | "AUTO_FILL_REVIEW" | "MANUAL_ONLY">();
+
+    for (const category of selectedCategories) {
+      if (category === "AUTO_SUBMIT_READY") {
+        expandedCategories.add("AUTO_SUBMIT_READY");
+      } else if (category === "MANUAL_ONLY" || category === "AUTO_FILL_REVIEW") {
+        expandedCategories.add("MANUAL_ONLY");
+        expandedCategories.add("AUTO_FILL_REVIEW");
+      }
+    }
+
+    const categoryList = [...expandedCategories];
+
+    if (categoryList.length === 1) {
+      where.eligibility = {
+        submissionCategory: categoryList[0],
+      };
+    } else if (categoryList.length > 1) {
+      where.eligibility = {
+        submissionCategory: {
+          in: categoryList,
+        },
+      };
+    }
   }
 
   if (filters.status) {
@@ -726,104 +747,5 @@ export async function getJobById(id: string) {
   return {
     ...rest,
     isSaved: savedJobs.length > 0,
-  };
-}
-
-export async function getFeedStats() {
-  const viewerProfileId = await getOptionalCurrentProfileId();
-  const now = new Date();
-  const oneDayAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
-  const oneWeekOut = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
-  const visibleLiveWhere: Prisma.JobCanonicalWhereInput = {
-    status: "LIVE",
-    sourceMappings: {
-      some: {
-        sourceName: {
-          notIn: [...DEMO_SOURCE_NAMES],
-        },
-      },
-    },
-  };
-  const withheldLiveWhere: Prisma.JobCanonicalWhereInput = {
-    status: "LIVE",
-    sourceMappings: {
-      none: {
-        sourceName: {
-          notIn: [...DEMO_SOURCE_NAMES],
-        },
-      },
-    },
-  };
-
-  const [
-    totalLive,
-    newLast24h,
-    expiredCount,
-    autoEligibleCount,
-    reviewRequiredCount,
-    manualOnlyCount,
-    savedCount,
-    savedEndingSoonCount,
-    withheldCount,
-  ] = await Promise.all([
-    prisma.jobCanonical.count({ where: visibleLiveWhere }),
-    prisma.jobCanonical.count({
-      where: {
-        ...visibleLiveWhere,
-        postedAt: { gte: oneDayAgo },
-      },
-    }),
-    prisma.jobCanonical.count({ where: { status: "EXPIRED" } }),
-    prisma.jobCanonical.count({
-      where: {
-        ...visibleLiveWhere,
-        eligibility: { submissionCategory: "AUTO_SUBMIT_READY" },
-      },
-    }),
-    prisma.jobCanonical.count({
-      where: {
-        ...visibleLiveWhere,
-        eligibility: { submissionCategory: "AUTO_FILL_REVIEW" },
-      },
-    }),
-    prisma.jobCanonical.count({
-      where: {
-        ...visibleLiveWhere,
-        eligibility: { submissionCategory: "MANUAL_ONLY" },
-      },
-    }),
-    viewerProfileId
-      ? prisma.savedJob.count({
-          where: { userId: viewerProfileId, status: "ACTIVE" },
-        })
-      : Promise.resolve(0),
-    viewerProfileId
-      ? prisma.savedJob.count({
-          where: {
-            userId: viewerProfileId,
-            status: "ACTIVE",
-            canonicalJob: {
-              status: "LIVE",
-              deadline: {
-                gte: now,
-                lte: oneWeekOut,
-              },
-            },
-          },
-        })
-      : Promise.resolve(0),
-    prisma.jobCanonical.count({ where: withheldLiveWhere }),
-  ]);
-
-  return {
-    totalLive,
-    newLast24h,
-    expiredCount,
-    autoEligibleCount,
-    reviewRequiredCount,
-    manualOnlyCount,
-    savedCount,
-    savedEndingSoonCount,
-    withheldCount,
   };
 }

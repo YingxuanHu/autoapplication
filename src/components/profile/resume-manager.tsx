@@ -21,7 +21,10 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { FileInput } from "@/components/ui/file-input";
 import { Input } from "@/components/ui/input";
+import { useNotifications } from "@/components/ui/notification-provider";
+import { useActionToast } from "@/components/ui/use-action-toast";
 import { supportedResumeAcceptValue, type ResumeImportSummary } from "@/lib/resume-shared";
 
 const SUPPORTED_TEMPLATE_ACCEPT =
@@ -68,6 +71,7 @@ async function readRoutePayload(response: Response) {
 
 function ResumeRow({ resume }: { resume: ResumeRecord }) {
   const router = useRouter();
+  const { notify } = useNotifications();
   const [renaming, setRenaming] = useState(false);
   const [renameValue, setRenameValue] = useState(resume.title);
   const renameInputRef = useRef<HTMLInputElement>(null);
@@ -86,6 +90,18 @@ function ResumeRow({ resume }: { resume: ResumeRecord }) {
   const [renameState, renameAction] = useActionState(renameDocument, {
     error: null,
     success: null,
+  });
+  useActionToast(primaryState, {
+    successTitle: "Resume updated",
+    errorTitle: "Could not update resume",
+  });
+  useActionToast(deleteState, {
+    successTitle: "Resume deleted",
+    errorTitle: "Could not delete resume",
+  });
+  useActionToast(renameState, {
+    successTitle: "Resume renamed",
+    errorTitle: "Could not rename resume",
   });
 
   useEffect(() => {
@@ -124,9 +140,20 @@ function ResumeRow({ resume }: { resume: ResumeRecord }) {
         throw new Error(payload.error ?? "Resume extraction failed.");
       }
 
+      notify({
+        title: "Resume synced",
+        message: payload.message ?? "Your profile was updated from this resume.",
+        tone: "success",
+      });
       router.refresh();
     } catch (error) {
-      setSyncError(error instanceof Error ? error.message : "Resume extraction failed.");
+      const message = error instanceof Error ? error.message : "Resume extraction failed.";
+      setSyncError(message);
+      notify({
+        title: "Could not sync resume",
+        message,
+        tone: "error",
+      });
     } finally {
       setSyncPending(false);
     }
@@ -257,6 +284,18 @@ function TemplateRow({ template }: { template: TemplateRecord }) {
     error: null,
     success: null,
   });
+  useActionToast(primaryState, {
+    successTitle: "Template updated",
+    errorTitle: "Could not update template",
+  });
+  useActionToast(deleteState, {
+    successTitle: "Template deleted",
+    errorTitle: "Could not delete template",
+  });
+  useActionToast(renameState, {
+    successTitle: "Template renamed",
+    errorTitle: "Could not rename template",
+  });
 
   useEffect(() => {
     if (primaryState.success || deleteState.success || renameState.success) {
@@ -383,6 +422,7 @@ function AddResumeForm({
   onDone: () => void;
 }) {
   const router = useRouter();
+  const { notify } = useNotifications();
   const formRef = useRef<HTMLFormElement>(null);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -408,11 +448,22 @@ function AddResumeForm({
         throw new Error(payload.error ?? "Resume upload failed.");
       }
 
+      notify({
+        title: "Resume uploaded",
+        message: payload.message ?? "Your resume was added to your library.",
+        tone: "success",
+      });
       formRef.current.reset();
       router.refresh();
       onDone();
     } catch (submitError) {
-      setError(submitError instanceof Error ? submitError.message : "Resume upload failed.");
+      const message = submitError instanceof Error ? submitError.message : "Resume upload failed.";
+      setError(message);
+      notify({
+        title: "Could not upload resume",
+        message,
+        tone: "error",
+      });
     } finally {
       setPending(false);
     }
@@ -443,13 +494,12 @@ function AddResumeForm({
           <label className="text-xs font-medium text-muted-foreground" htmlFor={fileId}>
             File
           </label>
-          <Input
+          <FileInput
             accept={supportedResumeAcceptValue}
             className="h-8 text-sm"
             id={fileId}
             name="file"
             required
-            type="file"
           />
         </div>
         <div className="flex items-end gap-2">
@@ -497,6 +547,10 @@ function AddTemplateForm({
     error: null,
     success: null,
   });
+  useActionToast(state, {
+    successTitle: "Template uploaded",
+    errorTitle: "Could not upload template",
+  });
 
   useEffect(() => {
     if (state.success) {
@@ -524,13 +578,12 @@ function AddTemplateForm({
           <label className="text-xs font-medium text-muted-foreground" htmlFor="template-file">
             File
           </label>
-          <Input
+          <FileInput
             accept={SUPPORTED_TEMPLATE_ACCEPT}
             className="h-8 text-sm"
             id="template-file"
             name="file"
             required
-            type="file"
           />
         </div>
         <div className="flex items-end gap-2">

@@ -1,4 +1,4 @@
-import type { TrackedApplicationStatus, TrackedApplicationEventType } from "@/generated/prisma/client";
+import type { TrackedApplicationStatus } from "@/generated/prisma/client";
 
 export const TRACKED_STATUS_LABEL: Record<TrackedApplicationStatus, string> = {
   WISHLIST: "Wishlist",
@@ -8,16 +8,6 @@ export const TRACKED_STATUS_LABEL: Record<TrackedApplicationStatus, string> = {
   OFFER: "Offer",
   REJECTED: "Rejected",
   WITHDRAWN: "Withdrawn",
-};
-
-export const TRACKED_EVENT_LABEL: Record<TrackedApplicationEventType, string> = {
-  APPLIED: "Applied",
-  SCREEN: "Screen",
-  INTERVIEW: "Interview",
-  OFFER: "Offer",
-  REJECTED: "Rejected",
-  NOTE: "Note",
-  REMINDER: "Reminder",
 };
 
 export function trackedStatusClass(status: TrackedApplicationStatus) {
@@ -45,15 +35,4 @@ export function formatTrackerDate(value: Date | null) {
   return new Intl.DateTimeFormat("en-CA", {
     dateStyle: "medium",
   }).format(value);
-}
-
-export function toDateInputValue(value: Date | null) {
-  if (!value) return "";
-  return value.toISOString().slice(0, 10);
-}
-
-export function toDatetimeLocalValue(value: Date | null) {
-  if (!value) return "";
-  const local = new Date(value.getTime() - value.getTimezoneOffset() * 60_000);
-  return local.toISOString().slice(0, 16);
 }

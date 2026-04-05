@@ -127,12 +127,6 @@ function isMissingStorageObjectError(error: unknown) {
   );
 }
 
-/** Build a unique storage key for a new upload. */
-export function buildStorageKey(userId: string, filename: string): string {
-  const ts = Date.now();
-  return `${userId}/${ts}-${randomUUID()}-${sanitizeFilename(filename)}`;
-}
-
 export function buildDocumentStorageKey(input: {
   userId: string;
   title: string;

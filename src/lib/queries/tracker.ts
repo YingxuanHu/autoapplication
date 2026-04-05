@@ -506,8 +506,8 @@ export async function createTrackedApplication(input: {
       type: statusToEventType(status),
       note:
         status === "WISHLIST"
-          ? "Application added to tracker."
-          : `Application added to tracker with status ${status.toLowerCase()}.`,
+          ? "Application created."
+          : `Application created with status ${status.toLowerCase()}.`,
     },
   });
 
@@ -581,6 +581,8 @@ export async function upsertTrackedApplicationFromJob(input: {
   }
 
   const latestPackage = job.applicationPackages[0] ?? null;
+  const nextStatus =
+    input.status === "WISHLIST" && existing ? existing.status : input.status;
   const tracked = existing
     ? await prisma.trackedApplication.update({
         where: { id: existing.id },
@@ -589,7 +591,7 @@ export async function upsertTrackedApplicationFromJob(input: {
           roleTitle: job.title,
           roleUrl: job.applyUrl,
           deadline: job.deadline,
-          status: input.status,
+          status: nextStatus,
           jobDescription: existing.jobDescription ?? job.description,
           fitAnalysis: existing.fitAnalysis ?? latestPackage?.whyItMatches ?? null,
         },
@@ -611,14 +613,14 @@ export async function upsertTrackedApplicationFromJob(input: {
   await prisma.trackedApplicationEvent.create({
     data: {
       trackedApplicationId: tracked.id,
-      type: statusToEventType(input.status),
+      type: statusToEventType(nextStatus),
       note: existing
-        ? existing.status === input.status
-          ? `Application refreshed from the jobs feed as ${TRACKED_STATUS_NOTE[input.status]}.`
-          : `Status updated from the jobs feed to ${TRACKED_STATUS_NOTE[input.status]}.`
-        : input.status === "WISHLIST"
-          ? "Application added to tracker from the jobs feed."
-          : `Application added to tracker from the jobs feed as ${TRACKED_STATUS_NOTE[input.status]}.`,
+        ? existing.status === nextStatus
+          ? `Application refreshed from the jobs feed as ${TRACKED_STATUS_NOTE[nextStatus]}.`
+          : `Status updated from the jobs feed to ${TRACKED_STATUS_NOTE[nextStatus]}.`
+        : nextStatus === "WISHLIST"
+          ? "Application created from the jobs feed."
+          : `Application created from the jobs feed as ${TRACKED_STATUS_NOTE[nextStatus]}.`,
     },
   });
 
@@ -633,7 +635,7 @@ export async function upsertTrackedApplicationFromJob(input: {
   return {
     applicationId: tracked.id,
     created: !existing,
-    status: tracked.status,
+    status: nextStatus,
   };
 }
 
@@ -779,6 +781,18 @@ export async function deleteTrackedApplicationEvent(input: {
       data: { updatedAt: new Date() },
     }),
   ]);
+}
+
+export async function removeTrackedWishlistFromJob(canonicalJobId: string) {
+  const userId = await requireCurrentAuthUserId();
+
+  return prisma.trackedApplication.deleteMany({
+    where: {
+      userId,
+      canonicalJobId,
+      status: "WISHLIST",
+    },
+  });
 }
 
 export async function addTrackedApplicationTag(input: {

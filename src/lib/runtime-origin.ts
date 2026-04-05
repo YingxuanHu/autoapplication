@@ -6,7 +6,7 @@ function isLocalHost(host: string) {
   return host.startsWith("localhost") || host.startsWith("127.0.0.1");
 }
 
-export function resolveRequestOrigin(headers?: HeaderSource | null) {
+function resolveRequestOrigin(headers?: HeaderSource | null) {
   const forwardedHost = headers?.get("x-forwarded-host");
   const host = forwardedHost ?? headers?.get("host");
 

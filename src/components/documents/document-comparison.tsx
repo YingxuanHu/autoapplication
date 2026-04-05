@@ -11,10 +11,12 @@ import {
   type SplitRow,
 } from "@/lib/diff";
 
+type DocumentType = "RESUME" | "COVER_LETTER" | "RESUME_TEMPLATE";
+
 type DocumentOption = {
   id: string;
   filename: string;
-  type: "RESUME" | "COVER_LETTER" | "RESUME_TEMPLATE";
+  type: DocumentType;
 };
 
 type LoadedDocument = {
@@ -23,6 +25,38 @@ type LoadedDocument = {
 };
 
 type ViewMode = "unified" | "split";
+
+const DOCUMENT_TYPE_OPTIONS: Array<{ value: DocumentType; label: string; emptyLabel: string }> = [
+  {
+    value: "RESUME",
+    label: "Resume",
+    emptyLabel: "Upload at least two resumes to compare them here.",
+  },
+  {
+    value: "COVER_LETTER",
+    label: "Cover letter",
+    emptyLabel: "Upload at least two cover letters to compare them here.",
+  },
+  {
+    value: "RESUME_TEMPLATE",
+    label: "Template",
+    emptyLabel: "Upload at least two templates to compare them here.",
+  },
+];
+
+function labelForDocumentType(type: DocumentType) {
+  return DOCUMENT_TYPE_OPTIONS.find((option) => option.value === type)?.label ?? type;
+}
+
+function getInitialDocumentType(documents: DocumentOption[]): DocumentType {
+  for (const option of DOCUMENT_TYPE_OPTIONS) {
+    if (documents.filter((document) => document.type === option.value).length >= 2) {
+      return option.value;
+    }
+  }
+
+  return documents[0]?.type ?? "RESUME";
+}
 
 function DocumentSelector({
   label,
@@ -54,7 +88,7 @@ function DocumentSelector({
             disabled={document.id === disabledId}
             value={document.id}
           >
-            {document.filename} ({document.type.replaceAll("_", " ").toLowerCase()})
+            {document.filename}
           </option>
         ))}
       </select>
@@ -219,11 +253,19 @@ function EmptyState({ message }: { message: string }) {
 }
 
 export function DocumentComparison({ documents }: { documents: DocumentOption[] }) {
+  const [documentType, setDocumentType] = useState<DocumentType>(() =>
+    getInitialDocumentType(documents)
+  );
   const [docA, setDocA] = useState<LoadedDocument | null>(null);
   const [docB, setDocB] = useState<LoadedDocument | null>(null);
   const [viewMode, setViewMode] = useState<ViewMode>("unified");
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
+
+  const filteredDocuments = documents.filter((document) => document.type === documentType);
+  const selectedTypeMeta =
+    DOCUMENT_TYPE_OPTIONS.find((option) => option.value === documentType) ??
+    DOCUMENT_TYPE_OPTIONS[0];
 
   const loadDocument = useCallback(
     (side: "A" | "B") => async (id: string) => {
@@ -250,7 +292,14 @@ export function DocumentComparison({ documents }: { documents: DocumentOption[] 
     []
   );
 
-  const diff = docA && docB ? computeDiff(docA.text, docB.text) : null;
+  const visibleDocA = filteredDocuments.some((document) => document.id === docA?.id)
+    ? docA
+    : null;
+  const visibleDocB = filteredDocuments.some((document) => document.id === docB?.id)
+    ? docB
+    : null;
+
+  const diff = visibleDocA && visibleDocB ? computeDiff(visibleDocA.text, visibleDocB.text) : null;
   const stats = diff ? getDiffStats(diff) : null;
   const splitRows = diff && viewMode === "split" ? toSplitRows(diff) : null;
 
@@ -260,19 +309,39 @@ export function DocumentComparison({ documents }: { documents: DocumentOption[] 
   return (
     <div className="grid gap-5">
       <div className="rounded-lg border border-border bg-card p-4">
+        <div className="mb-4 flex flex-col gap-1.5">
+          <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+            Compare
+          </span>
+          <select
+            className="h-9 w-full rounded-lg border border-input bg-background px-3 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 sm:max-w-xs"
+            onChange={(event) => {
+              setError(null);
+              setDocumentType(event.target.value as DocumentType);
+            }}
+            value={documentType}
+          >
+            {DOCUMENT_TYPE_OPTIONS.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </div>
+
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end">
           <DocumentSelector
             label="Document A"
-            options={documents}
-            selectedId={docA?.id ?? null}
-            disabledId={docB?.id ?? null}
+            options={filteredDocuments}
+            selectedId={visibleDocA?.id ?? null}
+            disabledId={visibleDocB?.id ?? null}
             onChange={loadDocument("A")}
           />
           <DocumentSelector
             label="Document B"
-            options={documents}
-            selectedId={docB?.id ?? null}
-            disabledId={docA?.id ?? null}
+            options={filteredDocuments}
+            selectedId={visibleDocB?.id ?? null}
+            disabledId={visibleDocA?.id ?? null}
             onChange={loadDocument("B")}
           />
         </div>
@@ -288,8 +357,10 @@ export function DocumentComparison({ documents }: { documents: DocumentOption[] 
         ) : null}
       </div>
 
-      {!diff ? (
-        <EmptyState message="Select two documents to compare." />
+      {filteredDocuments.length < 2 ? (
+        <EmptyState message={selectedTypeMeta.emptyLabel} />
+      ) : !diff ? (
+        <EmptyState message={`Select two ${labelForDocumentType(documentType).toLowerCase()} documents to compare.`} />
       ) : (
         <>
           <StatsBar
@@ -309,8 +380,8 @@ export function DocumentComparison({ documents }: { documents: DocumentOption[] 
           ) : (
             <SplitDiffView
               rows={splitRows!}
-              leftTitle={titleFor(docA)}
-              rightTitle={titleFor(docB)}
+              leftTitle={titleFor(visibleDocA)}
+              rightTitle={titleFor(visibleDocB)}
             />
           )}
         </>

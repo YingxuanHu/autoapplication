@@ -8,6 +8,7 @@ import {
   formatDisplayLabel,
   formatRelativeAge,
   getSubmissionMeta,
+  shouldShowSubmissionMeta,
   submissionCategoryColor,
 } from "@/lib/job-display";
 import { getOptionalSessionUser } from "@/lib/current-user";
@@ -20,7 +21,7 @@ type ApplicationHistoryPageProps = {
 
 const APPLICATION_FILTERS = [
   { value: "ALL", label: "All" },
-  { value: "ACTIVE", label: "In review" },
+  { value: "ACTIVE", label: "Active" },
   { value: "SUBMITTED", label: "Submitted" },
   { value: "CONFIRMED", label: "Confirmed" },
   { value: "FAILED", label: "Failed" },
@@ -95,17 +96,17 @@ export default async function ApplicationHistoryPage({
         <div>
           <h1 className="page-title">Apply history</h1>
           <p className="page-description">
-            Review package creation and submission state changes across the jobs flow.
+            Track package creation and submission state changes across the jobs flow.
           </p>
           <p className="mt-2 text-sm text-muted-foreground">
             {history.length} tracked job{history.length !== 1 ? "s" : ""}
-            {activeCount > 0 ? ` · ${activeCount} in review` : ""}
+            {activeCount > 0 ? ` · ${activeCount} active` : ""}
             {submittedCount > 0 ? ` · ${submittedCount} submitted` : ""}
           </p>
         </div>
         <div className="page-actions">
           <Link href="/applications">Applications</Link>
-          <Link href="/saved">Saved</Link>
+          <Link href="/applications?status=WISHLIST">Wishlist</Link>
           <Link href="/jobs">Feed</Link>
         </div>
       </div>
@@ -150,15 +151,15 @@ export default async function ApplicationHistoryPage({
               No applications in this view
             </p>
             <p className="mt-1 text-sm text-muted-foreground">
-              Start from your shortlist or feed to create your first tracked
+              Start from your wishlist or feed to create your first tracked
               package and submission record.
             </p>
             <div className="mt-3 flex items-center justify-center gap-3">
               <Link
-                href="/saved"
+                href="/applications?status=WISHLIST"
                 className="text-sm text-muted-foreground underline-offset-4 hover:underline"
               >
-                Open saved jobs
+                Open wishlist
               </Link>
               <Link
                 href="/jobs"
@@ -182,6 +183,7 @@ export default async function ApplicationHistoryPage({
 
 function ApplicationRow({ item }: { item: ApplicationHistoryItem }) {
   const submissionMeta = getSubmissionMeta(item.job);
+  const showSubmissionMeta = shouldShowSubmissionMeta(item.job);
   const primaryAction = getPrimaryAction(item);
   const statusSummary = getStatusSummary(item);
   const activityNote = getActivityNote(item);
@@ -225,12 +227,16 @@ function ApplicationRow({ item }: { item: ApplicationHistoryItem }) {
           </p>
 
           <p className="mt-3 text-xs text-muted-foreground/70">
-            <span
-              className={`font-medium ${submissionCategoryColor(item.job.eligibility?.submissionCategory)}`}
-            >
-              {submissionMeta.label}
-            </span>
-            <Sep />
+            {showSubmissionMeta ? (
+              <>
+                <span
+                  className={`font-medium ${submissionCategoryColor(item.job.eligibility?.submissionCategory)}`}
+                >
+                  {submissionMeta.label}
+                </span>
+                <Sep />
+              </>
+            ) : null}
             {item.latestPackage
               ? `Resume: ${item.latestPackage.resumeVariant.label}`
               : "No package"}
@@ -279,14 +285,14 @@ function getPrimaryAction(item: ApplicationHistoryItem) {
   if (item.latestStatus === "SUBMITTED") {
     return {
       href: `/jobs/${item.job.id}/apply`,
-      label: "Review submission",
+      label: "Open application",
       variant: "secondary" as const,
     };
   }
 
   return {
     href: `/jobs/${item.job.id}/apply`,
-    label: item.latestStatus === "FAILED" ? "Retry review" : "Open review",
+    label: item.latestStatus === "FAILED" ? "Retry application" : "Open application",
     variant: item.latestStatus === "FAILED" ? "outline" as const : "default" as const,
   };
 }
@@ -296,9 +302,9 @@ function getStatusSummary(item: ApplicationHistoryItem) {
     case "PACKAGE_ONLY":
       return "A tailored package exists, but no submission has been recorded yet.";
     case "DRAFT":
-      return "The application review was opened, but the package is still incomplete.";
+      return "The application was opened, but the package is still incomplete.";
     case "READY":
-      return "The package is prepared and ready for a final review before submission.";
+      return "The package is prepared and ready for submission.";
     case "SUBMITTED":
       return item.latestSubmission?.notes ?? "Submission recorded and awaiting confirmation.";
     case "CONFIRMED":

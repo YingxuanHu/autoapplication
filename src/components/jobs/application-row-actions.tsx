@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { LoaderCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useNotifications } from "@/components/ui/notification-provider";
 import type { ApplicationHistoryStatus } from "@/types";
 
 type ApplicationRowActionsProps = {
@@ -16,6 +17,7 @@ export function ApplicationRowActions({
   latestStatus,
 }: ApplicationRowActionsProps) {
   const router = useRouter();
+  const { notify } = useNotifications();
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
@@ -30,10 +32,26 @@ export function ApplicationRowActions({
           body: JSON.stringify({ intent }),
         });
         if (!res.ok) throw new Error(await res.text());
+        const successMessage =
+          intent === "confirm"
+            ? "Application confirmed"
+            : intent === "fail"
+              ? "Application marked failed"
+              : "Application withdrawn";
+        notify({
+          title: successMessage,
+          message: "Your application history was updated.",
+          tone: "success",
+        });
         router.refresh();
       } catch (e) {
         console.error(e);
         setError("Could not update status.");
+        notify({
+          title: "Could not update application",
+          message: "The application status could not be updated right now.",
+          tone: "error",
+        });
       }
     });
   }

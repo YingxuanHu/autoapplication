@@ -11,8 +11,10 @@ import {
   formatPostedAge,
   formatSalary,
   getDeadlineUrgency,
+  getEligibilityReasonDescription,
   getSourceShortName,
   getSubmissionMeta,
+  shouldShowSubmissionMeta,
   submissionCategoryColor,
   trustLevelColor,
 } from "@/lib/job-display";
@@ -47,6 +49,7 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
   const canStartApplyFlow = reviewState !== "NOT_ELIGIBLE" && job.status !== "EXPIRED";
   const applyLabel = reviewState === "MANUAL_ONLY" ? "Apply manually" : "Apply";
   const sourceShortName = getSourceShortName(job.primaryExternalLink?.sourceName ?? null);
+  const showSubmissionMeta = shouldShowSubmissionMeta(job);
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
@@ -62,11 +65,13 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-baseline gap-2">
             <h1 className="text-xl font-semibold tracking-tight">{job.title}</h1>
-            <span
-              className={`shrink-0 text-xs font-medium ${submissionCategoryColor(job.eligibility?.submissionCategory)}`}
-            >
-              {submissionMeta.label}
-            </span>
+            {showSubmissionMeta ? (
+              <span
+                className={`shrink-0 text-xs font-medium ${submissionCategoryColor(job.eligibility?.submissionCategory)}`}
+              >
+                {submissionMeta.label}
+              </span>
+            ) : null}
           </div>
 
           {/* Meta row: company (with ATS trust cue) · location · workMode · salary */}
@@ -176,7 +181,7 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
             ))}
           </div>
           <p className="text-sm text-muted-foreground">
-            {job.eligibility?.reasonDescription ?? "Eligibility has not been evaluated yet."}
+            {getEligibilityReasonDescription(job.eligibility)}
           </p>
         </div>
       </details>

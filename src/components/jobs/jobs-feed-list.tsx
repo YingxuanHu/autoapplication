@@ -54,10 +54,10 @@ export function JobsFeedList({ initialJobs }: { initialJobs: JobCardData[] }) {
             : "No more jobs on this page"}
         </p>
         <Link
-          href="/saved"
+          href="/applications?status=WISHLIST"
           className="mt-2 inline-block text-sm text-muted-foreground underline-offset-4 hover:underline"
         >
-          Review saved jobs
+          Open wishlist
         </Link>
       </div>
     );

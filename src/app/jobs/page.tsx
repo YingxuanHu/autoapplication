@@ -1,22 +1,20 @@
 import Link from "next/link";
 import { connection } from "next/server";
 import { redirect } from "next/navigation";
-import { X } from "lucide-react";
+import { ArrowUpDown, Check, ChevronDown, Search, SlidersHorizontal, X } from "lucide-react";
+
 import { JobsFeedList } from "@/components/jobs/jobs-feed-list";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { getOptionalSessionUser } from "@/lib/current-user";
-import { serializeJobCardData } from "@/lib/job-serialization";
 import { formatPostedAge } from "@/lib/job-display";
-import { getJobs, getFeedStats, type JobFilterParams } from "@/lib/queries/jobs";
+import { serializeJobCardData } from "@/lib/job-serialization";
 import { getIngestionStatus } from "@/lib/queries/ingestion";
+import { getJobs, type JobFilterParams } from "@/lib/queries/jobs";
 
 type JobsPageProps = {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 };
-
-const SELECT_CLASS =
-  "h-9 rounded-lg border border-input/80 bg-background/70 px-3 text-sm text-foreground outline-none focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/40";
 
 const EXPERIENCE_LEVEL_GROUPS: Array<{ label: string; value: string }> = [
   { label: "Entry", value: "ENTRY" },
@@ -36,19 +34,48 @@ const ROLE_FAMILY_GROUPS: Array<{ label: string; value: string }> = [
   { label: "Ops", value: "Operations" },
 ];
 
+const CATEGORY_OPTIONS: Array<{ label: string; value: string }> = [
+  { label: "Auto-apply", value: "AUTO_SUBMIT_READY" },
+  { label: "Manual", value: "MANUAL_ONLY" },
+];
+
+const WORK_MODE_OPTIONS: Array<{ label: string; value: string }> = [
+  { label: "Remote", value: "REMOTE" },
+  { label: "Hybrid", value: "HYBRID" },
+  { label: "On-site", value: "ONSITE" },
+  { label: "Flexible", value: "FLEXIBLE" },
+];
+
+const REGION_OPTIONS: Array<{ label: string; value: string }> = [
+  { label: "US", value: "US" },
+  { label: "Canada", value: "CA" },
+];
+
+const INDUSTRY_OPTIONS: Array<{ label: string; value: string }> = [
+  { label: "Tech", value: "TECH" },
+  { label: "Finance", value: "FINANCE" },
+];
+
+const SORT_OPTIONS: Array<{ label: string; value: string | undefined }> = [
+  { label: "Relevance", value: undefined },
+  { label: "Newest", value: "newest" },
+  { label: "Salary", value: "salary" },
+];
+
 export default async function JobsPage({ searchParams }: JobsPageProps) {
   await connection();
+
   const sessionUser = await getOptionalSessionUser();
   if (!sessionUser) {
     redirect("/sign-in");
   }
+
   const resolvedSearchParams = await searchParams;
   const filters = parseJobFilters(resolvedSearchParams);
 
-  const [jobsResult, ingestionStatus, feedStats] = await Promise.all([
+  const [jobsResult, ingestionStatus] = await Promise.all([
     getJobs(filters),
     getIngestionStatus(),
-    getFeedStats(),
   ]);
 
   const jobCards = jobsResult.data.map((job) =>
@@ -66,10 +93,23 @@ export default async function JobsPage({ searchParams }: JobsPageProps) {
   );
 
   const activeFilterCount = countActiveFilters(filters);
-  const activeAdvancedCount = countAdvancedFilters(filters);
+  const hasScopedResults = activeFilterCount > 0 || Boolean(filters.search);
+  const activeFilterChips = buildActiveFilterChips(filters);
+  const currentSortLabel = getSortLabel(filters.sortBy);
   const currentPage = jobsResult.page;
   const totalPages = Math.max(1, Math.ceil(jobsResult.total / jobsResult.pageSize));
   const navigationKey = buildSearchParamSignature(resolvedSearchParams);
+  const clearFiltersHref = buildJobsHref(resolvedSearchParams, {
+    page: undefined,
+    search: undefined,
+    region: undefined,
+    workMode: undefined,
+    industry: undefined,
+    roleFamily: undefined,
+    salaryMin: undefined,
+    experienceLevel: undefined,
+    submissionCategory: undefined,
+  });
 
   return (
     <div className="app-page space-y-6">
@@ -77,277 +117,243 @@ export default async function JobsPage({ searchParams }: JobsPageProps) {
         <div>
           <h1 className="page-title">Jobs</h1>
           <p className="page-description">
-            Review the live job pool first, then move the strongest matches into saved, review, or apply flows.
+            Review the live job pool first, then move the strongest matches into your wishlist or application flow.
           </p>
         </div>
       </header>
 
       <section className="surface-panel p-4 sm:p-5">
-        <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_auto] xl:items-end">
-          <div>
-            <p className="text-sm text-muted-foreground">
-              {jobsResult.total} live job{jobsResult.total !== 1 ? "s" : ""}
-              {activeFilterCount > 0 ? " matching filters" : ""}
+        <div>
+          <p className="text-[2rem] font-semibold tracking-tight text-foreground sm:text-[2.5rem]">
+            {jobsResult.total.toLocaleString()} {hasScopedResults ? "matching jobs" : "live jobs"}
+          </p>
+          {ingestionStatus.lastUpdatedAt ? (
+            <p className="mt-2 text-sm text-muted-foreground sm:text-[15px]">
+              Updated {formatPostedAge(ingestionStatus.lastUpdatedAt)}
+              {ingestionStatus.activeSourceCount > 0
+                ? ` · ${ingestionStatus.activeSourceCount} connector${ingestionStatus.activeSourceCount !== 1 ? "s" : ""} active`
+                : ""}
             </p>
-            {ingestionStatus.lastUpdatedAt ? (
-              <p className="mt-1 text-xs text-muted-foreground">
-                Updated {formatPostedAge(ingestionStatus.lastUpdatedAt)}
-                {ingestionStatus.activeSourceCount > 0
-                  ? ` · ${ingestionStatus.activeSourceCount} connector${ingestionStatus.activeSourceCount !== 1 ? "s" : ""} active`
-                  : ""}
-                {ingestionStatus.liveJobCount > jobsResult.total
-                  ? ` · ${ingestionStatus.liveJobCount} total in pool`
-                  : ""}
-              </p>
-            ) : null}
-          </div>
-
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-5">
-            <StatCard
-              label="Live jobs"
-              value={feedStats.totalLive.toLocaleString()}
-              detail={feedStats.newLast24h > 0 ? `+${feedStats.newLast24h.toLocaleString()} today` : undefined}
-              accentClass="text-foreground"
-            />
-            <StatCard
-              label="Auto-apply"
-              value={feedStats.autoEligibleCount.toLocaleString()}
-              detail="ready to submit"
-              accentClass="text-emerald-600"
-            />
-            <StatCard
-              label="Review"
-              value={feedStats.reviewRequiredCount.toLocaleString()}
-              detail="needs review"
-              accentClass="text-amber-600"
-            />
-            <StatCard
-              label="Saved"
-              value={feedStats.savedCount.toLocaleString()}
-              detail={feedStats.savedEndingSoonCount > 0 ? `${feedStats.savedEndingSoonCount} ending soon` : undefined}
-              accentClass="text-blue-600"
-            />
-            <StatCard
-              label="Manual"
-              value={feedStats.manualOnlyCount.toLocaleString()}
-              detail="manual apply"
-              accentClass="text-muted-foreground"
-            />
-          </div>
+          ) : null}
+          {hasScopedResults && ingestionStatus.liveJobCount > jobsResult.total ? (
+            <p className="mt-1 text-xs text-muted-foreground">
+              From {ingestionStatus.liveJobCount.toLocaleString()} total live jobs in the pool
+            </p>
+          ) : null}
         </div>
 
         <div className="mt-5 space-y-4 border-t border-border/60 pt-4">
-          <FilterRow
-            label="Category"
-            actions={
-              <div className="flex flex-wrap items-center gap-1">
-                <SortPill
-                  label="Relevance"
-                  href={buildJobsHref(resolvedSearchParams, {
-                    page: undefined,
-                    sortBy: undefined,
-                  })}
-                  active={!filters.sortBy || filters.sortBy === "relevance"}
-                />
-                <SortPill
-                  label="Newest"
-                  href={buildJobsHref(resolvedSearchParams, {
-                    page: undefined,
-                    sortBy: "newest",
-                  })}
-                  active={filters.sortBy === "newest"}
-                />
-                <SortPill
-                  label="Salary"
-                  href={buildJobsHref(resolvedSearchParams, {
-                    page: undefined,
-                    sortBy: "salary",
-                  })}
-                  active={filters.sortBy === "salary"}
-                />
-              </div>
-            }
-          >
-            <FilterPill
-              label="All"
-              href={buildJobsHref(resolvedSearchParams, {
-                page: undefined,
-                submissionCategory: undefined,
-              })}
-              active={!filters.submissionCategory}
-            />
-            <FilterPill
-              label="Auto-apply"
-              href={buildJobsHref(resolvedSearchParams, {
-                page: undefined,
-                submissionCategory: "AUTO_SUBMIT_READY",
-              })}
-              active={filters.submissionCategory === "AUTO_SUBMIT_READY"}
-            />
-            <FilterPill
-              label="Review"
-              href={buildJobsHref(resolvedSearchParams, {
-                page: undefined,
-                submissionCategory: "AUTO_FILL_REVIEW",
-              })}
-              active={filters.submissionCategory === "AUTO_FILL_REVIEW"}
-            />
-            <FilterPill
-              label="Manual"
-              href={buildJobsHref(resolvedSearchParams, {
-                page: undefined,
-                submissionCategory: "MANUAL_ONLY",
-              })}
-              active={filters.submissionCategory === "MANUAL_ONLY"}
-            />
-          </FilterRow>
-
-          <FilterRow label="Role">
-            <FilterPill
-              label="All roles"
-              href={buildJobsHref(resolvedSearchParams, {
-                page: undefined,
-                roleFamily: undefined,
-              })}
-              active={!filters.roleFamily}
-            />
-            {ROLE_FAMILY_GROUPS.map((group) => (
-              <FilterPill
-                key={group.value}
-                label={group.label}
-                href={buildJobsHref(resolvedSearchParams, {
-                  page: undefined,
-                  roleFamily: group.value,
-                })}
-                active={filters.roleFamily === group.value}
-              />
-            ))}
-          </FilterRow>
-
-          <FilterRow label="Level">
-            <FilterPill
-              label="All levels"
-              href={buildJobsHref(resolvedSearchParams, {
-                page: undefined,
-                experienceLevel: undefined,
-              })}
-              active={!filters.experienceLevel}
-            />
-            {EXPERIENCE_LEVEL_GROUPS.map((group) => (
-              <FilterPill
-                key={group.value}
-                label={group.label}
-                href={buildJobsHref(resolvedSearchParams, {
-                  page: undefined,
-                  experienceLevel: group.value,
-                })}
-                active={filters.experienceLevel === group.value}
-              />
-            ))}
-          </FilterRow>
-
-          <details className="surface-panel-muted overflow-hidden" open={activeFilterCount > 0}>
-            <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 text-sm font-medium text-foreground">
-              <span>More filters</span>
-              <span className="text-xs text-muted-foreground">
-                {activeFilterCount > 0 ? `${activeFilterCount} active` : "Optional"}
-              </span>
-            </summary>
-
-            <form className="space-y-3 border-t border-border/60 px-4 py-4">
-              {filters.submissionCategory ? (
-                <input
-                  type="hidden"
-                  name="submissionCategory"
-                  value={filters.submissionCategory}
-                />
-              ) : null}
-              {filters.roleFamily ? (
-                <input type="hidden" name="roleFamily" value={filters.roleFamily} />
-              ) : null}
-              {filters.experienceLevel ? (
-                <input
-                  type="hidden"
-                  name="experienceLevel"
-                  value={filters.experienceLevel}
-                />
-              ) : null}
-              {filters.sortBy ? (
-                <input type="hidden" name="sortBy" value={filters.sortBy} />
-              ) : null}
-
-              <div className="flex flex-col gap-2 sm:flex-row">
-                <Input
-                  name="search"
-                  placeholder="Search jobs…"
-                  defaultValue={filters.search}
-                  className="flex-1 text-sm"
-                />
-                <Button type="submit" size="sm">
-                  Apply filters
-                </Button>
-                {activeFilterCount > 0 ? (
-                  <Button variant="ghost" size="sm" render={<Link href="/jobs" />}>
-                    <X className="h-3.5 w-3.5" />
-                    Clear
-                  </Button>
-                ) : null}
-              </div>
-
-              <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
-                <select
-                  name="workMode"
-                  defaultValue={filters.workMode ?? ""}
-                  className={SELECT_CLASS}
-                >
-                  <option value="">Work mode</option>
-                  <option value="REMOTE">Remote</option>
-                  <option value="HYBRID">Hybrid</option>
-                  <option value="ONSITE">On-site</option>
-                  <option value="FLEXIBLE">Flexible</option>
-                </select>
-
-                <select
-                  name="region"
-                  defaultValue={filters.region ?? ""}
-                  className={SELECT_CLASS}
-                >
-                  <option value="">Region</option>
-                  <option value="US">US</option>
-                  <option value="CA">Canada</option>
-                </select>
-              </div>
-
-              <details open={activeAdvancedCount > 0}>
-                <summary className="flex cursor-pointer list-none items-center gap-1.5 pt-0.5 text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground hover:text-foreground">
-                  More filters
-                  {activeAdvancedCount > 0 ? (
-                    <span className="text-[11px] text-foreground">({activeAdvancedCount})</span>
+          <div className="flex flex-col gap-3 xl:flex-row xl:items-start xl:justify-between">
+            <div className="flex min-w-0 flex-1 flex-col gap-3">
+              <div className="flex min-w-0 flex-col gap-3 sm:flex-row sm:items-center">
+                <form className="flex min-w-0 flex-1 items-center gap-2" method="get">
+                  {filters.status ? <input name="status" type="hidden" value={filters.status} /> : null}
+                  {filters.sortBy ? <input name="sortBy" type="hidden" value={filters.sortBy} /> : null}
+                  {filters.submissionCategory ? (
+                    <input name="submissionCategory" type="hidden" value={filters.submissionCategory} />
                   ) : null}
-                </summary>
+                  {filters.roleFamily ? <input name="roleFamily" type="hidden" value={filters.roleFamily} /> : null}
+                  {filters.experienceLevel ? (
+                    <input name="experienceLevel" type="hidden" value={filters.experienceLevel} />
+                  ) : null}
+                  {filters.workMode ? <input name="workMode" type="hidden" value={filters.workMode} /> : null}
+                  {filters.region ? <input name="region" type="hidden" value={filters.region} /> : null}
+                  {filters.industry ? <input name="industry" type="hidden" value={filters.industry} /> : null}
+                  {filters.salaryMin ? (
+                    <input name="salaryMin" type="hidden" value={String(filters.salaryMin)} />
+                  ) : null}
 
-                <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-3">
-                  <select
-                    name="industry"
-                    defaultValue={filters.industry ?? ""}
-                    className={SELECT_CLASS}
-                  >
-                    <option value="">Industry</option>
-                    <option value="TECH">Tech</option>
-                    <option value="FINANCE">Finance</option>
-                  </select>
+                  <div className="relative min-w-0 flex-1">
+                    <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                    <Input
+                      className="h-10 pl-9 text-sm"
+                      defaultValue={filters.search}
+                      name="search"
+                      placeholder="Search jobs, companies, or keywords"
+                    />
+                  </div>
 
-                  <Input
-                    name="salaryMin"
-                    type="number"
-                    placeholder="Min salary"
-                    defaultValue={filters.salaryMin ? String(filters.salaryMin) : ""}
-                    className="text-sm"
-                  />
+                  <Button className="h-10 px-4" size="sm" type="submit">
+                    Search
+                  </Button>
+                </form>
+
+                <div className="flex flex-wrap items-center gap-2">
+                  <details className="group relative" name="jobs-toolbar-dropdown">
+                    <summary className="inline-flex h-10 list-none items-center gap-2 rounded-xl border border-border/70 bg-background/70 px-4 text-sm font-medium text-foreground transition hover:bg-muted/70 [&::-webkit-details-marker]:hidden">
+                      <SlidersHorizontal className="h-4 w-4 text-muted-foreground" />
+                      Filters
+                      {activeFilterCount > 0 ? (
+                        <span className="inline-flex min-w-5 items-center justify-center rounded-full bg-foreground px-1.5 text-[11px] font-medium text-background">
+                          {activeFilterCount}
+                        </span>
+                      ) : null}
+                      <ChevronDown className="h-4 w-4 text-muted-foreground transition group-open:rotate-180" />
+                    </summary>
+
+                    <div className="absolute left-0 top-[calc(100%+0.75rem)] z-30 w-[min(32rem,calc(100vw-3rem))] max-w-[calc(100vw-3rem)] overflow-hidden rounded-2xl border border-border/70 bg-background/96 shadow-[0_24px_60px_rgba(15,23,42,0.14)] backdrop-blur">
+                      <form className="space-y-4" method="get">
+                        {filters.sortBy ? <input name="sortBy" type="hidden" value={filters.sortBy} /> : null}
+                        {filters.status ? <input name="status" type="hidden" value={filters.status} /> : null}
+                        {filters.search ? <input name="search" type="hidden" value={filters.search} /> : null}
+
+                        <div className="border-b border-border/60 px-4 pb-4 pt-4 sm:px-5 sm:pt-5">
+                          <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+                            <div>
+                              <p className="text-base font-medium text-foreground">Refine the feed</p>
+                              <p className="mt-1 text-xs text-muted-foreground">
+                                Keep each filter section collapsed until you want to open it.
+                              </p>
+                            </div>
+                            {activeFilterCount > 0 ? (
+                              <span className="inline-flex h-7 items-center rounded-full border border-border/70 bg-muted/40 px-3 text-xs font-medium text-foreground">
+                                {activeFilterCount} active
+                              </span>
+                            ) : null}
+                          </div>
+                        </div>
+
+                        <div className="max-h-[min(65vh,34rem)] space-y-3 overflow-y-auto px-4 sm:px-5">
+                          <FilterDropdownField
+                            emptyLabel="All categories"
+                            name="submissionCategory"
+                            options={CATEGORY_OPTIONS}
+                            selected={filters.submissionCategory}
+                            title="Category"
+                          />
+
+                          <FilterDropdownField
+                            columnsClassName="sm:grid-cols-2"
+                            emptyLabel="All roles"
+                            name="roleFamily"
+                            options={ROLE_FAMILY_GROUPS}
+                            selected={filters.roleFamily}
+                            title="Role"
+                          />
+
+                          <FilterDropdownField
+                            columnsClassName="sm:grid-cols-2"
+                            emptyLabel="All levels"
+                            name="experienceLevel"
+                            options={EXPERIENCE_LEVEL_GROUPS}
+                            selected={filters.experienceLevel}
+                            title="Level"
+                          />
+
+                          <FilterDropdownField
+                            columnsClassName="sm:grid-cols-2"
+                            emptyLabel="Any work mode"
+                            name="workMode"
+                            options={WORK_MODE_OPTIONS}
+                            selected={filters.workMode}
+                            title="Work mode"
+                          />
+
+                          <FilterDropdownField
+                            columnsClassName="sm:grid-cols-2"
+                            emptyLabel="North America"
+                            name="region"
+                            options={REGION_OPTIONS}
+                            selected={filters.region}
+                            title="Region"
+                          />
+
+                          <FilterDropdownField
+                            columnsClassName="sm:grid-cols-2"
+                            emptyLabel="Any industry"
+                            name="industry"
+                            options={INDUSTRY_OPTIONS}
+                            selected={filters.industry}
+                            title="Industry"
+                          />
+
+                          <div className="rounded-xl border border-border/60 bg-muted/15 p-3">
+                            <FilterFieldLabel>Minimum salary</FilterFieldLabel>
+                            <Input
+                              className="mt-1 h-10 text-sm"
+                              defaultValue={filters.salaryMin ? String(filters.salaryMin) : ""}
+                              name="salaryMin"
+                              placeholder="e.g. 120000"
+                              type="number"
+                            />
+                          </div>
+                        </div>
+
+                        <div className="flex flex-col gap-3 border-t border-border/60 bg-muted/15 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-5">
+                          <div>
+                            <p className="text-sm font-medium text-foreground">Apply the current selection</p>
+                            <p className="mt-1 text-xs text-muted-foreground">
+                              Filters keep your search and sort, and reset the page.
+                            </p>
+                          </div>
+                          <Button size="sm" type="submit">
+                            Apply filters
+                          </Button>
+                        </div>
+                      </form>
+                    </div>
+                  </details>
+
+                  <details className="group relative self-start lg:self-auto" name="jobs-toolbar-dropdown">
+                    <summary className="inline-flex h-10 list-none items-center gap-2 rounded-xl border border-border/70 bg-background/70 px-4 text-sm font-medium text-foreground transition hover:bg-muted/70 [&::-webkit-details-marker]:hidden">
+                      <ArrowUpDown className="h-4 w-4 text-muted-foreground" />
+                      Sort
+                      <span className="text-muted-foreground">{currentSortLabel}</span>
+                      <ChevronDown className="h-4 w-4 text-muted-foreground transition group-open:rotate-180" />
+                    </summary>
+
+                    <div className="absolute right-0 top-[calc(100%+0.75rem)] z-30 w-56 rounded-2xl border border-border/70 bg-background/96 p-2 shadow-[0_24px_60px_rgba(15,23,42,0.14)] backdrop-blur">
+                      <div className="space-y-1">
+                        {SORT_OPTIONS.map((option) => {
+                          const active =
+                            (!option.value && (!filters.sortBy || filters.sortBy === "relevance")) ||
+                            filters.sortBy === option.value;
+
+                          return (
+                            <Link
+                              className={`flex items-center justify-between rounded-xl px-3 py-2 text-sm transition ${
+                                active
+                                  ? "bg-foreground text-background"
+                                  : "text-foreground hover:bg-muted/70"
+                              }`}
+                              href={buildJobsHref(resolvedSearchParams, {
+                                page: undefined,
+                                sortBy: option.value,
+                              })}
+                              key={option.label}
+                            >
+                              <span>{option.label}</span>
+                              {active ? <Check className="h-4 w-4" /> : null}
+                            </Link>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </details>
+
+                  {hasScopedResults ? (
+                    <Button className="h-10 px-3" render={<Link href={clearFiltersHref} />} size="sm" variant="ghost">
+                      <X className="h-3.5 w-3.5" />
+                      Clear
+                    </Button>
+                  ) : null}
                 </div>
-              </details>
-            </form>
-          </details>
+              </div>
+
+              {activeFilterChips.length > 0 ? (
+                <div className="flex flex-wrap items-center gap-2">
+                  {activeFilterChips.map((chip) => (
+                    <span
+                      className="inline-flex h-9 items-center rounded-xl border border-border/70 bg-background/55 px-3 text-sm text-muted-foreground"
+                      key={chip}
+                    >
+                      {chip}
+                    </span>
+                  ))}
+                </div>
+              ) : null}
+            </div>
+          </div>
         </div>
       </section>
 
@@ -358,12 +364,12 @@ export default async function JobsPage({ searchParams }: JobsPageProps) {
             <p className="mt-1 text-sm text-muted-foreground">
               Try widening your search or clearing filters.
             </p>
-            <Button variant="outline" size="sm" className="mt-4" render={<Link href="/jobs" />}>
+            <Button className="mt-4" render={<Link href="/jobs" />} size="sm" variant="outline">
               Clear filters
             </Button>
           </div>
         ) : (
-          <JobsFeedList key={navigationKey} initialJobs={jobCards} />
+          <JobsFeedList initialJobs={jobCards} key={navigationKey} />
         )}
 
         {totalPages > 1 ? (
@@ -373,18 +379,18 @@ export default async function JobsPage({ searchParams }: JobsPageProps) {
             </p>
             <div className="flex items-center gap-2">
               <PaginationLink
+                disabled={currentPage <= 1}
                 href={buildJobsHref(resolvedSearchParams, {
                   page: currentPage > 1 ? String(currentPage - 1) : undefined,
                 })}
-                disabled={currentPage <= 1}
               >
                 Previous
               </PaginationLink>
               <PaginationLink
+                disabled={currentPage >= totalPages}
                 href={buildJobsHref(resolvedSearchParams, {
                   page: currentPage < totalPages ? String(currentPage + 1) : undefined,
                 })}
-                disabled={currentPage >= totalPages}
               >
                 Next
               </PaginationLink>
@@ -393,38 +399,6 @@ export default async function JobsPage({ searchParams }: JobsPageProps) {
         ) : null}
       </section>
     </div>
-  );
-}
-
-// ─── Pills ──────────────────────────────────────────────────────────────────
-
-function FilterPill({ active, href, label }: { active: boolean; href: string; label: string }) {
-  return (
-    <Link
-      href={href}
-      className={`inline-flex h-8 items-center rounded-lg px-3 text-sm font-medium transition-colors ${
-        active
-          ? "bg-foreground text-background"
-          : "bg-background/70 text-muted-foreground hover:bg-muted hover:text-foreground"
-      }`}
-    >
-      {label}
-    </Link>
-  );
-}
-
-function SortPill({ active, href, label }: { active: boolean; href: string; label: string }) {
-  return (
-    <Link
-      href={href}
-      className={`inline-flex h-8 items-center rounded-lg px-3 text-sm font-medium transition-colors ${
-        active
-          ? "bg-muted text-foreground"
-          : "text-muted-foreground hover:bg-muted/70 hover:text-foreground"
-      }`}
-    >
-      {label}
-    </Link>
   );
 }
 
@@ -447,31 +421,30 @@ function PaginationLink({
 
   return (
     <Link
-      href={href}
       className="inline-flex h-8 items-center rounded-lg border border-input/80 bg-background/70 px-3 text-sm text-foreground hover:bg-muted"
+      href={href}
     >
       {children}
     </Link>
   );
 }
 
-// ─── Helpers ─────────────────────────────────────────────────────────────────
-
 function parseJobFilters(
   searchParams: Record<string, string | string[] | undefined>
 ): JobFilterParams {
   const pageValue = getSearchParam(searchParams, "page");
   const parsedPage = pageValue ? Number.parseInt(pageValue, 10) : undefined;
+  const rawSubmissionCategory = getMultiSearchParam(searchParams, "submissionCategory");
 
   return {
     search: getSearchParam(searchParams, "search"),
-    region: getSearchParam(searchParams, "region"),
-    workMode: getSearchParam(searchParams, "workMode"),
-    industry: getSearchParam(searchParams, "industry"),
-    roleFamily: getSearchParam(searchParams, "roleFamily"),
+    region: getMultiSearchParam(searchParams, "region"),
+    workMode: getMultiSearchParam(searchParams, "workMode"),
+    industry: getMultiSearchParam(searchParams, "industry"),
+    roleFamily: getMultiSearchParam(searchParams, "roleFamily"),
     salaryMin: getPositiveNumber(getSearchParam(searchParams, "salaryMin")),
-    experienceLevel: getSearchParam(searchParams, "experienceLevel"),
-    submissionCategory: getSearchParam(searchParams, "submissionCategory"),
+    experienceLevel: getMultiSearchParam(searchParams, "experienceLevel"),
+    submissionCategory: normalizeSubmissionCategoryFilter(rawSubmissionCategory),
     status: getSearchParam(searchParams, "status"),
     sortBy: getSearchParam(searchParams, "sortBy"),
     page: parsedPage && parsedPage > 0 ? parsedPage : undefined,
@@ -484,6 +457,25 @@ function getSearchParam(
 ) {
   const value = searchParams[key];
   return Array.isArray(value) ? value[0] : value;
+}
+
+function getMultiSearchParam(
+  searchParams: Record<string, string | string[] | undefined>,
+  key: string
+) {
+  const value = searchParams[key];
+  if (Array.isArray(value)) {
+    return value.filter(Boolean).join(",");
+  }
+  return value;
+}
+
+function normalizeSubmissionCategoryFilter(value?: string) {
+  const categories = splitFilterValues(value).map((entry) =>
+    entry === "AUTO_FILL_REVIEW" ? "MANUAL_ONLY" : entry
+  );
+  const unique = [...new Set(categories)];
+  return unique.length > 0 ? unique.join(",") : undefined;
 }
 
 function getPositiveNumber(value?: string) {
@@ -499,7 +491,7 @@ function buildJobsHref(
   const params = new URLSearchParams();
 
   for (const [key, value] of Object.entries(currentParams)) {
-    const normalizedValue = Array.isArray(value) ? value[0] : value;
+    const normalizedValue = Array.isArray(value) ? value.filter(Boolean).join(",") : value;
     if (normalizedValue) params.set(key, normalizedValue);
   }
 
@@ -519,7 +511,7 @@ function buildSearchParamSignature(
 
   for (const key of Object.keys(searchParams).sort()) {
     const value = searchParams[key];
-    const normalizedValue = Array.isArray(value) ? value[0] : value;
+    const normalizedValue = Array.isArray(value) ? value.filter(Boolean).join(",") : value;
     if (normalizedValue) {
       params.set(key, normalizedValue);
     }
@@ -528,18 +520,15 @@ function buildSearchParamSignature(
   return params.toString();
 }
 
-/** Counts non-sort, non-category filters for the badge on the filter drawer */
 function countActiveFilters(filters: JobFilterParams) {
   const keys: Array<keyof JobFilterParams> = [
-    "search",
     "region",
     "workMode",
     "industry",
     "salaryMin",
-    // submissionCategory is handled by the category pills, not shown in count
-    // roleFamily is handled by the role-family pills, not shown in count
-    // experienceLevel is handled by the experience-level pills, not shown in count
-    // sortBy is handled by the sort pills, not shown in count
+    "submissionCategory",
+    "roleFamily",
+    "experienceLevel",
   ];
 
   return keys.filter((key) => {
@@ -548,57 +537,152 @@ function countActiveFilters(filters: JobFilterParams) {
   }).length;
 }
 
-/** Counts only advanced-section filters for the inner disclosure badge */
-function countAdvancedFilters(filters: JobFilterParams) {
-  const keys: Array<keyof JobFilterParams> = ["industry", "salaryMin"];
-  return keys.filter((key) => {
-    const value = filters[key];
-    return value !== undefined && value !== "";
-  }).length;
+function FilterFieldLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <label className="mb-1.5 block text-[11px] font-medium uppercase tracking-[0.14em] text-muted-foreground">
+      {children}
+    </label>
+  );
 }
 
-function StatCard({
+function FilterDropdownField({
+  columnsClassName,
+  emptyLabel,
+  name,
+  options,
+  selected,
+  title,
+}: {
+  columnsClassName?: string;
+  emptyLabel: string;
+  name: string;
+  options: Array<{ label: string; value: string }>;
+  selected: string | undefined;
+  title: string;
+}) {
+  const selectedLabels = collectSelectedLabels(selected, options);
+  const summary = getFilterSummaryText(selectedLabels, emptyLabel);
+
+  return (
+    <details className="group rounded-xl border border-border/60 bg-muted/15 transition open:border-border/80 open:bg-muted/25">
+      <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-3.5 py-3 [&::-webkit-details-marker]:hidden">
+        <div className="min-w-0">
+          <p className="text-[11px] font-medium uppercase tracking-[0.14em] text-muted-foreground">{title}</p>
+          <p className="mt-1 truncate text-sm text-foreground">{summary}</p>
+        </div>
+        <div className="flex items-center gap-2">
+          {selectedLabels.length > 0 ? (
+            <span className="inline-flex min-w-5 items-center justify-center rounded-full border border-border/70 bg-background/80 px-1.5 text-[11px] font-medium text-foreground">
+              {selectedLabels.length}
+            </span>
+          ) : null}
+          <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground transition group-open:rotate-180" />
+        </div>
+      </summary>
+
+      <div className="border-t border-border/60 px-2.5 py-2.5">
+        <div className={`grid gap-1.5 ${columnsClassName ?? ""}`}>
+          {options.map((option) => (
+            <FilterDropdownOption
+              checked={hasFilterValue(selected, option.value)}
+              key={option.label}
+              label={option.label}
+              name={name}
+              value={option.value}
+            />
+          ))}
+        </div>
+      </div>
+    </details>
+  );
+}
+
+function FilterDropdownOption({
+  checked,
   label,
+  name,
   value,
-  detail,
-  accentClass,
 }: {
+  checked: boolean;
   label: string;
+  name: string;
   value: string;
-  detail?: string;
-  accentClass?: string;
 }) {
   return (
-    <div className="surface-panel-muted px-3 py-3">
-      <p className="text-[11px] font-medium uppercase tracking-[0.14em] text-muted-foreground">{label}</p>
-      <p className={`mt-1 text-lg font-semibold tabular-nums ${accentClass ?? "text-foreground"}`}>
-        {value}
-      </p>
-      {detail ? (
-        <p className="mt-1 text-xs text-muted-foreground">{detail}</p>
-      ) : null}
-    </div>
+    <label
+      className={`flex min-h-10 cursor-pointer items-center gap-3 rounded-lg px-2.5 py-2 text-sm transition ${
+        checked ? "bg-background/85 text-foreground" : "text-foreground hover:bg-background/65"
+      }`}
+    >
+      <span
+        className={`flex size-4 shrink-0 items-center justify-center rounded border ${
+          checked
+            ? "border-foreground bg-foreground text-background"
+            : "border-border/70 bg-background/80 text-transparent"
+        }`}
+      >
+        <Check className="h-3 w-3" />
+      </span>
+      <span className="min-w-0 truncate">{label}</span>
+      <input className="sr-only" defaultChecked={checked} name={name} type="checkbox" value={value} />
+    </label>
   );
 }
 
-function FilterRow({
-  label,
-  actions,
-  children,
-}: {
-  label: string;
-  actions?: React.ReactNode;
-  children: React.ReactNode;
-}) {
-  return (
-    <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
-      <div className="lg:w-20 lg:pt-2">
-        <p className="section-label">{label}</p>
-      </div>
-      <div className="min-w-0 flex-1">
-        <div className="flex flex-wrap gap-2">{children}</div>
-      </div>
-      {actions ? <div className="flex shrink-0 flex-wrap gap-2">{actions}</div> : null}
-    </div>
-  );
+function hasFilterValue(current: string | undefined, optionValue: string) {
+  const currentValues = new Set(splitFilterValues(current));
+  const optionValues = splitFilterValues(optionValue);
+  return optionValues.length > 0 && optionValues.every((value) => currentValues.has(value));
+}
+
+function getSortLabel(sortBy?: string) {
+  if (sortBy === "newest") return "Newest";
+  if (sortBy === "salary") return "Salary";
+  return "Relevance";
+}
+
+function buildActiveFilterChips(filters: JobFilterParams) {
+  const chips: string[] = [];
+
+  chips.push(...collectSelectedLabels(filters.submissionCategory, CATEGORY_OPTIONS));
+  chips.push(...collectSelectedLabels(filters.roleFamily, ROLE_FAMILY_GROUPS));
+  chips.push(...collectSelectedLabels(filters.experienceLevel, EXPERIENCE_LEVEL_GROUPS));
+  chips.push(...collectSelectedLabels(filters.workMode, WORK_MODE_OPTIONS));
+  chips.push(...collectSelectedLabels(filters.region, REGION_OPTIONS));
+  chips.push(...collectSelectedLabels(filters.industry, INDUSTRY_OPTIONS));
+
+  if (filters.salaryMin) chips.push(`Min $${Number(filters.salaryMin).toLocaleString()}`);
+  if (filters.search) chips.push(`Search: ${filters.search}`);
+
+  return chips;
+}
+
+function collectSelectedLabels(
+  current: string | undefined,
+  options: Array<{ label: string; value: string }>
+) {
+  const remaining = new Set(splitFilterValues(current));
+  const labels: string[] = [];
+
+  for (const option of options) {
+    const optionValues = splitFilterValues(option.value);
+    if (optionValues.length > 0 && optionValues.every((value) => remaining.has(value))) {
+      labels.push(option.label);
+      for (const value of optionValues) {
+        remaining.delete(value);
+      }
+    }
+  }
+
+  return labels.concat([...remaining]);
+}
+
+function getFilterSummaryText(selectedLabels: string[], emptyLabel: string) {
+  if (selectedLabels.length === 0) return emptyLabel;
+  if (selectedLabels.length <= 2) return selectedLabels.join(", ");
+  return `${selectedLabels[0]}, ${selectedLabels[1]} +${selectedLabels.length - 2}`;
+}
+
+function splitFilterValues(value?: string) {
+  return value ? value.split(",").map((entry) => entry.trim()).filter(Boolean) : [];
 }
