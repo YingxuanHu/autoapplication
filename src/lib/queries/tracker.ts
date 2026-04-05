@@ -65,6 +65,65 @@ function statusToEventType(status: TrackedApplicationStatus): TrackedApplication
   }
 }
 
+function isDocumentTypeCompatibleWithSlot(
+  slot: TrackedApplicationDocumentSlot,
+  documentType: string
+) {
+  if (slot === "SENT_RESUME") {
+    return documentType === "RESUME";
+  }
+
+  return documentType === "COVER_LETTER";
+}
+
+function getIncompatibleDocumentTypeMessage(slot: TrackedApplicationDocumentSlot) {
+  if (slot === "SENT_RESUME") {
+    return "Only uploaded resumes can be linked to the resume slot.";
+  }
+
+  return "Only uploaded cover letters can be linked to the cover letter slot.";
+}
+
+async function upsertTrackedApplicationResumeDocument(input: {
+  applicationId: string;
+  profileId: string;
+  documentId: string | null | undefined;
+}) {
+  if (!input.documentId) {
+    return;
+  }
+
+  const resumeDocument = await prisma.document.findFirst({
+    where: {
+      id: input.documentId,
+      userId: input.profileId,
+      type: "RESUME",
+    },
+    select: { id: true },
+  });
+
+  if (!resumeDocument) {
+    return;
+  }
+
+  await prisma.trackedApplicationDocument.upsert({
+    where: {
+      trackedApplicationId_slot: {
+        trackedApplicationId: input.applicationId,
+        slot: "SENT_RESUME",
+      },
+    },
+    create: {
+      trackedApplicationId: input.applicationId,
+      documentId: resumeDocument.id,
+      slot: "SENT_RESUME",
+    },
+    update: {
+      documentId: resumeDocument.id,
+    },
+  });
+}
+
 function buildTrackedOrderBy(sort: TrackerSortFilter): Prisma.TrackedApplicationOrderByWithRelationInput[] {
   switch (sort) {
     case "UPDATED_ASC":
@@ -249,10 +308,13 @@ export async function getTrackedApplicationWorkspace(id: string) {
               document: {
                 select: {
                   id: true,
-                  filename: true,
+                  title: true,
                   type: true,
-                  extractedText: true,
-                  createdAt: true,
+                  analysis: {
+                    select: {
+                      documentId: true,
+                    },
+                  },
                 },
               },
             },
@@ -282,9 +344,13 @@ export async function getTrackedApplicationWorkspace(id: string) {
         orderBy: { createdAt: "desc" },
         select: {
           id: true,
-          filename: true,
+          title: true,
           type: true,
-          extractedText: true,
+          analysis: {
+            select: {
+              documentId: true,
+            },
+          },
         },
       }),
       prisma.tag.findMany({
@@ -557,24 +623,11 @@ export async function upsertTrackedApplicationFromJob(input: {
   });
 
   const resumeDocumentId = latestPackage?.resumeVariant.documentId;
-  if (resumeDocumentId) {
-    await prisma.trackedApplicationDocument.upsert({
-      where: {
-        trackedApplicationId_slot: {
-          trackedApplicationId: tracked.id,
-          slot: "SENT_RESUME",
-        },
-      },
-      create: {
-        trackedApplicationId: tracked.id,
-        documentId: resumeDocumentId,
-        slot: "SENT_RESUME",
-      },
-      update: {
-        documentId: resumeDocumentId,
-      },
-    });
-  }
+  await upsertTrackedApplicationResumeDocument({
+    applicationId: tracked.id,
+    profileId,
+    documentId: resumeDocumentId,
+  });
 
   await checkSingleTrackedApplicationReminder(tracked.id);
   return {
@@ -584,16 +637,31 @@ export async function upsertTrackedApplicationFromJob(input: {
   };
 }
 
-export async function updateTrackedApplication(input: {
+export async function updateTrackedApplicationField(input: {
   applicationId: string;
-  company: string;
-  roleTitle: string;
-  roleUrl?: string | null;
+  field: "notes" | "jobDescription" | "fitAnalysis";
+  value?: string | null;
+}) {
+  const userId = await requireCurrentAuthUserId();
+  const result = await prisma.trackedApplication.updateMany({
+    where: {
+      id: input.applicationId,
+      userId,
+    },
+    data: {
+      [input.field]: input.value?.trim() || null,
+      updatedAt: new Date(),
+    },
+  });
+
+  if (result.count === 0) {
+    throw new Error("Tracked application not found");
+  }
+}
+
+export async function updateTrackedApplicationStatus(input: {
+  applicationId: string;
   status: TrackedApplicationStatus;
-  deadline?: Date | null;
-  notes?: string | null;
-  jobDescription?: string | null;
-  fitAnalysis?: string | null;
 }) {
   const userId = await requireCurrentAuthUserId();
   const existing = await prisma.trackedApplication.findFirst({
@@ -611,46 +679,29 @@ export async function updateTrackedApplication(input: {
     throw new Error("Tracked application not found");
   }
 
-  const updated = await prisma.trackedApplication.update({
-    where: { id: input.applicationId },
-    data: {
-      company: input.company.trim(),
-      roleTitle: input.roleTitle.trim(),
-      roleUrl: normalizeOptionalUrl(input.roleUrl),
-      status: input.status,
-      deadline: input.deadline ?? null,
-      notes: input.notes?.trim() || null,
-      jobDescription: input.jobDescription?.trim() || null,
-      fitAnalysis: input.fitAnalysis?.trim() || null,
-    },
-  });
+  if (existing.status === input.status) {
+    return { changed: false };
+  }
 
-  if (existing.status !== input.status) {
-    await prisma.trackedApplicationEvent.create({
+  await prisma.$transaction([
+    prisma.trackedApplication.update({
+      where: { id: input.applicationId },
+      data: {
+        status: input.status,
+        updatedAt: new Date(),
+      },
+    }),
+    prisma.trackedApplicationEvent.create({
       data: {
         trackedApplicationId: input.applicationId,
         type: statusToEventType(input.status),
-        note: `Status updated to ${input.status.toLowerCase()}.`,
+        note: `Status updated to ${TRACKED_STATUS_NOTE[input.status]}.`,
       },
-    });
-  }
+    }),
+  ]);
 
-  await checkSingleTrackedApplicationReminder(updated.id);
-  return updated;
-}
-
-export async function deleteTrackedApplication(applicationId: string) {
-  const userId = await requireCurrentAuthUserId();
-  const result = await prisma.trackedApplication.deleteMany({
-    where: {
-      id: applicationId,
-      userId,
-    },
-  });
-
-  if (result.count === 0) {
-    throw new Error("Tracked application not found");
-  }
+  await checkSingleTrackedApplicationReminder(input.applicationId);
+  return { changed: true };
 }
 
 export async function addTrackedApplicationEvent(input: {
@@ -730,9 +781,9 @@ export async function deleteTrackedApplicationEvent(input: {
   ]);
 }
 
-export async function setTrackedApplicationTags(input: {
+export async function addTrackedApplicationTag(input: {
   applicationId: string;
-  tags: string | string[];
+  name: string;
 }) {
   const userId = await requireCurrentAuthUserId();
   const application = await prisma.trackedApplication.findFirst({
@@ -749,55 +800,68 @@ export async function setTrackedApplicationTags(input: {
     throw new Error("Tracked application not found");
   }
 
-  const tagNames = normalizeTagNames(input.tags);
-  const existingTags = tagNames.length
-    ? await Promise.all(
-        tagNames.map((name) =>
-          prisma.tag.upsert({
-            where: {
-              userId_name: {
-                userId,
-                name,
-              },
-            },
-            update: {},
-            create: {
-              userId,
-              name,
-            },
-            select: {
-              id: true,
-              name: true,
-            },
-          })
-        )
-      )
-    : [];
+  const [name] = normalizeTagNames([input.name]);
+  if (!name) {
+    throw new Error("Tag name is required.");
+  }
+
+  const tag = await prisma.tag.upsert({
+    where: {
+      userId_name: {
+        userId,
+        name,
+      },
+    },
+    update: {},
+    create: {
+      userId,
+      name,
+    },
+    select: {
+      id: true,
+    },
+  });
+
+  await prisma.$transaction([
+    prisma.trackedApplicationTag.createMany({
+      data: [{ trackedApplicationId: input.applicationId, tagId: tag.id }],
+      skipDuplicates: true,
+    }),
+    prisma.trackedApplication.update({
+      where: { id: input.applicationId },
+      data: { updatedAt: new Date() },
+    }),
+  ]);
+
+  return { name };
+}
+
+export async function removeTrackedApplicationTag(input: {
+  applicationId: string;
+  tagId: string;
+}) {
+  const userId = await requireCurrentAuthUserId();
+  const application = await prisma.trackedApplication.findFirst({
+    where: {
+      id: input.applicationId,
+      userId,
+    },
+    select: {
+      id: true,
+    },
+  });
+
+  if (!application) {
+    throw new Error("Tracked application not found");
+  }
 
   await prisma.$transaction([
     prisma.trackedApplicationTag.deleteMany({
       where: {
         trackedApplicationId: input.applicationId,
-        ...(existingTags.length > 0
-          ? {
-              tagId: {
-                notIn: existingTags.map((tag) => tag.id),
-              },
-            }
-          : {}),
+        tagId: input.tagId,
       },
     }),
-    ...(existingTags.length > 0
-      ? [
-          prisma.trackedApplicationTag.createMany({
-            data: existingTags.map((tag) => ({
-              trackedApplicationId: input.applicationId,
-              tagId: tag.id,
-            })),
-            skipDuplicates: true,
-          }),
-        ]
-      : []),
     prisma.trackedApplication.update({
       where: { id: input.applicationId },
       data: { updatedAt: new Date() },
@@ -822,7 +886,7 @@ export async function linkTrackedApplicationDocument(input: {
     }),
     prisma.document.findFirst({
       where: { id: input.documentId, userId: profileId },
-      select: { id: true },
+      select: { id: true, type: true },
     }),
   ]);
 
@@ -832,6 +896,10 @@ export async function linkTrackedApplicationDocument(input: {
 
   if (!document) {
     throw new Error("Document not found");
+  }
+
+  if (!isDocumentTypeCompatibleWithSlot(input.slot, document.type)) {
+    throw new Error(getIncompatibleDocumentTypeMessage(input.slot));
   }
 
   await prisma.$transaction([
@@ -1026,24 +1094,11 @@ export async function syncTrackedApplicationFromSubmission(canonicalJobId: strin
   }
 
   const resumeDocumentId = latestPackage?.resumeVariant.documentId;
-  if (resumeDocumentId) {
-    await prisma.trackedApplicationDocument.upsert({
-      where: {
-        trackedApplicationId_slot: {
-          trackedApplicationId: tracked.id,
-          slot: "SENT_RESUME",
-        },
-      },
-      create: {
-        trackedApplicationId: tracked.id,
-        documentId: resumeDocumentId,
-        slot: "SENT_RESUME",
-      },
-      update: {
-        documentId: resumeDocumentId,
-      },
-    });
-  }
+  await upsertTrackedApplicationResumeDocument({
+    applicationId: tracked.id,
+    profileId,
+    documentId: resumeDocumentId,
+  });
 
   await checkSingleTrackedApplicationReminder(tracked.id);
   return tracked;

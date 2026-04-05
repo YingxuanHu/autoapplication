@@ -504,6 +504,47 @@ export async function deleteProfileResume(
   };
 }
 
+export async function importDocumentToProfile(
+  _prevState: ProfileActionState,
+  formData: FormData
+): Promise<ProfileActionState> {
+  const user = await requireProfileForAction();
+  if (!user) {
+    return {
+      error: "You must sign in before importing a resume into your profile.",
+      success: null,
+    };
+  }
+
+  const documentId = String(formData.get("documentId") ?? "").trim();
+  if (!documentId) {
+    return {
+      error: "Resume ID is missing.",
+      success: null,
+    };
+  }
+
+  try {
+    const { syncStoredResumeForProfile } = await import("@/lib/profile-resume-service");
+    const result = await syncStoredResumeForProfile({
+      user,
+      documentId,
+    });
+
+    revalidateProfileViews();
+
+    return {
+      error: null,
+      success: result.message,
+    };
+  } catch (error) {
+    return {
+      error: error instanceof Error ? error.message : "Resume import failed.",
+      success: null,
+    };
+  }
+}
+
 export async function uploadTemplate(
   _prevState: ProfileActionState,
   formData: FormData
