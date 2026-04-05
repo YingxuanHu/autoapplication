@@ -39,6 +39,8 @@ export type SourceConnectorFetchOptions = {
   maxRuntimeMs?: number;
   checkpoint?: Prisma.InputJsonValue | null;
   onCheckpoint?: (checkpoint: Prisma.InputJsonValue | null) => Promise<void> | void;
+  /** Optional structured logger. Defaults to console.log inside connectors. */
+  log?: (message: string) => void;
 };
 
 export type SourceConnectorFetchResult = {

@@ -16,6 +16,7 @@
  */
 import { prisma } from "@/lib/db";
 import { DEMO_USER_ID } from "@/lib/constants";
+import { resolvePath } from "@/lib/storage";
 import { createAutomationPage, disposeAutomationBrowser } from "./browser";
 import { resolveATSFiller } from "./fillers";
 import { ensureScreenshotDir } from "./screenshots";
@@ -215,6 +216,7 @@ type ProfileData = {
   id: string;
   name: string;
   email: string;
+  phone: string | null;
   linkedinUrl: string | null;
   githubUrl: string | null;
   portfolioUrl: string | null;
@@ -230,6 +232,7 @@ type ProfileData = {
     content: string | null;
     isDefault: boolean;
     targetRoleFamily: string | null;
+    document: { storageKey: string } | null;
   }>;
 };
 
@@ -239,6 +242,7 @@ async function loadProfile(): Promise<ProfileData | null> {
     include: {
       resumeVariants: {
         orderBy: { createdAt: "desc" },
+        include: { document: { select: { storageKey: true } } },
       },
     },
   });
@@ -352,7 +356,7 @@ function buildFillerProfile(profile: ProfileData): FillerProfile {
     firstName: nameParts[0] ?? "",
     lastName: nameParts.slice(1).join(" ") || (nameParts[0] ?? ""),
     email: profile.email,
-    phone: null, // Phone not in schema yet
+    phone: profile.phone,
     linkedinUrl: profile.linkedinUrl,
     githubUrl: profile.githubUrl,
     portfolioUrl: profile.portfolioUrl,
@@ -373,9 +377,14 @@ async function buildFillerResume(profile: ProfileData): Promise<FillerResume> {
     return { label: "None", filePath: null, content: null };
   }
 
+  // Prefer uploaded document file, fall back to legacy fileUrl
+  const filePath = defaultResume.document
+    ? resolvePath(defaultResume.document.storageKey)
+    : defaultResume.fileUrl;
+
   return {
     label: defaultResume.label,
-    filePath: defaultResume.fileUrl, // fileUrl stores the local path for now
+    filePath,
     content: defaultResume.content,
   };
 }

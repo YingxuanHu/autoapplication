@@ -105,6 +105,7 @@ export type ApplicationPackageSummary = {
   resumeVariant: ResumeVariantSummary;
   whyItMatches: string | null;
   coverLetterContent: string | null;
+  userNotes: string | null;
   attachedLinks: Array<{ label: string; value: string }>;
   savedAnswers: Array<{ label: string; value: string }>;
   createdAt: string;

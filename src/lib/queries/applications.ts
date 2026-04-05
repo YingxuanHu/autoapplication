@@ -494,6 +494,7 @@ function serializeApplicationPackage(applicationPackage: {
   };
   whyItMatches: string | null;
   coverLetterContent: string | null;
+  userNotes: string | null;
   attachedLinks: Prisma.JsonValue;
   savedAnswers: Prisma.JsonValue;
   createdAt: Date;
@@ -504,6 +505,7 @@ function serializeApplicationPackage(applicationPackage: {
     resumeVariant: serializeResumeVariant(applicationPackage.resumeVariant),
     whyItMatches: applicationPackage.whyItMatches,
     coverLetterContent: applicationPackage.coverLetterContent,
+    userNotes: applicationPackage.userNotes,
     attachedLinks: jsonObjectToEntries(applicationPackage.attachedLinks),
     savedAnswers: jsonObjectToEntries(applicationPackage.savedAnswers),
     createdAt: applicationPackage.createdAt.toISOString(),
@@ -556,6 +558,7 @@ function serializeApplicationHistoryItem(job: {
     };
     whyItMatches: string | null;
     coverLetterContent: string | null;
+    userNotes: string | null;
     attachedLinks: Prisma.JsonValue;
     savedAnswers: Prisma.JsonValue;
     createdAt: Date;

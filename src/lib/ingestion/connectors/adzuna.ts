@@ -231,6 +231,7 @@ export function createAdzunaConnector(
         signal: fetchOptions.signal,
         checkpoint: parseAdzunaCheckpoint(fetchOptions.checkpoint, categories),
         onCheckpoint: fetchOptions.onCheckpoint,
+        log: fetchOptions.log,
       });
       fetchCache.set(cacheKey, request);
       return request;
@@ -252,6 +253,7 @@ async function fetchAdzunaJobs({
   signal,
   checkpoint,
   onCheckpoint,
+  log = console.log,
 }: {
   country: string;
   categories: string[];
@@ -266,6 +268,7 @@ async function fetchAdzunaJobs({
   signal?: AbortSignal;
   checkpoint?: AdzunaCheckpoint | null;
   onCheckpoint?: (checkpoint: Prisma.InputJsonValue | null) => Promise<void> | void;
+  log?: (message: string) => void;
 }): Promise<SourceConnectorFetchResult> {
   const allJobs: SourceConnectorJob[] = [];
   const seenIds = new Set<string>();
@@ -301,6 +304,7 @@ async function fetchAdzunaJobs({
         appId,
         appKey,
         signal,
+        log,
       });
 
       advanced = true;
@@ -437,6 +441,7 @@ async function fetchCategoryPage({
   appId,
   appKey,
   signal,
+  log = console.log,
 }: {
   country: string;
   category: string;
@@ -445,6 +450,7 @@ async function fetchCategoryPage({
   appId: string;
   appKey: string;
   signal?: AbortSignal;
+  log?: (message: string) => void;
 }): Promise<{
   jobs: SourceConnectorJob[];
   apiCount: number;
@@ -469,16 +475,16 @@ async function fetchCategoryPage({
 
   if (!response.ok) {
     if (response.status === 429) {
-      console.log(`[adzuna:${country}] Rate limited on ${category} page ${page}, stopping category`);
+      log(`[adzuna:${country}] Rate limited on ${category} page ${page}, stopping category`);
       return { jobs: [], apiCount: 0, rawCount: 0, staffingFilteredCount: 0 };
     }
-    console.log(`[adzuna:${country}] API error ${response.status} on ${category} page ${page}`);
+    log(`[adzuna:${country}] API error ${response.status} on ${category} page ${page}`);
     return { jobs: [], apiCount: 0, rawCount: 0, staffingFilteredCount: 0 };
   }
 
   const payload = (await response.json()) as AdzunaSearchResponse;
   if (payload.__CLASS__?.includes("Exception")) {
-    console.log(`[adzuna:${country}] API exception on ${category}: ${JSON.stringify(payload)}`);
+    log(`[adzuna:${country}] API exception on ${category}: ${JSON.stringify(payload)}`);
     return { jobs: [], apiCount: payload.count ?? 0, rawCount: 0, staffingFilteredCount: 0 };
   }
 

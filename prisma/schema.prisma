@@ -103,12 +103,21 @@ enum IngestionRunMode {
   API
 }
 
+enum DocumentType {
+  RESUME
+  COVER_LETTER
+}
+
 // ─── Models ─────────────────────────────────────────────
 
 model UserProfile {
   id                String          @id @default(cuid())
   email             String          @unique
   name              String
+  phone             String?
+  location          String?
+  headline          String?
+  summary           String?
   linkedinUrl       String?
   githubUrl         String?
   portfolioUrl      String?
@@ -119,10 +128,18 @@ model UserProfile {
   preferredWorkMode WorkMode?
   experienceLevel   ExperienceLevel?
   automationMode    AutomationMode  @default(REVIEW_BEFORE_SUBMIT)
+
+  // Structured profile data (rich JSON fields for AI ingestion and display)
+  skillsJson      Json?   // string[] — e.g. ["TypeScript", "React", "PostgreSQL"]
+  experiencesJson Json?   // Array<{ title, company, location, startDate, endDate, description }>
+  educationsJson  Json?   // Array<{ school, degree, field, startDate, endDate, description }>
+  projectsJson    Json?   // Array<{ name, url, description, technologies }>
+
   createdAt         DateTime        @default(now())
   updatedAt         DateTime        @updatedAt
 
   resumeVariants         ResumeVariant[]
+  documents              Document[]
   preferences            UserPreference[]
   savedJobs              SavedJob[]
   behaviorSignals        UserBehaviorSignal[]
@@ -138,13 +155,34 @@ model ResumeVariant {
   fileUrl         String?
   content         String?
   isDefault       Boolean  @default(false)
+  documentId      String?  @unique
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
   user                UserProfile          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  document            Document?            @relation(fields: [documentId], references: [id], onDelete: SetNull)
   applicationPackages ApplicationPackage[]
 
   @@index([userId])
+}
+
+model Document {
+  id            String       @id @default(cuid())
+  userId        String
+  type          DocumentType
+  filename      String
+  mimeType      String
+  sizeBytes     Int
+  storageKey    String       @unique
+  extractedText String?
+  extractedAt   DateTime?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  user          UserProfile   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  resumeVariant ResumeVariant?
+
+  @@index([userId, type])
 }
 
 model JobRaw {
@@ -277,6 +315,7 @@ model ApplicationPackage {
   savedAnswers      Json?
   attachedLinks     Json?
   whyItMatches      String?
+  userNotes         String?
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
 

@@ -62,8 +62,10 @@ export function createWorkableConnector({
         `https://www.workable.com/api/accounts/${accountToken}`
       );
 
+      const log = options.log ?? console.log;
+
       if (!response.ok) {
-        console.log(`[workable:${accountToken}] API error ${response.status} ${response.statusText}`);
+        log(`[workable:${accountToken}] API error ${response.status} ${response.statusText}`);
         return {
           jobs: [],
           metadata: {

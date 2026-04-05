@@ -2,6 +2,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Bot, ExternalLink } from "lucide-react";
 import { ApplicationReviewActions } from "@/components/jobs/application-review-actions";
+import { AIWorkspace } from "@/components/jobs/ai-workspace";
+import { JobNotes } from "@/components/jobs/job-notes";
 import {
   APPLICATION_REVIEW_STATE_META,
   formatDisplayLabel,
@@ -155,6 +157,49 @@ export default async function JobApplyPage({ params }: JobApplyPageProps) {
             </Link>{" "}
             before preparing a package.
           </p>
+        )}
+      </div>
+
+      {/* Personal notes */}
+      <div className="border-t border-border py-4">
+        <p className="mb-2 text-xs text-muted-foreground">Notes</p>
+        <JobNotes
+          jobId={job.id}
+          initialNotes={latestPackage?.userNotes ?? null}
+        />
+      </div>
+
+      {/* AI workspace */}
+      <div className="border-t border-border py-4">
+        <p className="mb-3 text-xs text-muted-foreground">AI workspace</p>
+        {process.env.ANTHROPIC_API_KEY ? (
+          <AIWorkspace
+            jobId={job.id}
+            jobTitle={job.title}
+            company={job.company}
+          />
+        ) : (
+          <div className="rounded-md border border-dashed border-border p-4">
+            <p className="text-sm text-muted-foreground">
+              AI features are not configured.
+            </p>
+            <p className="mt-1 text-xs text-muted-foreground">
+              Add <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">ANTHROPIC_API_KEY</code> to{" "}
+              <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">.env</code> to unlock:
+            </p>
+            <ul className="mt-2 space-y-1">
+              {[
+                "Fit analysis — score + strengths/gaps vs. this job",
+                "Cover letter — tailored to this role in one click",
+                "Resume parsing — extract your experience from uploaded files",
+              ].map((item) => (
+                <li key={item} className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                  <span className="opacity-40">◦</span>
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </div>
         )}
       </div>
 

@@ -56,24 +56,27 @@ export default async function RankingDebugPage() {
     breakdown: ScoreBreakdown;
   };
 
-  const scored: ScoredJob[] = jobs
-    .map((job) => ({
-      id: job.id,
-      title: job.title,
-      company: job.company,
-      roleFamily: job.roleFamily,
-      workMode: job.workMode,
-      postedAt: job.postedAt,
-      submissionCategory: job.eligibility?.submissionCategory ?? null,
-      sourceName: job.sourceMappings[0]?.sourceName ?? null,
-      breakdown: scoreJobDetailed(job, prefs, behavior),
-    }))
+  // Score all jobs once, then derive both the top-N list and distribution stats
+  const allBreakdowns = jobs.map((job) => ({
+    id: job.id,
+    title: job.title,
+    company: job.company,
+    roleFamily: job.roleFamily,
+    workMode: job.workMode,
+    postedAt: job.postedAt,
+    submissionCategory: job.eligibility?.submissionCategory ?? null,
+    sourceName: job.sourceMappings[0]?.sourceName ?? null,
+    breakdown: scoreJobDetailed(job, prefs, behavior),
+  }));
+
+  const scored: ScoredJob[] = allBreakdowns
     .sort((a, b) => b.breakdown.total - a.breakdown.total)
     .slice(0, DEBUG_LIMIT);
 
-  // Compute score distribution summary
-  const allScores = jobs.map((j) => scoreJobDetailed(j, prefs, behavior).total);
-  allScores.sort((a, b) => b - a);
+  // Compute score distribution summary from the single scoring pass
+  const allScores = allBreakdowns
+    .map((j) => j.breakdown.total)
+    .sort((a, b) => b - a);
   const maxScore = allScores[0] ?? 0;
   const minScore = allScores[allScores.length - 1] ?? 0;
   const medianScore = allScores[Math.floor(allScores.length / 2)] ?? 0;

@@ -10,12 +10,17 @@ import { DEMO_SOURCE_NAMES } from "@/lib/job-links";
  * Splits on whitespace, strips non-alphanumeric chars, joins with &.
  * Each token is suffixed with :* for prefix matching ("eng" → "eng:*").
  */
+const MAX_SEARCH_LENGTH = 200;
+const MAX_SEARCH_TOKENS = 12;
+
 function toTsQuery(raw: string): string {
   const tokens = raw
+    .slice(0, MAX_SEARCH_LENGTH)
     .trim()
     .split(/\s+/)
     .map((t) => t.replace(/[^a-zA-Z0-9]/g, ""))
-    .filter((t) => t.length > 0);
+    .filter((t) => t.length > 0)
+    .slice(0, MAX_SEARCH_TOKENS);
   if (tokens.length === 0) return "";
   return tokens.map((t) => `${t}:*`).join(" & ");
 }

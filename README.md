@@ -7,16 +7,31 @@ Current implemented slice:
 - feed-first `/jobs` experience over a canonical live job pool
 - `/jobs` now defaults to live non-demo-backed jobs and resolves outbound links through a trust layer before rendering external actions
 - dedicated `/jobs/[id]` detail page with classification, explanation, and source context
-- `/jobs/[id]/apply` review flow with resume/package preview and submission tracking
+- `/jobs/[id]/apply` review flow with resume/package preview, per-job notes, and submission tracking
 - shortlist workflow through `/saved`
 - application history in `/applications`
-- profile and resume overview in `/profile`
+- profile editor at `/profile` — contact info, skills, experience, education, projects, preferences
+- profile completeness indicator — weighted score showing which fields improve auto-fill and AI quality
+- document upload — PDF/DOCX resume upload with text extraction; documents linked to resume variants
+- AI resume ingestion — parse an uploaded resume with Claude to populate structured profile fields
+- per-job AI workspace — fit analysis (score + strengths/gaps + keywords) and cover letter generation powered by Claude
 - internal `/ops/ingestion` visibility page for recent runs, source coverage, schedule cadence, and lifecycle counts
 - cron-ready `/api/ingestion/schedule` route plus `npm run ingest:schedule` script for cadence-driven ingestion
 - ingestion pipeline with connector interface, normalization, stronger cross-source dedupe, lifecycle sweeps, removal handling, run tracking, and real Greenhouse + Lever + Recruitee + SmartRecruiters connectors
-- Prisma/Postgres domain model for canonical jobs, raw jobs, source mappings, eligibility, saved jobs, profile data, and submissions
+- Prisma/Postgres domain model for canonical jobs, raw jobs, source mappings, eligibility, saved jobs, profile data, documents, and submissions
 - seeded demo dataset plus live external ingestion for local development
   - demo-backed canonical jobs stay useful for modeling and local data shape checks, but the main feed hides them when they do not have a trustworthy live source
+
+## Environment variables
+
+| Variable | Required | Description |
+|---|---|---|
+| `DATABASE_URL` | Yes | PostgreSQL connection string |
+| `ADZUNA_APP_ID` / `ADZUNA_APP_KEY` | Optional | Adzuna job board API credentials |
+| `ANTHROPIC_API_KEY` | Optional | Unlocks AI features — resume parsing, fit analysis, cover letter generation. Get a key at [console.anthropic.com](https://console.anthropic.com/) |
+| `AI_MODEL` | Optional | Override the Claude model (default: `claude-sonnet-4-20250514`) |
+
+Copy `.env.example` to `.env` and fill in your values. AI features degrade gracefully when `ANTHROPIC_API_KEY` is absent — all other functionality is unaffected.
 
 ## Local development
 
@@ -180,16 +195,21 @@ npm run ingest:schedule -- --force
 
 ## Main project paths
 
-- `src/app/jobs` for the main feed
-- `src/app/saved` for shortlist review
-- `src/app/applications` for package and submission history
-- `src/app/profile` for profile and resume overview
-- `src/app/ops/ingestion` for internal ingestion visibility
-- `src/app/api` for route handlers
-- `src/lib/queries` for Prisma-backed data access
-- `src/lib/ingestion` for connector fetch, normalization, dedupe, lifecycle, eligibility, and scheduling helpers
-- `scripts/ingest.ts` for manual ingestion runs
-- `scripts/ingest-scheduled.ts` for local scheduled-batch execution
-- `prisma/` for schema, migrations, and seed data
+- `src/app/jobs` — main feed
+- `src/app/saved` — shortlist review
+- `src/app/applications` — package and submission history
+- `src/app/profile` — profile editor, completeness indicator, document upload
+- `src/app/ops/ingestion` — internal ingestion visibility
+- `src/app/api` — route handlers
+- `src/lib/queries` — Prisma-backed data access
+- `src/lib/ingestion` — connector fetch, normalization, dedupe, lifecycle, eligibility, and scheduling helpers
+- `src/lib/ai` — AI modules: provider abstraction, resume parser, profile merge, job fit analysis, cover letter generation
+- `src/lib/storage` — local file storage (swap for S3 by replacing this module)
+- `src/lib/documents` — document text extraction (PDF via pdf-parse, DOCX via mammoth)
+- `src/components/profile` — profile editor, completeness indicator, resume upload, document list
+- `src/components/jobs` — job cards, review actions, AI workspace, per-job notes
+- `scripts/ingest.ts` — manual ingestion runs
+- `scripts/ingest-scheduled.ts` — local scheduled-batch execution
+- `prisma/` — schema, migrations, and seed data
 
 Use the actual repository state as the source of truth over older notes or assistant summaries.

@@ -55,15 +55,16 @@ export function createJobBankConnector(
     freshnessMode: "INCREMENTAL",
 
     async fetchJobs(fetchOptions: SourceConnectorFetchOptions): Promise<SourceConnectorFetchResult> {
+      const log = fetchOptions.log ?? console.log;
       const csvUrl = buildCsvUrl(resource.resourceId, resource.label);
-      console.log(`[JobBank] Fetching CSV from: ${csvUrl}`);
+      log(`[JobBank] Fetching CSV from: ${csvUrl}`);
 
       const response = await fetch(csvUrl, {
         signal: fetchOptions.signal,
       });
 
       if (!response.ok) {
-        console.error(`[JobBank] HTTP ${response.status} fetching CSV`);
+        log(`[JobBank] HTTP ${response.status} fetching CSV`);
         return { jobs: [], metadata: { error: `HTTP ${response.status}` } };
       }
 
@@ -72,14 +73,14 @@ export function createJobBankConnector(
 
       const lines = text.split("\n").filter((line) => line.trim().length > 0);
       if (lines.length < 2) {
-        console.log("[JobBank] CSV has no data rows");
+        log("[JobBank] CSV has no data rows");
         return { jobs: [], metadata: { totalRows: 0 } };
       }
 
       const headers = parseTabLine(lines[0]);
       const headerIndex = buildHeaderIndex(headers);
 
-      console.log(`[JobBank] CSV has ${lines.length - 1} data rows, ${headers.length} columns`);
+      log(`[JobBank] CSV has ${lines.length - 1} data rows, ${headers.length} columns`);
 
       const jobs: SourceConnectorJob[] = [];
       let skipped = 0;
@@ -94,7 +95,7 @@ export function createJobBankConnector(
         }
       }
 
-      console.log(
+      log(
         `[JobBank] Parsed ${jobs.length} jobs, skipped ${skipped} rows`
       );
 

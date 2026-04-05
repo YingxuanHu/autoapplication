@@ -16,6 +16,10 @@ export async function GET() {
 const ALLOWED_PROFILE_FIELDS = new Set([
   "name",
   "email",
+  "phone",
+  "location",
+  "headline",
+  "summary",
   "linkedinUrl",
   "githubUrl",
   "portfolioUrl",
@@ -26,6 +30,10 @@ const ALLOWED_PROFILE_FIELDS = new Set([
   "preferredWorkMode",
   "experienceLevel",
   "automationMode",
+  "skillsJson",
+  "experiencesJson",
+  "educationsJson",
+  "projectsJson",
 ]);
 
 export async function PATCH(request: NextRequest) {

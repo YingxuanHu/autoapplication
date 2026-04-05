@@ -45,8 +45,10 @@ export function createGreenhouseConnector({
         }
       );
 
+      const log = options.log ?? console.log;
+
       if (!response.ok) {
-        console.log(`[greenhouse:${boardToken}] API error ${response.status} ${response.statusText}`);
+        log(`[greenhouse:${boardToken}] API error ${response.status} ${response.statusText}`);
         return {
           jobs: [],
           metadata: {

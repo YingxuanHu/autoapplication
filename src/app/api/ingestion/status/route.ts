@@ -1,5 +1,5 @@
-import { NextResponse } from "next/server";
 import { getIngestionStatus } from "@/lib/queries/ingestion";
+import { errorResponse, successResponse } from "@/lib/api-utils";
 
 /**
  * GET /api/ingestion/status
@@ -10,6 +10,11 @@ import { getIngestionStatus } from "@/lib/queries/ingestion";
  * detail from /api/ingestion/schedule.
  */
 export async function GET() {
-  const status = await getIngestionStatus();
-  return NextResponse.json(status);
+  try {
+    const status = await getIngestionStatus();
+    return successResponse(status);
+  } catch (error) {
+    console.error("GET /api/ingestion/status error:", error);
+    return errorResponse("Failed to fetch ingestion status", 500);
+  }
 }
