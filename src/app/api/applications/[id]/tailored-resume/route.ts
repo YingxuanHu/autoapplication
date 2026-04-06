@@ -483,7 +483,7 @@ export async function POST(_request: Request, { params }: RouteParams) {
         role: "system" as const,
         content: `You are editing an EXISTING one-page resume for a specific job application.
 
-The attached baseline resume is the source document. The full profile is a superset of the candidate's background. The fit analysis suggestions tell you EXACTLY what changes to make — you MUST act on every suggestion.
+The attached baseline resume is the source document. The full profile is a superset of the user's background. The fit analysis suggestions tell you EXACTLY what changes to make — you MUST act on every suggestion.
 
 Return ONLY valid JSON matching this exact schema (no markdown, no code fences):
 {
@@ -524,8 +524,8 @@ Content Rules:
 - Bullets should be specific and achievement-oriented (include metrics, tools, outcomes where possible).
 - Use the full profile to enrich: add relevant skills, swap in stronger projects, beef up bullet points with details from the profile.
 - Keep all facts truthful — do NOT fabricate experience, companies, degrees, or skills.
-- Use the candidate's actual contact info, job titles, company names, and dates.
-- Summary should directly address why the candidate fits this specific role, referencing key qualifications.`,
+- Use the user's actual contact info, job titles, company names, and dates.
+- Summary should directly address why the user fits this specific role, referencing key qualifications.`,
       },
       {
         role: "user" as const,

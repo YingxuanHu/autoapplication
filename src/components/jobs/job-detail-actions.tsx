@@ -1,6 +1,5 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { JobCardActions } from "@/components/jobs/job-card-actions";
 
 type JobDetailActionsProps = {
@@ -9,16 +8,5 @@ type JobDetailActionsProps = {
 };
 
 export function JobDetailActions({ jobId, initialSaved }: JobDetailActionsProps) {
-  const router = useRouter();
-
-  return (
-    <JobCardActions
-      jobId={jobId}
-      initialSaved={initialSaved}
-      onPassed={() => {
-        router.push("/jobs");
-        router.refresh();
-      }}
-    />
-  );
+  return <JobCardActions initialSaved={initialSaved} jobId={jobId} />;
 }

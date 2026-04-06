@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/db";
 import { requireCurrentProfileId } from "@/lib/current-user";
+
 export async function saveJob(
   canonicalJobId: string,
   status: "ACTIVE" | "APPLIED" | "EXPIRED" | "DISMISSED" = "ACTIVE"
@@ -31,33 +32,6 @@ export async function unsaveJob(canonicalJobId: string) {
         userId,
         canonicalJobId,
       },
-    },
-  });
-}
-
-export async function dismissSavedJob(canonicalJobId: string) {
-  const userId = await requireCurrentProfileId();
-  const existing = await prisma.savedJob.findUnique({
-    where: {
-      userId_canonicalJobId: {
-        userId,
-        canonicalJobId,
-      },
-    },
-    select: { id: true },
-  });
-
-  if (!existing) return null;
-
-  return prisma.savedJob.update({
-    where: {
-      userId_canonicalJobId: {
-        userId,
-        canonicalJobId,
-      },
-    },
-    data: {
-      status: "DISMISSED",
     },
   });
 }

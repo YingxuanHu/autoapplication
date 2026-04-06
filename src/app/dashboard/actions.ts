@@ -12,6 +12,7 @@ type TrackerActionState = {
 
 const statusOptions = new Set<TrackedApplicationStatus>([
   "WISHLIST",
+  "PREPARING",
   "APPLIED",
   "SCREEN",
   "INTERVIEW",

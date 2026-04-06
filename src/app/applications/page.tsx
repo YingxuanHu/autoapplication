@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { ApplicationsOverviewBar } from "@/components/applications/applications-overview-bar";
+import { DeleteApplicationButton } from "@/components/applications/delete-application-button";
 import { getOptionalSessionUser } from "@/lib/current-user";
 import {
   getTrackedDashboardData,
@@ -26,6 +27,7 @@ function parseStatusFilter(rawValue?: string) {
   if (
     value === "ALL" ||
     value === "WISHLIST" ||
+    value === "PREPARING" ||
     value === "APPLIED" ||
     value === "SCREEN" ||
     value === "INTERVIEW" ||
@@ -179,6 +181,7 @@ export default async function ApplicationsPage({
             >
               <option value="ALL">All statuses</option>
               <option value="WISHLIST">Wishlist</option>
+              <option value="PREPARING">Preparing</option>
               <option value="APPLIED">Applied</option>
               <option value="SCREEN">Screen</option>
               <option value="INTERVIEW">Interview</option>
@@ -368,6 +371,12 @@ export default async function ApplicationsPage({
                           Open job
                         </Link>
                       ) : null}
+                      <DeleteApplicationButton
+                        applicationId={application.id}
+                        className="px-0 text-sm text-muted-foreground hover:text-destructive"
+                        size="sm"
+                        variant="ghost"
+                      />
                     </div>
                   </div>
                 </li>

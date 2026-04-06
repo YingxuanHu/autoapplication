@@ -1,6 +1,5 @@
 import type {
   EmploymentType,
-  ExperienceLevel,
   Industry,
   Region,
   WorkMode,
@@ -11,6 +10,8 @@ import type {
   SourceConnectorJob,
 } from "@/lib/ingestion/types";
 import { buildCanonicalDedupeFields } from "@/lib/ingestion/dedupe";
+import { resolveJobSalaryRange } from "@/lib/salary-extraction";
+import { inferExperienceLevel } from "@/lib/career-stage";
 
 const US_STATE_CODES = new Set([
   "AL",
@@ -552,10 +553,22 @@ export function normalizeSourceJob({
 
   const workMode = inferWorkMode(title, location, description, job.workMode);
   const employmentType = inferEmploymentType(title, description, job.employmentType);
-  const experienceLevel = inferExperienceLevel(title);
+  const experienceLevel = inferExperienceLevel(
+    title,
+    description,
+    employmentType,
+    roleProfile.roleFamily
+  );
   const postedAt = job.postedAt ?? fetchedAt;
   const deadline =
     job.deadline && job.deadline.getTime() > fetchedAt.getTime() ? job.deadline : null;
+  const resolvedSalary = resolveJobSalaryRange({
+    salaryMin: job.salaryMin,
+    salaryMax: job.salaryMax,
+    salaryCurrency: job.salaryCurrency,
+    description,
+    regionHint: region,
+  });
   const dedupeFields = buildCanonicalDedupeFields({
     company,
     title,
@@ -576,9 +589,9 @@ export function normalizeSourceJob({
     locationKey: dedupeFields.locationKey,
     region,
     workMode,
-    salaryMin: job.salaryMin,
-    salaryMax: job.salaryMax,
-    salaryCurrency: job.salaryCurrency,
+    salaryMin: resolvedSalary.salaryMin,
+    salaryMax: resolvedSalary.salaryMax,
+    salaryCurrency: resolvedSalary.salaryCurrency,
     employmentType,
     experienceLevel,
     description,
@@ -766,52 +779,6 @@ function inferEmploymentType(
   }
 
   return "FULL_TIME";
-}
-
-/**
- * Infer experience level from job title using keyword matching.
- *
- * Priority order (highest wins):
- *   EXECUTIVE  → director, head of, VP, chief, president
- *   LEAD       → lead, staff, principal, manager
- *   SENIOR     → senior, sr
- *   ENTRY      → intern, co-op, junior, jr, new grad, entry
- *   MID        → default (no qualifying keyword)
- *
- * Conservative: only fires on unambiguous title-level signals.
- * MID is the correct default for plain "Software Engineer" etc.
- */
-function inferExperienceLevel(title: string): ExperienceLevel | null {
-  const t = title.toLowerCase();
-
-  // EXECUTIVE: director-level and above
-  if (
-    /\b(director|head of|vice president|vp|chief|president)\b/.test(t)
-  ) {
-    return "EXECUTIVE";
-  }
-
-  // LEAD: team/tech lead, staff engineer, principal, engineering manager
-  if (
-    /\b(staff|principal|tech lead|team lead|engineering manager|design manager|lead)\b/.test(t)
-  ) {
-    return "LEAD";
-  }
-
-  // SENIOR: explicit seniority keyword
-  if (/\b(senior|sr)\b/.test(t)) {
-    return "SENIOR";
-  }
-
-  // ENTRY: intern, co-op, junior, new grad, entry-level
-  if (
-    /\b(intern|internship|co-op|coop|junior|jr|new grad|new-grad|entry[- ]level|entry)\b/.test(t)
-  ) {
-    return "ENTRY";
-  }
-
-  // Default: mid-level (no seniority qualifier = standard individual contributor)
-  return "MID";
 }
 
 function buildShortSummary(

@@ -3,6 +3,11 @@ import { PAGE_SIZE } from "@/lib/constants";
 import type { Prisma } from "@/generated/prisma/client";
 import { DEMO_SOURCE_NAMES } from "@/lib/job-links";
 import { getOptionalCurrentProfileId } from "@/lib/current-user";
+import {
+  CAREER_STAGE_DEFINITIONS,
+  normalizeCareerStageFilterValue,
+  type CareerStageFilter,
+} from "@/lib/career-stage";
 
 // ─── Full-text search ────────────────────────────────────────────────────────
 
@@ -37,6 +42,132 @@ function toTsQuery(raw: string): string {
     .slice(0, MAX_SEARCH_TOKENS);
   if (tokens.length === 0) return "";
   return tokens.map((t) => `${t}:*`).join(" & ");
+}
+
+function escapeLikePattern(value: string) {
+  return value.replace(/[\\%_]/g, "\\$&");
+}
+
+function splitFilterValues(value?: string) {
+  return value ? value.split(",").map((entry) => entry.trim()).filter(Boolean) : [];
+}
+
+function addLikeClauses(
+  field: "title" | "description" | "roleFamily",
+  keywords: string[],
+  params: string[]
+) {
+  const clauses: string[] = [];
+
+  for (const keyword of keywords) {
+    params.push(`%${escapeLikePattern(keyword)}%`);
+    clauses.push(`"${field}" ILIKE $${params.length} ESCAPE '\\'`);
+  }
+
+  return clauses.length > 0 ? `(${clauses.join(" OR ")})` : null;
+}
+
+function addEqualityClauses(
+  field: "employmentType",
+  values: string[],
+  params: string[]
+) {
+  const clauses: string[] = [];
+
+  for (const value of values) {
+    params.push(value);
+    clauses.push(`"${field}" = $${params.length}`);
+  }
+
+  return clauses.length > 0 ? `(${clauses.join(" OR ")})` : null;
+}
+
+function buildPositiveCareerStageSql(
+  stage: CareerStageFilter,
+  params: string[]
+) {
+  const definition = CAREER_STAGE_DEFINITIONS[stage];
+  const clauses = [
+    definition.employmentTypes
+      ? addEqualityClauses("employmentType", definition.employmentTypes, params)
+      : null,
+    definition.roleFamilyKeywords
+      ? addLikeClauses("roleFamily", definition.roleFamilyKeywords, params)
+      : null,
+    addLikeClauses("title", definition.titleKeywords, params),
+    addLikeClauses("description", definition.descriptionKeywords, params),
+  ].filter(Boolean);
+
+  return clauses.length > 0 ? `(${clauses.join(" OR ")})` : null;
+}
+
+function buildCareerStageSql(stage: CareerStageFilter, params: string[]) {
+  const internshipSql = buildPositiveCareerStageSql("INTERNSHIP", params);
+  const administrativeSql = buildPositiveCareerStageSql(
+    "ADMINISTRATIVE_SUPPORT",
+    params
+  );
+  const seniorSql = buildPositiveCareerStageSql("SENIOR_LEVEL", params);
+  const associateSql = buildPositiveCareerStageSql("ASSOCIATE", params);
+  const entrySql = buildPositiveCareerStageSql("ENTRY_LEVEL", params);
+
+  switch (stage) {
+    case "INTERNSHIP":
+      return internshipSql;
+    case "ADMINISTRATIVE_SUPPORT":
+      return administrativeSql;
+    case "SENIOR_LEVEL":
+      return seniorSql && internshipSql && administrativeSql
+        ? `(${seniorSql} AND NOT ${internshipSql} AND NOT ${administrativeSql})`
+        : seniorSql;
+    case "ASSOCIATE":
+      return associateSql && internshipSql && administrativeSql && seniorSql
+        ? `(${associateSql} AND NOT ${internshipSql} AND NOT ${administrativeSql} AND NOT ${seniorSql})`
+        : associateSql;
+    case "ENTRY_LEVEL":
+      return entrySql && internshipSql && administrativeSql && seniorSql && associateSql
+        ? `(${entrySql} AND NOT ${internshipSql} AND NOT ${administrativeSql} AND NOT ${seniorSql} AND NOT ${associateSql})`
+        : entrySql;
+  }
+}
+
+async function searchCareerStageJobIds(stages: CareerStageFilter[]) {
+  if (stages.length === 0) return null;
+
+  const params: string[] = [];
+  const stageClauses = stages
+    .map((stage) => buildCareerStageSql(stage, params))
+    .filter(Boolean) as string[];
+
+  if (stageClauses.length === 0) {
+    return null;
+  }
+
+  const rows = await prisma.$queryRawUnsafe<{ id: string }[]>(
+    `SELECT id FROM "JobCanonical" WHERE ${stageClauses.join(" OR ")}`,
+    ...params
+  );
+
+  return rows.map((row) => row.id);
+}
+
+function mergeMatchingIds(
+  current: Prisma.JobCanonicalWhereInput["id"],
+  nextIds: string[]
+) {
+  if (
+    !current ||
+    typeof current !== "object" ||
+    !("in" in current) ||
+    !Array.isArray(current.in)
+  ) {
+    return { in: nextIds };
+  }
+
+  const allowedIds = new Set(nextIds);
+  return {
+    in: current.in.filter((id): id is string => typeof id === "string" && allowedIds.has(id)),
+  };
 }
 
 /**
@@ -475,6 +606,54 @@ export type { FeedPrefs, BehaviorProfile };
  * full relevance scoring — an acceptable tradeoff for performance.
  */
 const SCORING_WINDOW_SIZE = 2000;
+type JobFeedSummary = {
+  liveJobCount: number;
+  addedTodayCount: number;
+  expiredTodayCount: number;
+};
+
+async function getJobFeedSummary() {
+  const now = new Date();
+  const startOfToday = new Date(now);
+  startOfToday.setHours(0, 0, 0, 0);
+
+  const visibleSourceFilter = {
+    some: {
+      sourceName: {
+        notIn: [...DEMO_SOURCE_NAMES],
+      },
+    },
+  } satisfies Prisma.JobCanonicalWhereInput["sourceMappings"];
+
+  const [liveJobCount, addedTodayCount, expiredTodayCount] = await Promise.all([
+    prisma.jobCanonical.count({
+      where: {
+        status: "LIVE",
+        sourceMappings: visibleSourceFilter,
+      },
+    }),
+    prisma.jobCanonical.count({
+      where: {
+        status: "LIVE",
+        postedAt: { gte: startOfToday },
+        sourceMappings: visibleSourceFilter,
+      },
+    }),
+    prisma.jobCanonical.count({
+      where: {
+        status: "EXPIRED",
+        expiredAt: { gte: startOfToday },
+        sourceMappings: visibleSourceFilter,
+      },
+    }),
+  ]);
+
+  return {
+    liveJobCount,
+    addedTodayCount,
+    expiredTodayCount,
+  } satisfies JobFeedSummary;
+}
 
 async function getJobsByRelevance(
   filters: JobFilterParams,
@@ -588,6 +767,7 @@ export async function getJobs(filters: JobFilterParams) {
   const viewerProfileId = await getOptionalCurrentProfileId();
   const page = filters.page ?? 1;
   const skip = (page - 1) * PAGE_SIZE;
+  const summaryPromise = getJobFeedSummary();
 
   const where: Prisma.JobCanonicalWhereInput = {
     sourceMappings: {
@@ -613,7 +793,13 @@ export async function getJobs(filters: JobFilterParams) {
     if (matchingIds !== null) {
       if (matchingIds.length === 0) {
         // No search results — short-circuit to empty response
-        return { data: [], total: 0, page: filters.page ?? 1, pageSize: PAGE_SIZE };
+        return {
+          data: [],
+          total: 0,
+          page: filters.page ?? 1,
+          pageSize: PAGE_SIZE,
+          summary: await summaryPromise,
+        };
       }
       where.id = { in: matchingIds };
     }
@@ -650,10 +836,32 @@ export async function getJobs(filters: JobFilterParams) {
   }
 
   if (filters.experienceLevel) {
-    const levels = filters.experienceLevel.split(",");
-    where.experienceLevel = {
-      in: levels as ("ENTRY" | "MID" | "SENIOR" | "LEAD" | "EXECUTIVE")[],
-    };
+    const stages = splitFilterValues(normalizeCareerStageFilterValue(filters.experienceLevel));
+    const matchingIds = await searchCareerStageJobIds(stages as CareerStageFilter[]);
+
+    if (matchingIds !== null) {
+      if (matchingIds.length === 0) {
+        return {
+          data: [],
+          total: 0,
+          page: filters.page ?? 1,
+          pageSize: PAGE_SIZE,
+          summary: await summaryPromise,
+        };
+      }
+
+      where.id = mergeMatchingIds(where.id, matchingIds);
+
+      if ("in" in where.id && Array.isArray(where.id.in) && where.id.in.length === 0) {
+        return {
+          data: [],
+          total: 0,
+          page: filters.page ?? 1,
+          pageSize: PAGE_SIZE,
+          summary: await summaryPromise,
+        };
+      }
+    }
   }
 
   if (filters.submissionCategory) {
@@ -700,7 +908,11 @@ export async function getJobs(filters: JobFilterParams) {
 
   // Relevance sort: score-based ranking with user preference signals
   if (!filters.sortBy || filters.sortBy === "relevance") {
-    return getJobsByRelevance(filters, where, viewerProfileId);
+    const [result, summary] = await Promise.all([
+      getJobsByRelevance(filters, where, viewerProfileId),
+      summaryPromise,
+    ]);
+    return { ...result, summary };
   }
 
   // Explicit sorts: salary or newest
@@ -731,7 +943,13 @@ export async function getJobs(filters: JobFilterParams) {
     };
   });
 
-  return { data, total, page, pageSize: PAGE_SIZE };
+  return {
+    data,
+    total,
+    page,
+    pageSize: PAGE_SIZE,
+    summary: await summaryPromise,
+  };
 }
 
 export async function getJobById(id: string) {

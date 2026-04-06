@@ -24,7 +24,9 @@ export async function POST(
 
     const saved = await saveJob(
       id,
-      tracked.status === "WISHLIST" ? "ACTIVE" : "APPLIED"
+      tracked.status === "WISHLIST" || tracked.status === "PREPARING"
+        ? "ACTIVE"
+        : "APPLIED"
     );
 
     return successResponse(

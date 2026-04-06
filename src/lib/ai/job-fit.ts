@@ -5,6 +5,7 @@
  * score, matching skills, gaps, strengths, and a brief narrative.
  */
 import { aiComplete } from "./provider";
+import type { FitAnalysis } from "./types";
 
 export type JobContext = {
   title: string;
@@ -40,18 +41,11 @@ export type ProfileContext = {
   preferredWorkMode: string | null;
 };
 
-export type FitAnalysis = {
-  score: number; // 1–10
-  tier: "strong" | "good" | "moderate" | "weak";
-  summary: string; // 2–3 sentence narrative
-  strengths: string[]; // what the candidate has that matches
-  gaps: string[]; // missing requirements or concerns
-  keywords: string[]; // key terms from JD to include in application
-};
+export type { FitAnalysis } from "./types";
 
-const SYSTEM_PROMPT = `You are a career advisor and expert recruiter analyzing job-candidate fit. Return ONLY valid JSON.
+const SYSTEM_PROMPT = `You are a career advisor and expert recruiter analyzing job-profile fit. Return ONLY valid JSON.
 
-Analyze how well the candidate's profile matches the job, considering:
+Analyze how well the user's profile matches the job, considering:
 - Skills alignment (required vs. possessed)
 - Experience level match
 - Role family / function match
@@ -69,7 +63,8 @@ Return this exact JSON shape:
 }
 
 Scoring guide: 8-10 = strong match, 6-7 = good fit, 4-5 = moderate, 1-3 = weak.
-Be specific and actionable. Max 4 items per array.`;
+Be specific and actionable. Max 4 items per array.
+Write all visible explanation text in second person. Use "you" and "your", never "the candidate".`;
 
 export async function analyzeJobFit(
   job: JobContext,
@@ -83,7 +78,7 @@ export async function analyzeJobFit(
     messages: [
       {
         role: "user",
-        content: `JOB:\n${jobText}\n\nCANDIDATE:\n${profileText}`,
+        content: `JOB:\n${jobText}\n\nYOUR PROFILE:\n${profileText}`,
       },
     ],
     modelFlavor: "standard",

@@ -97,26 +97,6 @@ export function formatSalary(
   return `Up to ${formatter.format(salaryMax ?? 0)}`;
 }
 
-export function buildWhyShown(job: JobCardData) {
-  const reasons = [
-    `${formatDisplayLabel(job.industry)} target`,
-    `${formatDisplayLabel(job.workMode)} work mode`,
-    `${job.roleFamily} role family`,
-  ];
-
-  if (job.eligibility?.submissionCategory === "AUTO_SUBMIT_READY") {
-    reasons.unshift("Auto-apply eligible now");
-  } else if (job.eligibility?.submissionCategory === "AUTO_FILL_REVIEW") {
-    reasons.unshift("Manual application path");
-  }
-
-  if (job.sourceMappings.length > 1) {
-    reasons.push("Seen across multiple sources");
-  }
-
-  return reasons.slice(0, 4);
-}
-
 function toDateValue(value: string | Date) {
   return value instanceof Date ? value : new Date(value);
 }
@@ -176,53 +156,6 @@ export function trustLevelColor(level: string): string {
   if (level === "TRUSTED") return "text-emerald-600";
   if (level === "CAUTION") return "text-amber-600";
   return "text-muted-foreground";
-}
-
-/**
- * Short uppercase ATS identifier derived from a connector source name.
- * "Greenhouse:vercel" → "GH", "Lever:stripe" → "LV", "SmartRecruiters:…" → "SR".
- * Returns null for unknown or demo sources so no badge is shown.
- */
-/**
- * Extract a short, scannable snippet from a job's shortSummary.
- * Strips section-header prefixes ("ABOUT THE ROLE", etc.) and generic
- * boilerplate intros ("X is hiring a Y...") before truncating.
- * Returns null if the result is too generic to be useful.
- */
-export function buildDescriptionSnippet(shortSummary: string | null | undefined): string | null {
-  if (!shortSummary?.trim()) return null;
-
-  let text = shortSummary
-    .trim()
-    .replace(/^[\s>*•\-–—]+/, "")
-    .replace(/\[[^\]]+\]\([^)]+\)/g, " ")
-    .replace(/https?:\/\/\S+/gi, " ")
-    .replace(/www\.\S+/gi, " ")
-    .replace(/\s+/g, " ")
-    .trim();
-
-  if (text.length < 24) return null;
-
-  // Strip leading section labels (e.g. "ABOUT THE ROLE ", "THE ROLE: ")
-  text = text.replace(/^(about the role|the role|about this role|role overview|position overview)[:\s]*/i, "").trim();
-
-  // Skip generic boilerplate: "X is hiring a Y. ... Join a fast-moving team..."
-  if (/is hiring (a|an) .+\.\s*(fully remote|on-site|hybrid|remote-friendly)?/i.test(text) &&
-      /join a fast-moving team/i.test(text)) {
-    return null;
-  }
-
-  // Skip degenerate snippets that collapse to just company name + work mode
-  if (/^[A-Z][A-Za-z0-9&' .-]{0,40}(remote-friendly|on-site expectation|hybrid schedule|flexible work arrangement)\.?$/i.test(text)) {
-    return null;
-  }
-
-  // Truncate cleanly at a word boundary
-  const MAX = 160;
-  if (text.length <= MAX) return text;
-  const truncated = text.slice(0, MAX);
-  const lastSpace = truncated.lastIndexOf(" ");
-  return (lastSpace > 100 ? truncated.slice(0, lastSpace) : truncated) + "…";
 }
 
 export function getSourceShortName(sourceName: string | null): string | null {

@@ -55,6 +55,10 @@ export default async function JobApplyPage({ params }: JobApplyPageProps) {
   const sourceShortName = getSourceShortName(job.primaryExternalLink?.sourceName ?? null);
   const showSubmissionMeta = shouldShowSubmissionMeta(job);
 
+  if (reviewState === "MANUAL_ONLY") {
+    redirect(`/jobs/${job.id}`);
+  }
+
   // Compact status strip values
   const packageState = latestPackage ? "Package ready" : "No package";
   const submissionState = latestSubmission

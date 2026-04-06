@@ -77,6 +77,7 @@ export function CreateTrackedApplicationForm() {
             className="h-9 rounded-lg border border-input/80 bg-background/70 px-3 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
           >
             <option value="WISHLIST">Wishlist</option>
+            <option value="PREPARING">Preparing</option>
             <option value="APPLIED">Applied</option>
             <option value="SCREEN">Screen</option>
             <option value="INTERVIEW">Interview</option>

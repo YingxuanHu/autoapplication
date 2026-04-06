@@ -2,15 +2,13 @@
  * AI cover letter generation.
  *
  * Produces a concise, professional cover letter tailored to a specific job
- * and the candidate's profile. ~3 paragraphs, no filler.
+ * and the user's profile. ~3 paragraphs, no filler.
  */
 import { aiComplete } from "./provider";
 import type { JobContext, ProfileContext } from "./job-fit";
+import type { CoverLetterResult } from "./types";
 
-export type CoverLetterResult = {
-  text: string; // The cover letter body (no salutation line — caller adds)
-  wordCount: number;
-};
+export type { CoverLetterResult } from "./types";
 
 const SYSTEM_PROMPT = `You are a professional career writer. Write a concise, targeted cover letter body for a job application.
 
@@ -34,7 +32,7 @@ export async function generateCoverLetter(
     messages: [
       {
         role: "user",
-        content: `Write a cover letter for this position:\n\nROLE: ${job.title} at ${job.company} (${job.location}, ${job.workMode})\n\nJOB DESCRIPTION:\n${job.description.slice(0, 2000)}\n\nCANDIDATE PROFILE:\n${profileText}`,
+        content: `Write a cover letter for this position:\n\nROLE: ${job.title} at ${job.company} (${job.location}, ${job.workMode})\n\nJOB DESCRIPTION:\n${job.description.slice(0, 2000)}\n\nYOUR PROFILE:\n${profileText}`,
       },
     ],
     modelFlavor: "standard",

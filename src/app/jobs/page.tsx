@@ -7,6 +7,7 @@ import { JobsFeedList } from "@/components/jobs/jobs-feed-list";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { getOptionalSessionUser } from "@/lib/current-user";
+import { normalizeCareerStageFilterValue } from "@/lib/career-stage";
 import { formatPostedAge } from "@/lib/job-display";
 import { serializeJobCardData } from "@/lib/job-serialization";
 import { getIngestionStatus } from "@/lib/queries/ingestion";
@@ -17,10 +18,11 @@ type JobsPageProps = {
 };
 
 const EXPERIENCE_LEVEL_GROUPS: Array<{ label: string; value: string }> = [
-  { label: "Entry", value: "ENTRY" },
-  { label: "Mid", value: "MID" },
-  { label: "Senior", value: "SENIOR" },
-  { label: "Staff+", value: "LEAD,EXECUTIVE" },
+  { label: "Internship & Co-op", value: "INTERNSHIP" },
+  { label: "Entry-Level", value: "ENTRY_LEVEL" },
+  { label: "Associate / Junior", value: "ASSOCIATE" },
+  { label: "Senior & Leadership", value: "SENIOR_LEVEL" },
+  { label: "Administrative Support", value: "ADMINISTRATIVE_SUPPORT" },
 ];
 
 const ROLE_FAMILY_GROUPS: Array<{ label: string; value: string }> = [
@@ -88,6 +90,7 @@ export default async function JobsPage({ searchParams }: JobsPageProps) {
             reasonDescription: job.eligibility.reasonDescription,
           }
         : null,
+      description: job.description,
       isSaved: job.isSaved,
     })
   );
@@ -135,6 +138,18 @@ export default async function JobsPage({ searchParams }: JobsPageProps) {
                 : ""}
             </p>
           ) : null}
+          <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm sm:text-[15px]">
+            <span className="text-foreground">
+              <span className="font-medium">{jobsResult.summary.addedTodayCount.toLocaleString()}</span>{" "}
+              added today
+            </span>
+            <span className="text-muted-foreground">
+              <span className="font-medium text-foreground">
+                {jobsResult.summary.expiredTodayCount.toLocaleString()}
+              </span>{" "}
+              expired today
+            </span>
+          </div>
           {hasScopedResults && ingestionStatus.liveJobCount > jobsResult.total ? (
             <p className="mt-1 text-xs text-muted-foreground">
               From {ingestionStatus.liveJobCount.toLocaleString()} total live jobs in the pool
@@ -215,6 +230,10 @@ export default async function JobsPage({ searchParams }: JobsPageProps) {
 
                         <div className="max-h-[min(65vh,34rem)] space-y-3 overflow-y-auto px-4 sm:px-5">
                           <FilterDropdownField
+                            clearHref={buildJobsHref(resolvedSearchParams, {
+                              page: undefined,
+                              submissionCategory: undefined,
+                            })}
                             emptyLabel="All categories"
                             name="submissionCategory"
                             options={CATEGORY_OPTIONS}
@@ -223,6 +242,10 @@ export default async function JobsPage({ searchParams }: JobsPageProps) {
                           />
 
                           <FilterDropdownField
+                            clearHref={buildJobsHref(resolvedSearchParams, {
+                              page: undefined,
+                              roleFamily: undefined,
+                            })}
                             columnsClassName="sm:grid-cols-2"
                             emptyLabel="All roles"
                             name="roleFamily"
@@ -232,15 +255,23 @@ export default async function JobsPage({ searchParams }: JobsPageProps) {
                           />
 
                           <FilterDropdownField
+                            clearHref={buildJobsHref(resolvedSearchParams, {
+                              page: undefined,
+                              experienceLevel: undefined,
+                            })}
                             columnsClassName="sm:grid-cols-2"
-                            emptyLabel="All levels"
+                            emptyLabel="All stages"
                             name="experienceLevel"
                             options={EXPERIENCE_LEVEL_GROUPS}
                             selected={filters.experienceLevel}
-                            title="Level"
+                            title="Career stage"
                           />
 
                           <FilterDropdownField
+                            clearHref={buildJobsHref(resolvedSearchParams, {
+                              page: undefined,
+                              workMode: undefined,
+                            })}
                             columnsClassName="sm:grid-cols-2"
                             emptyLabel="Any work mode"
                             name="workMode"
@@ -250,6 +281,10 @@ export default async function JobsPage({ searchParams }: JobsPageProps) {
                           />
 
                           <FilterDropdownField
+                            clearHref={buildJobsHref(resolvedSearchParams, {
+                              page: undefined,
+                              region: undefined,
+                            })}
                             columnsClassName="sm:grid-cols-2"
                             emptyLabel="North America"
                             name="region"
@@ -259,6 +294,10 @@ export default async function JobsPage({ searchParams }: JobsPageProps) {
                           />
 
                           <FilterDropdownField
+                            clearHref={buildJobsHref(resolvedSearchParams, {
+                              page: undefined,
+                              industry: undefined,
+                            })}
                             columnsClassName="sm:grid-cols-2"
                             emptyLabel="Any industry"
                             name="industry"
@@ -443,7 +482,9 @@ function parseJobFilters(
     industry: getMultiSearchParam(searchParams, "industry"),
     roleFamily: getMultiSearchParam(searchParams, "roleFamily"),
     salaryMin: getPositiveNumber(getSearchParam(searchParams, "salaryMin")),
-    experienceLevel: getMultiSearchParam(searchParams, "experienceLevel"),
+    experienceLevel: normalizeCareerStageFilterValue(
+      getMultiSearchParam(searchParams, "experienceLevel")
+    ),
     submissionCategory: normalizeSubmissionCategoryFilter(rawSubmissionCategory),
     status: getSearchParam(searchParams, "status"),
     sortBy: getSearchParam(searchParams, "sortBy"),
@@ -546,6 +587,7 @@ function FilterFieldLabel({ children }: { children: React.ReactNode }) {
 }
 
 function FilterDropdownField({
+  clearHref,
   columnsClassName,
   emptyLabel,
   name,
@@ -553,6 +595,7 @@ function FilterDropdownField({
   selected,
   title,
 }: {
+  clearHref: string;
   columnsClassName?: string;
   emptyLabel: string;
   name: string;
@@ -581,6 +624,16 @@ function FilterDropdownField({
       </summary>
 
       <div className="border-t border-border/60 px-2.5 py-2.5">
+        {selectedLabels.length > 0 ? (
+          <div className="mb-2 flex justify-end">
+            <Link
+              className="text-xs font-medium text-muted-foreground transition hover:text-foreground"
+              href={clearHref}
+            >
+              Clear filter
+            </Link>
+          </div>
+        ) : null}
         <div className={`grid gap-1.5 ${columnsClassName ?? ""}`}>
           {options.map((option) => (
             <FilterDropdownOption
@@ -609,22 +662,15 @@ function FilterDropdownOption({
   value: string;
 }) {
   return (
-    <label
-      className={`flex min-h-10 cursor-pointer items-center gap-3 rounded-lg px-2.5 py-2 text-sm transition ${
-        checked ? "bg-background/85 text-foreground" : "text-foreground hover:bg-background/65"
-      }`}
-    >
-      <span
-        className={`flex size-4 shrink-0 items-center justify-center rounded border ${
-          checked
-            ? "border-foreground bg-foreground text-background"
-            : "border-border/70 bg-background/80 text-transparent"
-        }`}
-      >
-        <Check className="h-3 w-3" />
-      </span>
+    <label className="flex min-h-10 cursor-pointer items-center gap-3 rounded-lg px-2.5 py-2 text-sm text-foreground transition hover:bg-background/65">
+      <input
+        className="size-4 shrink-0 rounded border-border/70 bg-background/80 accent-foreground"
+        defaultChecked={checked}
+        name={name}
+        type="checkbox"
+        value={value}
+      />
       <span className="min-w-0 truncate">{label}</span>
-      <input className="sr-only" defaultChecked={checked} name={name} type="checkbox" value={value} />
     </label>
   );
 }

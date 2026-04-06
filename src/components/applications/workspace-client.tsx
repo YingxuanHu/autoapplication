@@ -8,17 +8,18 @@ import { ChevronDown, ChevronRight } from "lucide-react";
 import {
   addTag,
   addTimelineEvent,
-  analyzeResumeFit,
   deleteTimelineEvent,
+  importJobDescription,
   linkDocument,
   removeTag,
-  summarizeJobDescription,
   unlinkDocument,
   updateApplicationField,
   updateApplicationStatus,
   uploadWorkspaceDocument,
 } from "@/app/applications/[id]/actions";
 import { importDocumentToProfile } from "@/app/profile/actions";
+import { AIWorkspace } from "@/components/jobs/ai-workspace";
+import { DeleteApplicationButton } from "@/components/applications/delete-application-button";
 import { JobAssistant } from "@/components/applications/job-assistant";
 import { Button } from "@/components/ui/button";
 import { ConfirmActionDialog } from "@/components/ui/confirm-action-dialog";
@@ -28,6 +29,8 @@ import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { Textarea } from "@/components/ui/textarea";
 import { useNotifications } from "@/components/ui/notification-provider";
 import type { DocumentType, TrackedApplicationEventType, TrackedApplicationStatus } from "@/generated/prisma/client";
+import { parseStoredFitAnalysis } from "@/lib/ai/fit-analysis-format";
+import { getJobDescriptionSummaryBlocks } from "@/lib/job-description-format";
 import { TRACKED_STATUS_LABEL } from "@/lib/tracker-ui";
 
 type ActionState = {
@@ -69,6 +72,9 @@ type UserDocument = {
 
 type WorkspaceApplication = {
   id: string;
+  canonicalJob: {
+    id: string;
+  } | null;
   company: string;
   roleTitle: string;
   roleUrl: string | null;
@@ -93,6 +99,7 @@ type WorkspaceClientProps = {
 
 const statusOptions = [
   { value: "WISHLIST", label: "Wishlist" },
+  { value: "PREPARING", label: "Preparing" },
   { value: "APPLIED", label: "Applied" },
   { value: "SCREEN", label: "Screen" },
   { value: "INTERVIEW", label: "Interview" },
@@ -119,6 +126,7 @@ const eventTypeOptions = [
 
 const statusBadgeClass: Record<string, string> = {
   WISHLIST: "border-border/70 bg-background text-muted-foreground",
+  PREPARING: "border-violet-500/20 bg-violet-500/10 text-violet-700 dark:text-violet-300",
   APPLIED: "border-amber-500/20 bg-amber-500/10 text-amber-700 dark:text-amber-300",
   SCREEN: "border-cyan-500/20 bg-cyan-500/10 text-cyan-700 dark:text-cyan-300",
   INTERVIEW: "border-blue-500/20 bg-blue-500/10 text-blue-700 dark:text-blue-300",
@@ -166,32 +174,31 @@ function renderInlineBold(text: string, tone: "assistant" | "user" = "assistant"
   return parts;
 }
 
-function renderFormattedText(text: string) {
-  return text.split("\n").map((line, index) => {
-    const boldMatch = line.match(/^\*\*(.+)\*\*$/);
-    if (boldMatch) {
+function renderDescriptionSummary(text: string) {
+  return getJobDescriptionSummaryBlocks(text, 7).map((block, index) => {
+    if (block.kind === "header") {
       return (
         <p className="mt-3 text-sm font-semibold text-foreground first:mt-0" key={index}>
-          {boldMatch[1]}
+          {block.text}
         </p>
       );
     }
 
-    if (line.startsWith("• ") || line.startsWith("- ") || line.startsWith("· ")) {
+    if (block.kind === "list") {
       return (
-        <p className="ml-3 text-sm text-foreground/80" key={index}>
-          · {renderInlineBold(line.slice(2))}
-        </p>
+        <ul className="ml-4 space-y-1 text-sm text-foreground/80" key={index}>
+          {block.items.map((item, itemIndex) => (
+            <li className="list-disc leading-relaxed" key={`${item}-${itemIndex}`}>
+              {item}
+            </li>
+          ))}
+        </ul>
       );
-    }
-
-    if (line.trim() === "") {
-      return <div className="h-1" key={index} />;
     }
 
     return (
-      <p className="text-sm text-foreground/80" key={index}>
-        {renderInlineBold(line)}
+      <p className="text-sm leading-relaxed text-foreground/80" key={index}>
+        {renderInlineBold(block.text)}
       </p>
     );
   });
@@ -218,6 +225,10 @@ function formatDateTime(date: Date) {
 
 function isGeneratedStatusNote(event: TimelineEvent) {
   if (!event.note) return false;
+  if (event.type === "NOTE") {
+    return event.note === `Status updated to ${TRACKED_STATUS_LABEL.PREPARING}.`;
+  }
+
   if (!["APPLIED", "SCREEN", "INTERVIEW", "OFFER", "REJECTED"].includes(event.type)) {
     return false;
   }
@@ -824,23 +835,34 @@ function JobDescriptionField({
   const [showPaste, setShowPaste] = useState(false);
   const [pasteContent, setPasteContent] = useState("");
   const [draft, setDraft] = useState(value);
-  const [summarizing, setSummarizing] = useState(false);
+  const [importing, setImporting] = useState(false);
 
   const [editState, editAction] = useActionState(updateApplicationField, INITIAL_ACTION_STATE);
-  const [summarizeState, summarizeAction] = useActionState(summarizeJobDescription, INITIAL_ACTION_STATE);
+  const [importState, importAction] = useActionState(importJobDescription, INITIAL_ACTION_STATE);
   useActionNotifications(editState);
-  useActionNotifications(summarizeState);
+  useActionNotifications(importState);
 
-  const summarizeActionState = summarizeState as ActionState & { fetchFailed?: boolean };
-  const needsPaste = showPaste || summarizeActionState.fetchFailed;
+  const importActionState = importState as ActionState & { fetchFailed?: boolean };
+  const needsPaste = showPaste || importActionState.fetchFailed;
 
   function handleCancel() {
     setDraft(value);
     setEditing(false);
   }
 
-  function handleSummarizeClick() {
+  function handlePasteClick() {
     setShowPaste(true);
+  }
+
+  function handleImportFromLink() {
+    setImporting(true);
+    const formData = new FormData();
+    formData.set("applicationId", applicationId);
+    formData.set("content", "");
+    startTransition(async () => {
+      await importAction(formData);
+      setImporting(false);
+    });
   }
 
   return (
@@ -848,13 +870,22 @@ function JobDescriptionField({
       <div className="flex items-center justify-between gap-3">
         <h3 className={WORKSPACE_FIELD_TITLE_CLASS}>Job description</h3>
         <div className="flex items-center gap-1">
-          {!editing && !showPaste && !summarizeActionState.fetchFailed ? (
+          {!editing && !showPaste && hasRoleUrl ? (
             <button
               className="rounded px-2 py-1 text-xs font-medium text-muted-foreground transition hover:bg-muted/70 hover:text-foreground"
-              onClick={handleSummarizeClick}
+              onClick={handleImportFromLink}
               type="button"
             >
-              {value ? "Re-summarize" : "Summarize with AI"}
+              {value ? "Re-import from link" : "Import from link"}
+            </button>
+          ) : null}
+          {!editing && !showPaste ? (
+            <button
+              className="rounded px-2 py-1 text-xs font-medium text-muted-foreground transition hover:bg-muted/70 hover:text-foreground"
+              onClick={handlePasteClick}
+              type="button"
+            >
+              Paste posting
             </button>
           ) : null}
           {!editing && !showPaste ? (
@@ -869,18 +900,18 @@ function JobDescriptionField({
         </div>
       </div>
 
-      {summarizeState.error ? (
+      {importState.error ? (
         <p className="mt-2 rounded-lg border border-destructive/20 bg-destructive/5 px-3 py-2 text-xs text-destructive">
-          {summarizeState.error}
+          {importState.error}
         </p>
       ) : null}
 
       {needsPaste && !editing ? (
         <form
           action={async (formData) => {
-            setSummarizing(true);
-            await summarizeAction(formData);
-            setSummarizing(false);
+            setImporting(true);
+            await importAction(formData);
+            setImporting(false);
             setShowPaste(false);
             setPasteContent("");
           }}
@@ -888,7 +919,7 @@ function JobDescriptionField({
         >
           <input name="applicationId" type="hidden" value={applicationId} />
           <p className="text-xs text-muted-foreground">
-            Paste the job posting content below for the best results. AI will extract and organize the key details.
+            Paste the job posting content below and it will be cleaned up into an organized summary.
           </p>
           <Textarea
             className="min-h-[120px] resize-y text-sm"
@@ -899,18 +930,18 @@ function JobDescriptionField({
             value={pasteContent}
           />
           <div className="flex gap-2">
-            <SubmitBtn label="Summarize" saving="Summarizing..." />
+            <SubmitBtn label="Organize & save" saving="Organizing..." />
             {hasRoleUrl && !pasteContent ? (
               <Button
                 className="h-8 px-3 text-xs"
                 onClick={() => {
-                  setSummarizing(true);
+                  setImporting(true);
                   const formData = new FormData();
                   formData.set("applicationId", applicationId);
                   formData.set("content", "");
                   startTransition(async () => {
-                    await summarizeAction(formData);
-                    setSummarizing(false);
+                    await importAction(formData);
+                    setImporting(false);
                   });
                   setShowPaste(false);
                 }}
@@ -918,7 +949,7 @@ function JobDescriptionField({
                 type="button"
                 variant="secondary"
               >
-                Auto-fetch from URL
+                Import from link
               </Button>
             ) : null}
             <Button
@@ -966,18 +997,18 @@ function JobDescriptionField({
             </Button>
           </div>
         </form>
-      ) : summarizing ? (
+      ) : importing ? (
         <div className="mt-4 flex items-center justify-center gap-2 py-4">
           <LoadingSpinner className="h-4 w-4" />
-          <span className="text-sm text-muted-foreground">Summarizing with AI...</span>
+          <span className="text-sm text-muted-foreground">Importing and organizing...</span>
         </div>
       ) : (
         <div className="mt-3">
           {value ? (
-            renderFormattedText(value)
+            renderDescriptionSummary(value)
           ) : (
             <p className="text-sm italic text-muted-foreground">
-              No job description yet. Use &quot;Summarize with AI&quot; to paste and extract, or &quot;Edit&quot; to write manually.
+              No job description yet. Import it from the posting link, paste the posting text, or edit it manually.
             </p>
           )}
         </div>
@@ -1186,60 +1217,63 @@ function TailoredResumeSection({ applicationId }: { applicationId: string }) {
   );
 }
 
-function FitAnalysisSection({
+function WorkspaceAISection({
   applicationId,
-  fitAnalysis,
+  canonicalJobId,
+  fitAnalysisText,
   hasJobDescription,
-  hasResume,
+  aiConfigured,
+  company,
+  roleTitle,
 }: {
   applicationId: string;
-  fitAnalysis: string | null;
+  canonicalJobId: string | null;
+  fitAnalysisText: string | null;
   hasJobDescription: boolean;
-  hasResume: boolean;
+  aiConfigured: boolean;
+  company: string;
+  roleTitle: string;
 }) {
-  const [state, formAction] = useActionState(analyzeResumeFit, INITIAL_ACTION_STATE);
-  useActionNotifications(state);
-
-  const canAnalyze = hasJobDescription && hasResume;
+  const [hasFitAnalysis, setHasFitAnalysis] = useState(Boolean(fitAnalysisText));
+  const initialStructuredFit = parseStoredFitAnalysis(fitAnalysisText);
+  const canAnalyze = Boolean(canonicalJobId) || hasJobDescription;
 
   return (
-    <div className="rounded-xl border border-border/70 bg-background/50 p-4">
-      <div className="flex items-center justify-between gap-3">
-        <h3 className={WORKSPACE_FIELD_TITLE_CLASS}>Fit analysis</h3>
-        {canAnalyze ? (
-          <form action={formAction}>
-            <input name="applicationId" type="hidden" value={applicationId} />
-            <SubmitBtn label={fitAnalysis ? "Re-analyze" : "Analyze fit"} saving="Analyzing..." />
-          </form>
-        ) : null}
-      </div>
-
-      {state.error ? (
-        <p className="mt-2 rounded-lg border border-destructive/20 bg-destructive/5 px-3 py-2 text-xs text-destructive">
-          {state.error}
-        </p>
-      ) : null}
-
-      {!canAnalyze && !fitAnalysis ? (
-        <p className="mt-2 text-sm text-muted-foreground">
-          {!hasJobDescription && !hasResume
-            ? "Add a job description and link a resume to analyze fit."
-            : !hasJobDescription
-              ? "Add a job description first."
-              : "Link a resume or set a primary resume in your Profile."}
-        </p>
-      ) : fitAnalysis ? (
-        <>
-          <div className="mt-3">{renderFormattedText(fitAnalysis)}</div>
-          <div className="mt-3 border-t border-border/70 pt-3">
+    <div className="grid gap-3">
+      {aiConfigured ? (
+        <AIWorkspace
+          company={company}
+          coverLetterEndpoint={`/api/applications/${applicationId}/ai/cover-letter`}
+          fitAnalysisEndpoint={`/api/applications/${applicationId}/ai/analyze`}
+          initialFitAnalysisText={
+            initialStructuredFit || fitAnalysisText ? fitAnalysisText : null
+          }
+          canAnalyzeFit={canAnalyze}
+          fitUnavailableMessage="Add a job description first, or link this application to a pool job."
+          jobTitle={roleTitle}
+          onFitAnalysisGenerated={() => {
+            setHasFitAnalysis(true);
+          }}
+          sectionTitleClassName={`flex items-center gap-2 ${WORKSPACE_FIELD_TITLE_CLASS}`}
+        />
+      ) : (
+        <div className="rounded-xl border border-dashed border-border bg-background/50 p-4">
+          <p className={WORKSPACE_FIELD_TITLE_CLASS}>Fit analysis</p>
+          <p className="mt-2 text-sm text-muted-foreground">AI features are not configured.</p>
+          <p className="mt-1 text-xs text-muted-foreground">
+            Add <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">OPENAI_API_KEY</code> to{" "}
+            <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">.env</code> to unlock fit analysis and cover letter generation.
+          </p>
+        </div>
+      )}
+      {hasFitAnalysis ? (
+        <div className="rounded-xl border border-border/70 bg-background/50 p-4">
+          <h4 className={WORKSPACE_FIELD_TITLE_CLASS}>Tailored resume</h4>
+          <div className="mt-3">
             <TailoredResumeSection applicationId={applicationId} />
           </div>
-        </>
-      ) : (
-        <p className="mt-2 text-sm text-muted-foreground">
-          Click &quot;Analyze fit&quot; to compare your resume against this job.
-        </p>
-      )}
+        </div>
+      ) : null}
     </div>
   );
 }
@@ -1286,7 +1320,15 @@ export function ApplicationWorkspaceClient({
             </TagsSection>
           </div>
 
-          <StatusSelector applicationId={application.id} currentStatus={application.status} />
+          <div className="flex flex-col items-start gap-2 sm:items-end">
+            <StatusSelector applicationId={application.id} currentStatus={application.status} />
+            <DeleteApplicationButton
+              applicationId={application.id}
+              redirectToList
+              size="sm"
+              variant="ghost"
+            />
+          </div>
         </div>
       </section>
 
@@ -1308,11 +1350,14 @@ export function ApplicationWorkspaceClient({
                 hasRoleUrl={Boolean(application.roleUrl)}
                 value={application.jobDescription ?? ""}
               />
-              <FitAnalysisSection
+              <WorkspaceAISection
                 applicationId={application.id}
-                fitAnalysis={application.fitAnalysis}
+                aiConfigured={aiConfigured}
+                canonicalJobId={application.canonicalJob?.id ?? null}
+                company={application.company}
+                fitAnalysisText={application.fitAnalysis}
                 hasJobDescription={Boolean(application.jobDescription)}
-                hasResume={Boolean(resumeLink)}
+                roleTitle={application.roleTitle}
               />
             </div>
           </section>

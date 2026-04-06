@@ -2,6 +2,10 @@ import type { Prisma, TrackedApplicationDocumentSlot, TrackedApplicationEventTyp
 
 import { prisma } from "@/lib/db";
 import {
+  formatJobDescriptionText,
+  pickBestFormattedJobDescription,
+} from "@/lib/job-description-format";
+import {
   requireCurrentAuthUserId,
   requireCurrentProfileId,
 } from "@/lib/current-user";
@@ -46,6 +50,15 @@ function normalizeTagNames(raw: string | string[]) {
   )].sort((left, right) => left.localeCompare(right));
 }
 
+function getNormalizedTrackedJobDescription(description: string | null | undefined) {
+  const cleaned = String(description ?? "").trim();
+  if (!cleaned) {
+    return null;
+  }
+
+  return pickBestFormattedJobDescription([formatJobDescriptionText(cleaned), cleaned]) ?? cleaned;
+}
+
 function statusToEventType(status: TrackedApplicationStatus): TrackedApplicationEventType {
   switch (status) {
     case "APPLIED":
@@ -58,11 +71,31 @@ function statusToEventType(status: TrackedApplicationStatus): TrackedApplication
       return "OFFER";
     case "REJECTED":
       return "REJECTED";
+    case "PREPARING":
     case "WISHLIST":
     case "WITHDRAWN":
     default:
       return "NOTE";
   }
+}
+
+function resolveTrackedStatusFromJobUpsert(
+  currentStatus: TrackedApplicationStatus | null | undefined,
+  requestedStatus: TrackedApplicationStatus
+): TrackedApplicationStatus {
+  if (!currentStatus) {
+    return requestedStatus;
+  }
+
+  if (requestedStatus === "WISHLIST") {
+    return currentStatus;
+  }
+
+  if (requestedStatus === "PREPARING") {
+    return currentStatus === "WISHLIST" ? "PREPARING" : currentStatus;
+  }
+
+  return requestedStatus;
 }
 
 function isDocumentTypeCompatibleWithSlot(
@@ -239,7 +272,12 @@ export async function getTrackedDashboardData(input: {
         where: { userId, readAt: null },
       }),
       prisma.tag.findMany({
-        where: { userId },
+        where: {
+          userId,
+          applications: {
+            some: {},
+          },
+        },
         orderBy: { name: "asc" },
         select: { id: true, name: true },
       }),
@@ -354,7 +392,12 @@ export async function getTrackedApplicationWorkspace(id: string) {
         },
       }),
       prisma.tag.findMany({
-        where: { userId: authUserId },
+        where: {
+          userId: authUserId,
+          applications: {
+            some: {},
+          },
+        },
         orderBy: { name: "asc" },
         select: { id: true, name: true },
       }),
@@ -517,6 +560,7 @@ export async function createTrackedApplication(input: {
 
 const TRACKED_STATUS_NOTE: Record<TrackedApplicationStatus, string> = {
   WISHLIST: "wishlist",
+  PREPARING: "preparing",
   APPLIED: "applied",
   SCREEN: "screen",
   INTERVIEW: "interview",
@@ -581,8 +625,8 @@ export async function upsertTrackedApplicationFromJob(input: {
   }
 
   const latestPackage = job.applicationPackages[0] ?? null;
-  const nextStatus =
-    input.status === "WISHLIST" && existing ? existing.status : input.status;
+  const normalizedJobDescription = getNormalizedTrackedJobDescription(job.description);
+  const nextStatus = resolveTrackedStatusFromJobUpsert(existing?.status, input.status);
   const tracked = existing
     ? await prisma.trackedApplication.update({
         where: { id: existing.id },
@@ -592,7 +636,7 @@ export async function upsertTrackedApplicationFromJob(input: {
           roleUrl: job.applyUrl,
           deadline: job.deadline,
           status: nextStatus,
-          jobDescription: existing.jobDescription ?? job.description,
+          jobDescription: existing.jobDescription ?? normalizedJobDescription,
           fitAnalysis: existing.fitAnalysis ?? latestPackage?.whyItMatches ?? null,
         },
       })
@@ -605,7 +649,7 @@ export async function upsertTrackedApplicationFromJob(input: {
           roleUrl: job.applyUrl,
           status: input.status,
           deadline: job.deadline,
-          jobDescription: job.description,
+          jobDescription: normalizedJobDescription,
           fitAnalysis: latestPackage?.whyItMatches ?? null,
         },
       });
@@ -783,6 +827,73 @@ export async function deleteTrackedApplicationEvent(input: {
   ]);
 }
 
+export async function deleteTrackedApplication(input: { applicationId: string }) {
+  const [authUserId, profileId] = await Promise.all([
+    requireCurrentAuthUserId(),
+    requireCurrentProfileId(),
+  ]);
+
+  const application = await prisma.trackedApplication.findFirst({
+    where: {
+      id: input.applicationId,
+      userId: authUserId,
+    },
+    select: {
+      id: true,
+      canonicalJobId: true,
+      status: true,
+      tags: {
+        select: {
+          tagId: true,
+        },
+      },
+    },
+  });
+
+  if (!application) {
+    throw new Error("Tracked application not found");
+  }
+
+  await prisma.$transaction(async (tx) => {
+    await tx.trackedApplication.delete({
+      where: { id: input.applicationId },
+    });
+
+    if (
+      application.canonicalJobId &&
+      (application.status === "WISHLIST" || application.status === "PREPARING")
+    ) {
+      await tx.savedJob.deleteMany({
+        where: {
+          userId: profileId,
+          canonicalJobId: application.canonicalJobId,
+          status: "ACTIVE",
+        },
+      });
+    }
+
+    for (const { tagId } of application.tags) {
+      const remainingUsageCount = await tx.trackedApplicationTag.count({
+        where: { tagId },
+      });
+
+      if (remainingUsageCount === 0) {
+        await tx.tag.deleteMany({
+          where: {
+            id: tagId,
+            userId: authUserId,
+          },
+        });
+      }
+    }
+  });
+
+  return {
+    canonicalJobId: application.canonicalJobId,
+    status: application.status,
+  };
+}
+
 export async function removeTrackedWishlistFromJob(canonicalJobId: string) {
   const userId = await requireCurrentAuthUserId();
 
@@ -869,18 +980,34 @@ export async function removeTrackedApplicationTag(input: {
     throw new Error("Tracked application not found");
   }
 
-  await prisma.$transaction([
-    prisma.trackedApplicationTag.deleteMany({
+  await prisma.$transaction(async (tx) => {
+    await tx.trackedApplicationTag.deleteMany({
       where: {
         trackedApplicationId: input.applicationId,
         tagId: input.tagId,
       },
-    }),
-    prisma.trackedApplication.update({
+    });
+
+    await tx.trackedApplication.update({
       where: { id: input.applicationId },
       data: { updatedAt: new Date() },
-    }),
-  ]);
+    });
+
+    const remainingUsageCount = await tx.trackedApplicationTag.count({
+      where: {
+        tagId: input.tagId,
+      },
+    });
+
+    if (remainingUsageCount === 0) {
+      await tx.tag.deleteMany({
+        where: {
+          id: input.tagId,
+          userId,
+        },
+      });
+    }
+  });
 }
 
 export async function linkTrackedApplicationDocument(input: {
@@ -1063,8 +1190,9 @@ export async function syncTrackedApplicationFromSubmission(canonicalJobId: strin
   }
 
   const latestPackage = job.applicationPackages[0] ?? null;
+  const normalizedJobDescription = getNormalizedTrackedJobDescription(job.description);
   const nextStatus: TrackedApplicationStatus =
-    existing?.status === "WISHLIST" || !existing
+    existing?.status === "WISHLIST" || existing?.status === "PREPARING" || !existing
       ? "APPLIED"
       : existing.status;
 
@@ -1077,7 +1205,7 @@ export async function syncTrackedApplicationFromSubmission(canonicalJobId: strin
           roleUrl: job.applyUrl,
           deadline: job.deadline,
           status: nextStatus,
-          jobDescription: existing.jobDescription ?? job.description,
+          jobDescription: existing.jobDescription ?? normalizedJobDescription,
           fitAnalysis: existing.fitAnalysis ?? latestPackage?.whyItMatches ?? null,
         },
       })
@@ -1090,12 +1218,12 @@ export async function syncTrackedApplicationFromSubmission(canonicalJobId: strin
           roleUrl: job.applyUrl,
           status: "APPLIED",
           deadline: job.deadline,
-          jobDescription: job.description,
+          jobDescription: normalizedJobDescription,
           fitAnalysis: latestPackage?.whyItMatches ?? null,
         },
       });
 
-  if (!existing || existing.status === "WISHLIST") {
+  if (!existing || existing.status === "WISHLIST" || existing.status === "PREPARING") {
     await prisma.trackedApplicationEvent.create({
       data: {
         trackedApplicationId: tracked.id,

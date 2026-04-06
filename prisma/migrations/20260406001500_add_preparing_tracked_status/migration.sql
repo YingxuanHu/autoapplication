@@ -1,0 +1,1 @@
+ALTER TYPE "TrackedApplicationStatus" ADD VALUE IF NOT EXISTS 'PREPARING';

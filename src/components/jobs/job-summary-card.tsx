@@ -1,13 +1,10 @@
 import Link from "next/link";
-import { ExternalLink } from "lucide-react";
+import { JobMetaRow } from "@/components/jobs/job-meta-row";
+import { ManualApplyMenu } from "@/components/jobs/manual-apply-menu";
 import { Button } from "@/components/ui/button";
 import {
-  buildDescriptionSnippet,
   formatPostedAge,
-  formatSalary,
-  formatDisplayLabel,
   getDeadlineUrgency,
-  getSourceShortName,
   getSubmissionMeta,
   shouldShowSubmissionMeta,
   submissionCategoryColor,
@@ -26,15 +23,14 @@ export function JobSummaryCard({
   footerActions,
 }: JobSummaryCardProps) {
   const submissionMeta = getSubmissionMeta(job);
-  const salary = formatSalary(job.salaryMin, job.salaryMax, job.salaryCurrency);
-  const sourceShortName = getSourceShortName(job.primaryExternalLink?.sourceName ?? null);
   const deadlineUrgency = getDeadlineUrgency(job.deadline);
-  const snippet = buildDescriptionSnippet(job.shortSummary);
   const showSubmissionMeta = shouldShowSubmissionMeta(job);
 
   // Apply is only available for live, eligible jobs
   const canStartApplyFlow =
     job.status === "LIVE" && job.eligibility !== null;
+  const manualApplyHref =
+    job.primaryExternalLink?.href ?? job.sourcePostingLink?.href ?? job.applyUrl;
 
   // Lifecycle cue shown in the secondary row for non-LIVE jobs
   const lifecycleCue = getLifecycleCue(job.status);
@@ -62,41 +58,16 @@ export function JobSummaryCard({
             ) : null}
           </div>
 
-          <p className="mt-1 text-sm text-muted-foreground">
-            {job.company}
-            {job.primaryExternalLink ? (
-              <a
-                href={job.primaryExternalLink.href}
-                target="_blank"
-                rel="noreferrer"
-                title={`${job.primaryExternalLink.label} · ${job.primaryExternalLink.sourceName ?? "external source"}`}
-                className="ml-1 inline-flex items-center gap-0.5 align-middle opacity-50 transition-opacity hover:opacity-90"
-              >
-                {sourceShortName ? (
-                  <span className="text-[10px] font-semibold uppercase leading-none tracking-wide">
-                    {sourceShortName}
-                  </span>
-                ) : null}
-                <ExternalLink className="h-3 w-3" />
-              </a>
-            ) : null}
-            <Sep />
-            {job.location}
-            <Sep />
-            {formatDisplayLabel(job.workMode)}
-            {salary ? (
-              <>
-                <Sep />
-                {salary}
-              </>
-            ) : null}
-          </p>
-
-          {snippet ? (
-            <p className="mt-2 line-clamp-2 max-w-3xl text-[13px] leading-6 text-muted-foreground/85">
-              {snippet}
-            </p>
-          ) : null}
+          <JobMetaRow
+            company={job.company}
+            location={job.location}
+            workMode={job.workMode}
+            salaryMin={job.salaryMin}
+            salaryMax={job.salaryMax}
+            salaryCurrency={job.salaryCurrency}
+            primaryExternalLink={job.primaryExternalLink}
+            variant="card"
+          />
 
           <p className="mt-3 text-xs text-muted-foreground/70">
             {formatPostedAge(job.postedAt)}
@@ -121,11 +92,19 @@ export function JobSummaryCard({
         <div className="flex shrink-0 items-center gap-2 self-start">
           {primaryAction ??
             (canStartApplyFlow ? (
-              <Button size="sm" render={<Link href={`/jobs/${job.id}/apply`} />} variant="secondary">
-                {job.eligibility?.submissionCategory === "AUTO_SUBMIT_READY"
-                  ? "Apply"
-                  : "Apply manually"}
-              </Button>
+              job.eligibility?.submissionCategory === "AUTO_SUBMIT_READY" ? (
+                <Button size="sm" render={<Link href={`/jobs/${job.id}/apply`} />} variant="secondary">
+                  Apply
+                </Button>
+              ) : (
+                <ManualApplyMenu
+                  align="end"
+                  applyHref={manualApplyHref}
+                  buttonSize="sm"
+                  buttonVariant="secondary"
+                  jobId={job.id}
+                />
+              )
             ) : null)}
           {footerActions}
         </div>

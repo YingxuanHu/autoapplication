@@ -13,14 +13,13 @@ import {
   UnauthorizedError,
 } from "@/lib/current-user";
 import { prisma } from "@/lib/db";
-import { getFastModel, getOpenAIClient, getOpenAIReadiness, getStandardModel } from "@/lib/openai";
 import {
-  normalizeContact,
-  normalizeEducations,
-  normalizeExperiences,
-  normalizeProjects,
-  normalizeSkills,
-} from "@/lib/profile";
+  formatJobDescriptionText,
+  isJobDescriptionSummaryUsable,
+  isLowQualityJobDescription,
+  parseJobDescriptionBlocks,
+  pickBestFormattedJobDescription,
+} from "@/lib/job-description-format";
 import { inferProfileDocumentMimeType } from "@/lib/profile-resume-service";
 import {
   addTrackedApplicationEvent,
@@ -65,6 +64,7 @@ const ACCEPTED_MIME_TYPES = new Set<string>([
 
 const allowedStatuses = new Set<TrackedApplicationStatus>([
   "WISHLIST",
+  "PREPARING",
   "APPLIED",
   "SCREEN",
   "INTERVIEW",
@@ -104,52 +104,6 @@ function toActionState(error: unknown): ActionState {
   };
 }
 
-function normalizeChatMessageContent(content: unknown): string {
-  if (typeof content === "string") {
-    return content.trim();
-  }
-
-  if (Array.isArray(content)) {
-    return content
-      .map((item) => {
-        if (!item || typeof item !== "object") {
-          return "";
-        }
-
-        const part = item as { type?: unknown; text?: unknown };
-        return part.type === "text" && typeof part.text === "string" ? part.text : "";
-      })
-      .join("")
-      .trim();
-  }
-
-  return "";
-}
-
-async function openAIWithRetry<T>(fn: () => Promise<T>, maxRetries = 2): Promise<T> {
-  let lastError: unknown;
-
-  for (let attempt = 0; attempt <= maxRetries; attempt += 1) {
-    try {
-      return await fn();
-    } catch (error: unknown) {
-      lastError = error;
-      const status = (error as { status?: number })?.status;
-      if (status !== 500 && status !== 502 && status !== 503 && status !== 504) {
-        throw error;
-      }
-
-      if (attempt === maxRetries) {
-        throw error;
-      }
-
-      await new Promise((resolve) => setTimeout(resolve, 500 * 2 ** attempt));
-    }
-  }
-
-  throw lastError;
-}
-
 function stripHtmlToText(html: string) {
   return html
     .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, "")
@@ -157,6 +111,10 @@ function stripHtmlToText(html: string) {
     .replace(/<nav[^>]*>[\s\S]*?<\/nav>/gi, "")
     .replace(/<footer[^>]*>[\s\S]*?<\/footer>/gi, "")
     .replace(/<header[^>]*>[\s\S]*?<\/header>/gi, "")
+    .replace(/<br\s*\/?>/gi, "\n")
+    .replace(/<\/(p|div|section|article|main|aside|ul|ol|table|tr|h1|h2|h3|h4|h5|h6)>/gi, "\n")
+    .replace(/<li[^>]*>/gi, "\n• ")
+    .replace(/<\/li>/gi, "")
     .replace(/<[^>]+>/g, " ")
     .replace(/&nbsp;/g, " ")
     .replace(/&amp;/g, "&")
@@ -164,7 +122,11 @@ function stripHtmlToText(html: string) {
     .replace(/&gt;/g, ">")
     .replace(/&quot;/g, "\"")
     .replace(/&#39;/g, "'")
-    .replace(/\s+/g, " ")
+    .replace(/\r/g, "")
+    .replace(/[ \t]+\n/g, "\n")
+    .replace(/\n[ \t]+/g, "\n")
+    .replace(/[ \t]{2,}/g, " ")
+    .replace(/\n{3,}/g, "\n\n")
     .trim();
 }
 
@@ -576,7 +538,7 @@ export async function removeTag(
   }
 }
 
-export async function summarizeJobDescription(
+export async function importJobDescription(
   _prev: SummarizeState,
   formData: FormData
 ): Promise<SummarizeState> {
@@ -587,11 +549,6 @@ export async function summarizeJobDescription(
 
     if (!applicationId) {
       return { error: "Missing application ID.", success: null };
-    }
-
-    const readiness = getOpenAIReadiness();
-    if (!readiness.configured) {
-      return { error: "OpenAI is not configured. Add OPENAI_API_KEY to .env.", success: null };
     }
 
     const application = await prisma.trackedApplication.findFirst({
@@ -640,7 +597,12 @@ export async function summarizeJobDescription(
         }
 
         const html = await response.text();
-        const pageText = stripHtmlToText(html);
+        const formattedFromHtml = formatJobDescriptionText(html);
+        const formattedFromPlainText = formatJobDescriptionText(stripHtmlToText(html));
+        const bestFormatted = pickBestFormattedJobDescription([
+          formattedFromHtml,
+          formattedFromPlainText,
+        ]);
 
         const jsPageSignals = [
           "requires JavaScript",
@@ -652,9 +614,9 @@ export async function summarizeJobDescription(
         ];
         const looksLikeJsPage = jsPageSignals.some((signal) =>
           html.toLowerCase().includes(signal.toLowerCase())
-        ) && pageText.length < 500;
+        ) && !bestFormatted;
 
-        if (pageText.length < 200 || looksLikeJsPage) {
+        if (!bestFormatted || looksLikeJsPage) {
           return {
             error: "This job posting requires JavaScript to load. Paste the content below instead.",
             success: null,
@@ -662,7 +624,7 @@ export async function summarizeJobDescription(
           };
         }
 
-        content = pageText;
+        content = bestFormatted;
       } catch (fetchError) {
         const reason = fetchError instanceof Error ? fetchError.message : "Unknown error";
         const friendlyReason =
@@ -682,114 +644,30 @@ export async function summarizeJobDescription(
       }
     } else if (!pastedContent) {
       return {
-        error: "No posting URL set. Paste the job posting content below to summarize.",
+        error: "No posting URL set. Paste the job posting content below instead.",
         success: null,
         fetchFailed: true,
       };
     } else {
       return {
-        error: "Too little content to summarize — paste the full job posting text (at least a few sentences).",
+        error: "Too little content to format — paste the full job posting text (at least a few sentences).",
         success: null,
         fetchFailed: true,
       };
     }
 
-    const maxChars = 15000;
-    const truncated = content.length > maxChars ? `${content.slice(0, maxChars)}\n[...truncated]` : content;
+    const formatted = formatJobDescriptionText(content);
+    const structuredBlocks = parseJobDescriptionBlocks(formatted);
 
-    const client = getOpenAIClient();
-    const messages: Array<{ role: "system" | "user"; content: string }> = [
-      {
-        role: "system",
-        content: `Summarize this job posting using EXACTLY this format (all 6 sections required, use "Not specified" if absent):
-
-**Role Summary**
-2-3 sentences: what the role is, team/product area.
-
-**Responsibilities**
-• 5-8 bullet points
-
-**Required Qualifications**
-• 5-8 bullet points
-
-**Preferred Qualifications**
-• 3-5 bullet points or "Not specified"
-
-**Compensation**
-Pay range or "Not specified"
-
-**Details**
-Location, work model, logistics or "Not specified"
-
-Keep bullets concise (one line each with •). 200-400 words total. Do not invent information.`,
-      },
-      {
-        role: "user",
-        content: `"${application.roleTitle}" at "${application.company}":\n\n${truncated}`,
-      },
-    ];
-
-    let summary = "";
-    let finishReason: string | null | undefined = null;
-
-    for (let attempt = 1; attempt <= 2; attempt += 1) {
-      const result = await openAIWithRetry(() =>
-        client.chat.completions.create({
-          model: getFastModel(),
-          messages,
-          max_completion_tokens: 1000,
-        })
-      );
-
-      const choice = result.choices[0];
-      summary = normalizeChatMessageContent(choice?.message?.content);
-      finishReason = choice?.finish_reason;
-
-      if (finishReason === "length" && summary) {
-        const lastNewline = summary.lastIndexOf("\n");
-        if (lastNewline > summary.length * 0.5) {
-          summary = summary.slice(0, lastNewline).trim();
-        }
-      }
-
-      if (summary) {
-        break;
-      }
-
-      if (attempt < 2) {
-        await new Promise((resolve) => setTimeout(resolve, 500));
-      }
-    }
-
-    if (!summary) {
-      const detail =
-        finishReason === "content_filter"
-          ? "Content was blocked by the AI safety filter."
-          : "AI returned an empty response after retrying. This is a transient issue — please try again.";
-
+    if (
+      !formatted ||
+      formatted.length < 120 ||
+      isLowQualityJobDescription(formatted) ||
+      structuredBlocks.length === 0 ||
+      !isJobDescriptionSummaryUsable(formatted)
+    ) {
       return {
-        error: detail,
-        success: null,
-        fetchFailed: true,
-      };
-    }
-
-    const lowQualitySignals = [
-      "not available",
-      "could not be extracted",
-      "requires javascript",
-      "no job description",
-      "were not available",
-      "not provided",
-      "unable to extract",
-    ];
-    const summaryLower = summary.toLowerCase();
-    const isLowQuality =
-      lowQualitySignals.some((signal) => summaryLower.includes(signal)) && summary.length < 300;
-
-    if (isLowQuality) {
-      return {
-        error: "The fetched page didn't contain enough job details (the site may render content with JavaScript). Paste the full posting text below instead.",
+        error: "The fetched page didn't contain enough job details. Paste the full posting text below instead.",
         success: null,
         fetchFailed: true,
       };
@@ -798,214 +676,11 @@ Keep bullets concise (one line each with •). 200-400 words total. Do not inven
     await updateTrackedApplicationField({
       applicationId,
       field: "jobDescription",
-      value: summary,
+      value: formatted,
     });
 
     revalidateApplication(applicationId);
-    return { error: null, success: "Job description summarized and saved." };
-  } catch (error) {
-    return toActionState(error);
-  }
-}
-
-export async function analyzeResumeFit(
-  _prev: ActionState,
-  formData: FormData
-): Promise<ActionState> {
-  try {
-    const [authUserId, profile] = await Promise.all([
-      requireCurrentAuthUserId(),
-      requireCurrentUserProfile(),
-    ]);
-
-    const applicationId = String(formData.get("applicationId") ?? "").trim();
-    if (!applicationId) {
-      return { error: "Missing application ID.", success: null };
-    }
-
-    const readiness = getOpenAIReadiness();
-    if (!readiness.configured) {
-      return { error: "OpenAI is not configured. Add OPENAI_API_KEY to .env.", success: null };
-    }
-
-    const application = await prisma.trackedApplication.findFirst({
-      where: { id: applicationId, userId: authUserId },
-      select: {
-        id: true,
-        company: true,
-        roleTitle: true,
-        jobDescription: true,
-        documentLinks: {
-          where: { slot: "SENT_RESUME" },
-          select: {
-            document: {
-              select: {
-                id: true,
-                title: true,
-                analysis: {
-                  select: {
-                    extractedText: true,
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-    });
-
-    if (!application) {
-      return { error: "Application not found.", success: null };
-    }
-
-    if (!application.jobDescription || application.jobDescription.trim().length < 20) {
-      return {
-        error: "Add a job description first (use \"Summarize with AI\" or edit manually).",
-        success: null,
-      };
-    }
-
-    const jobDescription = application.jobDescription;
-
-    let resumeText: string | null = null;
-    const linkedResume = application.documentLinks[0]?.document;
-    if (linkedResume?.analysis?.extractedText) {
-      resumeText = linkedResume.analysis.extractedText;
-    }
-
-    if (!resumeText) {
-      const primaryResume = await prisma.document.findFirst({
-        where: { userId: profile.id, type: "RESUME", isPrimary: true },
-        select: {
-          analysis: {
-            select: {
-              extractedText: true,
-            },
-          },
-        },
-      });
-
-      if (primaryResume?.analysis?.extractedText) {
-        resumeText = primaryResume.analysis.extractedText;
-      }
-    }
-
-    if (!resumeText) {
-      return {
-        error: "No resume text available. Link a resume to this application or upload one from your Profile.",
-        success: null,
-      };
-    }
-
-    const contact = normalizeContact(profile.contactJson);
-    const skills = normalizeSkills(profile.skillsJson);
-    const experiences = normalizeExperiences(profile.experiencesJson);
-    const educations = normalizeEducations(profile.educationsJson);
-    const projects = normalizeProjects(profile.projectsJson);
-
-    const profileContextParts: string[] = [];
-    if (skills.length > 0) {
-      profileContextParts.push(`Skills: ${skills.map((entry) => entry.name).join(", ")}`);
-    }
-    if (experiences.length > 0) {
-      profileContextParts.push(
-        `Experience: ${experiences
-          .slice(0, 6)
-          .map((entry) =>
-            [entry.title, entry.company, entry.time].filter(Boolean).join(" | ")
-          )
-          .join("; ")}`
-      );
-    }
-    if (projects.length > 0) {
-      profileContextParts.push(
-        `Projects: ${projects
-          .slice(0, 5)
-          .map((entry) => `${entry.name || entry.title}: ${entry.description.slice(0, 80)}`)
-          .join("; ")}`
-      );
-    }
-    if (educations.length > 0) {
-      profileContextParts.push(
-        `Education: ${educations
-          .slice(0, 3)
-          .map((entry) => [entry.degree, entry.school].filter(Boolean).join(" at "))
-          .join("; ")}`
-      );
-    }
-    if (contact.location) {
-      profileContextParts.push(`Location: ${contact.location}`);
-    }
-
-    const truncate = (value: string, maxChars: number) =>
-      value.length > maxChars ? `${value.slice(0, maxChars)}\n[...truncated]` : value;
-
-    const client = getOpenAIClient();
-    const result = await openAIWithRetry(() =>
-      client.chat.completions.create({
-        model: getStandardModel(),
-        messages: [
-          {
-            role: "system",
-            content: `You are a career coach analyzing how well a candidate fits a specific job posting. You have TWO sources of information about the candidate:
-1. The resume they plan to submit for this job
-2. Their full profile data (which includes ALL their skills, experience, projects, and education — a superset of what's on the resume)
-
-Provide actionable, specific feedback using this exact format:
-
-**Match Score**
-X/10 — one sentence overall assessment based on the candidate's FULL background (not just the resume).
-
-**Strengths**
-• 3-5 bullet points explaining what fits well
-
-**Gaps**
-• 2-4 bullet points explaining what is missing or weaker
-
-**What To Emphasize**
-• 3-5 bullet points on what to highlight in the application or interview
-
-**Recommended Changes**
-• 3-5 bullet points for how to improve the resume or application package for this job
-
-Rules:
-- Ground every point in the candidate information provided
-- Use the full profile data when relevant, not only the attached resume
-- Do not invent experience, skills, or certifications
-- Keep bullets concise and specific
-- Return plain text in exactly the structure above`,
-          },
-          {
-            role: "user",
-            content: `Role: ${application.roleTitle} at ${application.company}
-
-Job Description:
-${truncate(jobDescription, 5000)}
-
-Attached Resume:
-${truncate(resumeText, 6000)}
-
-Full Candidate Profile:
-${truncate(profileContextParts.join("\n"), 3000)}`,
-          },
-        ],
-        max_completion_tokens: 1400,
-      })
-    );
-
-    const analysis = normalizeChatMessageContent(result.choices[0]?.message?.content);
-    if (!analysis) {
-      return { error: "AI returned an empty response. Please try again.", success: null };
-    }
-
-    await updateTrackedApplicationField({
-      applicationId,
-      field: "fitAnalysis",
-      value: analysis,
-    });
-
-    revalidateApplication(applicationId);
-    return { error: null, success: "Fit analysis saved." };
+    return { error: null, success: "Job description imported and organized." };
   } catch (error) {
     return toActionState(error);
   }

@@ -55,6 +55,7 @@ export type JobCardData = {
   salaryMax: number | null;
   salaryCurrency: string | null;
   shortSummary: string;
+  description: string;
   applyUrl: string;
   postedAt: string;
   deadline: string | null;
@@ -67,7 +68,6 @@ export type JobCardData = {
 };
 
 export type JobDetailData = JobCardData & {
-  description: string;
   region: Region;
   employmentType: EmploymentType;
 };

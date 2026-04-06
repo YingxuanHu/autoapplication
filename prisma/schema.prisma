@@ -111,6 +111,7 @@ enum DocumentType {
 
 enum TrackedApplicationStatus {
   WISHLIST
+  PREPARING
   APPLIED
   SCREEN
   INTERVIEW

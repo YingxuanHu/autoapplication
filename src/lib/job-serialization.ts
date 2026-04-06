@@ -1,4 +1,5 @@
 import { resolveJobLinks, getSourceTrust } from "@/lib/job-links";
+import { resolveJobSalaryRange } from "@/lib/salary-extraction";
 import type {
   JobCardData,
   JobCardEligibility,
@@ -14,12 +15,14 @@ type JobSerializationInput = {
   workMode: JobCardData["workMode"];
   industry: JobCardData["industry"];
   status: JobCardData["status"];
+  region?: JobDetailData["region"];
   roleFamily: string;
   experienceLevel: JobCardData["experienceLevel"];
   salaryMin: number | null;
   salaryMax: number | null;
   salaryCurrency: string | null;
   shortSummary: string;
+  description: string;
   applyUrl: string;
   postedAt: Date;
   deadline: Date | null;
@@ -38,6 +41,13 @@ export function serializeJobCardData(job: JobSerializationInput): JobCardData {
     applyUrl: job.applyUrl,
     sourceMappings: job.sourceMappings,
   });
+  const resolvedSalary = resolveJobSalaryRange({
+    salaryMin: job.salaryMin,
+    salaryMax: job.salaryMax,
+    salaryCurrency: job.salaryCurrency,
+    description: job.description,
+    regionHint: job.region ?? null,
+  });
 
   return {
     id: job.id,
@@ -49,10 +59,11 @@ export function serializeJobCardData(job: JobSerializationInput): JobCardData {
     status: job.status,
     roleFamily: job.roleFamily,
     experienceLevel: job.experienceLevel,
-    salaryMin: job.salaryMin,
-    salaryMax: job.salaryMax,
-    salaryCurrency: job.salaryCurrency,
+    salaryMin: resolvedSalary.salaryMin,
+    salaryMax: resolvedSalary.salaryMax,
+    salaryCurrency: resolvedSalary.salaryCurrency,
     shortSummary: job.shortSummary,
+    description: job.description,
     applyUrl: job.applyUrl,
     postedAt: job.postedAt.toISOString(),
     deadline: job.deadline?.toISOString() ?? null,
@@ -67,7 +78,6 @@ export function serializeJobCardData(job: JobSerializationInput): JobCardData {
 
 export function serializeJobDetailData(
   job: JobSerializationInput & {
-    description: string;
     region: JobDetailData["region"];
     employmentType: JobDetailData["employmentType"];
   }

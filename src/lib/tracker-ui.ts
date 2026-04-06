@@ -2,6 +2,7 @@ import type { TrackedApplicationStatus } from "@/generated/prisma/client";
 
 export const TRACKED_STATUS_LABEL: Record<TrackedApplicationStatus, string> = {
   WISHLIST: "Wishlist",
+  PREPARING: "Preparing",
   APPLIED: "Applied",
   SCREEN: "Screen",
   INTERVIEW: "Interview",
@@ -12,6 +13,8 @@ export const TRACKED_STATUS_LABEL: Record<TrackedApplicationStatus, string> = {
 
 export function trackedStatusClass(status: TrackedApplicationStatus) {
   switch (status) {
+    case "PREPARING":
+      return "bg-violet-500/10 text-violet-700 dark:text-violet-300";
     case "OFFER":
       return "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300";
     case "INTERVIEW":
