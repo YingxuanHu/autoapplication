@@ -26,6 +26,7 @@ type JobAssistantProps = {
 
 const starterQuestions = [
   "What should I emphasize most for this role?",
+  "Which of my resumes is the best one to submit for this job?",
   "What interview questions should I prepare for?",
   "What are the biggest risks in my application?",
   "Draft a short recruiter follow-up for this job.",
@@ -331,7 +332,7 @@ export function JobAssistant({
             </p>
             <h3 className="mt-1 text-base font-semibold text-foreground">Ask AI about this job</h3>
             <p className="mt-1 text-sm text-muted-foreground">
-              Uses the current role, saved notes, linked documents, fit analysis, and your profile.
+              Uses the current role, your full profile, your uploaded resumes, linked documents, fit analysis, and notes.
             </p>
           </div>
           {messages.length > 0 ? (
@@ -374,7 +375,7 @@ export function JobAssistant({
                 <span className="font-medium text-foreground">{company}</span>.
               </p>
               <p className="mt-1 text-sm text-muted-foreground">
-                Good for interview prep, resume decisions, recruiter messages, and next-step planning.
+                Good for interview prep, choosing the best resume, recruiter messages, and next-step planning.
               </p>
             </div>
 
@@ -458,7 +459,7 @@ export function JobAssistant({
             />
             <div className="mt-2 flex items-center justify-between gap-3 border-t border-border/70 pt-2">
               <p className="text-xs text-muted-foreground">
-                Best after adding the job description and linking your resume.
+                Best after adding the job description and keeping your profile and resumes up to date.
               </p>
               <Button
                 className="h-8 bg-foreground px-3 text-xs text-background shadow-[0_10px_24px_rgba(15,23,42,0.18)] hover:opacity-95"

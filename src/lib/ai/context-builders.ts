@@ -4,7 +4,13 @@
  */
 import { prisma } from "@/lib/db";
 import { requireCurrentProfileId } from "@/lib/current-user";
-import { parseSkills, parseExperiences, parseEducations } from "@/types/profile";
+import {
+  normalizeContact,
+  normalizeEducations,
+  normalizeExperiences,
+  normalizeProjects,
+  normalizeSkills,
+} from "@/lib/profile";
 import type { JobContext, ProfileContext } from "./job-fit";
 
 export async function buildJobContext(jobId: string): Promise<JobContext | null> {
@@ -47,9 +53,15 @@ export async function buildProfileContext(): Promise<ProfileContext | null> {
     select: {
       headline: true,
       summary: true,
+      contactJson: true,
       skillsJson: true,
+      skillsText: true,
       experiencesJson: true,
+      experienceText: true,
       educationsJson: true,
+      educationText: true,
+      projectsJson: true,
+      projectsText: true,
       experienceLevel: true,
       workAuthorization: true,
       preferredWorkMode: true,
@@ -57,13 +69,28 @@ export async function buildProfileContext(): Promise<ProfileContext | null> {
   });
 
   if (!profile) return null;
+  const contact = normalizeContact(profile.contactJson);
+  const skills = normalizeSkills(profile.skillsJson).map((entry) => entry.name);
+  const experiences = normalizeExperiences(profile.experiencesJson);
+  const educations = normalizeEducations(profile.educationsJson);
+  const projects = normalizeProjects(profile.projectsJson);
 
   return {
     headline: profile.headline,
     summary: profile.summary,
-    skills: parseSkills(profile.skillsJson),
-    experiences: parseExperiences(profile.experiencesJson),
-    educations: parseEducations(profile.educationsJson),
+    fullName: contact.fullName || null,
+    location: contact.location || null,
+    linkedInUrl: contact.linkedInUrl || null,
+    githubUrl: contact.githubUrl || null,
+    portfolioUrl: contact.portfolioUrl || null,
+    skills,
+    skillsText: profile.skillsText ?? null,
+    experiences,
+    experienceText: profile.experienceText ?? null,
+    educations,
+    educationText: profile.educationText ?? null,
+    projects,
+    projectsText: profile.projectsText ?? null,
     experienceLevel: profile.experienceLevel,
     workAuthorization: profile.workAuthorization,
     preferredWorkMode: profile.preferredWorkMode,

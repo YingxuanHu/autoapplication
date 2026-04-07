@@ -111,9 +111,13 @@ function formatProfileContext(profile: {
   summary: string | null;
   contactJson: unknown;
   skillsJson: unknown;
+  skillsText?: string | null;
   experiencesJson: unknown;
+  experienceText?: string | null;
   educationsJson: unknown;
+  educationText?: string | null;
   projectsJson: unknown;
+  projectsText?: string | null;
 }) {
   const contact = normalizeContact(profile.contactJson);
   const skills = normalizeSkills(profile.skillsJson);
@@ -149,6 +153,9 @@ function formatProfileContext(profile: {
   if (skills.length > 0) {
     parts.push(`Skills: ${skills.map((entry) => entry.name).join(", ")}`);
   }
+  if (profile.skillsText?.trim()) {
+    parts.push(`Skills detail:\n${truncate(profile.skillsText, 1600)}`);
+  }
 
   if (experiences.length > 0) {
     parts.push(
@@ -165,6 +172,9 @@ function formatProfileContext(profile: {
         )
         .join("\n")}`
     );
+  }
+  if (profile.experienceText?.trim()) {
+    parts.push(`Experience detail:\n${truncate(profile.experienceText, 2200)}`);
   }
 
   if (educations.length > 0) {
@@ -183,6 +193,9 @@ function formatProfileContext(profile: {
         .join("\n")}`
     );
   }
+  if (profile.educationText?.trim()) {
+    parts.push(`Education detail:\n${truncate(profile.educationText, 1400)}`);
+  }
 
   if (projects.length > 0) {
     parts.push(
@@ -200,8 +213,49 @@ function formatProfileContext(profile: {
         .join("\n")}`
     );
   }
+  if (profile.projectsText?.trim()) {
+    parts.push(`Project detail:\n${truncate(profile.projectsText, 1800)}`);
+  }
 
   return parts.join("\n\n");
+}
+
+function formatResumeLibraryContext(
+  resumes: Array<{
+    title: string;
+    isPrimary: boolean;
+    createdAt: Date;
+    analysis: {
+      extractedText: string;
+    } | null;
+  }>
+) {
+  if (resumes.length === 0) {
+    return "No uploaded resumes are available in your profile yet.";
+  }
+
+  const shownResumes = resumes.slice(0, 6);
+  const blocks = shownResumes.map((resume, index) => {
+    const extractedText = truncate(resume.analysis?.extractedText, 1800);
+    const labelParts = [
+      `${index + 1}. ${resume.title}`,
+      resume.isPrimary ? "Primary resume" : null,
+      `Uploaded ${resume.createdAt.toISOString()}`,
+    ]
+      .filter(Boolean)
+      .join(" | ");
+
+    return [
+      labelParts,
+      extractedText || "No extracted text is available for this resume yet.",
+    ].join("\n");
+  });
+
+  if (resumes.length > shownResumes.length) {
+    blocks.push(`Additional uploaded resumes not shown here: ${resumes.length - shownResumes.length}.`);
+  }
+
+  return blocks.join("\n\n");
 }
 
 function formatDocumentContext(
@@ -291,6 +345,25 @@ export async function POST(request: Request, context: RouteContext) {
       return NextResponse.json({ error: "Application not found." }, { status: 404 });
     }
 
+    const uploadedResumes = await prisma.document.findMany({
+      where: {
+        userId: profile.id,
+        type: "RESUME",
+      },
+      orderBy: [{ isPrimary: "desc" }, { createdAt: "desc" }],
+      select: {
+        title: true,
+        isPrimary: true,
+        createdAt: true,
+        analysis: {
+          select: {
+            extractedText: true,
+          },
+        },
+      },
+      take: 8,
+    });
+
     const applicationContext = [
       `Company: ${application.company}`,
       `Role Title: ${application.roleTitle}`,
@@ -316,6 +389,7 @@ export async function POST(request: Request, context: RouteContext) {
         }>
       )}`,
       `Your Profile:\n${formatProfileContext(profile)}`,
+      `Uploaded Resume Library:\n${formatResumeLibraryContext(uploadedResumes)}`,
     ]
       .filter(Boolean)
       .join("\n\n");
@@ -335,12 +409,14 @@ What you help with:
 - understanding the role and priorities
 - interview preparation
 - resume or cover-letter strategy
+- choosing which of the user's uploaded resumes is the best one to submit
 - networking or recruiter message drafts
 - follow-up planning
 - identifying strengths, gaps, and next steps
 
 Rules:
 - Ground every answer in the saved context for this application.
+- Use the whole saved profile and uploaded resume library when the user asks resume-choice or profile-based questions.
 - If the saved context does not contain enough information, say that clearly.
 - Do not invent company facts, compensation, interview stages, or details about the user's experience.
 - Do not claim to have browsed the web.
@@ -353,6 +429,7 @@ Rules:
   - Keep each bullet or step to one or two lines
   - Avoid one long paragraph unless the user explicitly asks for prose
 - Talk to the user directly using "you" and "your", not "the candidate".
+- If the user asks which resume to submit, compare the uploaded resumes explicitly, name the best option, explain why, and mention any gaps in the available resume text.
 - If the user asks something unrelated to this job or user context, redirect the answer back to this application.
 
 Current application context:

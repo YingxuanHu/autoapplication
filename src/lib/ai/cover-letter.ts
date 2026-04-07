@@ -62,7 +62,10 @@ function buildProfileText(profile: ProfileContext): string {
 
   if (profile.educations.length > 0) {
     const edu = profile.educations[0];
-    lines.push(`Education: ${edu.degree} in ${edu.field} at ${edu.school}`);
+    const details = [edu.time, edu.location].filter(Boolean).join(" | ");
+    lines.push(`Education: ${[edu.degree, edu.school].filter(Boolean).join(" at ")}`);
+    if (details) lines.push(`  ${details}`);
+    if (edu.description) lines.push(`  ${edu.description.slice(0, 180)}`);
   }
 
   return lines.join("\n");
