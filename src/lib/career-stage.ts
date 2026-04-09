@@ -153,6 +153,7 @@ const LEAD_TITLE_KEYWORDS = [
 ];
 
 const SENIOR_TITLE_KEYWORDS = ["senior", "sr.", " sr "];
+const MID_TITLE_KEYWORDS = ["mid", "mid-level", "mid level", "intermediate"];
 
 export const CAREER_STAGE_DEFINITIONS: Record<CareerStageFilter, StageDefinition> = {
   INTERNSHIP: {
@@ -325,5 +326,12 @@ export function inferExperienceLevel(
     return "ENTRY";
   }
 
-  return "MID";
+  if (
+    includesAny(normalizedTitle, MID_TITLE_KEYWORDS) ||
+    includesAny(normalizedDescription, ["mid-level", "mid level", "intermediate level"])
+  ) {
+    return "MID";
+  }
+
+  return "UNKNOWN";
 }

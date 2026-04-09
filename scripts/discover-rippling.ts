@@ -16,7 +16,6 @@ import {
   type RipplingSourcePageReport,
   type RipplingSearchQueryReport,
 } from "../src/lib/ingestion/discovery/rippling";
-import { RIPPLING_DEFAULT_BOARD_TOKENS } from "../src/lib/ingestion/coverage";
 
 type DiscoveryStatus = "pending" | "rejected" | "promoted";
 
@@ -81,6 +80,17 @@ type DatasetLoadReport = {
 };
 
 const DEFAULT_STORE_PATH = "data/discovery/rippling-slugs.json";
+const RIPPLING_DEFAULT_BOARD_TOKENS = [
+  "rippling",
+  "anaconda",
+  "tixr",
+  "n3xt-jobs",
+  "exacare-inc",
+  "inrule",
+  "patientnow",
+  "vouch-inc",
+  "heads-up-technologies",
+] as const;
 
 async function main() {
   const args = parseArgs(process.argv.slice(2));

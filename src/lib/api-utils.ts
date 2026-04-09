@@ -1,7 +1,11 @@
 import { NextResponse } from "next/server";
 
-export function successResponse<T>(data: T, status = 200) {
-  return NextResponse.json(data, { status });
+export function successResponse<T>(
+  data: T,
+  status = 200,
+  headers?: HeadersInit
+) {
+  return NextResponse.json(data, { status, headers });
 }
 
 export function errorResponse(message: string, status = 400) {
@@ -10,16 +14,18 @@ export function errorResponse(message: string, status = 400) {
 
 export function paginatedResponse<T>(
   data: T[],
-  total: number,
+  total: number | null,
   page: number,
-  pageSize: number
+  pageSize: number,
+  hasNextPage?: boolean
 ) {
   return NextResponse.json({
     data,
     total,
     page,
     pageSize,
-    totalPages: Math.ceil(total / pageSize),
+    totalPages: total === null ? null : Math.ceil(total / pageSize),
+    hasNextPage: hasNextPage ?? (total === null ? null : page < Math.ceil(total / pageSize)),
   });
 }
 

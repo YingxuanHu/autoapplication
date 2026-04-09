@@ -260,7 +260,7 @@ async function getEligibleCandidates(limit: number): Promise<AutoApplyCandidate[
   //   5. Have an applyUrl pointing to a supported ATS
   const jobs = await prisma.jobCanonical.findMany({
     where: {
-      status: "LIVE",
+      status: { in: ["LIVE", "AGING"] },
       eligibility: {
         submissionCategory: { in: ["AUTO_SUBMIT_READY", "AUTO_FILL_REVIEW"] },
       },

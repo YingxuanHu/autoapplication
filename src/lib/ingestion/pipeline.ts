@@ -1,12 +1,21 @@
 import { prisma } from "@/lib/db";
 import { buildEligibilityDraft } from "@/lib/ingestion/classify";
 import {
+  assignCanonicalJobsToCompany,
+  ensureCompanyRecord,
+} from "@/lib/ingestion/company-records";
+import {
   backfillCanonicalDedupeFields,
   findCrossSourceCanonicalMatch,
   isCanonicalMatchCompatible,
-  type CanonicalMatchCandidate,
+  type CanonicalMatchResult,
 } from "@/lib/ingestion/dedupe";
-import { normalizeSourceJob } from "@/lib/ingestion/normalize";
+import { detectDeadSignal, normalizeSourceJob } from "@/lib/ingestion/normalize";
+import {
+  deriveSourceIdentitySnapshot,
+  deriveSourceLifecycleSnapshot,
+  type SourceIdentitySnapshot,
+} from "@/lib/ingestion/source-quality";
 import type {
   IngestionSummary,
   NormalizedJobInput,
@@ -17,12 +26,13 @@ import type {
   IngestionRunMode,
   IngestionRunStatus,
   JobStatus,
-  Prisma,
 } from "@/generated/prisma/client";
+import { Prisma } from "@/generated/prisma/client";
 
-const LIVE_WINDOW_DAYS = 7;
-const STALE_WINDOW_DAYS = 21;
 const RUNNING_LOCK_WINDOW_MINUTES = 90;
+const RUNNING_PROGRESS_STALE_MINUTES = 45;
+const APPLY_URL_CHECK_INTERVAL_HOURS = 18;
+const APPLY_URL_CHECK_TIMEOUT_MS = 5000;
 
 type IngestConnectorOptions = {
   now?: Date;
@@ -54,13 +64,27 @@ export async function previewConnectorIngestion(
 
 type CanonicalStatusSnapshot = {
   id: string;
+  applyUrl: string;
   status: JobStatus;
+  firstSeenAt: Date;
   lastSeenAt: Date;
+  lastSourceSeenAt: Date | null;
+  lastApplyCheckAt: Date | null;
+  lastConfirmedAliveAt: Date | null;
+  availabilityScore: number;
+  deadSignalAt: Date | null;
+  deadSignalReason: string | null;
   deadline: Date | null;
   staleAt: Date | null;
   expiredAt: Date | null;
   removedAt: Date | null;
   sourceMappings: Array<{
+    id: string;
+    sourceName: string;
+    sourceType: string | null;
+    sourceReliability: number;
+    isFullSnapshot: boolean;
+    pollPattern: string | null;
     lastSeenAt: Date;
     removedAt: Date | null;
   }>;
@@ -73,6 +97,7 @@ type CanonicalStatusRefreshResult = {
 
 type CanonicalStatusTally = {
   liveCount: number;
+  agingCount: number;
   staleCount: number;
   expiredCount: number;
   removedCount: number;
@@ -144,7 +169,8 @@ export async function ingestConnector(
         runtimeController?.signal,
         options.maxRuntimeMs,
         startingCheckpoint,
-        persistCheckpoint
+        persistCheckpoint,
+        createConnectorLogger(connector, runOptionsState.runMetadata)
       );
     } finally {
       if (runtimeTimer) clearTimeout(runtimeTimer);
@@ -189,6 +215,94 @@ export async function ingestConnector(
   }
 }
 
+export async function recoverStaleRunningIngestionRuns(options: {
+  now?: Date;
+  connectorKeys?: string[];
+} = {}) {
+  const now = options.now ?? new Date();
+  const staleStartedBefore = new Date(
+    now.getTime() - RUNNING_LOCK_WINDOW_MINUTES * 60 * 1000
+  );
+  const staleCheckpointBefore = new Date(
+    now.getTime() - RUNNING_PROGRESS_STALE_MINUTES * 60 * 1000
+  );
+
+  const runningRuns = await prisma.ingestionRun.findMany({
+    where: {
+      status: "RUNNING",
+      ...(options.connectorKeys && options.connectorKeys.length > 0
+        ? {
+            connectorKey: {
+              in: options.connectorKeys,
+            },
+          }
+        : {}),
+    },
+    select: {
+      id: true,
+      connectorKey: true,
+      sourceName: true,
+      startedAt: true,
+      runOptions: true,
+    },
+  });
+
+  const staleRuns = runningRuns.filter((run) => {
+    const runOptions = asJsonObject(run.runOptions);
+    const checkpointUpdatedAtRaw = runOptions?.checkpointUpdatedAt;
+    const checkpointUpdatedAt =
+      typeof checkpointUpdatedAtRaw === "string"
+        ? new Date(checkpointUpdatedAtRaw)
+        : null;
+
+    if (
+      checkpointUpdatedAt &&
+      !Number.isNaN(checkpointUpdatedAt.getTime()) &&
+      checkpointUpdatedAt < staleCheckpointBefore
+    ) {
+      return true;
+    }
+
+    return run.startedAt < staleStartedBefore;
+  });
+
+  if (staleRuns.length === 0) {
+    return {
+      recoveredCount: 0,
+      connectorKeys: [] as string[],
+    };
+  }
+
+  await prisma.$transaction(
+    staleRuns.map((run) => {
+      const runOptions = asJsonObject(run.runOptions) ?? {};
+      const existingMetadata = asJsonObject(runOptions.runMetadata) ?? {};
+
+      return prisma.ingestionRun.update({
+        where: { id: run.id },
+        data: {
+          status: "FAILED",
+          endedAt: now,
+          errorSummary:
+            "Recovered stale RUNNING ingestion run before scheduling.",
+          runOptions: {
+            ...runOptions,
+            runMetadata: {
+              ...existingMetadata,
+              staleRunRecoveredAt: now.toISOString(),
+            },
+          } satisfies Prisma.InputJsonValue,
+        },
+      });
+    })
+  );
+
+  return {
+    recoveredCount: staleRuns.length,
+    connectorKeys: [...new Set(staleRuns.map((run) => run.connectorKey))],
+  };
+}
+
 export async function reconcileCanonicalLifecycle(options: { now?: Date } = {}) {
   const now = options.now ?? new Date();
   const canonicalJobs = await prisma.jobCanonical.findMany({
@@ -199,6 +313,14 @@ export async function reconcileCanonicalLifecycle(options: { now?: Date } = {}) 
     canonicalJobs.map((job) => job.id),
     now
   );
+}
+
+export async function reconcileCanonicalLifecycleByIds(
+  canonicalIds: string[],
+  options: { now?: Date } = {}
+) {
+  const now = options.now ?? new Date();
+  return refreshCanonicalStatuses(canonicalIds, now);
 }
 
 async function createIngestionRun({
@@ -266,12 +388,11 @@ async function performConnectorIngestion(
   signal?: AbortSignal,
   maxRuntimeMs?: number,
   checkpoint?: Prisma.InputJsonValue | null,
-  onCheckpoint?: (checkpoint: Prisma.InputJsonValue | null) => Promise<void>
+  onCheckpoint?: (checkpoint: Prisma.InputJsonValue | null) => Promise<void>,
+  log?: (message: string) => void
 ) {
   const seenSourceIds = new Set<string>();
   const freshnessCandidateIds = new Set<string>();
-  const shouldRunFreshnessRemoval =
-    connector.freshnessMode === "FULL_SNAPSHOT" && limit === undefined;
 
   const fetchResult = await connector.fetchJobs({
     now,
@@ -280,11 +401,13 @@ async function performConnectorIngestion(
     maxRuntimeMs,
     checkpoint,
     onCheckpoint,
+    log,
     deadlineAt:
       typeof maxRuntimeMs === "number" ? new Date(now.getTime() + maxRuntimeMs) : undefined,
   });
+  const fetchExhausted = fetchResult.exhausted ?? fetchResult.checkpoint == null;
   summary.checkpoint = fetchResult.checkpoint ?? null;
-  summary.checkpointExhausted = fetchResult.exhausted ?? fetchResult.checkpoint == null;
+  summary.checkpointExhausted = fetchExhausted;
 
   for (const sourceJob of fetchResult.jobs) {
     summary.fetchedCount += 1;
@@ -311,16 +434,47 @@ async function performConnectorIngestion(
       summary.rejectedCount += 1;
       summary.skippedReasons[normalizationResult.reason] =
         (summary.skippedReasons[normalizationResult.reason] ?? 0) + 1;
+      if (normalizationResult.reason === "obvious_dead_at_intake") {
+        const deadSignal = detectDeadSignal({
+          title: sourceJob.title,
+          description: sourceJob.description,
+          deadline: sourceJob.deadline,
+          fetchedAt: now,
+        });
+        const deadResult = await markMappedJobAsDead({
+          rawJobId: rawJobResult.rawJob.id,
+          now,
+          reason: deadSignal.reason ?? "Explicit dead signal detected during source refresh.",
+        });
+        if (deadResult.canonicalId) {
+          freshnessCandidateIds.add(deadResult.canonicalId);
+        }
+      }
       continue;
     }
 
     summary.acceptedCount += 1;
+    summary.minimallyAcceptedCount += 1;
     if (isCanadaJob(normalizationResult.job)) {
       summary.acceptedCanadaCount += 1;
       if (isCanadaRemoteJob(normalizationResult.job)) {
         summary.acceptedCanadaRemoteCount += 1;
       }
     }
+
+    const sourceIdentity = deriveSourceIdentitySnapshot({
+      sourceName: connector.sourceName,
+      sourceId: sourceJob.sourceId,
+      sourceUrl: sourceJob.sourceUrl,
+      applyUrl: normalizationResult.job.applyUrl,
+      metadata: sourceJob.metadata,
+    });
+    const sourceLifecycle = deriveSourceLifecycleSnapshot({
+      sourceName: connector.sourceName,
+      sourceUrl: sourceJob.sourceUrl,
+      applyUrl: normalizationResult.job.applyUrl,
+      freshnessMode: connector.freshnessMode,
+    });
 
     const mappedCanonical = await findMappedCanonical(rawJobResult.rawJob.id);
     const compatibleMappedCanonical =
@@ -330,7 +484,7 @@ async function performConnectorIngestion(
         : null;
     const crossSourceMatch = compatibleMappedCanonical
       ? null
-      : await findCrossSourceCanonicalMatch(normalizationResult.job);
+      : await findCrossSourceCanonicalMatch(normalizationResult.job, sourceIdentity);
     const canonicalMatch = compatibleMappedCanonical ?? crossSourceMatch;
 
     if (canonicalMatch && canonicalMatch.matchedBy !== "rawJob") {
@@ -338,8 +492,11 @@ async function performConnectorIngestion(
     }
 
     const canonicalResult = await upsertCanonicalJob({
-      currentCanonical: canonicalMatch?.canonical ?? null,
+      currentCanonicalId: canonicalMatch?.canonical.id ?? null,
       normalizedJob: normalizationResult.job,
+      sourceIdentity,
+      sourceUrl: sourceJob.sourceUrl,
+      rawApplyUrl: sourceJob.applyUrl,
       now,
     });
 
@@ -362,6 +519,9 @@ async function performConnectorIngestion(
       connector,
       rawJobId: rawJobResult.rawJob.id,
       sourceUrl: sourceJob.sourceUrl,
+      sourceIdentity,
+      sourceLifecycle,
+      canonicalMatch,
       now,
     });
 
@@ -371,8 +531,17 @@ async function performConnectorIngestion(
       summary.sourceMappingUpdatedCount += 1;
     }
 
+    if (mappingResult.previousCanonicalId) {
+      freshnessCandidateIds.add(mappingResult.previousCanonicalId);
+    }
+
     await upsertEligibility(canonicalResult.id, normalizationResult.job, connector.sourceName);
   }
+
+  const shouldRunFreshnessRemoval =
+    connector.freshnessMode === "FULL_SNAPSHOT" &&
+    limit === undefined &&
+    fetchExhausted;
 
   if (shouldRunFreshnessRemoval) {
     const removalResult = await markMissingSourceMappingsRemoved({
@@ -384,12 +553,14 @@ async function performConnectorIngestion(
     summary.sourceMappingsRemovedCount = removalResult.removedMappingCount;
 
     for (const canonicalId of removalResult.canonicalIds) {
+      await refreshPrimarySourceMapping(canonicalId);
       freshnessCandidateIds.add(canonicalId);
     }
   }
 
   const statusTally = await refreshCanonicalStatuses([...freshnessCandidateIds], now);
   summary.liveCount = statusTally.liveCount;
+  summary.visibleLiveCount = statusTally.liveCount;
   summary.staleCount = statusTally.staleCount;
   summary.expiredCount = statusTally.expiredCount;
   summary.removedCount = statusTally.removedCount;
@@ -404,6 +575,7 @@ async function performConnectorPreview(
   const fetchResult = await connector.fetchJobs({
     now,
     limit,
+    log: createConnectorLogger(connector, null),
   });
 
   for (const sourceJob of fetchResult.jobs) {
@@ -438,12 +610,21 @@ async function performConnectorPreview(
     }
 
     summary.acceptedCount += 1;
+    summary.minimallyAcceptedCount += 1;
     if (isCanadaJob(normalizationResult.job)) {
       summary.acceptedCanadaCount += 1;
       if (isCanadaRemoteJob(normalizationResult.job)) {
         summary.acceptedCanadaRemoteCount += 1;
       }
     }
+
+    const sourceIdentity = deriveSourceIdentitySnapshot({
+      sourceName: connector.sourceName,
+      sourceId: sourceJob.sourceId,
+      sourceUrl: sourceJob.sourceUrl,
+      applyUrl: normalizationResult.job.applyUrl,
+      metadata: sourceJob.metadata,
+    });
 
     const mappedCanonical = existingRawJob
       ? await findMappedCanonical(existingRawJob.id)
@@ -455,7 +636,7 @@ async function performConnectorPreview(
         : null;
     const crossSourceMatch = compatibleMappedCanonical
       ? null
-      : await findCrossSourceCanonicalMatch(normalizationResult.job);
+      : await findCrossSourceCanonicalMatch(normalizationResult.job, sourceIdentity);
     const canonicalMatch = compatibleMappedCanonical ?? crossSourceMatch;
 
     if (canonicalMatch && canonicalMatch.matchedBy !== "rawJob") {
@@ -506,6 +687,7 @@ function createEmptySummary(
     sourceTier: connector.sourceTier,
     freshnessMode: connector.freshnessMode,
     fetchedCount: 0,
+    minimallyAcceptedCount: 0,
     acceptedCount: 0,
     acceptedCanadaCount: 0,
     acceptedCanadaRemoteCount: 0,
@@ -520,6 +702,7 @@ function createEmptySummary(
     sourceMappingCreatedCount: 0,
     sourceMappingUpdatedCount: 0,
     sourceMappingsRemovedCount: 0,
+    visibleLiveCount: 0,
     liveCount: 0,
     staleCount: 0,
     expiredCount: 0,
@@ -527,6 +710,38 @@ function createEmptySummary(
     skippedReasons: {},
     checkpoint: null,
     checkpointExhausted: false,
+  };
+}
+
+function createConnectorLogger(
+  connector: SourceConnector,
+  runMetadata: Prisma.InputJsonValue | null
+) {
+  const metadata = asJsonObject(runMetadata as Prisma.JsonValue | null);
+
+  return (message: string) => {
+    const origin =
+      typeof metadata?.origin === "string" ? metadata.origin : "manual";
+    const companySourceId =
+      typeof metadata?.companySourceId === "string"
+        ? metadata.companySourceId
+        : null;
+    const registryKey =
+      typeof metadata?.registryKey === "string" ? metadata.registryKey : null;
+    const validationState =
+      typeof metadata?.validationState === "string"
+        ? metadata.validationState
+        : null;
+
+    const tags = [
+      `origin=${origin}`,
+      registryKey ? `registryKey=${registryKey}` : null,
+      companySourceId ? `companySourceId=${companySourceId}` : null,
+      validationState ? `validationState=${validationState}` : null,
+      `source=${connector.sourceName}`,
+    ].filter(Boolean);
+
+    console.log(`[connector:${connector.key}] [${tags.join(" ")}] ${message}`);
   };
 }
 
@@ -604,10 +819,12 @@ async function loadResumeCheckpoint(connectorKey: string) {
 
 function buildRunResultMetrics(summary: IngestionSummary) {
   return {
+    minimallyAcceptedCount: summary.minimallyAcceptedCount,
     acceptedCanadaCount: summary.acceptedCanadaCount,
     acceptedCanadaRemoteCount: summary.acceptedCanadaRemoteCount,
     canonicalCreatedCanadaCount: summary.canonicalCreatedCanadaCount,
     canonicalCreatedCanadaRemoteCount: summary.canonicalCreatedCanadaRemoteCount,
+    visibleLiveCount: summary.visibleLiveCount,
   } satisfies Record<string, Prisma.InputJsonValue | null>;
 }
 
@@ -681,6 +898,7 @@ async function findMappedCanonical(rawJobId: string) {
     matchedBy: "rawJob" as const,
     canonical: mappingMatch.canonicalJob,
     score: 100,
+    evidence: {},
   };
 }
 
@@ -705,25 +923,47 @@ const canonicalMatchSelect = {
 } as const;
 
 async function upsertCanonicalJob({
-  currentCanonical,
+  currentCanonicalId,
   normalizedJob,
+  sourceIdentity,
+  sourceUrl,
+  rawApplyUrl,
   now,
 }: {
-  currentCanonical: CanonicalMatchCandidate | null;
+  currentCanonicalId: string | null;
   normalizedJob: NormalizedJobInput;
+  sourceIdentity: SourceIdentitySnapshot;
+  sourceUrl: string | null;
+  rawApplyUrl: string | null;
   now: Date;
 }) {
-  if (!currentCanonical) {
+  const companyRecord = await ensureCompanyRecord({
+    companyName: normalizedJob.company,
+    companyKey: normalizedJob.companyKey,
+    urls: [sourceUrl, rawApplyUrl, normalizedJob.applyUrl],
+  });
+
+  if (!currentCanonicalId) {
     const canonicalJob = await prisma.jobCanonical.create({
       data: {
         ...normalizedJob,
+        companyId: companyRecord.id,
         status: "LIVE",
+        firstSeenAt: now,
         lastSeenAt: now,
+        lastSourceSeenAt: now,
+        lastApplyCheckAt: null,
+        lastConfirmedAliveAt: now,
+        availabilityScore: 100,
+        deadSignalAt: null,
+        deadSignalReason: null,
         staleAt: null,
         expiredAt: null,
         removedAt: null,
       },
     });
+
+    await assignCanonicalJobsToCompany(companyRecord.id, normalizedJob.companyKey);
 
     return {
       id: canonicalJob.id,
@@ -731,44 +971,183 @@ async function upsertCanonicalJob({
     };
   }
 
+  const currentCanonical = await prisma.jobCanonical.findUniqueOrThrow({
+    where: { id: currentCanonicalId },
+    select: {
+      id: true,
+      companyId: true,
+      title: true,
+      company: true,
+      companyKey: true,
+      titleKey: true,
+      titleCoreKey: true,
+      descriptionFingerprint: true,
+      location: true,
+      locationKey: true,
+      region: true,
+      workMode: true,
+      salaryMin: true,
+      salaryMax: true,
+      salaryCurrency: true,
+      employmentType: true,
+      experienceLevel: true,
+      description: true,
+      shortSummary: true,
+      industry: true,
+      roleFamily: true,
+      applyUrl: true,
+      applyUrlKey: true,
+      postedAt: true,
+      deadline: true,
+      duplicateClusterId: true,
+      availabilityScore: true,
+      sourceMappings: {
+        where: {
+          removedAt: null,
+          isPrimary: true,
+        },
+        select: {
+          sourceQualityRank: true,
+        },
+        take: 1,
+      },
+    },
+  });
+
+  const currentPrimaryRank = currentCanonical.sourceMappings[0]?.sourceQualityRank ?? 0;
+  const preferIncomingSource = sourceIdentity.sourceQualityRank >= currentPrimaryRank;
+  const incomingHasSalary =
+    normalizedJob.salaryMin != null || normalizedJob.salaryMax != null;
+  const currentHasSalary =
+    currentCanonical.salaryMin != null || currentCanonical.salaryMax != null;
+  const useIncomingSalary = (preferIncomingSource && incomingHasSalary) || !currentHasSalary;
+
   const canonicalJob = await prisma.jobCanonical.update({
     where: { id: currentCanonical.id },
     data: {
-      title: normalizedJob.title,
-      company: normalizedJob.company,
-      companyKey: normalizedJob.companyKey,
-      titleKey: normalizedJob.titleKey,
-      titleCoreKey: normalizedJob.titleCoreKey,
-      descriptionFingerprint:
-        normalizedJob.descriptionFingerprint || currentCanonical.descriptionFingerprint,
-      location: normalizedJob.location,
-      locationKey: normalizedJob.locationKey,
-      region: normalizedJob.region,
-      workMode: normalizedJob.workMode,
-      salaryMin: chooseNumericValue(normalizedJob.salaryMin, currentCanonical.salaryMin),
-      salaryMax: chooseNumericValue(normalizedJob.salaryMax, currentCanonical.salaryMax),
-      salaryCurrency: normalizedJob.salaryCurrency ?? currentCanonical.salaryCurrency,
-      employmentType: normalizedJob.employmentType,
-      experienceLevel: normalizedJob.experienceLevel,
-      description: chooseLongerText(normalizedJob.description, currentCanonical.description),
-      // Always prefer the freshly-computed shortSummary: it uses the current
-      // buildShortSummary logic which skips section headers like "ABOUT THE ROLE".
-      // chooseLongerText would keep the old (longer) header-prefixed value.
-      shortSummary: normalizedJob.shortSummary,
-      industry: normalizedJob.industry,
-      roleFamily: normalizedJob.roleFamily,
-      applyUrl: choosePreferredUrl(normalizedJob.applyUrl, currentCanonical.applyUrl),
-      applyUrlKey: normalizedJob.applyUrlKey ?? currentCanonical.applyUrlKey,
+      companyId: currentCanonical.companyId ?? companyRecord.id,
+      title: chooseCanonicalStringValue({
+        currentValue: currentCanonical.title,
+        nextValue: normalizedJob.title,
+        preferNext: preferIncomingSource,
+      }),
+      company: chooseCanonicalStringValue({
+        currentValue: currentCanonical.company,
+        nextValue: normalizedJob.company,
+        preferNext: preferIncomingSource,
+        unknownValues: ["Unknown"],
+      }),
+      companyKey: chooseCanonicalStringValue({
+        currentValue: currentCanonical.companyKey,
+        nextValue: normalizedJob.companyKey,
+        preferNext: preferIncomingSource,
+      }),
+      titleKey: chooseCanonicalStringValue({
+        currentValue: currentCanonical.titleKey,
+        nextValue: normalizedJob.titleKey,
+        preferNext: preferIncomingSource,
+      }),
+      titleCoreKey: chooseCanonicalStringValue({
+        currentValue: currentCanonical.titleCoreKey,
+        nextValue: normalizedJob.titleCoreKey,
+        preferNext: preferIncomingSource,
+      }),
+      descriptionFingerprint: chooseCanonicalStringValue({
+        currentValue: currentCanonical.descriptionFingerprint,
+        nextValue: normalizedJob.descriptionFingerprint,
+        preferNext: preferIncomingSource,
+      }),
+      location: chooseCanonicalStringValue({
+        currentValue: currentCanonical.location,
+        nextValue: normalizedJob.location,
+        preferNext: preferIncomingSource,
+        unknownValues: ["Unknown"],
+      }),
+      locationKey: chooseCanonicalStringValue({
+        currentValue: currentCanonical.locationKey,
+        nextValue: normalizedJob.locationKey,
+        preferNext: preferIncomingSource,
+      }),
+      region: chooseCanonicalNullableValue({
+        currentValue: currentCanonical.region,
+        nextValue: normalizedJob.region,
+        preferNext: preferIncomingSource,
+      }),
+      workMode: chooseCanonicalEnumValue({
+        currentValue: currentCanonical.workMode,
+        nextValue: normalizedJob.workMode,
+        preferNext: preferIncomingSource,
+        unknownValue: "UNKNOWN",
+      }),
+      salaryMin: useIncomingSalary ? normalizedJob.salaryMin : currentCanonical.salaryMin,
+      salaryMax: useIncomingSalary ? normalizedJob.salaryMax : currentCanonical.salaryMax,
+      salaryCurrency: useIncomingSalary
+        ? normalizedJob.salaryCurrency ?? currentCanonical.salaryCurrency
+        : currentCanonical.salaryCurrency ?? normalizedJob.salaryCurrency,
+      employmentType: chooseCanonicalEnumValue({
+        currentValue: currentCanonical.employmentType,
+        nextValue: normalizedJob.employmentType,
+        preferNext: preferIncomingSource,
+        unknownValue: "UNKNOWN",
+      }),
+      experienceLevel: chooseCanonicalEnumValue({
+        currentValue: currentCanonical.experienceLevel,
+        nextValue: normalizedJob.experienceLevel,
+        preferNext: preferIncomingSource,
+        unknownValue: "UNKNOWN",
+      }),
+      description: chooseCanonicalDescription({
+        currentValue: currentCanonical.description,
+        nextValue: normalizedJob.description,
+        preferNext: preferIncomingSource,
+      }),
+      shortSummary: chooseCanonicalDescription({
+        currentValue: currentCanonical.shortSummary,
+        nextValue: normalizedJob.shortSummary,
+        preferNext: preferIncomingSource,
+      }),
+      industry: chooseCanonicalNullableValue({
+        currentValue: currentCanonical.industry,
+        nextValue: normalizedJob.industry,
+        preferNext: preferIncomingSource,
+      }),
+      roleFamily: chooseCanonicalStringValue({
+        currentValue: currentCanonical.roleFamily,
+        nextValue: normalizedJob.roleFamily,
+        preferNext: preferIncomingSource,
+        unknownValues: ["Unknown"],
+      }),
+      applyUrl: chooseCanonicalUrl({
+        currentValue: currentCanonical.applyUrl,
+        nextValue: normalizedJob.applyUrl,
+        preferNext: preferIncomingSource,
+      }),
+      applyUrlKey: chooseCanonicalNullableValue({
+        currentValue: currentCanonical.applyUrlKey,
+        nextValue: normalizedJob.applyUrlKey,
+        preferNext: preferIncomingSource,
+      }),
       postedAt: chooseEarlierDate(currentCanonical.postedAt, normalizedJob.postedAt),
       deadline: choosePreferredDeadline(currentCanonical.deadline, normalizedJob.deadline),
-      duplicateClusterId: normalizedJob.duplicateClusterId,
+      duplicateClusterId: chooseCanonicalNullableValue({
+        currentValue: currentCanonical.duplicateClusterId,
+        nextValue: normalizedJob.duplicateClusterId,
+        preferNext: preferIncomingSource,
+      }),
       status: "LIVE",
       lastSeenAt: now,
+      lastSourceSeenAt: now,
+      lastConfirmedAliveAt: now,
+      availabilityScore: currentCanonical.availabilityScore ?? 100,
+      deadSignalAt: null,
+      deadSignalReason: null,
       staleAt: null,
       expiredAt: null,
       removedAt: null,
     },
   });
+
+  await assignCanonicalJobsToCompany(companyRecord.id, normalizedJob.companyKey);
 
   return {
     id: canonicalJob.id,
@@ -781,49 +1160,67 @@ async function upsertSourceMapping({
   connector,
   rawJobId,
   sourceUrl,
+  sourceIdentity,
+  sourceLifecycle,
+  canonicalMatch,
   now,
 }: {
   canonicalId: string;
   connector: SourceConnector;
   rawJobId: string;
   sourceUrl: string | null;
+  sourceIdentity: SourceIdentitySnapshot;
+  sourceLifecycle: ReturnType<typeof deriveSourceLifecycleSnapshot>;
+  canonicalMatch: CanonicalMatchResult | null;
   now: Date;
 }) {
   const existingMapping = await prisma.jobSourceMapping.findFirst({
     where: { rawJobId },
+    select: {
+      id: true,
+      canonicalJobId: true,
+    },
   });
 
   if (existingMapping) {
-    const hasAnyActivePrimary = await prisma.jobSourceMapping.count({
-      where: {
-        canonicalJobId: canonicalId,
-        isPrimary: true,
-        removedAt: null,
-      },
-    });
-
     await prisma.jobSourceMapping.update({
       where: { id: existingMapping.id },
       data: {
         canonicalJobId: canonicalId,
         sourceName: connector.sourceName,
         sourceUrl,
+        applyUrlKey: sourceIdentity.applyUrlKey,
+        sourceUrlKey: sourceIdentity.sourceUrlKey,
+        postingIdKey: sourceIdentity.postingIdKey,
+        sourceQualityKind: sourceIdentity.sourceQualityKind,
+        sourceQualityRank: sourceIdentity.sourceQualityRank,
+        sourceType: sourceLifecycle.sourceType,
+        sourceReliability: sourceLifecycle.sourceReliability,
+        isFullSnapshot: sourceLifecycle.isFullSnapshot,
+        pollPattern: sourceLifecycle.pollPattern,
+        dedupeMatchedBy: canonicalMatch?.matchedBy ?? null,
+        dedupeScore: canonicalMatch?.score ?? null,
+        dedupeEvidence:
+          canonicalMatch?.evidence
+            ? (canonicalMatch.evidence as Prisma.InputJsonValue)
+            : Prisma.JsonNull,
         lastSeenAt: now,
         removedAt: null,
-        isPrimary: existingMapping.isPrimary || hasAnyActivePrimary === 0,
+        isPrimary: false,
       },
     });
 
-    return { created: false as const };
-  }
+    await refreshPrimarySourceMapping(canonicalId);
+    if (existingMapping.canonicalJobId !== canonicalId) {
+      await refreshPrimarySourceMapping(existingMapping.canonicalJobId);
+    }
 
-  const hasAnyActivePrimary = await prisma.jobSourceMapping.count({
-    where: {
-      canonicalJobId: canonicalId,
-      isPrimary: true,
-      removedAt: null,
-    },
-  });
+    return {
+      created: false as const,
+      previousCanonicalId:
+        existingMapping.canonicalJobId !== canonicalId ? existingMapping.canonicalJobId : null,
+    };
+  }
 
   await prisma.jobSourceMapping.create({
     data: {
@@ -831,13 +1228,33 @@ async function upsertSourceMapping({
       rawJobId,
       sourceName: connector.sourceName,
       sourceUrl,
-      isPrimary: hasAnyActivePrimary === 0,
+      applyUrlKey: sourceIdentity.applyUrlKey,
+      sourceUrlKey: sourceIdentity.sourceUrlKey,
+      postingIdKey: sourceIdentity.postingIdKey,
+      sourceQualityKind: sourceIdentity.sourceQualityKind,
+      sourceQualityRank: sourceIdentity.sourceQualityRank,
+      sourceType: sourceLifecycle.sourceType,
+      sourceReliability: sourceLifecycle.sourceReliability,
+      isFullSnapshot: sourceLifecycle.isFullSnapshot,
+      pollPattern: sourceLifecycle.pollPattern,
+      dedupeMatchedBy: canonicalMatch?.matchedBy ?? null,
+      dedupeScore: canonicalMatch?.score ?? null,
+      dedupeEvidence:
+        canonicalMatch?.evidence
+          ? (canonicalMatch.evidence as Prisma.InputJsonValue)
+          : Prisma.JsonNull,
+      isPrimary: false,
       lastSeenAt: now,
       removedAt: null,
     },
   });
 
-  return { created: true as const };
+  await refreshPrimarySourceMapping(canonicalId);
+
+  return {
+    created: true as const,
+    previousCanonicalId: null,
+  };
 }
 
 async function upsertEligibility(
@@ -913,10 +1330,54 @@ async function markMissingSourceMappingsRemoved({
   };
 }
 
+async function markMappedJobAsDead({
+  rawJobId,
+  now,
+  reason,
+}: {
+  rawJobId: string;
+  now: Date;
+  reason: string;
+}) {
+  const mapping = await prisma.jobSourceMapping.findFirst({
+    where: { rawJobId },
+    select: {
+      id: true,
+      canonicalJobId: true,
+    },
+  });
+
+  if (!mapping) {
+    return { canonicalId: null as string | null };
+  }
+
+  await prisma.jobSourceMapping.update({
+    where: { id: mapping.id },
+    data: {
+      removedAt: now,
+      isPrimary: false,
+    },
+  });
+
+  await prisma.jobCanonical.update({
+    where: { id: mapping.canonicalJobId },
+    data: {
+      deadSignalAt: now,
+      deadSignalReason: reason,
+      lastApplyCheckAt: now,
+    },
+  });
+
+  await refreshPrimarySourceMapping(mapping.canonicalJobId);
+
+  return { canonicalId: mapping.canonicalJobId };
+}
+
 async function refreshCanonicalStatuses(canonicalIds: string[], now: Date) {
   const uniqueCanonicalIds = [...new Set(canonicalIds)];
   const tally: CanonicalStatusTally = {
     liveCount: 0,
+    agingCount: 0,
     staleCount: 0,
     expiredCount: 0,
     removedCount: 0,
@@ -925,7 +1386,8 @@ async function refreshCanonicalStatuses(canonicalIds: string[], now: Date) {
 
   for (const canonicalId of uniqueCanonicalIds) {
     const result = await refreshCanonicalStatus(canonicalId, now);
-    if (result.status === "LIVE") tally.liveCount += 1;
+    if (result.status === "LIVE" || result.status === "AGING") tally.liveCount += 1;
+    if (result.status === "AGING") tally.agingCount += 1;
     if (result.status === "STALE") tally.staleCount += 1;
     if (result.status === "EXPIRED") tally.expiredCount += 1;
     if (result.status === "REMOVED") tally.removedCount += 1;
@@ -943,14 +1405,28 @@ async function refreshCanonicalStatus(
     where: { id: canonicalId },
     select: {
       id: true,
+      applyUrl: true,
       status: true,
+      firstSeenAt: true,
       lastSeenAt: true,
+      lastSourceSeenAt: true,
+      lastApplyCheckAt: true,
+      lastConfirmedAliveAt: true,
+      availabilityScore: true,
+      deadSignalAt: true,
+      deadSignalReason: true,
       deadline: true,
       staleAt: true,
       expiredAt: true,
       removedAt: true,
       sourceMappings: {
         select: {
+          id: true,
+          sourceName: true,
+          sourceType: true,
+          sourceReliability: true,
+          isFullSnapshot: true,
+          pollPattern: true,
           lastSeenAt: true,
           removedAt: true,
         },
@@ -972,36 +1448,49 @@ async function refreshCanonicalStatusFromSnapshot(
   const activeMappings = canonicalJob.sourceMappings.filter(
     (sourceMapping) => sourceMapping.removedAt === null
   );
-  const removedMappingsCount = canonicalJob.sourceMappings.length - activeMappings.length;
-  const latestSeenAt = canonicalJob.sourceMappings.reduce<Date>(
-    (currentLatestSeenAt, sourceMapping) =>
-      sourceMapping.lastSeenAt > currentLatestSeenAt
-        ? sourceMapping.lastSeenAt
-        : currentLatestSeenAt,
-    canonicalJob.lastSeenAt
+  const removedMappings = canonicalJob.sourceMappings.filter(
+    (sourceMapping) => sourceMapping.removedAt !== null
   );
 
-  const nextStatus = determineCanonicalStatus({
-    activeMappingsCount: activeMappings.length,
-    removedMappingsCount,
-    deadline: canonicalJob.deadline,
-    latestSeenAt,
+  let applyCheckOutcome: ApplyUrlCheckOutcome | null = null;
+  const provisionalLifecycle = computeLifecycleState({
+    canonicalJob,
+    activeMappings,
+    removedMappings,
     now,
   });
 
+  if (
+    shouldRunApplyUrlCheck({
+      canonicalJob,
+      activeMappingsCount: activeMappings.length,
+      provisionalScore: provisionalLifecycle.availabilityScore,
+      now,
+    })
+  ) {
+    applyCheckOutcome = await checkApplyUrlAvailability(canonicalJob.applyUrl, now);
+  }
+
   const nextLifecycleData = buildLifecycleUpdateData({
-    nextStatus,
-    currentStatus: canonicalJob.status,
-    currentStaleAt: canonicalJob.staleAt,
-    currentExpiredAt: canonicalJob.expiredAt,
-    currentRemovedAt: canonicalJob.removedAt,
-    latestSeenAt,
+    canonicalJob,
+    activeMappings,
+    removedMappings,
+    applyCheckOutcome,
     now,
   });
 
   const shouldUpdate =
-    nextStatus !== canonicalJob.status ||
-    latestSeenAt.getTime() !== canonicalJob.lastSeenAt.getTime() ||
+    nextLifecycleData.status !== canonicalJob.status ||
+    nextLifecycleData.lastSeenAt.getTime() !== canonicalJob.lastSeenAt.getTime() ||
+    !sameNullableDate(nextLifecycleData.lastSourceSeenAt, canonicalJob.lastSourceSeenAt) ||
+    !sameNullableDate(nextLifecycleData.lastApplyCheckAt, canonicalJob.lastApplyCheckAt) ||
+    !sameNullableDate(
+      nextLifecycleData.lastConfirmedAliveAt,
+      canonicalJob.lastConfirmedAliveAt
+    ) ||
+    nextLifecycleData.availabilityScore !== canonicalJob.availabilityScore ||
+    !sameNullableDate(nextLifecycleData.deadSignalAt, canonicalJob.deadSignalAt) ||
+    nextLifecycleData.deadSignalReason !== canonicalJob.deadSignalReason ||
     !sameNullableDate(nextLifecycleData.staleAt, canonicalJob.staleAt) ||
     !sameNullableDate(nextLifecycleData.expiredAt, canonicalJob.expiredAt) ||
     !sameNullableDate(nextLifecycleData.removedAt, canonicalJob.removedAt);
@@ -1014,89 +1503,453 @@ async function refreshCanonicalStatusFromSnapshot(
   }
 
   return {
-    status: nextStatus,
+    status: nextLifecycleData.status,
     updated: shouldUpdate,
   };
 }
 
-function determineCanonicalStatus({
-  activeMappingsCount,
-  removedMappingsCount,
-  deadline,
-  latestSeenAt,
-  now,
-}: {
-  activeMappingsCount: number;
-  removedMappingsCount: number;
-  deadline: Date | null;
-  latestSeenAt: Date;
-  now: Date;
-}): JobStatus {
-  if (deadline && deadline.getTime() < now.getTime()) {
-    return "EXPIRED";
-  }
-
-  if (activeMappingsCount === 0 && removedMappingsCount > 0) {
-    return "REMOVED";
-  }
-
-  if (activeMappingsCount === 0) {
-    return "EXPIRED";
-  }
-
-  const liveCutoff = new Date(now.getTime() - LIVE_WINDOW_DAYS * 24 * 60 * 60 * 1000);
-  const staleCutoff = new Date(now.getTime() - STALE_WINDOW_DAYS * 24 * 60 * 60 * 1000);
-
-  if (latestSeenAt.getTime() >= liveCutoff.getTime()) {
-    return "LIVE";
-  }
-
-  if (latestSeenAt.getTime() >= staleCutoff.getTime()) {
-    return "STALE";
-  }
-
-  return "EXPIRED";
-}
-
 function buildLifecycleUpdateData({
-  nextStatus,
-  currentStatus,
-  currentStaleAt,
-  currentExpiredAt,
-  currentRemovedAt,
-  latestSeenAt,
+  canonicalJob,
+  activeMappings,
+  removedMappings,
+  applyCheckOutcome,
   now,
 }: {
-  nextStatus: JobStatus;
-  currentStatus: JobStatus;
-  currentStaleAt: Date | null;
-  currentExpiredAt: Date | null;
-  currentRemovedAt: Date | null;
-  latestSeenAt: Date;
+  canonicalJob: CanonicalStatusSnapshot;
+  activeMappings: CanonicalStatusSnapshot["sourceMappings"];
+  removedMappings: CanonicalStatusSnapshot["sourceMappings"];
+  applyCheckOutcome: ApplyUrlCheckOutcome | null;
   now: Date;
 }) {
+  const lastApplyCheckAt = applyCheckOutcome?.checkedAt ?? canonicalJob.lastApplyCheckAt;
+  const lastConfirmedAliveAt =
+    applyCheckOutcome?.aliveConfirmedAt ?? canonicalJob.lastConfirmedAliveAt;
+  const deadSignalAt = applyCheckOutcome?.deadSignalAt ?? canonicalJob.deadSignalAt;
+  const deadSignalReason = applyCheckOutcome?.deadSignalReason ?? canonicalJob.deadSignalReason;
+  const computed = computeLifecycleState({
+    canonicalJob: {
+      ...canonicalJob,
+      lastApplyCheckAt,
+      lastConfirmedAliveAt,
+      deadSignalAt,
+      deadSignalReason,
+    },
+    activeMappings,
+    removedMappings,
+    now,
+  });
+
   return {
-    status: nextStatus,
-    lastSeenAt: latestSeenAt,
+    status: computed.status,
+    lastSeenAt: computed.lastSeenAt,
+    lastSourceSeenAt: computed.lastSourceSeenAt,
+    lastApplyCheckAt,
+    lastConfirmedAliveAt,
+    availabilityScore: computed.availabilityScore,
+    deadSignalAt,
+    deadSignalReason,
     staleAt:
-      nextStatus === "STALE"
-        ? currentStatus === "STALE"
-          ? currentStaleAt
+      computed.status === "STALE"
+        ? canonicalJob.status === "STALE"
+          ? canonicalJob.staleAt
           : now
         : null,
     expiredAt:
-      nextStatus === "EXPIRED"
-        ? currentStatus === "EXPIRED"
-          ? currentExpiredAt
+      computed.status === "EXPIRED"
+        ? canonicalJob.status === "EXPIRED"
+          ? canonicalJob.expiredAt
           : now
         : null,
     removedAt:
-      nextStatus === "REMOVED"
-        ? currentStatus === "REMOVED"
-          ? currentRemovedAt
+      computed.status === "REMOVED"
+        ? canonicalJob.status === "REMOVED"
+          ? canonicalJob.removedAt
           : now
         : null,
   } satisfies Prisma.JobCanonicalUncheckedUpdateInput;
+}
+
+type ApplyUrlCheckOutcome = {
+  checkedAt: Date;
+  aliveConfirmedAt: Date | null;
+  deadSignalAt: Date | null;
+  deadSignalReason: string | null;
+};
+
+function computeLifecycleState({
+  canonicalJob,
+  activeMappings,
+  removedMappings,
+  now,
+}: {
+  canonicalJob: Pick<
+    CanonicalStatusSnapshot,
+    | "status"
+    | "firstSeenAt"
+    | "lastSeenAt"
+    | "lastSourceSeenAt"
+    | "lastApplyCheckAt"
+    | "lastConfirmedAliveAt"
+    | "availabilityScore"
+    | "deadline"
+    | "deadSignalAt"
+    | "deadSignalReason"
+  >;
+  activeMappings: CanonicalStatusSnapshot["sourceMappings"];
+  removedMappings: CanonicalStatusSnapshot["sourceMappings"];
+  now: Date;
+}) {
+  const lastSourceSeenAt = activeMappings.reduce<Date | null>(
+    (latestSeenAt, sourceMapping) =>
+      !latestSeenAt || sourceMapping.lastSeenAt > latestSeenAt
+        ? sourceMapping.lastSeenAt
+        : latestSeenAt,
+    canonicalJob.lastSourceSeenAt
+  );
+  const lastEvidenceAt = getLatestEvidenceAt([
+    lastSourceSeenAt,
+    canonicalJob.lastConfirmedAliveAt,
+    canonicalJob.lastSeenAt,
+    canonicalJob.firstSeenAt,
+  ]);
+  const latestAliveEvidenceAt = getLatestEvidenceAt([
+    lastSourceSeenAt,
+    canonicalJob.lastConfirmedAliveAt,
+  ]);
+
+  if (
+    canonicalJob.deadline &&
+    canonicalJob.deadline.getTime() <= now.getTime() &&
+    latestAliveEvidenceAt.getTime() <= canonicalJob.deadline.getTime()
+  ) {
+    return {
+      status: "EXPIRED" as JobStatus,
+      availabilityScore: 0,
+      lastSeenAt: lastEvidenceAt,
+      lastSourceSeenAt,
+    };
+  }
+
+  if (
+    canonicalJob.deadSignalAt &&
+    (!canonicalJob.lastConfirmedAliveAt ||
+      canonicalJob.deadSignalAt.getTime() >= canonicalJob.lastConfirmedAliveAt.getTime())
+  ) {
+    return {
+      status: "EXPIRED" as JobStatus,
+      availabilityScore: 0,
+      lastSeenAt: lastEvidenceAt,
+      lastSourceSeenAt,
+    };
+  }
+
+  const activeEvidenceScore = Math.min(
+    78,
+    [...activeMappings]
+      .map((sourceMapping) => scoreActiveMappingEvidence(sourceMapping, now))
+      .sort((left, right) => right - left)
+      .slice(0, 2)
+      .reduce((sum, value) => sum + value, 0)
+  );
+  const consistencyBonus = Math.min(12, Math.max(0, activeMappings.length - 1) * 4);
+  const confirmationBonus = scoreConfirmationEvidence(
+    canonicalJob.lastConfirmedAliveAt,
+    now
+  );
+  const agePenalty = scoreAgePenalty(canonicalJob.firstSeenAt, activeMappings.length, now);
+  const removalPenalty = computeRemovalPenalty(removedMappings, activeMappings.length, now);
+
+  const confirmationFloor = getRecentAliveConfirmationFloor(
+    canonicalJob.lastConfirmedAliveAt,
+    activeMappings.length,
+    now
+  );
+
+  const availabilityScore = Math.max(
+    confirmationFloor,
+    clampScore(
+    activeEvidenceScore + consistencyBonus + confirmationBonus - agePenalty - removalPenalty
+    )
+  );
+  const strongRemovalEvidence = hasStrongRemovalEvidence(removedMappings, now);
+
+  let status: JobStatus;
+  if (availabilityScore >= 72) status = "LIVE";
+  else if (availabilityScore >= 48) status = "AGING";
+  else if (availabilityScore >= 22) status = "STALE";
+  else if (activeMappings.length === 0 && strongRemovalEvidence) status = "REMOVED";
+  else status = "EXPIRED";
+
+  return {
+    status,
+    availabilityScore,
+    lastSeenAt: lastEvidenceAt,
+    lastSourceSeenAt,
+  };
+}
+
+function scoreActiveMappingEvidence(
+  sourceMapping: CanonicalStatusSnapshot["sourceMappings"][number],
+  now: Date
+) {
+  const hoursSinceSeen = (now.getTime() - sourceMapping.lastSeenAt.getTime()) / 3_600_000;
+  const recencyFactor =
+    hoursSinceSeen <= 12
+      ? 1
+      : hoursSinceSeen <= 48
+        ? 0.92
+        : hoursSinceSeen <= 24 * 7
+          ? 0.78
+          : hoursSinceSeen <= 24 * 14
+            ? 0.6
+            : hoursSinceSeen <= 24 * 30
+              ? 0.42
+              : hoursSinceSeen <= 24 * 60
+                ? 0.24
+                : 0.12;
+
+  let score = sourceMapping.sourceReliability * 55 * recencyFactor;
+
+  if (sourceMapping.isFullSnapshot) score += 6 * recencyFactor;
+  if (sourceMapping.sourceType === "ATS") score += 8 * recencyFactor;
+  if (sourceMapping.sourceType === "BOARD") score += 4 * recencyFactor;
+  if (sourceMapping.sourceType === "AGGREGATOR") score -= 3 * (1 - recencyFactor);
+
+  return Math.max(0, score);
+}
+
+function scoreRemovalPenalty(
+  sourceMapping: CanonicalStatusSnapshot["sourceMappings"][number],
+  now: Date
+) {
+  if (!sourceMapping.removedAt) return 0;
+
+  const daysSinceRemoved =
+    (now.getTime() - sourceMapping.removedAt.getTime()) / (24 * 60 * 60 * 1000);
+  const recencyFactor =
+    daysSinceRemoved <= 2
+      ? 1
+      : daysSinceRemoved <= 7
+        ? 0.85
+        : daysSinceRemoved <= 21
+          ? 0.65
+          : daysSinceRemoved <= 45
+            ? 0.35
+            : 0.15;
+
+  let score = sourceMapping.sourceReliability * 22;
+  if (sourceMapping.isFullSnapshot) score += 12;
+  if (sourceMapping.sourceType === "ATS") score += 8;
+  if (sourceMapping.sourceType === "BOARD") score += 4;
+  if (sourceMapping.sourceType === "AGGREGATOR") score -= 10;
+
+  return Math.max(0, score * recencyFactor);
+}
+
+function computeRemovalPenalty(
+  removedMappings: CanonicalStatusSnapshot["sourceMappings"],
+  activeMappingsCount: number,
+  now: Date
+) {
+  const latestRemovalBySource = new Map<
+    string,
+    CanonicalStatusSnapshot["sourceMappings"][number]
+  >();
+
+  for (const sourceMapping of removedMappings) {
+    const key = sourceMapping.sourceName;
+    const current = latestRemovalBySource.get(key);
+    if (
+      !current ||
+      ((sourceMapping.removedAt?.getTime() ?? 0) > (current.removedAt?.getTime() ?? 0))
+    ) {
+      latestRemovalBySource.set(key, sourceMapping);
+    }
+  }
+
+  const rawPenalty = [...latestRemovalBySource.values()].reduce(
+    (sum, sourceMapping) => sum + scoreRemovalPenalty(sourceMapping, now),
+    0
+  );
+
+  return Math.min(activeMappingsCount > 0 ? 28 : 70, rawPenalty);
+}
+
+function scoreConfirmationEvidence(lastConfirmedAliveAt: Date | null, now: Date) {
+  if (!lastConfirmedAliveAt) return 0;
+
+  const daysSinceConfirmed =
+    (now.getTime() - lastConfirmedAliveAt.getTime()) / (24 * 60 * 60 * 1000);
+
+  if (daysSinceConfirmed <= 1) return 15;
+  if (daysSinceConfirmed <= 3) return 12;
+  if (daysSinceConfirmed <= 7) return 8;
+  if (daysSinceConfirmed <= 14) return 4;
+  if (daysSinceConfirmed <= 30) return 1;
+  return 0;
+}
+
+function getRecentAliveConfirmationFloor(
+  lastConfirmedAliveAt: Date | null,
+  activeMappingsCount: number,
+  now: Date
+) {
+  if (!lastConfirmedAliveAt) return 0;
+
+  const daysSinceConfirmed =
+    (now.getTime() - lastConfirmedAliveAt.getTime()) / (24 * 60 * 60 * 1000);
+
+  if (daysSinceConfirmed <= 1) {
+    return activeMappingsCount > 0 ? 72 : 56;
+  }
+
+  if (daysSinceConfirmed <= 3) {
+    return activeMappingsCount > 0 ? 60 : 48;
+  }
+
+  if (daysSinceConfirmed <= 7) {
+    return activeMappingsCount > 0 ? 48 : 30;
+  }
+
+  return 0;
+}
+
+function scoreAgePenalty(firstSeenAt: Date, activeMappingsCount: number, now: Date) {
+  const daysSinceFirstSeen =
+    (now.getTime() - firstSeenAt.getTime()) / (24 * 60 * 60 * 1000);
+
+  if (daysSinceFirstSeen <= 120) return 0;
+  if (daysSinceFirstSeen <= 240) return activeMappingsCount <= 1 ? 4 : 2;
+  if (daysSinceFirstSeen <= 365) return activeMappingsCount === 0 ? 10 : 6;
+  return activeMappingsCount === 0 ? 16 : 10;
+}
+
+function hasStrongRemovalEvidence(
+  removedMappings: CanonicalStatusSnapshot["sourceMappings"],
+  now: Date
+) {
+  return removedMappings.some((sourceMapping) => {
+    if (!sourceMapping.removedAt) return false;
+    const daysSinceRemoved =
+      (now.getTime() - sourceMapping.removedAt.getTime()) / (24 * 60 * 60 * 1000);
+    return (
+      daysSinceRemoved <= 21 &&
+      sourceMapping.isFullSnapshot &&
+      sourceMapping.sourceReliability >= 0.8 &&
+      (sourceMapping.sourceType === "ATS" ||
+        sourceMapping.sourceType === "COMPANY_JSON" ||
+        sourceMapping.sourceType === "COMPANY_HTML" ||
+        sourceMapping.sourceType === "BOARD")
+    );
+  });
+}
+
+function clampScore(value: number) {
+  return Math.max(0, Math.min(100, Math.round(value)));
+}
+
+function getLatestEvidenceAt(dates: Array<Date | null>) {
+  return dates.reduce<Date>((latestValue, currentValue) => {
+    if (!currentValue) return latestValue;
+    return currentValue > latestValue ? currentValue : latestValue;
+  }, dates.find((value): value is Date => Boolean(value)) ?? new Date(0));
+}
+
+function shouldRunApplyUrlCheck({
+  canonicalJob,
+  activeMappingsCount,
+  provisionalScore,
+  now,
+}: {
+  canonicalJob: CanonicalStatusSnapshot;
+  activeMappingsCount: number;
+  provisionalScore: number;
+  now: Date;
+}) {
+  if (!canonicalJob.applyUrl || !/^https?:\/\//i.test(canonicalJob.applyUrl)) return false;
+  if (canonicalJob.deadSignalAt) return false;
+
+  const hoursSinceLastApplyCheck = canonicalJob.lastApplyCheckAt
+    ? (now.getTime() - canonicalJob.lastApplyCheckAt.getTime()) / 3_600_000
+    : Number.POSITIVE_INFINITY;
+
+  if (hoursSinceLastApplyCheck < APPLY_URL_CHECK_INTERVAL_HOURS) {
+    return false;
+  }
+
+  return activeMappingsCount === 0 || provisionalScore < 48;
+}
+
+async function checkApplyUrlAvailability(
+  applyUrl: string,
+  now: Date
+): Promise<ApplyUrlCheckOutcome> {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), APPLY_URL_CHECK_TIMEOUT_MS);
+
+  try {
+    const response = await fetch(applyUrl, {
+      method: "GET",
+      redirect: "follow",
+      signal: controller.signal,
+      headers: {
+        "User-Agent": "Mozilla/5.0 (compatible; autoapplication-lifecycle-check/1.0)",
+      },
+    });
+
+    if ([404, 410, 451].includes(response.status)) {
+      return {
+        checkedAt: now,
+        aliveConfirmedAt: null,
+        deadSignalAt: now,
+        deadSignalReason: `Apply URL returned HTTP ${response.status}.`,
+      };
+    }
+
+    const contentType = response.headers.get("content-type") ?? "";
+    const shouldInspectBody = contentType.includes("text") || contentType.includes("html");
+    const bodyText = shouldInspectBody ? await response.text() : "";
+    const deadSignal = detectDeadSignal({
+      title: "",
+      description: bodyText,
+      deadline: null,
+      fetchedAt: now,
+    });
+
+    if (deadSignal.detected) {
+      return {
+        checkedAt: now,
+        aliveConfirmedAt: null,
+        deadSignalAt: now,
+        deadSignalReason: deadSignal.reason,
+      };
+    }
+
+    if (response.ok || (response.status >= 300 && response.status < 400)) {
+      return {
+        checkedAt: now,
+        aliveConfirmedAt: now,
+        deadSignalAt: null,
+        deadSignalReason: null,
+      };
+    }
+
+    return {
+      checkedAt: now,
+      aliveConfirmedAt: null,
+      deadSignalAt: null,
+      deadSignalReason: null,
+    };
+  } catch {
+    return {
+      checkedAt: now,
+      aliveConfirmedAt: null,
+      deadSignalAt: null,
+      deadSignalReason: null,
+    };
+  } finally {
+    clearTimeout(timeout);
+  }
 }
 
 function buildRawPayload(sourceJob: SourceConnectorJob, fetchedAt: Date) {
@@ -1117,8 +1970,152 @@ function buildRawPayload(sourceJob: SourceConnectorJob, fetchedAt: Date) {
   } as Prisma.InputJsonValue;
 }
 
-function chooseNumericValue(nextValue: number | null, currentValue: number | null) {
-  return nextValue ?? currentValue;
+async function refreshPrimarySourceMapping(canonicalJobId: string) {
+  const activeMappings = await prisma.jobSourceMapping.findMany({
+    where: {
+      canonicalJobId,
+      removedAt: null,
+    },
+    select: {
+      id: true,
+    },
+    orderBy: [
+      { sourceQualityRank: "desc" },
+      { lastSeenAt: "desc" },
+      { createdAt: "asc" },
+    ],
+  });
+
+  if (activeMappings.length === 0) {
+    await prisma.jobSourceMapping.updateMany({
+      where: { canonicalJobId },
+      data: { isPrimary: false },
+    });
+    return;
+  }
+
+  const primaryId = activeMappings[0]?.id;
+  await prisma.jobSourceMapping.updateMany({
+    where: {
+      canonicalJobId,
+      id: {
+        not: primaryId,
+      },
+    },
+    data: {
+      isPrimary: false,
+    },
+  });
+  await prisma.jobSourceMapping.update({
+    where: { id: primaryId },
+    data: { isPrimary: true },
+  });
+}
+
+function chooseCanonicalStringValue({
+  currentValue,
+  nextValue,
+  preferNext,
+  unknownValues = [],
+}: {
+  currentValue: string;
+  nextValue: string;
+  preferNext: boolean;
+  unknownValues?: string[];
+}) {
+  const currentKnown = isMeaningfulString(currentValue, unknownValues);
+  const nextKnown = isMeaningfulString(nextValue, unknownValues);
+
+  if (preferNext && nextKnown) return nextValue;
+  if (currentKnown) return currentValue;
+  if (nextKnown) return nextValue;
+  if (preferNext && nextValue.trim()) return nextValue;
+  return currentValue;
+}
+
+function chooseCanonicalNullableValue<T>({
+  currentValue,
+  nextValue,
+  preferNext,
+}: {
+  currentValue: T | null;
+  nextValue: T | null;
+  preferNext: boolean;
+}) {
+  if (preferNext && nextValue != null) return nextValue;
+  if (currentValue != null) return currentValue;
+  return nextValue;
+}
+
+function chooseCanonicalEnumValue<T extends string | null>({
+  currentValue,
+  nextValue,
+  preferNext,
+  unknownValue,
+}: {
+  currentValue: T;
+  nextValue: T;
+  preferNext: boolean;
+  unknownValue: string;
+}) {
+  const currentKnown = currentValue != null && currentValue !== unknownValue;
+  const nextKnown = nextValue != null && nextValue !== unknownValue;
+
+  if (preferNext && nextKnown) return nextValue;
+  if (currentKnown) return currentValue;
+  if (nextKnown) return nextValue;
+  if (preferNext && nextValue != null) return nextValue;
+  return currentValue ?? nextValue;
+}
+
+function chooseCanonicalDescription({
+  currentValue,
+  nextValue,
+  preferNext,
+}: {
+  currentValue: string;
+  nextValue: string;
+  preferNext: boolean;
+}) {
+  const currentLength = currentValue.trim().length;
+  const nextLength = nextValue.trim().length;
+
+  if (preferNext) {
+    if (nextLength > 0 && nextLength >= Math.floor(currentLength * 0.6)) {
+      return nextValue;
+    }
+    if (currentLength === 0) return nextValue;
+    return currentValue;
+  }
+
+  if (currentLength > 0) return currentValue;
+  return nextValue;
+}
+
+function chooseCanonicalUrl({
+  currentValue,
+  nextValue,
+  preferNext,
+}: {
+  currentValue: string;
+  nextValue: string;
+  preferNext: boolean;
+}) {
+  const normalizedCurrentValue = currentValue.trim();
+  const normalizedNextValue = nextValue.trim();
+
+  if (!normalizedCurrentValue) return normalizedNextValue;
+  if (!normalizedNextValue) return normalizedCurrentValue;
+  if (preferNext) return normalizedNextValue;
+  return normalizedCurrentValue;
+}
+
+function isMeaningfulString(value: string, unknownValues: string[]) {
+  const normalizedValue = value.trim();
+  if (!normalizedValue) return false;
+  return !unknownValues.some(
+    (unknownValue) => normalizedValue.toLowerCase() === unknownValue.toLowerCase()
+  );
 }
 
 function chooseEarlierDate(currentValue: Date, nextValue: Date) {
@@ -1132,33 +2129,6 @@ function choosePreferredDeadline(
   if (!currentValue) return nextValue;
   if (!nextValue) return currentValue;
   return currentValue.getTime() <= nextValue.getTime() ? currentValue : nextValue;
-}
-
-function chooseLongerText(nextValue: string, currentValue: string) {
-  if (nextValue.trim().length >= currentValue.trim().length) return nextValue;
-  return currentValue;
-}
-
-function choosePreferredUrl(nextValue: string, currentValue: string) {
-  const normalizedNextValue = nextValue.trim();
-  if (!normalizedNextValue) return currentValue;
-
-  try {
-    const nextUrl = new URL(normalizedNextValue);
-    const currentUrl = new URL(currentValue);
-
-    if (currentUrl.hostname.includes("greenhouse.io") && !nextUrl.hostname.includes("greenhouse.io")) {
-      return normalizedNextValue;
-    }
-
-    if (currentUrl.hostname.includes("lever.co") && !nextUrl.hostname.includes("lever.co")) {
-      return normalizedNextValue;
-    }
-  } catch {
-    return normalizedNextValue;
-  }
-
-  return normalizedNextValue;
 }
 
 function sameNullableDate(left: Date | null, right: Date | null) {

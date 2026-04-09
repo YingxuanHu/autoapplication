@@ -9,10 +9,8 @@
  */
 import { prisma } from "@/lib/db";
 import { normalizeSourceJob } from "@/lib/ingestion/normalize";
-import {
-  findCrossSourceCanonicalMatch,
-  isCanonicalMatchCompatible,
-} from "@/lib/ingestion/dedupe";
+import { findCrossSourceCanonicalMatch } from "@/lib/ingestion/dedupe";
+import { deriveSourceIdentitySnapshot } from "@/lib/ingestion/source-quality";
 import type { SourceConnectorJob } from "@/lib/ingestion/types";
 import type { Prisma } from "@/generated/prisma/client";
 
@@ -43,7 +41,7 @@ async function main() {
         sourceId: string;
         sourceName: string;
         sourceTier: string;
-        rawPayload: any;
+        rawPayload: Prisma.JsonValue;
         fetchedAt: Date;
       }>
     >`
@@ -78,9 +76,16 @@ async function main() {
 
       totalAccepted++;
       const normalized = result.job;
+      const sourceIdentity = deriveSourceIdentitySnapshot({
+        sourceName: raw.sourceName,
+        sourceId: sourceJob.sourceId,
+        sourceUrl: sourceJob.sourceUrl,
+        applyUrl: normalized.applyUrl,
+        metadata: sourceJob.metadata,
+      });
 
       // Find existing canonical match
-      const crossMatch = await findCrossSourceCanonicalMatch(normalized);
+      const crossMatch = await findCrossSourceCanonicalMatch(normalized, sourceIdentity);
       if (crossMatch) {
         totalDeduped++;
       }
@@ -179,36 +184,67 @@ async function main() {
 }
 
 function rawPayloadToSourceJob(
-  payload: any,
+  payload: Prisma.JsonValue,
   fallbackSourceId: string
 ): SourceConnectorJob | null {
-  if (!payload || typeof payload !== "object") return null;
+  if (!payload || typeof payload !== "object" || Array.isArray(payload)) return null;
 
-  const title = payload.title?.trim?.();
-  const company = payload.company?.trim?.() ?? payload.company_name?.trim?.() ?? "";
-  const location = payload.location?.trim?.() ?? "";
-  const description = payload.description?.trim?.() ?? "";
-  const applyUrl = payload.applyUrl?.trim?.() ?? payload.apply_url?.trim?.() ?? payload.sourceUrl?.trim?.() ?? "";
+  const payloadObject = payload as Record<string, Prisma.JsonValue>;
+  const title = readString(payloadObject.title)?.trim();
+  const company =
+    readString(payloadObject.company)?.trim() ??
+    readString(payloadObject.company_name)?.trim() ??
+    "";
+  const location = readString(payloadObject.location)?.trim() ?? "";
+  const description = readString(payloadObject.description)?.trim() ?? "";
+  const applyUrl =
+    readString(payloadObject.applyUrl)?.trim() ??
+    readString(payloadObject.apply_url)?.trim() ??
+    readString(payloadObject.sourceUrl)?.trim() ??
+    "";
 
   if (!title || !applyUrl) return null;
 
   return {
-    sourceId: payload.sourceId ?? fallbackSourceId,
-    sourceUrl: payload.sourceUrl ?? null,
+    sourceId: readString(payloadObject.sourceId) ?? fallbackSourceId,
+    sourceUrl: readString(payloadObject.sourceUrl) ?? null,
     title,
     company,
     location,
     description,
     applyUrl,
-    postedAt: payload.postedAt ? new Date(payload.postedAt) : null,
-    deadline: payload.deadline ? new Date(payload.deadline) : null,
-    employmentType: payload.employmentType ?? null,
-    workMode: payload.workMode ?? null,
-    salaryMin: payload.salaryMin ?? null,
-    salaryMax: payload.salaryMax ?? null,
-    salaryCurrency: payload.salaryCurrency ?? null,
-    metadata: payload.metadata ?? {},
+    postedAt: parseDateValue(payloadObject.postedAt),
+    deadline: parseDateValue(payloadObject.deadline),
+    employmentType: readEnumValue<SourceConnectorJob["employmentType"]>(
+      payloadObject.employmentType
+    ),
+    workMode: readEnumValue<SourceConnectorJob["workMode"]>(payloadObject.workMode),
+    salaryMin: readNumber(payloadObject.salaryMin),
+    salaryMax: readNumber(payloadObject.salaryMax),
+    salaryCurrency: readString(payloadObject.salaryCurrency) ?? null,
+    metadata:
+      payloadObject.metadata && typeof payloadObject.metadata === "object"
+        ? (payloadObject.metadata as Prisma.InputJsonValue)
+        : {},
   };
+}
+
+function readString(value: Prisma.JsonValue | undefined) {
+  return typeof value === "string" ? value : null;
+}
+
+function readNumber(value: Prisma.JsonValue | undefined) {
+  return typeof value === "number" ? value : null;
+}
+
+function parseDateValue(value: Prisma.JsonValue | undefined) {
+  if (typeof value !== "string" || !value.trim()) return null;
+  const parsedValue = new Date(value);
+  return Number.isNaN(parsedValue.getTime()) ? null : parsedValue;
+}
+
+function readEnumValue<T>(value: Prisma.JsonValue | undefined) {
+  return typeof value === "string" ? (value as T) : null;
 }
 
 main()

@@ -59,6 +59,7 @@ export function createLeverConnector({
     async fetchJobs(
       options: SourceConnectorFetchOptions
     ): Promise<SourceConnectorFetchResult> {
+      const log = options.log ?? console.error;
       const response = await fetch(
         `https://api.lever.co/v0/postings/${siteToken}?mode=json`,
         {
@@ -69,7 +70,7 @@ export function createLeverConnector({
       );
 
       if (!response.ok) {
-        console.error(
+        log(
           `[lever:${siteToken}] Fetch failed: ${response.status} ${response.statusText}`
         );
         return {
@@ -116,15 +117,17 @@ export function createLeverConnector({
 }
 
 function buildLocation(job: LeverPosting) {
-  const allLocations = job.categories?.allLocations?.map((value) => value.trim()).filter(Boolean);
+  const allLocations = (job.categories?.allLocations ?? [])
+    .map((value) => readText(value))
+    .filter(Boolean);
   if (allLocations && allLocations.length > 0) {
     return [...new Set(allLocations)].join(", ");
   }
 
-  const directLocation = job.categories?.location?.trim();
+  const directLocation = readText(job.categories?.location);
   if (directLocation) return directLocation;
 
-  const country = job.country?.trim();
+  const country = readText(job.country);
   return country || "Unknown";
 }
 
@@ -135,7 +138,7 @@ function buildDescription(job: LeverPosting) {
     job.additionalPlain,
     job.salaryDescriptionPlain,
   ]
-    .map((value) => value?.trim())
+    .map((value) => readText(value))
     .filter(Boolean);
 
   return sections.join("\n\n");
@@ -150,9 +153,8 @@ function parseTimestamp(value: number | null | undefined) {
 }
 
 function inferEmploymentType(value: string | null | undefined): EmploymentType | null {
-  if (!value) return null;
-
-  const normalizedValue = value.toLowerCase();
+  const normalizedValue = readLowerText(value);
+  if (!normalizedValue) return null;
   if (normalizedValue.includes("intern")) return "INTERNSHIP";
   if (normalizedValue.includes("contract") || normalizedValue.includes("temporary")) {
     return "CONTRACT";
@@ -163,9 +165,8 @@ function inferEmploymentType(value: string | null | undefined): EmploymentType |
 }
 
 function inferWorkMode(value: string | null | undefined): WorkMode | null {
-  if (!value) return null;
-
-  const normalizedValue = value.toLowerCase();
+  const normalizedValue = readLowerText(value);
+  if (!normalizedValue) return null;
   if (normalizedValue.includes("remote")) return "REMOTE";
   if (normalizedValue.includes("hybrid")) return "HYBRID";
   if (normalizedValue.includes("on-site") || normalizedValue.includes("onsite")) {
@@ -181,4 +182,15 @@ function buildCompanyName(siteToken: string) {
     .filter(Boolean)
     .map((segment) => segment.charAt(0).toUpperCase() + segment.slice(1))
     .join(" ");
+}
+
+function readText(value: unknown): string | null {
+  if (typeof value !== "string") return null;
+  const trimmed = value.trim();
+  return trimmed || null;
+}
+
+function readLowerText(value: unknown): string | null {
+  const text = readText(value);
+  return text ? text.toLowerCase() : null;
 }

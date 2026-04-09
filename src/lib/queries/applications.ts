@@ -723,8 +723,10 @@ function buildPackageWhyItMatches(
 ) {
   const reasons = [
     `${job.roleFamily} role family alignment`,
-    `${formatDisplayLabel(job.industry)} focus`,
-    `${formatDisplayLabel(job.workMode)} work mode fit`,
+    job.industry ? `${formatDisplayLabel(job.industry)} focus` : "General role alignment",
+    job.workMode !== "UNKNOWN"
+      ? `${formatDisplayLabel(job.workMode)} work mode fit`
+      : "Work mode still being clarified",
   ];
 
   if (recommendedResume) {

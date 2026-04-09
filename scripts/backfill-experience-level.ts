@@ -14,7 +14,13 @@ import { inferExperienceLevel } from "../src/lib/career-stage";
 
 const DRY_RUN = process.argv.includes("--dry-run");
 
-type ExperienceLevel = "ENTRY" | "MID" | "SENIOR" | "LEAD" | "EXECUTIVE";
+type ExperienceLevel =
+  | "ENTRY"
+  | "MID"
+  | "SENIOR"
+  | "LEAD"
+  | "EXECUTIVE"
+  | "UNKNOWN";
 
 async function main() {
   console.log(`Experience-level backfill ${DRY_RUN ? "(dry run)" : "(live)"}\n`);

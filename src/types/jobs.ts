@@ -47,7 +47,7 @@ export type JobCardData = {
   company: string;
   location: string;
   workMode: WorkMode;
-  industry: Industry;
+  industry: Industry | null;
   status: JobStatus;
   roleFamily: string;
   experienceLevel: ExperienceLevel | null;
@@ -68,7 +68,7 @@ export type JobCardData = {
 };
 
 export type JobDetailData = JobCardData & {
-  region: Region;
+  region: Region | null;
   employmentType: EmploymentType;
 };
 
@@ -139,7 +139,7 @@ export type ApplicationHistoryItem = {
     company: string;
     location: string;
     workMode: WorkMode;
-    industry: Industry;
+    industry: Industry | null;
     status: JobStatus;
     roleFamily: string;
     applyUrl: string;

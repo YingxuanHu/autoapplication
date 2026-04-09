@@ -1,5 +1,13 @@
 import { prisma } from "@/lib/db";
-import { reconcileCanonicalLifecycle, ingestConnector } from "@/lib/ingestion/pipeline";
+import {
+  isCompanySourceManagedConnector,
+  routeLegacyScheduledConnectorToCompanySource,
+} from "@/lib/ingestion/legacy-source-routing";
+import {
+  reconcileCanonicalLifecycle,
+  ingestConnector,
+  recoverStaleRunningIngestionRuns,
+} from "@/lib/ingestion/pipeline";
 import { getScheduledConnectors } from "@/lib/ingestion/registry";
 import type { IngestionSummary } from "@/lib/ingestion/types";
 
@@ -9,9 +17,12 @@ export type ScheduledIngestionResult = {
   skippedConnectors: Array<{
     connectorKey: string;
     sourceName: string;
-    reason: "not_due";
-    nextEligibleAt: string;
-    lastRunStartedAt: string;
+    reason: "not_due" | "managed_by_company_source";
+    nextEligibleAt: string | null;
+    lastRunStartedAt: string | null;
+    origin: "legacy_registry";
+    companySourceId?: string;
+    taskKind?: "SOURCE_VALIDATION" | "CONNECTOR_POLL";
   }>;
   lifecycle: {
     liveCount: number;
@@ -29,6 +40,15 @@ export async function runScheduledIngestion(options: {
   triggerLabel?: string;
 } = {}): Promise<ScheduledIngestionResult> {
   const now = options.now ?? new Date();
+  const staleRunRecovery = await recoverStaleRunningIngestionRuns({
+    now,
+    connectorKeys: options.connectorKeys,
+  });
+  if (staleRunRecovery.recoveredCount > 0) {
+    console.log(
+      `[scheduler] Recovered ${staleRunRecovery.recoveredCount} stale RUNNING ingestion run(s): ${staleRunRecovery.connectorKeys.join(", ")}`
+    );
+  }
   const scheduledDefinitions = getScheduledConnectors().filter((definition) => {
     if (!options.connectorKeys || options.connectorKeys.length === 0) return true;
     return options.connectorKeys.includes(definition.connector.key);
@@ -38,6 +58,27 @@ export async function runScheduledIngestion(options: {
   const skippedConnectors: ScheduledIngestionResult["skippedConnectors"] = [];
 
   for (const definition of scheduledDefinitions) {
+    if (isCompanySourceManagedConnector(definition.connector.sourceName)) {
+      const promotion = await routeLegacyScheduledConnectorToCompanySource(definition, {
+        now,
+        origin: "legacy_registry",
+      });
+
+      if (promotion.managed) {
+        skippedConnectors.push({
+          connectorKey: definition.connector.key,
+          sourceName: definition.connector.sourceName,
+          reason: "managed_by_company_source",
+          nextEligibleAt: null,
+          lastRunStartedAt: null,
+          origin: "legacy_registry",
+          companySourceId: promotion.companySourceId,
+          taskKind: promotion.taskKind,
+        });
+        continue;
+      }
+    }
+
     const lastTrackedRun = await prisma.ingestionRun.findFirst({
       where: {
         connectorKey: definition.connector.key,
@@ -61,6 +102,7 @@ export async function runScheduledIngestion(options: {
           reason: "not_due",
           nextEligibleAt: nextEligibleAt.toISOString(),
           lastRunStartedAt: lastTrackedRun.startedAt.toISOString(),
+          origin: "legacy_registry",
         });
         continue;
       }
@@ -73,6 +115,13 @@ export async function runScheduledIngestion(options: {
         allowOverlappingRuns: false,
         triggerLabel: options.triggerLabel ?? "schedule.route",
         scheduleCadenceMinutes: definition.cadenceMinutes,
+        runMetadata: {
+          origin: "legacy_registry",
+          registryKey: definition.connector.key,
+          sourceName: definition.connector.sourceName,
+          validationState: null,
+          companySourceId: null,
+        },
       });
 
       executedRuns.push(summary);

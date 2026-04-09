@@ -1,7 +1,7 @@
 import { headers } from "next/headers";
 
 import { DEMO_USER_ID } from "@/lib/constants";
-import { prisma } from "@/lib/db";
+import { prisma, withPrismaConnectionRetry } from "@/lib/db";
 import { auth } from "@/lib/auth";
 import { syncProfileForAuthUser } from "@/lib/user-profile-sync";
 
@@ -20,9 +20,12 @@ type SessionUser = {
 
 async function getSessionUser(): Promise<SessionUser | null> {
   try {
-    const session = await auth.api.getSession({
-      headers: await headers(),
-    });
+    const requestHeaders = await headers();
+    const session = await withPrismaConnectionRetry(() =>
+      auth.api.getSession({
+        headers: requestHeaders,
+      })
+    );
 
     if (!session?.user) {
       return null;
@@ -36,6 +39,14 @@ async function getSessionUser(): Promise<SessionUser | null> {
   } catch {
     return null;
   }
+}
+
+async function getDemoProfile() {
+  return withPrismaConnectionRetry(() =>
+    prisma.userProfile.findUnique({
+      where: { id: DEMO_USER_ID },
+    })
+  );
 }
 
 async function ensureProfileForUser(user: SessionUser) {
@@ -60,9 +71,7 @@ export async function getOptionalCurrentUserProfile(options?: {
   }
 
   if (options?.fallbackToDemo) {
-    return prisma.userProfile.findUnique({
-      where: { id: DEMO_USER_ID },
-    });
+    return getDemoProfile();
   }
 
   return null;

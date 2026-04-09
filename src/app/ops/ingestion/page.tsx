@@ -9,6 +9,7 @@ export default async function IngestionOpsPage() {
   const overview = await getIngestionOverview();
   const scheduledSourceCount = overview.sources.filter((s) => s.isScheduled).length;
   const activeCanonicalCount = overview.liveCount + overview.staleCount;
+  const confirmedLiveCount = overview.liveCount - overview.agingCount;
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
@@ -36,7 +37,10 @@ export default async function IngestionOpsPage() {
       {/* Summary stats */}
       <div className="grid grid-cols-2 gap-x-8 gap-y-3 border-t border-border py-4 sm:grid-cols-4">
         <Field label="Raw jobs" value={String(overview.rawCount)} />
-        <Field label="Live / active" value={`${overview.liveCount} / ${activeCanonicalCount}`} />
+        <Field
+          label="Live / aging / active"
+          value={`${confirmedLiveCount} / ${overview.agingCount} / ${activeCanonicalCount}`}
+        />
         <Field label="Scheduled sources" value={String(scheduledSourceCount)} />
         <Field
           label="Stale / expired / removed"

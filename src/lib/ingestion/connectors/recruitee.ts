@@ -147,7 +147,7 @@ function buildSourceJob({
     sourceId: String(offer.guid ?? offer.id),
     sourceUrl: offer.careers_url ?? buildPostingUrl(companyIdentifier, offer.slug),
     title: offer.title,
-    company: offer.company_name?.trim() || fallbackCompanyName,
+    company: readText(offer.company_name) || fallbackCompanyName,
     location: buildLocation(offer),
     description: buildDescription(offer),
     applyUrl:
@@ -160,7 +160,7 @@ function buildSourceJob({
     workMode: inferWorkMode(offer),
     salaryMin: parseSalaryValue(offer.salary?.min),
     salaryMax: parseSalaryValue(offer.salary?.max),
-    salaryCurrency: offer.salary?.currency?.trim() || null,
+    salaryCurrency: readText(offer.salary?.currency),
     metadata: {
       offer,
     } as unknown as Prisma.InputJsonValue,
@@ -181,48 +181,47 @@ function buildLocation(offer: RecruiteeOffer) {
     return [...new Set(locations)].join(" | ");
   }
 
-  if (offer.location?.trim()) return offer.location.trim();
+  const directLocation = readText(offer.location);
+  if (directLocation) return directLocation;
 
   return [
-    offer.city?.trim(),
-    offer.state_name?.trim() || offer.state_code?.trim(),
-    offer.country?.trim(),
+    readText(offer.city),
+    readText(offer.state_name) || readText(offer.state_code),
+    readText(offer.country),
   ]
     .filter(Boolean)
     .join(", ") || "Unknown";
 }
 
 function formatLocation(location: RecruiteeLocation) {
-  if (location.name?.trim()) {
-    const name = location.name.trim();
+  const name = readText(location.name);
+  if (name) {
     if (/remote/i.test(name)) return name;
   }
 
   return [
-    location.city?.trim(),
-    location.state?.trim() || location.state_code?.trim(),
-    location.country?.trim(),
+    readText(location.city),
+    readText(location.state) || readText(location.state_code),
+    readText(location.country),
   ]
     .filter(Boolean)
     .join(", ");
 }
 
 function buildDescription(offer: RecruiteeOffer) {
+  const description = readText(offer.description);
+  const requirements = readText(offer.requirements);
   const sections = [
-    offer.description?.trim()
-      ? `<h2>Role</h2>\n${offer.description.trim()}`
-      : null,
-    offer.requirements?.trim()
-      ? `<h2>Requirements</h2>\n${offer.requirements.trim()}`
-      : null,
+    description ? `<h2>Role</h2>\n${description}` : null,
+    requirements ? `<h2>Requirements</h2>\n${requirements}` : null,
   ].filter(Boolean);
 
   if (sections.length > 0) return sections.join("\n\n");
 
   return [
-    offer.department?.trim(),
-    offer.category_code?.trim(),
-    offer.experience_code?.trim(),
+    readText(offer.department),
+    readText(offer.category_code),
+    readText(offer.experience_code),
   ]
     .filter(Boolean)
     .join(" · ");
@@ -231,8 +230,8 @@ function buildDescription(offer: RecruiteeOffer) {
 function inferEmploymentType(
   value: string | null | undefined
 ): EmploymentType | null {
-  if (!value) return null;
-  const normalized = value.toLowerCase();
+  const normalized = readLowerText(value);
+  if (!normalized) return null;
   if (normalized.includes("intern")) return "INTERNSHIP";
   if (normalized.includes("contract") || normalized.includes("temporary"))
     return "CONTRACT";
@@ -267,4 +266,15 @@ function buildCompanyName(companyIdentifier: string) {
     .filter(Boolean)
     .map((segment) => segment.charAt(0).toUpperCase() + segment.slice(1))
     .join(" ");
+}
+
+function readText(value: unknown): string | null {
+  if (typeof value !== "string") return null;
+  const trimmed = value.trim();
+  return trimmed || null;
+}
+
+function readLowerText(value: unknown): string | null {
+  const text = readText(value);
+  return text ? text.toLowerCase() : null;
 }

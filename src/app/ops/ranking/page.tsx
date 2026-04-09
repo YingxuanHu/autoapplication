@@ -20,7 +20,7 @@ export default async function RankingDebugPage() {
     loadBehaviorProfile(),
     prisma.jobCanonical.findMany({
       where: {
-        status: "LIVE",
+        status: { in: ["LIVE", "AGING"] },
         behaviorSignals: {
           none: { userId: DEMO_USER_ID, action: "PASS" },
         },
@@ -35,10 +35,16 @@ export default async function RankingDebugPage() {
         roleFamily: true,
         workMode: true,
         postedAt: true,
+        status: true,
+        availabilityScore: true,
         eligibility: { select: { submissionCategory: true } },
         sourceMappings: {
           where: { removedAt: null },
-          select: { sourceName: true },
+          select: {
+            sourceName: true,
+            sourceQualityRank: true,
+            sourceReliability: true,
+          },
         },
       },
     }),
@@ -51,6 +57,8 @@ export default async function RankingDebugPage() {
     roleFamily: string | null;
     workMode: string | null;
     postedAt: Date | null;
+    status: string | null;
+    availabilityScore: number;
     submissionCategory: string | null;
     sourceName: string | null;
     breakdown: ScoreBreakdown;
@@ -64,6 +72,8 @@ export default async function RankingDebugPage() {
     roleFamily: job.roleFamily,
     workMode: job.workMode,
     postedAt: job.postedAt,
+    status: job.status,
+    availabilityScore: job.availabilityScore,
     submissionCategory: job.eligibility?.submissionCategory ?? null,
     sourceName: job.sourceMappings[0]?.sourceName ?? null,
     breakdown: scoreJobDetailed(job, prefs, behavior),
@@ -158,6 +168,7 @@ export default async function RankingDebugPage() {
               <th className="py-2 pr-3 font-medium">Job</th>
               <th className="py-2 pr-2 font-medium text-center" title="Eligibility (0–20)">Elig</th>
               <th className="py-2 pr-2 font-medium text-center" title="Freshness (-10–20)">Fresh</th>
+              <th className="py-2 pr-2 font-medium text-center" title="Availability / health (-14–18)">Avail</th>
               <th className="py-2 pr-2 font-medium text-center" title="Pref: Role Family (0–15)">PrfRF</th>
               <th className="py-2 pr-2 font-medium text-center" title="Pref: Work Mode (0–10)">PrfWM</th>
               <th className="py-2 pr-2 font-medium text-center" title="Behavior: Role Family (0–8)">BhvRF</th>
@@ -187,6 +198,7 @@ export default async function RankingDebugPage() {
                 </td>
                 <ScoreCell value={job.breakdown.eligibility} max={20} />
                 <ScoreCell value={job.breakdown.freshness} max={20} />
+                <ScoreCell value={job.breakdown.availability} max={18} />
                 <ScoreCell value={job.breakdown.prefRoleFamily} max={15} />
                 <ScoreCell value={job.breakdown.prefWorkMode} max={10} />
                 <ScoreCell value={job.breakdown.behaviorRoleFamily} max={8} />
@@ -195,7 +207,7 @@ export default async function RankingDebugPage() {
                 <ScoreCell value={job.breakdown.sourceTrust} max={5} />
                 <ScoreCell value={job.breakdown.multiSource} max={3} />
                 <td className="py-1.5 pr-3 text-[11px] text-muted-foreground whitespace-nowrap">
-                  {job.roleFamily ?? "—"} · {job.workMode ?? "—"} ·{" "}
+                  {job.roleFamily ?? "—"} · {job.workMode ?? "—"} · {job.status ?? "—"} ·{" "}
                   {job.submissionCategory?.replace("AUTO_", "").replace("_READY", "").replace("_REVIEW", " rev") ?? "—"}
                 </td>
               </tr>

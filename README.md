@@ -16,7 +16,7 @@ Current implemented slice:
 - AI resume ingestion — parse an uploaded resume with OpenAI to populate structured profile fields
 - per-job AI workspace — fit analysis (score + strengths/gaps + keywords) and cover letter generation powered by OpenAI
 - internal `/ops/ingestion` visibility page for recent runs, source coverage, schedule cadence, and lifecycle counts
-- cron-ready `/api/ingestion/schedule` route plus `npm run ingest:schedule` script for cadence-driven ingestion
+- cron-ready `/api/ingestion/schedule` route for cadence-driven ingestion
 - ingestion pipeline with connector interface, normalization, stronger cross-source dedupe, lifecycle sweeps, removal handling, run tracking, and real Greenhouse + Lever + Recruitee + SmartRecruiters connectors
 - Prisma/Postgres domain model for canonical jobs, raw jobs, source mappings, eligibility, saved jobs, profile data, documents, and submissions
 - seeded demo dataset plus live external ingestion for local development
@@ -155,38 +155,6 @@ npx tsx scripts/generate-seed.ts --families=workday --out=data/discovery/seeds/w
 npx tsx scripts/discover-sources.ts --dataset=data/discovery/seeds/workday-candidates.json --limit=5
 ```
 
-Run the default curated Recruitee expansion batch and print a before/after impact report:
-
-```bash
-npm run ingest:expand
-```
-
-Preview an expansion batch without consuming the net-new canonical yield during evaluation:
-
-```bash
-npm run ingest:expand -- --profile=recruitee_growth_batch --dry-run
-```
-
-Run a specific expansion profile:
-
-```bash
-npm run ingest:expand -- --profile=greenhouse_trusted_batch
-npm run ingest:expand -- --profile=greenhouse_growth_batch
-npm run ingest:expand -- --profile=rippling_growth_batch
-npm run ingest:expand -- --profile=recruitee_growth_batch
-npm run ingest:expand -- --profile=ashby_growth_batch
-npm run ingest:expand -- --profile=ashby_yield_batch
-npm run ingest:expand -- --profile=ashby_marginal_yield_batch
-npm run ingest:expand -- --profile=ashby_next_yield_batch
-npm run ingest:expand -- --profile=ashby_strict_yield_batch
-```
-
-Run the scheduled ingestion batch locally:
-
-```bash
-npm run ingest:schedule -- --force
-```
-
 ## Product direction
 
 - Feed first, apply flow second
@@ -211,7 +179,6 @@ npm run ingest:schedule -- --force
 - `src/components/profile` — profile editor, completeness indicator, resume upload, document list
 - `src/components/jobs` — job cards, review actions, AI workspace, per-job notes
 - `scripts/ingest.ts` — manual ingestion runs
-- `scripts/ingest-scheduled.ts` — local scheduled-batch execution
 - `prisma/` — schema, migrations, and seed data
 
 Use the actual repository state as the source of truth over older notes or assistant summaries.

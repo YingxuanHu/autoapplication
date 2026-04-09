@@ -67,16 +67,22 @@ export type NormalizedJobInput = {
   descriptionFingerprint: string;
   location: string;
   locationKey: string;
-  region: Region;
+  /** null = geography could not be resolved to a known NA region */
+  region: Region | null;
+  /** UNKNOWN = work arrangement could not be confidently inferred */
   workMode: WorkMode;
   salaryMin: number | null;
   salaryMax: number | null;
   salaryCurrency: string | null;
+  /** UNKNOWN = employment type could not be confidently inferred */
   employmentType: EmploymentType;
-  experienceLevel: ExperienceLevel | null;
+  /** UNKNOWN = career stage could not be confidently inferred */
+  experienceLevel: ExperienceLevel;
   description: string;
   shortSummary: string;
-  industry: Industry;
+  /** null = role did not match a known industry pattern */
+  industry: Industry | null;
+  /** "Unknown" when title did not match any role-family pattern */
   roleFamily: string;
   applyUrl: string;
   applyUrlKey: string | null;
@@ -116,6 +122,8 @@ export type IngestionSummary = {
   sourceTier: SourceTier;
   freshnessMode: ConnectorFreshnessMode;
   fetchedCount: number;
+  /** Phase-1 broad-intake alias for acceptedCount */
+  minimallyAcceptedCount: number;
   acceptedCount: number;
   acceptedCanadaCount: number;
   acceptedCanadaRemoteCount: number;
@@ -130,6 +138,8 @@ export type IngestionSummary = {
   sourceMappingCreatedCount: number;
   sourceMappingUpdatedCount: number;
   sourceMappingsRemovedCount: number;
+  /** Phase-1 downstream visibility alias for liveCount */
+  visibleLiveCount: number;
   liveCount: number;
   staleCount: number;
   expiredCount: number;
@@ -185,6 +195,7 @@ export type IngestionOverview = {
   canonicalCount: number;
   sourceMappingCount: number;
   liveCount: number;
+  agingCount: number;
   staleCount: number;
   expiredCount: number;
   removedCount: number;

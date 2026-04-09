@@ -19,7 +19,13 @@ export async function GET(request: NextRequest) {
       page: parseIntParam(sp.get("page"), 1),
     });
 
-    return paginatedResponse(result.data, result.total, result.page, result.pageSize);
+    return paginatedResponse(
+      result.data,
+      result.total,
+      result.page,
+      result.pageSize,
+      result.hasNextPage
+    );
   } catch (error) {
     console.error("GET /api/jobs error:", error);
     return errorResponse("Failed to fetch jobs", 500);

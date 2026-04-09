@@ -26,9 +26,9 @@ export function JobSummaryCard({
   const deadlineUrgency = getDeadlineUrgency(job.deadline);
   const showSubmissionMeta = shouldShowSubmissionMeta(job);
 
-  // Apply is only available for live, eligible jobs
+  // Apply is available for active jobs unless they are explicitly expired/removed.
   const canStartApplyFlow =
-    job.status === "LIVE" && job.eligibility !== null;
+    job.status !== "EXPIRED" && job.status !== "REMOVED" && job.eligibility !== null;
   const manualApplyHref =
     job.primaryExternalLink?.href ?? job.sourcePostingLink?.href ?? job.applyUrl;
 
@@ -38,7 +38,7 @@ export function JobSummaryCard({
   return (
     <article
       className={`rounded-2xl border border-border/70 bg-background/45 p-4 transition-colors hover:bg-background/60 ${
-        job.status === "EXPIRED" ? "opacity-60" : ""
+        job.status === "EXPIRED" || job.status === "REMOVED" ? "opacity-60" : ""
       }`}
     >
       <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
@@ -120,15 +120,19 @@ function Sep() {
 }
 
 /**
- * Returns a lifecycle label + color for STALE and EXPIRED jobs.
- * Returns null for LIVE (no indicator needed).
+ * Returns a lifecycle label + color for non-primary lifecycle states.
+ * Returns null for LIVE.
  */
 function getLifecycleCue(status: string): { label: string; color: string } | null {
   switch (status) {
+    case "AGING":
+      return { label: "Aging", color: "text-amber-500" };
     case "STALE":
       return { label: "Stale", color: "text-amber-600" };
     case "EXPIRED":
       return { label: "Expired", color: "text-destructive" };
+    case "REMOVED":
+      return { label: "Removed", color: "text-destructive" };
     default:
       return null;
   }

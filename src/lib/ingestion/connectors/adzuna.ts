@@ -24,7 +24,9 @@ import { sleepWithAbort, throwIfAborted } from "@/lib/ingestion/runtime-control"
 const ADZUNA_API_BASE = "https://api.adzuna.com/v1/api/jobs";
 const ADZUNA_PAGE_SIZE = 50; // max allowed by API
 const ADZUNA_MAX_PAGES = 50; // safety limit per category (50 pages × 50 = 2500 per category)
-const ADZUNA_RATE_DELAY_MS = 2500; // keep request rate conservative
+const ADZUNA_RATE_DELAY_MS = 3500; // keep request rate conservative
+const ADZUNA_RATE_LIMIT_MAX_ATTEMPTS = 2;
+const ADZUNA_RATE_LIMIT_BACKOFF_MS = 20_000;
 
 type AdzunaConnectorOptions = {
   country?: string;
@@ -277,6 +279,8 @@ async function fetchAdzunaJobs({
   const mappedByCategory: Record<string, number> = {};
   const staffingFilteredByCategory: Record<string, number> = {};
   const pagesFetchedByCategory: Record<string, number> = {};
+  let requestCount = 0;
+  let rateLimited = false;
 
   const categoryStates = checkpoint?.categoryStates.map((state) => ({ ...state })) ??
     categories.map((category) => ({
@@ -285,7 +289,7 @@ async function fetchAdzunaJobs({
       exhausted: false,
     }));
 
-  while (categoryStates.some((state) => !state.exhausted)) {
+  outer: while (categoryStates.some((state) => !state.exhausted)) {
     throwIfAborted(signal);
     let advanced = false;
     const activeStates =
@@ -295,6 +299,10 @@ async function fetchAdzunaJobs({
 
     for (const state of activeStates) {
       if (typeof limit === "number" && allJobs.length >= limit) break;
+
+      if (requestCount > 0) {
+        await sleepWithAbort(ADZUNA_RATE_DELAY_MS, signal);
+      }
 
       const categoryJobs = await fetchCategoryPage({
         country,
@@ -306,6 +314,7 @@ async function fetchAdzunaJobs({
         signal,
         log,
       });
+      requestCount += 1;
 
       advanced = true;
       totalApiCount += categoryJobs.apiCount;
@@ -318,6 +327,12 @@ async function fetchAdzunaJobs({
         categoryJobs.staffingFilteredCount;
       pagesFetchedByCategory[state.category] =
         (pagesFetchedByCategory[state.category] ?? 0) + 1;
+
+      if (categoryJobs.rateLimited) {
+        rateLimited = true;
+        await onCheckpoint?.(buildAdzunaCheckpoint(categoryStates));
+        break outer;
+      }
 
       for (const job of categoryJobs.jobs) {
         if (!seenIds.has(job.sourceId)) {
@@ -343,7 +358,7 @@ async function fetchAdzunaJobs({
 
   const finalJobs =
     typeof limit === "number" ? allJobs.slice(0, limit) : allJobs;
-  const exhausted = categoryStates.every((state) => state.exhausted);
+  const exhausted = !rateLimited && categoryStates.every((state) => state.exhausted);
 
   return {
     jobs: finalJobs,
@@ -365,6 +380,7 @@ async function fetchAdzunaJobs({
       mappedByCategory,
       staffingFilteredByCategory,
       pagesFetchedByCategory,
+      rateLimited,
     } as Prisma.InputJsonValue,
   };
 }
@@ -456,57 +472,93 @@ async function fetchCategoryPage({
   apiCount: number;
   rawCount: number;
   staffingFilteredCount: number;
+  rateLimited: boolean;
 }> {
   const url = buildSearchUrl(country, category, appId, appKey, page, maxDaysOld);
 
-  if (page > 1) {
-    await sleepWithAbort(ADZUNA_RATE_DELAY_MS, signal);
-  }
+  for (let attempt = 1; attempt <= ADZUNA_RATE_LIMIT_MAX_ATTEMPTS; attempt += 1) {
+    throwIfAborted(signal);
+    const response = await fetch(url, {
+      signal,
+      headers: {
+        Accept: "application/json",
+        "User-Agent":
+          "Mozilla/5.0 (compatible; autoapplication-adzuna/1.0)",
+      },
+    });
 
-  throwIfAborted(signal);
-  const response = await fetch(url, {
-    signal,
-    headers: {
-      Accept: "application/json",
-      "User-Agent":
-        "Mozilla/5.0 (compatible; autoapplication-adzuna/1.0)",
-    },
-  });
+    if (!response.ok) {
+      if (response.status === 429) {
+        if (attempt < ADZUNA_RATE_LIMIT_MAX_ATTEMPTS) {
+          log(
+            `[adzuna:${country}] Rate limited on ${category} page ${page}; backing off (${attempt}/${ADZUNA_RATE_LIMIT_MAX_ATTEMPTS})`
+          );
+          await sleepWithAbort(ADZUNA_RATE_LIMIT_BACKOFF_MS * attempt, signal);
+          continue;
+        }
 
-  if (!response.ok) {
-    if (response.status === 429) {
-      log(`[adzuna:${country}] Rate limited on ${category} page ${page}, stopping category`);
-      return { jobs: [], apiCount: 0, rawCount: 0, staffingFilteredCount: 0 };
+        log(
+          `[adzuna:${country}] Rate limited on ${category} page ${page}, stopping connector fetch`
+        );
+        return {
+          jobs: [],
+          apiCount: 0,
+          rawCount: 0,
+          staffingFilteredCount: 0,
+          rateLimited: true,
+        };
+      }
+      log(`[adzuna:${country}] API error ${response.status} on ${category} page ${page}`);
+      return {
+        jobs: [],
+        apiCount: 0,
+        rawCount: 0,
+        staffingFilteredCount: 0,
+        rateLimited: false,
+      };
     }
-    log(`[adzuna:${country}] API error ${response.status} on ${category} page ${page}`);
-    return { jobs: [], apiCount: 0, rawCount: 0, staffingFilteredCount: 0 };
-  }
 
-  const payload = (await response.json()) as AdzunaSearchResponse;
-  if (payload.__CLASS__?.includes("Exception")) {
-    log(`[adzuna:${country}] API exception on ${category}: ${JSON.stringify(payload)}`);
-    return { jobs: [], apiCount: payload.count ?? 0, rawCount: 0, staffingFilteredCount: 0 };
-  }
-
-  const results = payload.results ?? [];
-  const jobs: SourceConnectorJob[] = [];
-  let staffingFilteredCount = 0;
-
-  for (const entry of results) {
-    if (!entry.id || !entry.title) continue;
-    if (isStaffingEntry(entry)) {
-      staffingFilteredCount += 1;
-      continue;
+    const payload = (await response.json()) as AdzunaSearchResponse;
+    if (payload.__CLASS__?.includes("Exception")) {
+      log(`[adzuna:${country}] API exception on ${category}: ${JSON.stringify(payload)}`);
+      return {
+        jobs: [],
+        apiCount: payload.count ?? 0,
+        rawCount: 0,
+        staffingFilteredCount: 0,
+        rateLimited: false,
+      };
     }
-    const mappedJob = mapAdzunaJob(entry, country);
-    if (mappedJob) jobs.push(mappedJob);
+
+    const results = payload.results ?? [];
+    const jobs: SourceConnectorJob[] = [];
+    let staffingFilteredCount = 0;
+
+    for (const entry of results) {
+      if (!entry.id || !entry.title) continue;
+      if (isStaffingEntry(entry)) {
+        staffingFilteredCount += 1;
+        continue;
+      }
+      const mappedJob = mapAdzunaJob(entry, country);
+      if (mappedJob) jobs.push(mappedJob);
+    }
+
+    return {
+      jobs,
+      apiCount: payload.count ?? 0,
+      rawCount: results.length,
+      staffingFilteredCount,
+      rateLimited: false,
+    };
   }
 
   return {
-    jobs,
-    apiCount: payload.count ?? 0,
-    rawCount: results.length,
-    staffingFilteredCount,
+    jobs: [],
+    apiCount: 0,
+    rawCount: 0,
+    staffingFilteredCount: 0,
+    rateLimited: true,
   };
 }
 

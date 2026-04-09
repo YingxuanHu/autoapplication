@@ -75,7 +75,7 @@ type ExperienceLevelType = "ENTRY" | "MID" | "SENIOR" | "LEAD";
 type RegionType = "US" | "CA";
 type IndustryType = "TECH" | "FINANCE";
 type SourceTierType = "TIER_1" | "TIER_2" | "TIER_3";
-type JobStatusType = "LIVE" | "EXPIRED" | "STALE";
+type JobStatusType = "LIVE" | "AGING" | "EXPIRED" | "REMOVED" | "STALE";
 type SubmissionCategoryType = "AUTO_SUBMIT_READY" | "AUTO_FILL_REVIEW" | "MANUAL_ONLY";
 
 const WORK_MODES: WorkModeType[] = ["REMOTE", "HYBRID", "ONSITE", "FLEXIBLE"];

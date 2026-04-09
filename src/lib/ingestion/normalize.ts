@@ -4,6 +4,10 @@ import type {
   Region,
   WorkMode,
 } from "@/generated/prisma/client";
+
+// Sentinel for jobs whose geography could not be resolved to a known NA region.
+// Stored in the DB as null; the feed layer filters these out by default.
+export const UNKNOWN_REGION = null satisfies Region | null;
 import type {
   NormalizationResult,
   NormalizedJobInput,
@@ -479,7 +483,7 @@ const ROLE_PATTERNS: Array<{
   },
 ];
 
-const EXCLUDED_TITLE_PATTERNS = [
+export const EXCLUDED_TITLE_PATTERNS = [
   // Recruiting / HR
   /\b(recruiter|recruiting coordinator|recruiting ops|talent acquisition|technical recruiter|sourcer)\b/i,
   /\b(people partner|people operations|people ops|hr business partner|human resources)\b/i,
@@ -507,6 +511,29 @@ const EXCLUDED_TITLE_PATTERNS = [
   /\b(door\s+to\s+door|brand\s+ambassador.*activation|remote\s+recruiter.*\$\d|personal\s+development\s+sales)\b/i,
 ];
 
+const JUNK_TITLE_PATTERNS = [
+  /^(jobs?|job search|search results|career opportunities|careers?|open positions?|job openings?)$/i,
+  /^(page not found|404|access denied|forbidden|sign in|log in)$/i,
+];
+
+const JUNK_CONTENT_PATTERNS = [
+  /\b(access denied|forbidden|captcha|cloudflare|security check|enable javascript|page not found|404 not found)\b/i,
+  /\b(sign in to continue|log in to continue|session expired)\b/i,
+];
+
+const DEAD_CONTENT_PATTERNS = [
+  /\b(job (?:posting )?(?:has )?(?:closed|expired)|position has been filled|role has been filled|no longer accepting applications)\b/i,
+  /\b(this posting is no longer available|this job is no longer available|application window has closed)\b/i,
+  /\b(job not found|posting not found|position not found|requisition not found|listing not found)\b/i,
+  /\b(position (?:is )?(?:closed|filled)|posting (?:is )?(?:closed|inactive)|role (?:is )?no longer open)\b/i,
+  /\b(we (?:are|re) no longer accepting applications|this opportunity is no longer open|this requisition has been cancelled)\b/i,
+];
+
+export type DeadSignalResult = {
+  detected: boolean;
+  reason: string | null;
+};
+
 type NormalizeSourceJobOptions = {
   job: SourceConnectorJob;
   fetchedAt: Date;
@@ -517,39 +544,55 @@ export function normalizeSourceJob({
   fetchedAt,
 }: NormalizeSourceJobOptions): NormalizationResult {
   const title = compactWhitespace(job.title);
-  const company = compactWhitespace(job.company);
-  const location = compactWhitespace(job.location);
   const description = sanitizeText(job.description);
+  const applyUrl =
+    compactWhitespace(job.applyUrl) ||
+    (job.sourceUrl ? compactWhitespace(job.sourceUrl) : "") ||
+    "";
 
-  if (!title || !company || !location || !job.applyUrl) {
+  if (!title) {
     return {
       kind: "rejected",
-      reason: "missing_required_fields",
+      reason: "missing_minimum_identity",
     };
   }
+
+  if (!applyUrl) {
+    return {
+      kind: "rejected",
+      reason: "missing_apply_or_detail_path",
+    };
+  }
+
+  if (isObviouslyJunkJob({ title, description, applyUrl })) {
+    return {
+      kind: "rejected",
+      reason: "obvious_junk",
+    };
+  }
+
+  if (
+    isObviouslyDeadAtIntake({
+      title,
+      description,
+      deadline: job.deadline,
+      fetchedAt,
+    })
+  ) {
+    return {
+      kind: "rejected",
+      reason: "obvious_dead_at_intake",
+    };
+  }
+
+  const company = compactWhitespace(job.company) || "Unknown";
+  const location = compactWhitespace(job.location) || "Unknown";
 
   const region = inferRegion(location);
-  if (!region) {
-    return {
-      kind: "rejected",
-      reason: "outside_north_america_scope",
-    };
-  }
-
-  if (EXCLUDED_TITLE_PATTERNS.some((pattern) => pattern.test(title))) {
-    return {
-      kind: "rejected",
-      reason: "unsupported_role_family",
-    };
-  }
 
   const roleProfile = inferRoleProfile(title);
-  if (!roleProfile) {
-    return {
-      kind: "rejected",
-      reason: "unsupported_role_family",
-    };
-  }
+  const roleFamily = roleProfile?.roleFamily ?? "Unknown";
+  const industry: Industry | null = roleProfile?.industry ?? null;
 
   const workMode = inferWorkMode(title, location, description, job.workMode);
   const employmentType = inferEmploymentType(title, description, job.employmentType);
@@ -557,7 +600,7 @@ export function normalizeSourceJob({
     title,
     description,
     employmentType,
-    roleProfile.roleFamily
+    roleFamily
   );
   const postedAt = job.postedAt ?? fetchedAt;
   const deadline =
@@ -575,7 +618,7 @@ export function normalizeSourceJob({
     description,
     location,
     region,
-    applyUrl: job.applyUrl,
+    applyUrl,
   });
 
   const normalized: NormalizedJobInput = {
@@ -596,9 +639,9 @@ export function normalizeSourceJob({
     experienceLevel,
     description,
     shortSummary: buildShortSummary(title, company, workMode, description),
-    industry: roleProfile.industry,
-    roleFamily: roleProfile.roleFamily,
-    applyUrl: job.applyUrl,
+    industry,
+    roleFamily,
+    applyUrl,
     applyUrlKey: dedupeFields.applyUrlKey,
     postedAt,
     deadline,
@@ -748,7 +791,7 @@ function inferWorkMode(
     return "ONSITE";
   }
 
-  return "ONSITE";
+  return "UNKNOWN";
 }
 
 function inferEmploymentType(
@@ -778,7 +821,7 @@ function inferEmploymentType(
     return "PART_TIME";
   }
 
-  return "FULL_TIME";
+  return "UNKNOWN";
 }
 
 function buildShortSummary(
@@ -814,9 +857,73 @@ function buildShortSummary(
         ? "Hybrid schedule."
         : workMode === "FLEXIBLE"
           ? "Flexible work arrangement."
-          : "On-site expectation.";
+          : workMode === "ONSITE"
+            ? "On-site expectation."
+            : "";
 
   return compactWhitespace(`${firstSentence} ${modeSummary}`).slice(0, 280);
+}
+
+function isObviouslyJunkJob(input: {
+  title: string;
+  description: string;
+  applyUrl: string;
+}) {
+  if (JUNK_TITLE_PATTERNS.some((pattern) => pattern.test(input.title))) {
+    return true;
+  }
+
+  const combined = `${input.title}\n${input.description}\n${input.applyUrl}`;
+  const hasJobLikeSignals =
+    /\b(responsibilities|requirements|qualifications|what you(?:'|’)ll do|what we(?:'|’)re looking for|benefits|compensation|about the role|about the job|job description)\b/i.test(
+      combined
+    ) || input.description.length >= 240;
+
+  return (
+    JUNK_CONTENT_PATTERNS.some((pattern) => pattern.test(combined)) &&
+    !hasJobLikeSignals
+  );
+}
+
+function isObviouslyDeadAtIntake(input: {
+  title: string;
+  description: string;
+  deadline: Date | null;
+  fetchedAt: Date;
+}) {
+  return detectDeadSignal(input).detected;
+}
+
+export function detectDeadSignal(input: {
+  title: string;
+  description: string;
+  deadline: Date | null;
+  fetchedAt: Date;
+}): DeadSignalResult {
+  if (input.deadline && input.deadline.getTime() <= input.fetchedAt.getTime()) {
+    return {
+      detected: true,
+      reason: "Posting deadline has passed.",
+    };
+  }
+
+  const combined = `${input.title}\n${input.description}`;
+  const matchedPattern = DEAD_CONTENT_PATTERNS.find((pattern) => pattern.test(combined));
+
+  if (!matchedPattern) {
+    return {
+      detected: false,
+      reason: null,
+    };
+  }
+
+  const matchedText = combined.match(matchedPattern)?.[0]?.trim() ?? null;
+  return {
+    detected: true,
+    reason: matchedText
+      ? `Explicit dead signal detected: ${matchedText}`
+      : "Explicit dead signal detected in source content.",
+  };
 }
 
 function sanitizeSummaryLine(line: string) {
@@ -841,8 +948,8 @@ function sanitizeSummaryLine(line: string) {
  * Output: newlines preserved, spaces within lines compacted, max 2 consecutive
  * blank lines, no leading/trailing whitespace.
  */
-function sanitizeText(value: string) {
-  const decoded = decodeHtmlEntities(value);
+function sanitizeText(value: unknown) {
+  const decoded = decodeHtmlEntities(asText(value));
   // Convert block-level HTML element boundaries to paragraph breaks
   const withBreaks = decoded
     .replace(/<br\s*\/?>/gi, "\n")
@@ -866,6 +973,14 @@ function decodeHtmlEntities(value: string) {
     .replace(/&nbsp;/g, " ");
 }
 
-function compactWhitespace(value: string) {
-  return value.replace(/\s+/g, " ").trim();
+function compactWhitespace(value: unknown) {
+  return asText(value).replace(/\s+/g, " ").trim();
+}
+
+function asText(value: unknown) {
+  if (typeof value === "string") return value;
+  if (typeof value === "number" || typeof value === "boolean") {
+    return String(value);
+  }
+  return "";
 }

@@ -3,6 +3,7 @@ import { connection } from "next/server";
 import { redirect } from "next/navigation";
 import { ArrowUpDown, Check, ChevronDown, Search, SlidersHorizontal, X } from "lucide-react";
 
+import { JobsAutoRefresh } from "@/components/jobs/jobs-auto-refresh";
 import { JobsFeedList } from "@/components/jobs/jobs-feed-list";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -97,10 +98,14 @@ export default async function JobsPage({ searchParams }: JobsPageProps) {
 
   const activeFilterCount = countActiveFilters(filters);
   const hasScopedResults = activeFilterCount > 0 || Boolean(filters.search);
+  const headlineCount = hasScopedResults
+    ? jobsResult.total ?? jobsResult.data.length
+    : jobsResult.summary.liveJobCount;
   const activeFilterChips = buildActiveFilterChips(filters);
   const currentSortLabel = getSortLabel(filters.sortBy);
   const currentPage = jobsResult.page;
-  const totalPages = Math.max(1, Math.ceil(jobsResult.total / jobsResult.pageSize));
+  const totalPages =
+    jobsResult.total !== null ? Math.max(1, Math.ceil(jobsResult.total / jobsResult.pageSize)) : null;
   const navigationKey = buildSearchParamSignature(resolvedSearchParams);
   const clearFiltersHref = buildJobsHref(resolvedSearchParams, {
     page: undefined,
@@ -116,6 +121,8 @@ export default async function JobsPage({ searchParams }: JobsPageProps) {
 
   return (
     <div className="app-page space-y-6">
+      <JobsAutoRefresh initialLastUpdatedAt={ingestionStatus.lastUpdatedAt} />
+
       <header className="page-header">
         <div>
           <h1 className="page-title">Jobs</h1>
@@ -128,7 +135,7 @@ export default async function JobsPage({ searchParams }: JobsPageProps) {
       <section className="surface-panel p-4 sm:p-5">
         <div>
           <p className="text-[2rem] font-semibold tracking-tight text-foreground sm:text-[2.5rem]">
-            {jobsResult.total.toLocaleString()} {hasScopedResults ? "matching jobs" : "live jobs"}
+            {headlineCount.toLocaleString()} {hasScopedResults ? "matching jobs" : "live jobs"}
           </p>
           {ingestionStatus.lastUpdatedAt ? (
             <p className="mt-2 text-sm text-muted-foreground sm:text-[15px]">
@@ -149,8 +156,16 @@ export default async function JobsPage({ searchParams }: JobsPageProps) {
               </span>{" "}
               expired today
             </span>
+            <span className="text-muted-foreground">
+              <span className="font-medium text-foreground">
+                {jobsResult.summary.removedTodayCount.toLocaleString()}
+              </span>{" "}
+              removed today
+            </span>
           </div>
-          {hasScopedResults && ingestionStatus.liveJobCount > jobsResult.total ? (
+          {hasScopedResults &&
+          jobsResult.total !== null &&
+          ingestionStatus.liveJobCount > jobsResult.total ? (
             <p className="mt-1 text-xs text-muted-foreground">
               From {ingestionStatus.liveJobCount.toLocaleString()} total live jobs in the pool
             </p>
@@ -286,7 +301,7 @@ export default async function JobsPage({ searchParams }: JobsPageProps) {
                               region: undefined,
                             })}
                             columnsClassName="sm:grid-cols-2"
-                            emptyLabel="North America"
+                            emptyLabel="All regions"
                             name="region"
                             options={REGION_OPTIONS}
                             selected={filters.region}
@@ -399,22 +414,28 @@ export default async function JobsPage({ searchParams }: JobsPageProps) {
       <section className="surface-panel p-4 sm:p-5">
         {jobCards.length === 0 ? (
           <div className="py-16 text-center">
-            <p className="text-sm font-medium text-foreground">No jobs match these filters</p>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Try widening your search or clearing filters.
+            <p className="text-sm font-medium text-foreground">
+              {hasScopedResults ? "No jobs match these filters" : "No jobs available right now"}
             </p>
-            <Button className="mt-4" render={<Link href="/jobs" />} size="sm" variant="outline">
-              Clear filters
-            </Button>
+            <p className="mt-1 text-sm text-muted-foreground">
+              {hasScopedResults
+                ? "Try widening your search or clearing filters."
+                : "The live pool is refreshing. Check back in a moment."}
+            </p>
+            {hasScopedResults ? (
+              <Button className="mt-4" render={<Link href="/jobs" />} size="sm" variant="outline">
+                Clear filters
+              </Button>
+            ) : null}
           </div>
         ) : (
           <JobsFeedList initialJobs={jobCards} key={navigationKey} />
         )}
 
-        {totalPages > 1 ? (
+        {(currentPage > 1 || jobsResult.hasNextPage || (totalPages !== null && totalPages > 1)) ? (
           <div className="mt-5 flex flex-col gap-3 border-t border-border/60 pt-4 sm:flex-row sm:items-center sm:justify-between">
             <p className="text-sm text-muted-foreground">
-              Page {currentPage} of {totalPages}
+              {totalPages !== null ? `Page ${currentPage} of ${totalPages}` : `Page ${currentPage}`}
             </p>
             <div className="flex items-center gap-2">
               <PaginationLink
@@ -426,9 +447,16 @@ export default async function JobsPage({ searchParams }: JobsPageProps) {
                 Previous
               </PaginationLink>
               <PaginationLink
-                disabled={currentPage >= totalPages}
+                disabled={totalPages !== null ? currentPage >= totalPages : !jobsResult.hasNextPage}
                 href={buildJobsHref(resolvedSearchParams, {
-                  page: currentPage < totalPages ? String(currentPage + 1) : undefined,
+                  page:
+                    totalPages !== null
+                      ? currentPage < totalPages
+                        ? String(currentPage + 1)
+                        : undefined
+                      : jobsResult.hasNextPage
+                        ? String(currentPage + 1)
+                        : undefined,
                 })}
               >
                 Next

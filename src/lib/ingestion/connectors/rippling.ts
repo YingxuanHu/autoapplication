@@ -98,16 +98,19 @@ async function fetchJobs(boardSlug: string, limit?: number) {
 // workLocation.label format: "Remote (United States)" | "Hybrid (Toronto, CA)" | "On-site (New York, NY)"
 // Extract the inner parenthesized portion as the location string.
 function parseLocation(label: string | null | undefined): string {
-  if (!label) return "Unknown";
-  const match = label.match(/\(([^)]+)\)/);
+  const text = readText(label);
+  if (!text) return "Unknown";
+  const match = text.match(/\(([^)]+)\)/);
   if (match) return match[1].trim();
   // Fall back to the full label if no parens (shouldn't happen in practice)
-  return label.trim();
+  return text;
 }
 
 function parseWorkMode(label: string | null | undefined): WorkMode | null {
-  if (!label) return null;
-  const prefix = label.split("(")[0].trim().toLowerCase();
+  const text = readText(label);
+  if (!text) return null;
+  const prefix = text.split("(")[0]?.trim().toLowerCase();
+  if (!prefix) return null;
   if (prefix === "remote") return "REMOTE";
   if (prefix === "hybrid") return "HYBRID";
   if (prefix === "on-site" || prefix === "onsite") return "ONSITE";
@@ -118,11 +121,13 @@ function parseWorkMode(label: string | null | undefined): WorkMode | null {
 function buildDescription(job: RipplingJob): string {
   const parts: string[] = [];
 
-  if (job.department?.label?.trim()) {
-    parts.push(`Department: ${job.department.label.trim()}`);
+  const department = readText(job.department?.label);
+  if (department) {
+    parts.push(`Department: ${department}`);
   }
-  if (job.workLocation?.label?.trim()) {
-    parts.push(`Work location: ${job.workLocation.label.trim()}`);
+  const workLocation = readText(job.workLocation?.label);
+  if (workLocation) {
+    parts.push(`Work location: ${workLocation}`);
   }
 
   return parts.join("\n");
@@ -134,4 +139,10 @@ function buildCompanyName(boardSlug: string): string {
     .filter(Boolean)
     .map((segment) => segment.charAt(0).toUpperCase() + segment.slice(1))
     .join(" ");
+}
+
+function readText(value: unknown): string | null {
+  if (typeof value !== "string") return null;
+  const trimmed = value.trim();
+  return trimmed || null;
 }

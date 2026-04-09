@@ -21,8 +21,8 @@ type PortalTier = "structured" | "semi_structured" | "aggregator" | "unknown";
  * - **unknown**: Source not recognized
  */
 function classifyPortal(sourceName: string, applyUrl: string): PortalTier {
-  const src = sourceName.toLowerCase();
-  const url = applyUrl.toLowerCase();
+  const src = normalizeText(sourceName);
+  const url = normalizeText(applyUrl);
 
   // Tier 1: Structured ATS portals with standardized application flows
   if (
@@ -71,7 +71,7 @@ export function buildEligibilityDraft({
   sourceName,
 }: BuildEligibilityOptions): EligibilityDraft {
   const evaluationTime = new Date();
-  const lowerDescription = job.description.toLowerCase();
+  const lowerDescription = normalizeText(job.description);
   const portalTier = classifyPortal(sourceName, job.applyUrl);
 
   // ─── Signal detection ──────────────────────────────────────────────
@@ -202,6 +202,10 @@ export function buildEligibilityDraft({
     customizationLevel: 1,
     evaluatedAt: evaluationTime,
   };
+}
+
+function normalizeText(value: unknown) {
+  return typeof value === "string" ? value.toLowerCase() : "";
 }
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────

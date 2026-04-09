@@ -50,8 +50,10 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
   const reviewStateMeta = APPLICATION_REVIEW_STATE_META[reviewState];
   const deadlineUrgency = getDeadlineUrgency(job.deadline);
   const deadlineValue = formatDeadlineValue(job.deadline);
-  // EXPIRED jobs: show detail but block the apply flow
-  const canStartApplyFlow = reviewState !== "NOT_ELIGIBLE" && job.status !== "EXPIRED";
+  const canStartApplyFlow =
+    reviewState !== "NOT_ELIGIBLE" &&
+    job.status !== "EXPIRED" &&
+    job.status !== "REMOVED";
   const showSubmissionMeta = shouldShowSubmissionMeta(job);
   const manualApplyHref =
     job.primaryExternalLink?.href ?? job.sourcePostingLink?.href ?? job.applyUrl;
@@ -129,17 +131,28 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
         ) : null}
       </div>
 
-      {/* Lifecycle notice — only shown for STALE or EXPIRED */}
-      {job.status === "STALE" || job.status === "EXPIRED" ? (
+      {/* Lifecycle notice — shown for aging and degraded lifecycle states */}
+      {job.status === "AGING" ||
+      job.status === "STALE" ||
+      job.status === "EXPIRED" ||
+      job.status === "REMOVED" ? (
         <div className="border-t border-border py-3">
           <p
             className={`text-sm ${
-              job.status === "EXPIRED" ? "text-destructive" : "text-amber-600"
+              job.status === "EXPIRED" || job.status === "REMOVED"
+                ? "text-destructive"
+                : job.status === "AGING"
+                  ? "text-amber-500"
+                  : "text-amber-600"
             }`}
           >
             {job.status === "EXPIRED"
               ? "This posting has expired — the application window is likely closed."
-              : "This posting hasn't been confirmed in a recent crawl and may no longer be active."}
+              : job.status === "REMOVED"
+                ? "This posting disappeared from a high-confidence source and is likely no longer active."
+                : job.status === "AGING"
+                  ? "This posting is still visible, but source evidence is weakening and it should be verified before you rely on it."
+                  : "This posting hasn't been reconfirmed recently and may no longer be active."}
           </p>
         </div>
       ) : null}

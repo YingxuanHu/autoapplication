@@ -72,9 +72,11 @@ export function JobMetaRow({
         <span className="truncate">{location}</span>
       </MetaItem>
 
-      <MetaItem variant={variant} icon={<Briefcase className="h-3.5 w-3.5 shrink-0" />}>
-        <span>{formatDisplayLabel(workMode)}</span>
-      </MetaItem>
+      {workMode !== "UNKNOWN" ? (
+        <MetaItem variant={variant} icon={<Briefcase className="h-3.5 w-3.5 shrink-0" />}>
+          <span>{formatDisplayLabel(workMode)}</span>
+        </MetaItem>
+      ) : null}
 
       {salary ? (
         <MetaItem variant={variant} icon={<Banknote className="h-3.5 w-3.5 shrink-0" />}>
