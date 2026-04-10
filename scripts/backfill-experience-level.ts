@@ -10,34 +10,17 @@
  */
 import "dotenv/config";
 import { prisma } from "../src/lib/db";
+import { inferExperienceLevel } from "../src/lib/career-stage";
 
 const DRY_RUN = process.argv.includes("--dry-run");
 
-type ExperienceLevel = "ENTRY" | "MID" | "SENIOR" | "LEAD" | "EXECUTIVE";
-
-/**
- * Mirrors inferExperienceLevel from normalize.ts — kept in sync manually.
- * Update both if you change the logic.
- */
-function inferExperienceLevel(title: string): ExperienceLevel {
-  const t = title.toLowerCase();
-
-  if (/\b(director|head of|vice president|vp|chief|president)\b/.test(t)) {
-    return "EXECUTIVE";
-  }
-  if (/\b(staff|principal|tech lead|team lead|engineering manager|design manager|lead)\b/.test(t)) {
-    return "LEAD";
-  }
-  if (/\b(senior|sr)\b/.test(t)) {
-    return "SENIOR";
-  }
-  if (
-    /\b(intern|internship|co-op|coop|junior|jr|new grad|new-grad|entry[- ]level|entry)\b/.test(t)
-  ) {
-    return "ENTRY";
-  }
-  return "MID";
-}
+type ExperienceLevel =
+  | "ENTRY"
+  | "MID"
+  | "SENIOR"
+  | "LEAD"
+  | "EXECUTIVE"
+  | "UNKNOWN";
 
 async function main() {
   console.log(`Experience-level backfill ${DRY_RUN ? "(dry run)" : "(live)"}\n`);
@@ -45,7 +28,14 @@ async function main() {
   // Fetch all live jobs
   const jobs = await prisma.jobCanonical.findMany({
     where: { status: "LIVE" },
-    select: { id: true, title: true, roleFamily: true, experienceLevel: true },
+    select: {
+      id: true,
+      title: true,
+      description: true,
+      employmentType: true,
+      roleFamily: true,
+      experienceLevel: true,
+    },
   });
 
   console.log(`Total LIVE jobs: ${jobs.length}`);
@@ -68,7 +58,12 @@ async function main() {
   // Compute changes
   const updates: Array<{ id: string; from: ExperienceLevel | null; to: ExperienceLevel }> = [];
   for (const job of jobs) {
-    const inferred = inferExperienceLevel(job.title);
+    const inferred = inferExperienceLevel(
+      job.title,
+      job.description,
+      job.employmentType,
+      job.roleFamily
+    );
     if (job.experienceLevel !== inferred) {
       updates.push({ id: job.id, from: job.experienceLevel as ExperienceLevel | null, to: inferred });
     }

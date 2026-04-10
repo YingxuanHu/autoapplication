@@ -571,7 +571,10 @@ function resolveOptionalAdzunaScheduledConnectors() {
   const appKey = process.env.ADZUNA_APP_KEY ?? "";
   if (!appId || !appKey) return [];
 
-  const countries = resolveTokens(process.env.ADZUNA_COUNTRIES ?? "ca,us");
+  const countries = resolveTokens(
+    process.env.ADZUNA_COUNTRIES ??
+      "au,be,br,ca,de,fr,gb,in,it,mx,nl,nz,pl,sg,us,za"
+  );
   const cadence = resolveCadenceMinutes(process.env.ADZUNA_SCHEDULE_MINUTES, 360);
 
   // Primary broad connectors per country

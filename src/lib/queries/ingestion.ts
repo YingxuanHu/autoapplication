@@ -7,11 +7,12 @@ import type {
 } from "@/lib/ingestion/types";
 
 const RECENT_RUN_LIMIT = 20;
+const VISIBLE_JOB_STATUSES = ["LIVE", "AGING"] as const;
 
 export type IngestionStatus = {
   /** ISO timestamp of the most recent successful ingestion run, or null if none. */
   lastUpdatedAt: string | null;
-  /** Total live canonical jobs in the pool (unfiltered). */
+  /** Total visible active canonical jobs in the pool (LIVE + AGING, unfiltered). */
   liveJobCount: number;
   /** Number of distinct ATS platforms (e.g. Greenhouse, Lever, SmartRecruiters) that have run successfully. */
   activeSourceCount: number;
@@ -28,7 +29,9 @@ export async function getIngestionStatus(): Promise<IngestionStatus> {
       orderBy: { endedAt: "desc" },
       select: { endedAt: true, startedAt: true },
     }),
-    prisma.jobCanonical.count({ where: { status: "LIVE" } }),
+    prisma.jobCanonical.count({
+      where: { status: { in: [...VISIBLE_JOB_STATUSES] } },
+    }),
     prisma.ingestionRun.findMany({
       where: { status: "SUCCESS" },
       select: { sourceName: true },
@@ -51,6 +54,7 @@ export async function getIngestionOverview(): Promise<IngestionOverview> {
     canonicalCount,
     sourceMappingCount,
     liveCount,
+    agingCount,
     staleCount,
     expiredCount,
     removedCount,
@@ -65,25 +69,26 @@ export async function getIngestionOverview(): Promise<IngestionOverview> {
     prisma.jobRaw.count(),
     prisma.jobCanonical.count(),
     prisma.jobSourceMapping.count(),
-    prisma.jobCanonical.count({ where: { status: "LIVE" } }),
+    prisma.jobCanonical.count({ where: { status: { in: [...VISIBLE_JOB_STATUSES] } } }),
+    prisma.jobCanonical.count({ where: { status: "AGING" } }),
     prisma.jobCanonical.count({ where: { status: "STALE" } }),
     prisma.jobCanonical.count({ where: { status: "EXPIRED" } }),
     prisma.jobCanonical.count({ where: { status: "REMOVED" } }),
     prisma.jobCanonical.count({
       where: {
-        status: "LIVE",
+        status: { in: [...VISIBLE_JOB_STATUSES] },
         eligibility: { submissionCategory: "AUTO_SUBMIT_READY" },
       },
     }),
     prisma.jobCanonical.count({
       where: {
-        status: "LIVE",
+        status: { in: [...VISIBLE_JOB_STATUSES] },
         eligibility: { submissionCategory: "AUTO_FILL_REVIEW" },
       },
     }),
     prisma.jobCanonical.count({
       where: {
-        status: "LIVE",
+        status: { in: [...VISIBLE_JOB_STATUSES] },
         eligibility: { submissionCategory: "MANUAL_ONLY" },
       },
     }),
@@ -122,6 +127,7 @@ export async function getIngestionOverview(): Promise<IngestionOverview> {
     canonicalCount,
     sourceMappingCount,
     liveCount,
+    agingCount,
     staleCount,
     expiredCount,
     removedCount,
@@ -202,7 +208,7 @@ function buildSourceCoverage({
     canonicalJobId: string;
     removedAt: Date | null;
     canonicalJob: {
-      status: "LIVE" | "STALE" | "EXPIRED" | "REMOVED";
+      status: "LIVE" | "AGING" | "STALE" | "EXPIRED" | "REMOVED";
     };
   }>;
   allRuns: IngestionRunListItem[];
@@ -273,7 +279,10 @@ function buildSourceCoverage({
     source.activeMappingCount += 1;
     sources.set(source.sourceName, source);
 
-    if (sourceMapping.canonicalJob.status === "LIVE") {
+    if (
+      sourceMapping.canonicalJob.status === "LIVE" ||
+      sourceMapping.canonicalJob.status === "AGING"
+    ) {
       const liveIds = liveCanonicalBySource.get(source.sourceName) ?? new Set<string>();
       liveIds.add(sourceMapping.canonicalJobId);
       liveCanonicalBySource.set(source.sourceName, liveIds);

@@ -1,184 +1,194 @@
-import Link from "next/link";
-import { notFound } from "next/navigation";
-import { Link2 } from "lucide-react";
-import { formatDisplayLabel, formatSalary } from "@/lib/job-display";
-import { getProfile } from "@/lib/queries/profile";
+import { redirect } from "next/navigation";
 
-export default async function ProfilePage() {
-  const profile = await getProfile();
+import { prisma } from "@/lib/db";
+import { getOptionalSessionUser, requireCurrentProfileId } from "@/lib/current-user";
+import { buildProfileFormValues } from "@/lib/profile";
+import { type ResumeImportSummary } from "@/lib/resume-shared";
+import { getStorageReadiness } from "@/lib/storage";
+import { CoverLetterManager } from "@/components/profile/cover-letter-manager";
+import { ProfileForm } from "@/components/profile/profile-form";
+import { ResumeManager } from "@/components/profile/resume-manager";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-  if (!profile) {
-    notFound();
+function formatBytes(sizeBytes: number) {
+  if (sizeBytes < 1024) {
+    return `${sizeBytes} B`;
   }
 
-  const hardFilters = profile.preferences.filter((p) => p.isHardFilter);
-  const softSignals = profile.preferences.filter((p) => !p.isHardFilter);
+  if (sizeBytes < 1024 * 1024) {
+    return `${(sizeBytes / 1024).toFixed(1)} KB`;
+  }
 
-  return (
-    <div className="mx-auto max-w-4xl px-4 py-6 sm:px-6">
-      {/* Header */}
-      <div className="flex items-start justify-between pb-4">
-        <div>
-          <h1 className="text-xl font-semibold tracking-tight">{profile.name}</h1>
-          <p className="mt-0.5 text-sm text-muted-foreground">
-            {profile.email}
-            {profile.experienceLevel ? (
-              <>
-                <Sep />
-                {formatDisplayLabel(profile.experienceLevel)}
-              </>
-            ) : null}
-            {profile.preferredWorkMode ? (
-              <>
-                <Sep />
-                {formatDisplayLabel(profile.preferredWorkMode)}
-              </>
-            ) : null}
-          </p>
-        </div>
-        <Link href="/jobs" className="text-sm text-muted-foreground hover:text-foreground">
-          Back to feed
-        </Link>
-      </div>
-
-      {/* Key fields */}
-      <div className="grid grid-cols-2 gap-x-8 gap-y-2 border-t border-border py-3 sm:grid-cols-3">
-        <Field label="Automation mode" value={formatDisplayLabel(profile.automationMode)} />
-        <Field label="Work authorization" value={profile.workAuthorization ?? "Not set"} />
-        <Field
-          label="Target salary"
-          value={formatSalary(profile.salaryMin, profile.salaryMax, profile.salaryCurrency)}
-        />
-      </div>
-
-      {/* Links */}
-      <div className="border-t border-border py-4">
-        <p className="mb-3 text-xs font-medium uppercase tracking-wide text-muted-foreground">
-          Links
-        </p>
-        <div className="flex flex-wrap gap-x-6 gap-y-2">
-          {[
-            { label: "LinkedIn", href: profile.linkedinUrl },
-            { label: "GitHub", href: profile.githubUrl },
-            { label: "Portfolio", href: profile.portfolioUrl },
-          ].map(({ label, href }) => (
-            <div key={label} className="flex items-center gap-1.5">
-              <span className="text-xs text-muted-foreground">{label}:</span>
-              {href ? (
-                <a
-                  href={href}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex items-center gap-1 text-sm font-medium text-foreground underline-offset-4 hover:underline"
-                >
-                  <Link2 className="h-3 w-3" />
-                  {href}
-                </a>
-              ) : (
-                <span className="text-sm text-muted-foreground">Not set</span>
-              )}
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Hard filters */}
-      <div className="border-t border-border py-4">
-        <p className="mb-3 text-xs font-medium uppercase tracking-wide text-muted-foreground">
-          Hard filters
-          <span className="ml-1.5 opacity-60">{hardFilters.length}</span>
-        </p>
-        {hardFilters.length === 0 ? (
-          <p className="text-sm text-muted-foreground">No hard filters configured.</p>
-        ) : (
-          <div className="space-y-2">
-            {hardFilters.map((pref) => (
-              <KV key={pref.key} label={pref.key} value={pref.value} />
-            ))}
-          </div>
-        )}
-      </div>
-
-      {/* Soft signals */}
-      <div className="border-t border-border py-4">
-        <p className="mb-3 text-xs font-medium uppercase tracking-wide text-muted-foreground">
-          Soft signals
-          <span className="ml-1.5 opacity-60">{softSignals.length}</span>
-        </p>
-        {softSignals.length === 0 ? (
-          <p className="text-sm text-muted-foreground">No soft signals configured.</p>
-        ) : (
-          <div className="space-y-2">
-            {softSignals.map((pref) => (
-              <KV key={pref.key} label={pref.key} value={pref.value} />
-            ))}
-          </div>
-        )}
-      </div>
-
-      {/* Resume variants */}
-      <div className="border-t border-border py-4">
-        <p className="mb-3 text-xs font-medium uppercase tracking-wide text-muted-foreground">
-          Resume variants
-          <span className="ml-1.5 opacity-60">{profile.resumeVariants.length}</span>
-        </p>
-        <div className="space-y-4">
-          {profile.resumeVariants.map((resume) => (
-            <div
-              key={resume.id}
-              className="border-b border-border/60 pb-4 last:border-b-0 last:pb-0"
-            >
-              <div className="flex items-baseline gap-2">
-                <p className="text-sm font-medium text-foreground">{resume.label}</p>
-                {resume.isDefault ? (
-                  <span className="text-xs text-muted-foreground">(default)</span>
-                ) : null}
-                {resume.targetRoleFamily ? (
-                  <span className="text-xs text-muted-foreground">· {resume.targetRoleFamily}</span>
-                ) : null}
-              </div>
-              {resume.content ? (
-                <p className="mt-1 line-clamp-4 text-sm text-muted-foreground">{resume.content}</p>
-              ) : (
-                <p className="mt-1 text-sm text-muted-foreground">No content preview stored.</p>
-              )}
-              {resume.fileUrl ? (
-                <a
-                  href={resume.fileUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="mt-1 inline-flex items-center gap-1 text-sm font-medium text-foreground underline-offset-4 hover:underline"
-                >
-                  <Link2 className="h-3 w-3" />
-                  Open file
-                </a>
-              ) : null}
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
+  return `${(sizeBytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
-function Field({ label, value }: { label: string; value: string }) {
-  return (
-    <div>
-      <p className="text-xs text-muted-foreground">{label}</p>
-      <p className="mt-0.5 text-sm font-medium text-foreground">{value}</p>
-    </div>
-  );
+function formatDateTime(value: Date) {
+  return new Intl.DateTimeFormat("en-CA", {
+    dateStyle: "medium",
+    timeStyle: "short",
+  }).format(value);
 }
 
-function KV({ label, value }: { label: string; value: string }) {
+export default async function ProfilePage() {
+  const sessionUser = await getOptionalSessionUser();
+
+  if (!sessionUser) {
+    redirect("/sign-in");
+  }
+
+  const profileId = await requireCurrentProfileId();
+  const storageReadiness = getStorageReadiness();
+
+  const [profile, resumes, templates, coverLetters] = await Promise.all([
+    prisma.userProfile.findUnique({
+      where: { id: profileId },
+      select: {
+        updatedAt: true,
+        headline: true,
+        summary: true,
+        skillsText: true,
+        experienceText: true,
+        educationText: true,
+        projectsText: true,
+        contactJson: true,
+        skillsJson: true,
+        educationsJson: true,
+        experiencesJson: true,
+        projectsJson: true,
+      },
+    }),
+    prisma.document.findMany({
+      where: { userId: profileId, type: "RESUME" },
+      orderBy: [{ isPrimary: "desc" }, { createdAt: "desc" }],
+      select: {
+        id: true,
+        title: true,
+        originalFileName: true,
+        mimeType: true,
+        sizeBytes: true,
+        createdAt: true,
+        isPrimary: true,
+        analysis: {
+          select: {
+            importSummaryJson: true,
+          },
+        },
+      },
+    }),
+    prisma.document.findMany({
+      where: { userId: profileId, type: "RESUME_TEMPLATE" },
+      orderBy: [{ isPrimary: "desc" }, { createdAt: "desc" }],
+      select: {
+        id: true,
+        title: true,
+        originalFileName: true,
+        mimeType: true,
+        isPrimary: true,
+      },
+    }),
+    prisma.document.findMany({
+      where: { userId: profileId, type: "COVER_LETTER" },
+      orderBy: [{ createdAt: "desc" }],
+      select: {
+        id: true,
+        title: true,
+        originalFileName: true,
+        mimeType: true,
+        sizeBytes: true,
+        createdAt: true,
+      },
+    }),
+  ]);
+
+  const initialValues = buildProfileFormValues(profile, sessionUser);
+  const profileFormKey = profile?.updatedAt?.toISOString() ?? "blank-profile";
+
   return (
-    <div className="flex items-baseline gap-2">
-      <span className="shrink-0 text-xs text-muted-foreground">{label}:</span>
-      <span className="text-sm text-foreground">{value}</span>
+    <div className="app-page space-y-6">
+      <div className="space-y-1">
+        <h1 className="page-title">Profile</h1>
+        <p className="page-description">
+          Keep your profile, resume history, templates, and cover letters in one place.
+        </p>
+      </div>
+
+      <section>
+        <Card>
+          <CardHeader>
+            <CardTitle>Resumes and templates</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ResumeManager
+              resumes={resumes.map((resume) => ({
+                id: resume.id,
+                title: resume.title,
+                originalFileName: resume.originalFileName,
+                mimeType: resume.mimeType,
+                sizeLabel: formatBytes(resume.sizeBytes),
+                createdAtLabel: formatDateTime(resume.createdAt),
+                isPrimary: resume.isPrimary,
+                downloadHref: `/api/profile/documents/${resume.id}/download`,
+                importSummary:
+                  (resume.analysis?.importSummaryJson as ResumeImportSummary | null) ?? null,
+                isImported: resume.analysis !== null,
+              }))}
+              templates={templates.map((template) => ({
+                id: template.id,
+                title: template.title,
+                originalFileName: template.originalFileName,
+                mimeType: template.mimeType,
+                isPrimary: template.isPrimary,
+                downloadHref: `/api/profile/documents/${template.id}/download`,
+              }))}
+              storageConfigured={storageReadiness.configured}
+            />
+          </CardContent>
+        </Card>
+      </section>
+
+      <section>
+        <Card>
+          <CardHeader>
+            <CardTitle>Cover letters</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <CoverLetterManager
+              coverLetters={coverLetters.map((coverLetter) => ({
+                id: coverLetter.id,
+                title: coverLetter.title,
+                originalFileName: coverLetter.originalFileName,
+                mimeType: coverLetter.mimeType,
+                sizeLabel: formatBytes(coverLetter.sizeBytes),
+                createdAtLabel: formatDateTime(coverLetter.createdAt),
+                downloadHref: `/api/profile/documents/${coverLetter.id}/download`,
+              }))}
+              storageConfigured={storageReadiness.configured}
+            />
+          </CardContent>
+        </Card>
+      </section>
+
+      <section>
+        <Card>
+          <CardHeader>
+            <CardTitle>Profile data</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ProfileForm
+              key={profileFormKey}
+              initialValues={{
+                headline: initialValues.headline,
+                summary: initialValues.summary,
+                contact: initialValues.contact,
+                skills: initialValues.skills,
+                educations: initialValues.educations,
+                experiences: initialValues.experiences,
+                projects: initialValues.projects,
+              }}
+            />
+          </CardContent>
+        </Card>
+      </section>
     </div>
   );
-}
-
-function Sep() {
-  return <span className="mx-1.5 text-border">·</span>;
 }

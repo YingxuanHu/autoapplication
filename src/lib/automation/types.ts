@@ -33,6 +33,8 @@ export type FillerResume = {
   filePath: string | null;
   /** Raw text content for pasting, if no file exists */
   content: string | null;
+  /** Cleanup hook for temporary local files materialized from remote storage */
+  cleanup?: (() => Promise<void>) | null;
 };
 
 export type FillerPackage = {

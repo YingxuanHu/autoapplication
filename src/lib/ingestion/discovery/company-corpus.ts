@@ -71,13 +71,13 @@ export async function buildCompanyDiscoveryCorpus(options?: {
   const [liveRows, canadaRows, canadaRemoteRows] = await Promise.all([
     prisma.jobCanonical.groupBy({
       by: ["company"],
-      where: { status: "LIVE" },
+      where: { status: { in: ["LIVE", "AGING"] } },
       _count: { _all: true },
     }),
     prisma.jobCanonical.groupBy({
       by: ["company"],
       where: {
-        status: "LIVE",
+        status: { in: ["LIVE", "AGING"] },
         OR: [{ region: "CA" }, { region: "CA", workMode: "REMOTE" }],
       },
       _count: { _all: true },
@@ -85,7 +85,7 @@ export async function buildCompanyDiscoveryCorpus(options?: {
     prisma.jobCanonical.groupBy({
       by: ["company"],
       where: {
-        status: "LIVE",
+        status: { in: ["LIVE", "AGING"] },
         region: "CA",
         workMode: "REMOTE",
       },

@@ -1,14 +1,19 @@
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { Bot, ExternalLink } from "lucide-react";
 import { ApplicationReviewActions } from "@/components/jobs/application-review-actions";
+import { AIWorkspace } from "@/components/jobs/ai-workspace";
+import { JobNotes } from "@/components/jobs/job-notes";
+import { getOptionalSessionUser } from "@/lib/current-user";
 import {
   APPLICATION_REVIEW_STATE_META,
   formatDisplayLabel,
   formatPostedAge,
   formatSalary,
+  getEligibilityReasonDescription,
   getSourceShortName,
   getSubmissionMeta,
+  shouldShowSubmissionMeta,
   submissionCategoryColor,
 } from "@/lib/job-display";
 import { getApplicationReviewData } from "@/lib/queries/applications";
@@ -18,6 +23,11 @@ type JobApplyPageProps = {
 };
 
 export default async function JobApplyPage({ params }: JobApplyPageProps) {
+  const sessionUser = await getOptionalSessionUser();
+  if (!sessionUser) {
+    redirect("/sign-in");
+  }
+
   const { id } = await params;
   const reviewData = await getApplicationReviewData(id);
 
@@ -43,6 +53,11 @@ export default async function JobApplyPage({ params }: JobApplyPageProps) {
   const reviewStateMeta = APPLICATION_REVIEW_STATE_META[reviewState];
   const canCreatePackage = recommendedResume !== null;
   const sourceShortName = getSourceShortName(job.primaryExternalLink?.sourceName ?? null);
+  const showSubmissionMeta = shouldShowSubmissionMeta(job);
+
+  if (reviewState === "MANUAL_ONLY") {
+    redirect(`/jobs/${job.id}`);
+  }
 
   // Compact status strip values
   const packageState = latestPackage ? "Package ready" : "No package";
@@ -57,7 +72,7 @@ export default async function JobApplyPage({ params }: JobApplyPageProps) {
     : "Not submitted";
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-6 sm:px-6">
+    <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
       {/* Breadcrumb + external link */}
       <div className="mb-3 flex items-center gap-3">
         <Link
@@ -84,7 +99,7 @@ export default async function JobApplyPage({ params }: JobApplyPageProps) {
 
       {/* Header */}
       <div className="pb-3">
-        <p className="mb-0.5 text-xs text-muted-foreground">Apply review</p>
+        <p className="mb-0.5 text-xs text-muted-foreground">Application</p>
         <h1 className="text-xl font-semibold tracking-tight">{job.title}</h1>
         <p className="mt-0.5 text-sm text-muted-foreground">
           {job.company}
@@ -96,10 +111,14 @@ export default async function JobApplyPage({ params }: JobApplyPageProps) {
       {/* Compact status strip */}
       <div className="border-t border-border py-2.5">
         <p className="text-xs text-muted-foreground">
-          <span className={submissionCategoryColor(job.eligibility?.submissionCategory)}>
-            {submissionMeta.label}
-          </span>
-          <Sep />
+          {showSubmissionMeta ? (
+            <>
+              <span className={submissionCategoryColor(job.eligibility?.submissionCategory)}>
+                {submissionMeta.label}
+              </span>
+              <Sep />
+            </>
+          ) : null}
           {packageState}
           <Sep />
           {submissionState}
@@ -158,6 +177,49 @@ export default async function JobApplyPage({ params }: JobApplyPageProps) {
         )}
       </div>
 
+      {/* Personal notes */}
+      <div className="border-t border-border py-4">
+        <p className="mb-2 text-xs text-muted-foreground">Notes</p>
+        <JobNotes
+          jobId={job.id}
+          initialNotes={latestPackage?.userNotes ?? null}
+        />
+      </div>
+
+      {/* AI workspace */}
+      <div className="border-t border-border py-4">
+        <p className="mb-3 text-xs text-muted-foreground">AI workspace</p>
+        {process.env.OPENAI_API_KEY ? (
+          <AIWorkspace
+            jobId={job.id}
+            jobTitle={job.title}
+            company={job.company}
+          />
+        ) : (
+          <div className="rounded-md border border-dashed border-border p-4">
+            <p className="text-sm text-muted-foreground">
+              AI features are not configured.
+            </p>
+            <p className="mt-1 text-xs text-muted-foreground">
+              Add <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">OPENAI_API_KEY</code> to{" "}
+              <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">.env</code> to unlock:
+            </p>
+            <ul className="mt-2 space-y-1">
+              {[
+                "Fit analysis — score + strengths/gaps vs. this job",
+                "Cover letter — tailored to this role in one click",
+                "Resume parsing — extract your experience from uploaded files",
+              ].map((item) => (
+                <li key={item} className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                  <span className="opacity-40">◦</span>
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </div>
+
       {/* Submission history — visible if there are any */}
       {submissions.length > 0 ? (
         <div className="border-t border-border py-4">
@@ -207,9 +269,7 @@ export default async function JobApplyPage({ params }: JobApplyPageProps) {
         </summary>
         <div className="space-y-2 pb-4">
           <p className="text-sm text-muted-foreground">{reviewStateMeta.description}</p>
-          {job.eligibility?.reasonDescription ? (
-            <p className="text-sm text-muted-foreground">{job.eligibility.reasonDescription}</p>
-          ) : null}
+          <p className="text-sm text-muted-foreground">{getEligibilityReasonDescription(job.eligibility)}</p>
           <p className="text-sm text-muted-foreground">{job.linkTrust.summary}</p>
         </div>
       </details>
@@ -379,4 +439,3 @@ function AutomationLogSummary({ log }: { log: AutomationLog }) {
     </div>
   );
 }
-

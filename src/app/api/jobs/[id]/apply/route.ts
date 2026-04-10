@@ -1,4 +1,5 @@
 import { type NextRequest } from "next/server";
+import { UnauthorizedError } from "@/lib/current-user";
 import {
   prepareApplicationReview,
   submitApplicationReview,
@@ -28,6 +29,9 @@ export async function POST(
 
     return errorResponse("Invalid application intent", 400);
   } catch (error) {
+    if (error instanceof UnauthorizedError) {
+      return errorResponse("Unauthorized", 401);
+    }
     console.error("POST /api/jobs/[id]/apply error:", error);
     return errorResponse("Failed to update application review", 500);
   }
@@ -56,6 +60,9 @@ export async function PATCH(
     const result = await updateApplicationSubmissionStatus(id, statusMap[patchIntent as keyof typeof statusMap]);
     return successResponse(result);
   } catch (error) {
+    if (error instanceof UnauthorizedError) {
+      return errorResponse("Unauthorized", 401);
+    }
     console.error("PATCH /api/jobs/[id]/apply error:", error);
     return errorResponse("Failed to update submission status", 500);
   }

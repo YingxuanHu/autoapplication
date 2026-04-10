@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { LoaderCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useNotifications } from "@/components/ui/notification-provider";
 import type { ApplicationHistoryStatus } from "@/types";
 
 type ApplicationRowActionsProps = {
@@ -16,6 +17,7 @@ export function ApplicationRowActions({
   latestStatus,
 }: ApplicationRowActionsProps) {
   const router = useRouter();
+  const { notify } = useNotifications();
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
@@ -30,10 +32,26 @@ export function ApplicationRowActions({
           body: JSON.stringify({ intent }),
         });
         if (!res.ok) throw new Error(await res.text());
+        const successMessage =
+          intent === "confirm"
+            ? "Application confirmed"
+            : intent === "fail"
+              ? "Application marked failed"
+              : "Application withdrawn";
+        notify({
+          title: successMessage,
+          message: "Your application history was updated.",
+          tone: "success",
+        });
         router.refresh();
       } catch (e) {
         console.error(e);
         setError("Could not update status.");
+        notify({
+          title: "Could not update application",
+          message: "The application status could not be updated right now.",
+          tone: "error",
+        });
       }
     });
   }
@@ -51,7 +69,7 @@ export function ApplicationRowActions({
             size="sm"
             onClick={() => patch("confirm")}
             disabled={isPending}
-            className="h-6 px-2 text-xs"
+            className="h-8 px-3 text-xs"
           >
             {spinner}
             Confirm
@@ -61,7 +79,7 @@ export function ApplicationRowActions({
             size="sm"
             onClick={() => patch("fail")}
             disabled={isPending}
-            className="h-6 px-2 text-xs"
+            className="h-8 px-3 text-xs"
           >
             {spinner}
             Failed
@@ -71,7 +89,7 @@ export function ApplicationRowActions({
             size="sm"
             onClick={() => patch("withdraw")}
             disabled={isPending}
-            className="h-6 px-2 text-xs text-muted-foreground"
+            className="h-8 px-3 text-xs text-muted-foreground"
           >
             {spinner}
             Withdraw
@@ -95,7 +113,7 @@ export function ApplicationRowActions({
             size="sm"
             onClick={() => patch("fail")}
             disabled={isPending}
-            className="h-6 px-2 text-xs text-muted-foreground"
+            className="h-8 px-3 text-xs text-muted-foreground"
           >
             {spinner}
             Mark failed
@@ -105,7 +123,7 @@ export function ApplicationRowActions({
             size="sm"
             onClick={() => patch("withdraw")}
             disabled={isPending}
-            className="h-6 px-2 text-xs text-muted-foreground"
+            className="h-8 px-3 text-xs text-muted-foreground"
           >
             {spinner}
             Withdraw

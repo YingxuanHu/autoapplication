@@ -164,6 +164,7 @@ export function createTaleoConnector(
         now: fetchOptions.now,
         limit: fetchOptions.limit,
         signal: fetchOptions.signal,
+        log: fetchOptions.log,
       });
       fetchCache.set(cacheKey, request);
       return request;
@@ -179,26 +180,28 @@ async function fetchTaleoJobs({
   now,
   limit,
   signal,
+  log = console.log,
 }: {
   target: TaleoTarget;
   fallbackCompanyName: string;
   now: Date;
   limit?: number;
   signal?: AbortSignal;
+  log?: (message: string) => void;
 }): Promise<SourceConnectorFetchResult> {
   throwIfAborted(signal);
 
   // Step 1: Try REST API with headless portal ID discovery
-  const restResult = await tryRestApiFetch(target, fallbackCompanyName, now, limit, signal);
+  const restResult = await tryRestApiFetch(target, fallbackCompanyName, now, limit, signal, log);
   if (restResult) {
     return restResult;
   }
 
   // Step 2: Fall back to sitemap + headless detail rendering
-  console.log(
+  log(
     `[taleo:${buildTaleoSourceToken(target)}] REST API unavailable, falling back to sitemap + headless detail`
   );
-  return fetchViaSitemapAndHeadless(target, fallbackCompanyName, now, limit, signal);
+  return fetchViaSitemapAndHeadless(target, fallbackCompanyName, now, limit, signal, log);
 }
 
 // ─── REST API path ──────────────────────────────────────────────────────────
@@ -208,18 +211,19 @@ async function tryRestApiFetch(
   fallbackCompanyName: string,
   now: Date,
   limit?: number,
-  signal?: AbortSignal
+  signal?: AbortSignal,
+  log: (message: string) => void = console.log
 ): Promise<SourceConnectorFetchResult | null> {
   // First: discover the numeric portal ID by rendering the search page
-  const portalId = await discoverPortalId(target);
+  const portalId = await discoverPortalId(target, log);
   if (!portalId) {
-    console.log(
+    log(
       `[taleo:${buildTaleoSourceToken(target)}] Could not discover portal ID via headless`
     );
     return null;
   }
 
-  console.log(
+  log(
     `[taleo:${buildTaleoSourceToken(target)}] Discovered portal ID: ${portalId}`
   );
 
@@ -245,14 +249,14 @@ async function tryRestApiFetch(
       } as Prisma.InputJsonValue,
     };
   } catch (error) {
-    console.log(
+    log(
       `[taleo:${buildTaleoSourceToken(target)}] REST API failed: ${error instanceof Error ? error.message : String(error)}`
     );
     return null;
   }
 }
 
-async function discoverPortalId(target: TaleoTarget): Promise<string | null> {
+async function discoverPortalId(target: TaleoTarget, log: (message: string) => void = console.log): Promise<string | null> {
   const searchUrl = buildTaleoBoardUrl(target);
   try {
     const result = await renderPage({
@@ -295,7 +299,7 @@ async function discoverPortalId(target: TaleoTarget): Promise<string | null> {
     // (some Taleo instances use the section code directly)
     return null;
   } catch (error) {
-    console.log(
+    log(
       `[taleo:${buildTaleoSourceToken(target)}] Headless portal discovery failed: ${error instanceof Error ? error.message : String(error)}`
     );
     return null;
@@ -425,13 +429,14 @@ async function fetchViaSitemapAndHeadless(
   fallbackCompanyName: string,
   now: Date,
   limit?: number,
-  signal?: AbortSignal
+  signal?: AbortSignal,
+  log: (message: string) => void = console.log
 ): Promise<SourceConnectorFetchResult> {
   const sitemapEntries = await fetchSitemap(target);
   const entriesToProcess =
     typeof limit === "number" ? sitemapEntries.slice(0, limit) : sitemapEntries;
 
-  console.log(
+  log(
     `[taleo:${buildTaleoSourceToken(target)}] Sitemap has ${sitemapEntries.length} entries, processing ${entriesToProcess.length}`
   );
 
@@ -472,7 +477,7 @@ async function fetchViaSitemapAndHeadless(
           });
         }
       } catch (error) {
-        console.log(
+        log(
           `[taleo:${buildTaleoSourceToken(target)}] Detail fetch failed for job ${entry.jobId}: ${error instanceof Error ? error.message : String(error)}`
         );
       }

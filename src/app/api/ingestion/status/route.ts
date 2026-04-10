@@ -1,5 +1,7 @@
-import { NextResponse } from "next/server";
 import { getIngestionStatus } from "@/lib/queries/ingestion";
+import { errorResponse, successResponse } from "@/lib/api-utils";
+
+export const dynamic = "force-dynamic";
 
 /**
  * GET /api/ingestion/status
@@ -10,6 +12,13 @@ import { getIngestionStatus } from "@/lib/queries/ingestion";
  * detail from /api/ingestion/schedule.
  */
 export async function GET() {
-  const status = await getIngestionStatus();
-  return NextResponse.json(status);
+  try {
+    const status = await getIngestionStatus();
+    return successResponse(status, 200, {
+      "Cache-Control": "no-store, max-age=0",
+    });
+  } catch (error) {
+    console.error("GET /api/ingestion/status error:", error);
+    return errorResponse("Failed to fetch ingestion status", 500);
+  }
 }

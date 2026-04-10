@@ -7,13 +7,15 @@ import {
 } from "@/lib/ingestion/discovery/sources";
 
 const CAREER_PAGE_FETCH_TIMEOUT_MS = 12_000;
-const MAX_PAGES_PER_COMPANY = 10;
+const MAX_PAGES_PER_COMPANY = 18;
 const CAREER_PAGE_CONCURRENCY = 8;
 const COMPANY_CRAWL_CONCURRENCY = 6;
-const MAX_LINKS_PER_PAGE = 24;
+const MAX_LINKS_PER_PAGE = 40;
 const CAREER_PATH_HINTS = [
   "/careers",
   "/jobs",
+  "/careers/",
+  "/jobs/",
   "/careers/jobs",
   "/careers/job-openings",
   "/careers/openings",
@@ -34,6 +36,23 @@ const CAREER_PATH_HINTS = [
   "/company/careers/open-positions",
   "/company/careers/jobs",
   "/our-company/careers",
+  "/join",
+  "/join/",
+  "/join-our-team",
+  "/join-our-team/",
+  "/opportunities",
+  "/opportunities/",
+  "/open-roles",
+  "/open-positions",
+  "/careers/search-results",
+  "/careers/opportunities",
+  "/careers/positions",
+  "/work-here",
+  "/work-here/",
+  "/working-at-us",
+  "/teams",
+  "/departments",
+  "/life-at-company",
 ];
 const CAREER_KEYWORD_RE =
   /(careers?|jobs?|opportunit(?:y|ies)|join-us|work-with-us|employment|talent|openings?|open[- ]roles?|vacanc(?:y|ies))/i;
@@ -251,6 +270,12 @@ async function crawlCompanyCareerPages(company: EnterpriseCompanyRecord) {
         const embeddedCandidate = extractSourceCandidateFromUrl(embeddedUrl);
         if (!embeddedCandidate) continue;
         directAtsUrls.add(embeddedCandidate.boardUrl);
+      }
+
+      for (const discoveredApiUrl of extractInlineApiUrls(page.html, page.finalUrl)) {
+        const apiCandidate = extractSourceCandidateFromUrl(discoveredApiUrl);
+        if (!apiCandidate) continue;
+        directAtsUrls.add(apiCandidate.boardUrl);
       }
 
       for (const link of extractCareerLinks(page.html, page.finalUrl, domains)) {
@@ -471,6 +496,30 @@ function shouldFollowCareerUrl(url: URL, domains: string[], anchorText?: string)
 
 function stripHtml(value: string) {
   return value.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+}
+
+function extractInlineApiUrls(html: string, baseUrl: string) {
+  const urls = new Set<string>();
+  const base = new URL(baseUrl);
+  const patterns = [
+    /["']((?:\/|https?:\/\/)[^"'<>\\]+\b(?:jobs|careers|openings|positions|job-openings|api\/jobs|graphql)[^"'<>\\]*)["']/gi,
+    /fetch\((["'])([^"'<>\\]+\b(?:jobs|careers|graphql|openings)[^"'<>\\]*)\1/gi,
+  ];
+
+  for (const pattern of patterns) {
+    let match: RegExpExecArray | null;
+    while ((match = pattern.exec(html)) !== null) {
+      const candidate = match[1] && match[2] ? match[2] : match[1];
+      if (!candidate) continue;
+      try {
+        urls.add(new URL(candidate, base).toString());
+      } catch {
+        continue;
+      }
+    }
+  }
+
+  return [...urls];
 }
 
 function getOrCreateMetadata(

@@ -1,8 +1,15 @@
 import { prisma } from "@/lib/db";
-import { DEMO_USER_ID } from "@/lib/constants";
+import {
+  getOptionalCurrentProfileId,
+  requireCurrentProfileId,
+} from "@/lib/current-user";
 import { formatDisplayLabel, formatSalary } from "@/lib/job-display";
 import { serializeJobDetailData } from "@/lib/job-serialization";
 import { recordAction } from "@/lib/queries/behavior";
+import {
+  syncTrackedApplicationFromSubmission,
+  syncTrackedApplicationLifecycleFromSubmission,
+} from "@/lib/queries/tracker";
 import { resolveATSFiller } from "@/lib/automation/fillers";
 import type {
   ApplicationHistoryItem,
@@ -27,17 +34,18 @@ const NON_TERMINAL_SUBMISSION_STATUSES: ReadonlySet<
 ] as const);
 
 export async function getApplicationHistory(): Promise<ApplicationHistoryItem[]> {
+  const userId = await requireCurrentProfileId();
   const jobs = await prisma.jobCanonical.findMany({
     where: {
       OR: [
         {
           applicationPackages: {
-            some: { userId: DEMO_USER_ID },
+            some: { userId },
           },
         },
         {
           applicationSubmissions: {
-            some: { userId: DEMO_USER_ID },
+            some: { userId },
           },
         },
       ],
@@ -45,7 +53,7 @@ export async function getApplicationHistory(): Promise<ApplicationHistoryItem[]>
     include: {
       eligibility: true,
       applicationPackages: {
-        where: { userId: DEMO_USER_ID },
+        where: { userId },
         include: {
           resumeVariant: true,
         },
@@ -53,7 +61,7 @@ export async function getApplicationHistory(): Promise<ApplicationHistoryItem[]>
         take: 1,
       },
       applicationSubmissions: {
-        where: { userId: DEMO_USER_ID },
+        where: { userId },
         orderBy: { updatedAt: "desc" },
         take: 1,
       },
@@ -72,6 +80,9 @@ export async function getApplicationHistory(): Promise<ApplicationHistoryItem[]>
 export async function getApplicationReviewData(
   jobId: string
 ): Promise<ApplicationReviewData | null> {
+  const userId = await getOptionalCurrentProfileId({ fallbackToDemo: true });
+  if (!userId) return null;
+
   const [job, profile] = await Promise.all([
     prisma.jobCanonical.findUnique({
       where: { id: jobId },
@@ -79,11 +90,11 @@ export async function getApplicationReviewData(
         eligibility: true,
         sourceMappings: true,
         savedJobs: {
-          where: { userId: DEMO_USER_ID, status: "ACTIVE" },
+          where: { userId, status: "ACTIVE" },
           select: { id: true },
         },
         applicationPackages: {
-          where: { userId: DEMO_USER_ID },
+          where: { userId },
           include: {
             resumeVariant: true,
           },
@@ -91,14 +102,14 @@ export async function getApplicationReviewData(
           take: 1,
         },
         applicationSubmissions: {
-          where: { userId: DEMO_USER_ID },
+          where: { userId },
           orderBy: { updatedAt: "desc" },
           take: 5,
         },
       },
     }),
     prisma.userProfile.findUnique({
-      where: { id: DEMO_USER_ID },
+      where: { id: userId },
       include: {
         resumeVariants: {
           orderBy: { createdAt: "desc" },
@@ -161,9 +172,11 @@ export async function prepareApplicationReview(jobId: string) {
       : null,
     packageId: packageRecord.id,
     status: "READY",
-    submissionMethod: "review",
+    submissionMethod: isManualApplicationCategory(job.eligibility?.submissionCategory) ? "manual" : "review",
     submittedAt: null,
-    notes: "Prepared for review in the apply flow.",
+    notes: isManualApplicationCategory(job.eligibility?.submissionCategory)
+      ? "Prepared for manual application in the apply flow."
+      : "Prepared for auto-apply in the apply flow.",
   });
 
   return {
@@ -179,8 +192,9 @@ export async function updateApplicationSubmissionStatus(
   jobId: string,
   status: "CONFIRMED" | "FAILED" | "WITHDRAWN"
 ) {
+  const userId = await requireCurrentProfileId();
   const latestSubmission = await prisma.applicationSubmission.findFirst({
-    where: { canonicalJobId: jobId, userId: DEMO_USER_ID },
+    where: { canonicalJobId: jobId, userId },
     orderBy: { updatedAt: "desc" },
   });
 
@@ -196,10 +210,16 @@ export async function updateApplicationSubmissionStatus(
     },
   });
 
+  await syncTrackedApplicationLifecycleFromSubmission({
+    canonicalJobId: jobId,
+    submissionStatus: status,
+  });
+
   return serializeApplicationSubmission(updated);
 }
 
 export async function submitApplicationReview(jobId: string) {
+  const userId = await requireCurrentProfileId();
   const context = await getMutableApplicationContext(jobId);
   if (!context) throw new Error("Application review context not found");
 
@@ -217,7 +237,7 @@ export async function submitApplicationReview(jobId: string) {
   });
 
   const submissionMethod =
-    job.eligibility?.submissionCategory === "MANUAL_ONLY" ? "manual" : "review";
+    isManualApplicationCategory(job.eligibility?.submissionCategory) ? "manual" : "review";
   const submittedAt = new Date();
 
   const submissionRecord = await upsertApplicationSubmission({
@@ -232,7 +252,7 @@ export async function submitApplicationReview(jobId: string) {
     notes:
       submissionMethod === "manual"
         ? "Marked submitted manually from the apply review flow."
-        : "Marked submitted from the apply review flow.",
+        : "Marked submitted from the auto-apply flow.",
   });
 
   await Promise.all([
@@ -240,12 +260,12 @@ export async function submitApplicationReview(jobId: string) {
     prisma.savedJob.upsert({
       where: {
         userId_canonicalJobId: {
-          userId: DEMO_USER_ID,
+          userId,
           canonicalJobId: jobId,
         },
       },
       create: {
-        userId: DEMO_USER_ID,
+        userId,
         canonicalJobId: jobId,
         status: "APPLIED",
       },
@@ -253,6 +273,7 @@ export async function submitApplicationReview(jobId: string) {
         status: "APPLIED",
       },
     }),
+    syncTrackedApplicationFromSubmission(jobId),
   ]);
 
   return {
@@ -265,6 +286,7 @@ export async function submitApplicationReview(jobId: string) {
 }
 
 async function getMutableApplicationContext(jobId: string) {
+  const userId = await requireCurrentProfileId();
   const [job, profile] = await Promise.all([
     prisma.jobCanonical.findUnique({
       where: { id: jobId },
@@ -272,24 +294,24 @@ async function getMutableApplicationContext(jobId: string) {
         eligibility: true,
         sourceMappings: true,
         savedJobs: {
-          where: { userId: DEMO_USER_ID, status: "ACTIVE" },
+          where: { userId, status: "ACTIVE" },
           select: { id: true },
         },
         applicationPackages: {
-          where: { userId: DEMO_USER_ID },
+          where: { userId },
           include: { resumeVariant: true },
           orderBy: { updatedAt: "desc" },
           take: 1,
         },
         applicationSubmissions: {
-          where: { userId: DEMO_USER_ID },
+          where: { userId },
           orderBy: { updatedAt: "desc" },
           take: 1,
         },
       },
     }),
     prisma.userProfile.findUnique({
-      where: { id: DEMO_USER_ID },
+      where: { id: userId },
       include: {
         resumeVariants: {
           orderBy: { createdAt: "desc" },
@@ -322,8 +344,9 @@ async function upsertApplicationPackage({
   resumeVariantId: string;
   packagePreview: ApplicationPackagePreview;
 }) {
+  const userId = await requireCurrentProfileId();
   const data = {
-    userId: DEMO_USER_ID,
+    userId,
     canonicalJobId: jobId,
     resumeVariantId,
     coverLetterContent: null,
@@ -371,8 +394,9 @@ async function upsertApplicationSubmission({
   submittedAt: Date | null;
   notes: string;
 }) {
+  const userId = await requireCurrentProfileId();
   const data = {
-    userId: DEMO_USER_ID,
+    userId,
     canonicalJobId: jobId,
     packageId,
     status,
@@ -494,6 +518,7 @@ function serializeApplicationPackage(applicationPackage: {
   };
   whyItMatches: string | null;
   coverLetterContent: string | null;
+  userNotes: string | null;
   attachedLinks: Prisma.JsonValue;
   savedAnswers: Prisma.JsonValue;
   createdAt: Date;
@@ -504,6 +529,7 @@ function serializeApplicationPackage(applicationPackage: {
     resumeVariant: serializeResumeVariant(applicationPackage.resumeVariant),
     whyItMatches: applicationPackage.whyItMatches,
     coverLetterContent: applicationPackage.coverLetterContent,
+    userNotes: applicationPackage.userNotes,
     attachedLinks: jsonObjectToEntries(applicationPackage.attachedLinks),
     savedAnswers: jsonObjectToEntries(applicationPackage.savedAnswers),
     createdAt: applicationPackage.createdAt.toISOString(),
@@ -556,6 +582,7 @@ function serializeApplicationHistoryItem(job: {
     };
     whyItMatches: string | null;
     coverLetterContent: string | null;
+    userNotes: string | null;
     attachedLinks: Prisma.JsonValue;
     savedAnswers: Prisma.JsonValue;
     createdAt: Date;
@@ -684,9 +711,9 @@ function buildPackagePreview(
     savedAnswers,
     whyItMatches: buildPackageWhyItMatches(job, recommendedResume),
     coverLetterMode:
-      job.eligibility?.submissionCategory === "MANUAL_ONLY"
+      isManualApplicationCategory(job.eligibility?.submissionCategory)
         ? "No auto-generated cover letter. Manual tailoring is expected."
-        : "No custom cover letter yet. This review flow is resume-first.",
+        : "No custom cover letter yet. This auto-apply flow is resume-first.",
   };
 }
 
@@ -696,8 +723,10 @@ function buildPackageWhyItMatches(
 ) {
   const reasons = [
     `${job.roleFamily} role family alignment`,
-    `${formatDisplayLabel(job.industry)} focus`,
-    `${formatDisplayLabel(job.workMode)} work mode fit`,
+    job.industry ? `${formatDisplayLabel(job.industry)} focus` : "General role alignment",
+    job.workMode !== "UNKNOWN"
+      ? `${formatDisplayLabel(job.workMode)} work mode fit`
+      : "Work mode still being clarified",
   ];
 
   if (recommendedResume) {
@@ -710,8 +739,14 @@ function buildPackageWhyItMatches(
 function getApplicationReviewState(job: JobDetailData): ApplicationReviewState {
   if (job.status !== "LIVE") return "NOT_ELIGIBLE";
   if (!job.eligibility) return "NOT_ELIGIBLE";
-  if (job.eligibility.submissionCategory === "MANUAL_ONLY") return "MANUAL_ONLY";
+  if (isManualApplicationCategory(job.eligibility.submissionCategory)) return "MANUAL_ONLY";
   return "READY_FOR_REVIEW";
+}
+
+function isManualApplicationCategory(
+  category: NonNullable<JobCardEligibility>["submissionCategory"] | null | undefined
+) {
+  return category === "MANUAL_ONLY" || category === "AUTO_FILL_REVIEW";
 }
 
 function jsonObjectToEntries(value: Prisma.JsonValue) {

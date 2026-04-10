@@ -1,0 +1,8 @@
+-- AlterEnum
+ALTER TYPE "WorkMode" ADD VALUE IF NOT EXISTS 'UNKNOWN';
+
+-- AlterEnum
+ALTER TYPE "EmploymentType" ADD VALUE IF NOT EXISTS 'UNKNOWN';
+
+-- AlterEnum
+ALTER TYPE "ExperienceLevel" ADD VALUE IF NOT EXISTS 'UNKNOWN';

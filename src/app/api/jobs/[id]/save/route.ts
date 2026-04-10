@@ -1,6 +1,11 @@
 import { type NextRequest } from "next/server";
+import { UnauthorizedError } from "@/lib/current-user";
 import { saveJob, unsaveJob } from "@/lib/queries/saved-jobs";
 import { recordAction } from "@/lib/queries/behavior";
+import {
+  removeTrackedWishlistFromJob,
+  upsertTrackedApplicationFromJob,
+} from "@/lib/queries/tracker";
 import { successResponse, errorResponse } from "@/lib/api-utils";
 
 export async function POST(
@@ -9,14 +14,34 @@ export async function POST(
 ) {
   try {
     const { id } = await params;
-    const [saved] = await Promise.all([
-      saveJob(id),
+    const [tracked] = await Promise.all([
+      upsertTrackedApplicationFromJob({
+        canonicalJobId: id,
+        status: "WISHLIST",
+      }),
       recordAction(id, "SAVE"),
     ]);
-    return successResponse(saved, 201);
+
+    const saved = await saveJob(
+      id,
+      tracked.status === "WISHLIST" || tracked.status === "PREPARING"
+        ? "ACTIVE"
+        : "APPLIED"
+    );
+
+    return successResponse(
+      {
+        ...saved,
+        trackedStatus: tracked.status,
+      },
+      tracked.created ? 201 : 200
+    );
   } catch (error) {
+    if (error instanceof UnauthorizedError) {
+      return errorResponse("Unauthorized", 401);
+    }
     console.error("POST /api/jobs/[id]/save error:", error);
-    return errorResponse("Failed to save job", 500);
+    return errorResponse("Failed to add job to wishlist", 500);
   }
 }
 
@@ -26,10 +51,16 @@ export async function DELETE(
 ) {
   try {
     const { id } = await params;
-    await unsaveJob(id);
+    await Promise.all([
+      unsaveJob(id),
+      removeTrackedWishlistFromJob(id),
+    ]);
     return successResponse({ success: true });
   } catch (error) {
+    if (error instanceof UnauthorizedError) {
+      return errorResponse("Unauthorized", 401);
+    }
     console.error("DELETE /api/jobs/[id]/save error:", error);
-    return errorResponse("Failed to unsave job", 500);
+    return errorResponse("Failed to remove job from wishlist", 500);
   }
 }

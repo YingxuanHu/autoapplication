@@ -9,7 +9,6 @@ import type {
   JobStatus,
   JobSourceMapping,
   Region,
-  SavedJobStatus,
   SubmissionCategory,
   WorkMode,
 } from "@/generated/prisma/client";
@@ -23,18 +22,6 @@ export type JobWithEligibility = JobCanonical & {
   eligibility: JobEligibility | null;
   sourceMappings: JobSourceMapping[];
   isSaved: boolean;
-};
-
-export type FeedStats = {
-  totalLive: number;
-  newLast24h: number;
-  expiredCount: number;
-  autoEligibleCount: number;
-  reviewRequiredCount: number;
-  manualOnlyCount: number;
-  savedCount: number;
-  savedEndingSoonCount: number;
-  withheldCount: number;
 };
 
 export type JobCardEligibility = {
@@ -60,7 +47,7 @@ export type JobCardData = {
   company: string;
   location: string;
   workMode: WorkMode;
-  industry: Industry;
+  industry: Industry | null;
   status: JobStatus;
   roleFamily: string;
   experienceLevel: ExperienceLevel | null;
@@ -68,6 +55,7 @@ export type JobCardData = {
   salaryMax: number | null;
   salaryCurrency: string | null;
   shortSummary: string;
+  description: string;
   applyUrl: string;
   postedAt: string;
   deadline: string | null;
@@ -80,8 +68,7 @@ export type JobCardData = {
 };
 
 export type JobDetailData = JobCardData & {
-  description: string;
-  region: Region;
+  region: Region | null;
   employmentType: EmploymentType;
 };
 
@@ -105,6 +92,7 @@ export type ApplicationPackageSummary = {
   resumeVariant: ResumeVariantSummary;
   whyItMatches: string | null;
   coverLetterContent: string | null;
+  userNotes: string | null;
   attachedLinks: Array<{ label: string; value: string }>;
   savedAnswers: Array<{ label: string; value: string }>;
   createdAt: string;
@@ -151,7 +139,7 @@ export type ApplicationHistoryItem = {
     company: string;
     location: string;
     workMode: WorkMode;
-    industry: Industry;
+    industry: Industry | null;
     status: JobStatus;
     roleFamily: string;
     applyUrl: string;
@@ -162,14 +150,6 @@ export type ApplicationHistoryItem = {
   latestSubmission: ApplicationSubmissionSummary | null;
   latestStatus: ApplicationHistoryStatus;
   latestActivityAt: string;
-};
-
-export type SavedJobListItem = {
-  id: string;
-  status: SavedJobStatus;
-  notes: string | null;
-  createdAt: string;
-  canonicalJob: JobCardData;
 };
 
 export type JobFilters = {

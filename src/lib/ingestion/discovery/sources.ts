@@ -307,19 +307,23 @@ export function isKnownAtsHost(hostname: string) {
 
   return (
     normalizedHost === "jobs.ashbyhq.com" ||
+    normalizedHost === "jobs.eu.ashbyhq.com" ||
     normalizedHost === "boards.greenhouse.io" ||
     normalizedHost === "job-boards.greenhouse.io" ||
     normalizedHost === "boards-api.greenhouse.io" ||
     normalizedHost === "jobs.lever.co" ||
     normalizedHost === "api.lever.co" ||
     normalizedHost === "ats.rippling.com" ||
+    normalizedHost === "jobs.rippling.com" ||
     normalizedHost.endsWith(".successfactors.com") ||
     normalizedHost.endsWith(".successfactors.eu") ||
     normalizedHost === "jobs.smartrecruiters.com" ||
+    normalizedHost === "careers.smartrecruiters.com" ||
     normalizedHost === "api.smartrecruiters.com" ||
     normalizedHost === "apply.workable.com" ||
     normalizedHost === "www.workable.com" ||
     normalizedHost.endsWith(".myworkdayjobs.com") ||
+    normalizedHost.endsWith(".myworkdaysite.com") ||
     normalizedHost.endsWith(".recruitee.com") ||
     normalizedHost.endsWith(".icims.com") ||
     normalizedHost.endsWith(".taleo.net")
@@ -738,13 +742,18 @@ export function extractKnownAtsUrlsFromText(text: string) {
 
 const ATS_URL_FRAGMENT_PATTERNS = [
   /(?:https?:)?\/\/jobs\.ashbyhq\.com\/[^\s"'<>\\]+/gi,
+  /(?:https?:)?\/\/jobs\.eu\.ashbyhq\.com\/[^\s"'<>\\]+/gi,
   /(?:https?:)?\/\/(?:job-boards|boards)\.greenhouse\.io\/[^\s"'<>\\]+/gi,
+  /(?:https?:)?\/\/boards-api\.greenhouse\.io\/[^\s"'<>\\]+/gi,
   /(?:https?:)?\/\/jobs\.lever\.co\/[^\s"'<>\\]+/gi,
   /(?:https?:)?\/\/jobs\.smartrecruiters\.com\/[^\s"'<>\\]+/gi,
+  /(?:https?:)?\/\/careers\.smartrecruiters\.com\/[^\s"'<>\\]+/gi,
   /(?:https?:)?\/\/apply\.workable\.com\/[^\s"'<>\\]+/gi,
   /(?:https?:)?\/\/[a-z0-9-]+\.icims\.com\/jobs[^\s"'<>\\]*/gi,
   /(?:https?:)?\/\/[a-z0-9-]+\.taleo\.net\/careersection\/[^\s"'<>\\]+/gi,
   /(?:https?:)?\/\/[a-z0-9-]+\.(?:wd\d+)\.myworkdayjobs\.com\/[^\s"'<>\\]+/gi,
+  /(?:https?:)?\/\/[a-z0-9-]+\.(?:wd\d+)\.myworkdaysite\.com\/[^\s"'<>\\]+/gi,
+  /(?:https?:)?\/\/jobs\.rippling\.com\/[^\s"'<>\\]+/gi,
   /(?:https?:)?\/\/(?:jobs|careers)\.[a-z0-9.-]+\/(?:search|job|talentcommunity)[^\s"'<>\\]*/gi,
 ];
 
@@ -1068,6 +1077,10 @@ function matchAtsSource(parsedUrl: URL): AtsMatch | null {
     }
   }
 
+  if (hostname === "jobs.rippling.com" && pathSegments[0]) {
+    return { connectorName: "rippling", token: pathSegments[0].toLowerCase() };
+  }
+
   if (
     (hostname.startsWith("jobs.") || hostname.startsWith("careers.")) &&
     (pathSegments[0] === "search" ||
@@ -1080,8 +1093,27 @@ function matchAtsSource(parsedUrl: URL): AtsMatch | null {
     };
   }
 
-  if (hostname === "jobs.ashbyhq.com" && pathSegments[0]) {
+  if (
+    (hostname === "jobs.ashbyhq.com" || hostname === "jobs.eu.ashbyhq.com") &&
+    pathSegments[0]
+  ) {
     return { connectorName: "ashby", token: pathSegments[0].toLowerCase() };
+  }
+
+  if (
+    (hostname === "jobs.ashbyhq.com" || hostname === "jobs.eu.ashbyhq.com") &&
+    pathSegments[0] === "api"
+  ) {
+    const organizationSlug =
+      parsedUrl.searchParams.get("organizationSlug") ??
+      parsedUrl.searchParams.get("orgSlug") ??
+      parsedUrl.searchParams.get("company");
+    if (organizationSlug) {
+      return {
+        connectorName: "ashby",
+        token: organizationSlug.toLowerCase(),
+      };
+    }
   }
 
   if (
@@ -1147,6 +1179,13 @@ function matchAtsSource(parsedUrl: URL): AtsMatch | null {
     };
   }
 
+  if (hostname === "careers.smartrecruiters.com" && pathSegments[0]) {
+    return {
+      connectorName: "smartrecruiters",
+      token: pathSegments[0].toLowerCase(),
+    };
+  }
+
   if (
     hostname === "api.smartrecruiters.com" &&
     pathSegments[0] === "v1" &&
@@ -1201,7 +1240,7 @@ function matchAtsSource(parsedUrl: URL): AtsMatch | null {
   }
 
   const workdayMatch = hostname.match(
-    /^([a-z0-9-]+)\.(wd\d+)\.myworkdayjobs\.com$/i
+    /^([a-z0-9-]+)\.(wd\d+)\.(?:myworkdayjobs|myworkdaysite)\.com$/i
   );
   if (workdayMatch) {
     if (
@@ -1210,6 +1249,22 @@ function matchAtsSource(parsedUrl: URL): AtsMatch | null {
       pathSegments[2] &&
       pathSegments[3] &&
       pathSegments[4] === "jobs"
+    ) {
+      return {
+        connectorName: "workday",
+        token: buildWorkdaySourceToken({
+          host: hostname,
+          tenant: pathSegments[2],
+          site: pathSegments[3],
+        }),
+      };
+    }
+
+    if (
+      pathSegments[0] === "wday" &&
+      pathSegments[1] === "apply" &&
+      pathSegments[2] &&
+      pathSegments[3]
     ) {
       return {
         connectorName: "workday",
@@ -1315,7 +1370,7 @@ export async function getExistingSourceStatsForSourceName(
     }),
     prisma.jobCanonical.count({
       where: {
-        status: "LIVE",
+        status: { in: ["LIVE", "AGING"] },
         sourceMappings: {
           some: {
             sourceName,

@@ -9,11 +9,16 @@ import type {
   SourceConnectorFetchResult,
   SourceConnectorJob,
 } from "@/lib/ingestion/types";
-import { throwIfAborted } from "@/lib/ingestion/runtime-control";
+import { sleepWithAbort, throwIfAborted } from "@/lib/ingestion/runtime-control";
 
 const WORKDAY_PAGE_SIZE = 20;
 const WORKDAY_DETAIL_CONCURRENCY = 6;
 const WORKDAY_SOURCE_TOKEN_SEPARATOR = "|";
+const WORKDAY_LIST_TIMEOUT_MS = 25_000;
+const WORKDAY_DETAIL_TIMEOUT_MS = 20_000;
+const WORKDAY_FETCH_MAX_ATTEMPTS = 3;
+const WORKDAY_FETCH_RETRY_DELAY_MS = 1_500;
+const WORKDAY_RETRYABLE_STATUSES = new Set([408, 429, 500, 502, 503, 504]);
 
 type WorkdayConnectorOptions = {
   sourceToken?: string;
@@ -168,6 +173,7 @@ export function createWorkdayConnector(
     async fetchJobs(
       options: SourceConnectorFetchOptions
     ): Promise<SourceConnectorFetchResult> {
+      const log = options.log ?? console.error;
       const cacheKey = JSON.stringify({
         limit: options.limit ?? "all",
         checkpoint: options.checkpoint ?? null,
@@ -181,6 +187,7 @@ export function createWorkdayConnector(
         now: options.now,
         limit: options.limit,
         signal: options.signal,
+        log,
         checkpoint: parseWorkdayCheckpoint(options.checkpoint),
         onCheckpoint: options.onCheckpoint,
       });
@@ -196,6 +203,7 @@ async function fetchWorkdayJobs({
   now,
   limit,
   signal,
+  log,
   checkpoint,
   onCheckpoint,
 }: {
@@ -204,6 +212,7 @@ async function fetchWorkdayJobs({
   now: Date;
   limit?: number;
   signal?: AbortSignal;
+  log: (message: string) => void;
   checkpoint?: WorkdayCheckpoint | null;
   onCheckpoint?: (checkpoint: Prisma.InputJsonValue | null) => Promise<void> | void;
 }): Promise<SourceConnectorFetchResult> {
@@ -223,9 +232,9 @@ async function fetchWorkdayJobs({
         ? Math.min(WORKDAY_PAGE_SIZE, remaining)
         : WORKDAY_PAGE_SIZE;
 
-    const payload = await fetchListingPage(target, requestedLimit, offset, signal);
-    const postings = (payload.jobPostings ?? []).filter((job) =>
-      Boolean(job.title?.trim() && job.externalPath?.trim())
+    const payload = await fetchListingPage(target, requestedLimit, offset, signal, log);
+    const postings = (payload.jobPostings ?? []).filter(
+      (job) => Boolean(readText(job.title) && readText(job.externalPath))
     );
 
     if (typeof payload.total === "number" && payload.total > 0) {
@@ -291,42 +300,79 @@ async function fetchListingPage(
   target: WorkdaySourceTarget,
   requestedLimit: number,
   offset: number,
-  signal?: AbortSignal
+  signal?: AbortSignal,
+  log: (message: string) => void = console.error
 ) {
-  throwIfAborted(signal);
-  const response = await fetch(buildWorkdayApiUrl(target), {
-    method: "POST",
-    signal,
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-      "User-Agent": "Mozilla/5.0 (compatible; autoapplication-workday/1.0)",
-    },
-    body: JSON.stringify({
-      appliedFacets: {},
-      limit: requestedLimit,
-      offset,
-      searchText: "",
-    }),
-  });
+  const sourceToken = buildWorkdaySourceToken(target);
 
-  if (!response.ok) {
-    console.error(
-      `[workday:${buildWorkdaySourceToken(target)}] Fetch failed: ${response.status} ${response.statusText}`
-    );
-    return { jobPostings: [], total: 0 } as WorkdayListResponse;
+  for (let attempt = 1; attempt <= WORKDAY_FETCH_MAX_ATTEMPTS; attempt += 1) {
+    try {
+      throwIfAborted(signal);
+      const response = await fetch(buildWorkdayApiUrl(target), {
+        method: "POST",
+        signal: buildTimeoutSignal(signal, WORKDAY_LIST_TIMEOUT_MS),
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          "User-Agent": "Mozilla/5.0 (compatible; autoapplication-workday/1.0)",
+        },
+        body: JSON.stringify({
+          appliedFacets: {},
+          limit: requestedLimit,
+          offset,
+          searchText: "",
+        }),
+      });
+
+      if (!response.ok) {
+        if (
+          WORKDAY_RETRYABLE_STATUSES.has(response.status) &&
+          attempt < WORKDAY_FETCH_MAX_ATTEMPTS
+        ) {
+          log(
+            `[workday:${sourceToken}] Fetch failed: ${response.status} ${response.statusText}; retrying (${attempt}/${WORKDAY_FETCH_MAX_ATTEMPTS})`
+          );
+          await sleepWithAbort(WORKDAY_FETCH_RETRY_DELAY_MS * attempt, signal);
+          continue;
+        }
+
+        log(
+          `[workday:${sourceToken}] Fetch failed: ${response.status} ${response.statusText}`
+        );
+        return { jobPostings: [], total: 0 } as WorkdayListResponse;
+      }
+
+      const contentType = response.headers.get("content-type") ?? "";
+      if (!contentType.includes("application/json")) {
+        log(
+          `[workday:${sourceToken}] Unexpected content-type: ${contentType} (likely bot detection)`
+        );
+        return { jobPostings: [], total: 0 } as WorkdayListResponse;
+      }
+
+      return (await response.json()) as WorkdayListResponse;
+    } catch (error) {
+      throwIfAborted(signal);
+
+      if (
+        isTransientWorkdayError(error) &&
+        attempt < WORKDAY_FETCH_MAX_ATTEMPTS
+      ) {
+        log(
+          `[workday:${sourceToken}] Fetch error: ${formatErrorMessage(error)}; retrying (${attempt}/${WORKDAY_FETCH_MAX_ATTEMPTS})`
+        );
+        await sleepWithAbort(WORKDAY_FETCH_RETRY_DELAY_MS * attempt, signal);
+        continue;
+      }
+
+      log(
+        `[workday:${sourceToken}] Fetch error: ${formatErrorMessage(error)}`
+      );
+      return { jobPostings: [], total: 0 } as WorkdayListResponse;
+    }
   }
 
-  // Guard against HTML responses (bot detection returns HTML instead of JSON)
-  const contentType = response.headers.get("content-type") ?? "";
-  if (!contentType.includes("application/json")) {
-    console.error(
-      `[workday:${buildWorkdaySourceToken(target)}] Unexpected content-type: ${contentType} (likely bot detection)`
-    );
-    return { jobPostings: [], total: 0 } as WorkdayListResponse;
-  }
-
-  return (await response.json()) as WorkdayListResponse;
+  return { jobPostings: [], total: 0 } as WorkdayListResponse;
 }
 
 async function buildSourceJob({
@@ -342,9 +388,19 @@ async function buildSourceJob({
   job: WorkdayListJob;
   signal?: AbortSignal;
 }): Promise<SourceConnectorJob> {
-  const detail = await fetchJobDetail(target, job.externalPath, signal);
+  let detail: WorkdayJobDetail;
+  try {
+    detail = await fetchJobDetail(target, job.externalPath, signal);
+  } catch {
+    detail = {
+      pageUrl: buildDetailPageUrl(target, job.externalPath),
+      detailUrl: buildDetailPageUrl(target, job.externalPath),
+      jsonLd: null,
+      runtimeConfig: null,
+    };
+  }
   const jsonLd = detail.jsonLd;
-  const pageUrl = jsonLd?.url?.trim() || detail.pageUrl;
+  const pageUrl = readText(jsonLd?.url) || detail.pageUrl;
   const salary = extractSalary(jsonLd?.baseSalary ?? null);
   const workMode = inferWorkMode({
     jsonLd,
@@ -353,20 +409,21 @@ async function buildSourceJob({
 
   return {
     sourceId:
-      jsonLd?.identifier?.value?.trim() ||
+      readText(jsonLd?.identifier?.value) ||
       findReferenceId(job.bulletFields) ||
       job.externalPath,
     sourceUrl: detail.pageUrl,
-    title: jsonLd?.title?.trim() || job.title,
+    title: readText(jsonLd?.title) || job.title,
     company:
-      jsonLd?.hiringOrganization?.name?.trim() || fallbackCompanyName,
+      readText(jsonLd?.hiringOrganization?.name) || fallbackCompanyName,
     location: buildLocation({
       jsonLd,
       listJob: job,
       workMode,
     }),
     description:
-      jsonLd?.description?.trim() || buildFallbackDescription(job, detail.runtimeConfig),
+      readText(jsonLd?.description) ||
+      buildFallbackDescription(job, detail.runtimeConfig),
     applyUrl: pageUrl,
     postedAt:
       parseDateValue(jsonLd?.datePosted) ??
@@ -407,13 +464,18 @@ async function fetchJobDetail(
 
   for (const pageUrl of [...new Set([detailUrl, localeDetailUrl])]) {
     throwIfAborted(signal);
-    const response = await fetch(pageUrl, {
-      signal,
-      headers: {
-        Accept: "text/html",
-        "User-Agent": "Mozilla/5.0 (compatible; autoapplication-workday/1.0)",
-      },
-    });
+    let response: Response;
+    try {
+      response = await fetch(pageUrl, {
+        signal: buildTimeoutSignal(signal, WORKDAY_DETAIL_TIMEOUT_MS),
+        headers: {
+          Accept: "text/html",
+          "User-Agent": "Mozilla/5.0 (compatible; autoapplication-workday/1.0)",
+        },
+      });
+    } catch {
+      continue;
+    }
 
     if (!response.ok) {
       continue;
@@ -439,6 +501,32 @@ async function fetchJobDetail(
     jsonLd: null,
     runtimeConfig: null,
   };
+}
+
+function buildTimeoutSignal(signal: AbortSignal | undefined, timeoutMs: number) {
+  const timeoutSignal = AbortSignal.timeout(timeoutMs);
+  if (!signal) return timeoutSignal;
+
+  const abortSignalAny = (AbortSignal as typeof AbortSignal & {
+    any?: (signals: AbortSignal[]) => AbortSignal;
+  }).any;
+
+  return abortSignalAny ? abortSignalAny([signal, timeoutSignal]) : timeoutSignal;
+}
+
+function formatErrorMessage(error: unknown) {
+  return error instanceof Error ? error.message : String(error);
+}
+
+function isTransientWorkdayError(error: unknown) {
+  const message = formatErrorMessage(error).toLowerCase();
+  return (
+    message.includes("fetch failed") ||
+    message.includes("timeout") ||
+    message.includes("timed out") ||
+    message.includes("abort") ||
+    message.includes("gateway timeout")
+  );
 }
 
 function extractJobPostingJsonLd(html: string): WorkdayJobPostingLd | null {
@@ -522,8 +610,9 @@ function buildLocation({
     return locations.join(" | ");
   }
 
-  if (listJob.locationsText?.trim()) {
-    return listJob.locationsText.trim();
+  const listLocation = readText(listJob.locationsText);
+  if (listLocation) {
+    return listLocation;
   }
 
   if (workMode === "REMOTE") {
@@ -537,28 +626,29 @@ function formatPlaces(value: WorkdayPlace | WorkdayPlace[] | null | undefined) {
   const places = Array.isArray(value) ? value : value ? [value] : [];
   const formatted = places
     .map((place) => formatPlace(place))
-    .filter(Boolean)
+    .filter((location): location is string => Boolean(location))
     .map((location) => location!);
 
   return [...new Set(formatted)];
 }
 
 function formatPlace(place: WorkdayPlace) {
-  if (place.name?.trim()) {
-    return place.name.trim();
+  const placeName = readText(place.name);
+  if (placeName) {
+    return placeName;
   }
 
   const address = place.address;
   if (!address) return null;
 
   const parts = [
-    address.addressLocality?.trim(),
-    address.addressRegion?.trim(),
-    address.addressCountry?.trim(),
+    readText(address.addressLocality),
+    readText(address.addressRegion),
+    readText(address.addressCountry),
   ].filter(Boolean);
 
   if (parts.length > 0) return parts.join(", ");
-  return address.streetAddress?.trim() || null;
+  return readText(address.streetAddress);
 }
 
 function inferWorkMode({
@@ -573,7 +663,8 @@ function inferWorkMode({
     listJob.remoteType,
     listJob.locationsText,
   ]
-    .filter(Boolean)
+    .map((value) => readText(value))
+    .filter((value): value is string => Boolean(value))
     .join(" ")
     .toLowerCase();
 
@@ -589,7 +680,7 @@ function inferWorkMode({
     return "ONSITE";
   }
 
-  if (jsonLd?.jobLocation || listJob.locationsText?.trim()) {
+  if (jsonLd?.jobLocation || readText(listJob.locationsText)) {
     return "ONSITE";
   }
 
@@ -599,16 +690,17 @@ function inferWorkMode({
 function inferEmploymentType(
   value: string | string[] | null | undefined
 ): EmploymentType | null {
-  const values = Array.isArray(value) ? value : value ? [value] : [];
+  const values = (Array.isArray(value) ? value : value ? [value] : [])
+    .map((item) => readLowerText(item))
+    .filter((item): item is string => Boolean(item));
 
   for (const item of values) {
-    const normalized = item.toLowerCase();
-    if (normalized.includes("intern")) return "INTERNSHIP";
-    if (normalized.includes("contract") || normalized.includes("temporary")) {
+    if (item.includes("intern")) return "INTERNSHIP";
+    if (item.includes("contract") || item.includes("temporary")) {
       return "CONTRACT";
     }
-    if (normalized.includes("part")) return "PART_TIME";
-    if (normalized.includes("full")) return "FULL_TIME";
+    if (item.includes("part")) return "PART_TIME";
+    if (item.includes("full")) return "FULL_TIME";
   }
 
   return null;
@@ -632,7 +724,7 @@ function extractSalary(baseSalary: WorkdayMonetaryAmount | null) {
   return {
     min: parseNumberValue(value?.minValue ?? value?.value ?? null),
     max: parseNumberValue(value?.maxValue ?? value?.value ?? null),
-    currency: baseSalary.currency?.trim() || null,
+    currency: readText(baseSalary.currency),
   };
 }
 
@@ -640,14 +732,13 @@ function buildFallbackDescription(
   job: WorkdayListJob,
   runtimeConfig: WorkdayRuntimeConfig | null
 ) {
+  const locationsText = readText(job.locationsText);
+  const postedOn = readText(job.postedOn);
+  const remoteType = readText(job.remoteType);
   return [
-    job.locationsText?.trim()
-      ? `Locations: ${job.locationsText.trim()}`
-      : null,
-    job.postedOn?.trim() ? `Posted: ${job.postedOn.trim()}` : null,
-    job.remoteType?.trim()
-      ? `Remote type: ${job.remoteType.trim()}`
-      : null,
+    locationsText ? `Locations: ${locationsText}` : null,
+    postedOn ? `Posted: ${postedOn}` : null,
+    remoteType ? `Remote type: ${remoteType}` : null,
     job.bulletFields?.length ? job.bulletFields.join(" · ") : null,
     runtimeConfig?.siteId ? `Site: ${runtimeConfig.siteId}` : null,
   ]
@@ -656,19 +747,24 @@ function buildFallbackDescription(
 }
 
 function findReferenceId(values: string[] | null | undefined) {
-  return values?.find((value) => /[A-Z]{2,}-?\d+/i.test(value))?.trim() || null;
+  return (
+    values
+      ?.map((value) => readText(value))
+      .find((value) => value && /[A-Z]{2,}-?\d+/i.test(value)) || null
+  );
 }
 
 function parseDateValue(value: string | null | undefined) {
-  if (!value) return null;
-  const parsed = new Date(value);
+  const text = readText(value);
+  if (!text) return null;
+  const parsed = new Date(text);
   if (Number.isNaN(parsed.getTime())) return null;
   return parsed;
 }
 
 function parseRelativePostedOn(value: string | null | undefined, now: Date) {
-  if (!value) return null;
-  const normalized = value.trim().toLowerCase();
+  const normalized = readLowerText(value);
+  if (!normalized) return null;
 
   if (normalized.includes("today")) return now;
   if (normalized.includes("yesterday")) {
@@ -726,9 +822,9 @@ function resolveSourceTarget(options: WorkdayConnectorOptions): WorkdaySourceTar
 
   if (options.host && options.tenant && options.site) {
     return {
-      host: options.host.trim().toLowerCase(),
-      tenant: options.tenant.trim().toLowerCase(),
-      site: options.site.trim().toLowerCase(),
+      host: normalizeTokenPart(options.host, "host"),
+      tenant: normalizeTokenPart(options.tenant, "tenant"),
+      site: normalizeTokenPart(options.site, "site"),
     };
   }
 
@@ -759,4 +855,23 @@ async function mapWithConcurrency<Input, Output>(
   );
   await Promise.all(workers);
   return results;
+}
+
+function readText(value: unknown): string | null {
+  if (typeof value !== "string") return null;
+  const trimmed = value.trim();
+  return trimmed || null;
+}
+
+function readLowerText(value: unknown): string | null {
+  const text = readText(value);
+  return text ? text.toLowerCase() : null;
+}
+
+function normalizeTokenPart(value: string, label: string) {
+  const normalized = readLowerText(value);
+  if (!normalized) {
+    throw new Error(`Workday connector ${label} cannot be empty.`);
+  }
+  return normalized;
 }

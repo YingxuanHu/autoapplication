@@ -71,6 +71,7 @@ export function createAshbyConnector({
     async fetchJobs(
       options: SourceConnectorFetchOptions
     ): Promise<SourceConnectorFetchResult> {
+      const log = options.log ?? console.warn;
       // Stage 1: fetch listing page to get job summaries
       const listingData = await fetchAshbyPage(`${BASE_URL}/${orgSlug}`);
       const allListings = (listingData.jobBoard?.jobPostings ?? []).filter(
@@ -101,7 +102,11 @@ export function createAshbyConnector({
         // Log but don't throw on individual detail failures
         for (const result of results) {
           if (result.status === "rejected") {
-            console.warn(`Ashby detail fetch warning (${orgSlug}):`, result.reason);
+            log(
+              `[ashby:${orgSlug}] Detail fetch warning: ${
+                result.reason instanceof Error ? result.reason.message : String(result.reason)
+              }`
+            );
           }
         }
       }
@@ -238,13 +243,16 @@ function buildLocation(listing: AshbyJobListing): string {
 // The real NA filter runs in normalize.ts; this just avoids fetching clearly
 // non-NA pages (e.g., "Australia", "France", "Singapore" without remote).
 function mayBeNorthAmerica(
-  locationName: string | null | undefined,
-  workplaceType: string | null | undefined
+  locationName: unknown,
+  workplaceType: unknown
 ): boolean {
+  const normalizedWorkplaceType = readAshbyText(workplaceType)?.toLowerCase() ?? null;
   // Remote positions are always candidates (could be open to NA residents)
-  if (workplaceType?.toLowerCase() === "remote") return true;
-  if (!locationName) return true; // Uncertain — include it
-  const lower = locationName.toLowerCase();
+  if (normalizedWorkplaceType === "remote") return true;
+
+  const normalizedLocation = readAshbyText(locationName);
+  if (!normalizedLocation) return true; // Uncertain — include it
+  const lower = normalizedLocation.toLowerCase();
   // Explicit NA markers
   if (
     lower.includes("united states") ||
@@ -288,10 +296,10 @@ function mayBeNorthAmerica(
 // ─── Inference helpers ────────────────────────────────────────────────────────
 
 function inferEmploymentType(
-  value: string | null | undefined
+  value: unknown
 ): EmploymentType | null {
-  if (!value) return null;
-  const normalized = value.toLowerCase();
+  const normalized = readAshbyText(value)?.toLowerCase();
+  if (!normalized) return null;
   if (normalized.includes("intern")) return "INTERNSHIP";
   if (normalized.includes("contract") || normalized.includes("temp"))
     return "CONTRACT";
@@ -301,15 +309,24 @@ function inferEmploymentType(
 }
 
 function inferWorkMode(
-  workplaceType: string | null | undefined,
+  workplaceType: unknown,
   isRemote: boolean | null | undefined
 ): WorkMode | null {
   if (isRemote) return "REMOTE";
-  if (!workplaceType) return null;
-  const normalized = workplaceType.toLowerCase();
+  const normalized = readAshbyText(workplaceType)?.toLowerCase();
+  if (!normalized) return null;
   if (normalized === "remote") return "REMOTE";
   if (normalized === "hybrid") return "HYBRID";
   if (normalized === "onsite" || normalized === "on-site") return "ONSITE";
+  return null;
+}
+
+function readAshbyText(value: unknown): string | null {
+  if (typeof value === "string") {
+    const trimmed = value.trim();
+    return trimmed.length > 0 ? trimmed : null;
+  }
+
   return null;
 }
 

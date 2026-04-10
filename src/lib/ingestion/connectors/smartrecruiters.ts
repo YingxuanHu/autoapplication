@@ -232,7 +232,7 @@ async function fetchPostingDetail(
 }
 
 function mayNeedDetailFetch(listing: SmartRecruitersListing) {
-  const title = listing.name.toLowerCase();
+  const title = readLowerText(listing.name) ?? "";
   const location = buildLocation(listing.location).toLowerCase();
 
   const isNorthAmerica =
@@ -248,10 +248,11 @@ function mayNeedDetailFetch(listing: SmartRecruitersListing) {
 
 function buildLocation(location: SmartRecruitersLocation | null | undefined) {
   if (!location) return "Unknown";
-  if (location.fullLocation?.trim()) return location.fullLocation.trim();
+  const fullLocation = readText(location.fullLocation);
+  if (fullLocation) return fullLocation;
 
   return [location.city, location.region, location.country]
-    .map((value) => value?.trim())
+    .map((value) => readText(value))
     .filter(Boolean)
     .join(", ");
 }
@@ -263,7 +264,7 @@ function buildListingDescription(listing: SmartRecruitersListing) {
     listing.industry?.label,
     listing.experienceLevel?.label,
   ]
-    .map((value) => value?.trim())
+    .map((value) => readText(value))
     .filter(Boolean)
     .join(" · ");
 }
@@ -273,7 +274,7 @@ function buildDetailDescription(detail: SmartRecruitersDetail) {
     .map((section) => {
       const body = stripHtml(section.text ?? "");
       if (!body) return "";
-      const title = section.title?.trim();
+      const title = readText(section.title);
       return title ? `${title}\n${body}` : body;
     })
     .filter(Boolean);
@@ -307,9 +308,8 @@ function parseDateValue(value: string | null | undefined) {
 }
 
 function inferEmploymentType(value: string | null | undefined): EmploymentType | null {
-  if (!value) return null;
-
-  const normalizedValue = value.toLowerCase();
+  const normalizedValue = readLowerText(value);
+  if (!normalizedValue) return null;
   if (normalizedValue.includes("intern")) return "INTERNSHIP";
   if (normalizedValue.includes("contract") || normalizedValue.includes("temporary")) {
     return "CONTRACT";
@@ -334,6 +334,17 @@ function buildCompanyName(companyIdentifier: string) {
     .filter(Boolean)
     .map((segment) => segment.charAt(0).toUpperCase() + segment.slice(1))
     .join(" ");
+}
+
+function readText(value: unknown): string | null {
+  if (typeof value !== "string") return null;
+  const trimmed = value.trim();
+  return trimmed || null;
+}
+
+function readLowerText(value: unknown): string | null {
+  const text = readText(value);
+  return text ? text.toLowerCase() : null;
 }
 
 async function mapInBatches<TInput, TOutput>(

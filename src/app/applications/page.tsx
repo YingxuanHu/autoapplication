@@ -1,416 +1,390 @@
 import Link from "next/link";
-import { connection } from "next/server";
-import { ApplicationRowActions } from "@/components/jobs/application-row-actions";
-import { Button } from "@/components/ui/button";
-import {
-  formatDisplayLabel,
-  formatRelativeAge,
-  getSubmissionMeta,
-  submissionCategoryColor,
-} from "@/lib/job-display";
-import { getApplicationHistory } from "@/lib/queries/applications";
-import type { ApplicationHistoryItem, ApplicationHistoryStatus } from "@/types";
+import { redirect } from "next/navigation";
 
-type ApplicationsPageProps = {
-  searchParams: Promise<Record<string, string | string[] | undefined>>;
+import { ApplicationsOverviewBar } from "@/components/applications/applications-overview-bar";
+import { DeleteApplicationButton } from "@/components/applications/delete-application-button";
+import { getOptionalSessionUser } from "@/lib/current-user";
+import {
+  getTrackedDashboardData,
+  type TrackerDeadlineFilter,
+  type TrackerSortFilter,
+} from "@/lib/queries/tracker";
+import {
+  formatTrackerDate,
+  TRACKED_STATUS_LABEL,
+  trackedStatusClass,
+} from "@/lib/tracker-ui";
+
+type ApplicationsSearchParams = {
+  status?: string;
+  deadline?: string;
+  sort?: string;
+  tags?: string;
 };
 
-// ─── Filter config ────────────────────────────────────────────────────────────
-
-const APPLICATION_FILTERS = [
-  { value: "ALL", label: "All" },
-  { value: "ACTIVE", label: "In review" },
-  { value: "SUBMITTED", label: "Submitted" },
-  { value: "CONFIRMED", label: "Confirmed" },
-  { value: "FAILED", label: "Failed" },
-  { value: "WITHDRAWN", label: "Withdrawn" },
-] as const;
-
-type ApplicationFilterValue = (typeof APPLICATION_FILTERS)[number]["value"];
-
-/** ACTIVE = any in-progress state that hasn't been formally submitted yet */
-const ACTIVE_STATUSES: ApplicationHistoryStatus[] = [
-  "DRAFT",
-  "PACKAGE_ONLY",
-  "READY",
-];
-
-function matchesFilter(
-  status: ApplicationHistoryStatus,
-  filter: ApplicationFilterValue
-): boolean {
-  if (filter === "ALL") return true;
-  if (filter === "ACTIVE") return ACTIVE_STATUSES.includes(status);
-  return status === filter;
-}
-
-// ─── Status display ───────────────────────────────────────────────────────────
-
-function statusColor(status: ApplicationHistoryStatus): string {
-  switch (status) {
-    case "CONFIRMED":
-      return "text-emerald-600";
-    case "SUBMITTED":
-      return "text-foreground";
-    case "READY":
-      return "text-amber-600";
-    case "FAILED":
-      return "text-destructive";
-    case "WITHDRAWN":
-      return "text-muted-foreground";
-    default:
-      // DRAFT, PACKAGE_ONLY
-      return "text-muted-foreground";
+function parseStatusFilter(rawValue?: string) {
+  const value = String(rawValue ?? "ALL").toUpperCase();
+  if (
+    value === "ALL" ||
+    value === "WISHLIST" ||
+    value === "PREPARING" ||
+    value === "APPLIED" ||
+    value === "SCREEN" ||
+    value === "INTERVIEW" ||
+    value === "OFFER" ||
+    value === "REJECTED" ||
+    value === "WITHDRAWN"
+  ) {
+    return value;
   }
+  return "ALL";
 }
 
-function statusLabel(status: ApplicationHistoryStatus): string {
-  if (status === "PACKAGE_ONLY") return "Package only";
-  return formatDisplayLabel(status);
+function parseDeadlineFilter(rawValue?: string): TrackerDeadlineFilter {
+  const value = String(rawValue ?? "ALL").toUpperCase();
+  if (
+    value === "UPCOMING" ||
+    value === "OVERDUE" ||
+    value === "NO_DEADLINE"
+  ) {
+    return value;
+  }
+  return "ALL";
 }
 
-// ─── Page ─────────────────────────────────────────────────────────────────────
+function parseSortFilter(rawValue?: string): TrackerSortFilter {
+  const value = String(rawValue ?? "UPDATED_DESC").toUpperCase();
+  if (
+    value === "UPDATED_ASC" ||
+    value === "DEADLINE_ASC" ||
+    value === "DEADLINE_DESC" ||
+    value === "COMPANY_ASC" ||
+    value === "COMPANY_DESC"
+  ) {
+    return value;
+  }
+  return "UPDATED_DESC";
+}
+
+function buildApplicationsUrl(input: {
+  status?: string;
+  deadline?: string;
+  sort?: string;
+  tags?: string[];
+}) {
+  const params = new URLSearchParams();
+  if (input.status && input.status !== "ALL") params.set("status", input.status);
+  if (input.deadline && input.deadline !== "ALL") params.set("deadline", input.deadline);
+  if (input.sort && input.sort !== "UPDATED_DESC") params.set("sort", input.sort);
+  if (input.tags && input.tags.length > 0) params.set("tags", input.tags.join(","));
+  const query = params.toString();
+  return query ? `/applications?${query}` : "/applications";
+}
+
+function toggleTag(selectedTags: string[], tag: string) {
+  return selectedTags.includes(tag)
+    ? selectedTags.filter((value) => value !== tag)
+    : [...selectedTags, tag].sort((left, right) => left.localeCompare(right));
+}
 
 export default async function ApplicationsPage({
   searchParams,
-}: ApplicationsPageProps) {
-  await connection();
+}: {
+  searchParams: Promise<ApplicationsSearchParams>;
+}) {
+  const sessionUser = await getOptionalSessionUser();
+  if (!sessionUser) {
+    redirect("/sign-in");
+  }
 
-  const resolvedSearchParams = await searchParams;
-  const selectedFilter = getApplicationFilter(resolvedSearchParams.status);
-  const history = await getApplicationHistory();
-  const activeCount = history.filter((item) =>
-    matchesFilter(item.latestStatus, "ACTIVE")
-  ).length;
-  const submittedCount = history.filter((item) =>
-    matchesFilter(item.latestStatus, "SUBMITTED")
-  ).length;
+  const params = await searchParams;
+  const status = parseStatusFilter(params.status);
+  const deadline = parseDeadlineFilter(params.deadline);
+  const sort = parseSortFilter(params.sort);
+  const selectedTags = String(params.tags ?? "")
+    .split(",")
+    .map((value) => value.trim())
+    .filter(Boolean)
+    .sort((left, right) => left.localeCompare(right));
 
-  const filteredHistory = history.filter((item) =>
-    matchesFilter(item.latestStatus, selectedFilter)
-  );
+  const data = await getTrackedDashboardData({
+    status: status as Parameters<typeof getTrackedDashboardData>[0]["status"],
+    deadline,
+    sort,
+    tags: selectedTags,
+  });
+  const expiredCount = data.applications.filter(
+    (application) => application.canonicalJob?.status === "EXPIRED"
+  ).length;
+  const hasActiveFilters =
+    status !== "ALL" ||
+    deadline !== "ALL" ||
+    sort !== "UPDATED_DESC" ||
+    selectedTags.length > 0;
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-6 sm:px-6">
-      {/* Header */}
-      <div className="flex items-center justify-between pb-4">
+    <div className="app-page space-y-6">
+      <div className="page-header">
         <div>
-          <h1 className="text-xl font-semibold tracking-tight">Applications</h1>
-          <p className="mt-0.5 text-sm text-muted-foreground">
-            {history.length} tracked job{history.length !== 1 ? "s" : ""}
-            {activeCount > 0 ? ` · ${activeCount} in review` : ""}
-            {submittedCount > 0 ? ` · ${submittedCount} submitted` : ""}
+          <h1 className="page-title">Applications</h1>
+          <p className="page-description">
+            Track feed submissions and manual applications in one workflow.
           </p>
         </div>
-        <div className="flex items-center gap-3">
-          <Link
-            href="/saved"
-            className="text-sm text-muted-foreground hover:text-foreground"
-          >
-            Saved
+        <div className="page-actions">
+          <Link href="/applications/history">Apply history</Link>
+          <Link href="/notifications">
+            Notifications
+            {data.unreadNotificationCount > 0 ? ` (${data.unreadNotificationCount})` : ""}
           </Link>
-          <Link
-            href="/jobs"
-            className="text-sm text-muted-foreground hover:text-foreground"
-          >
-            Feed
-          </Link>
+          <Link href="/jobs">Feed</Link>
         </div>
       </div>
 
-      {/* Filter pills */}
-      <div className="flex flex-wrap items-center gap-1.5 border-b border-border pb-3">
-        {APPLICATION_FILTERS.map((filter) => {
-          const count =
-            filter.value === "ALL"
-              ? history.length
-              : history.filter((i) => matchesFilter(i.latestStatus, filter.value))
-                  .length;
-          return (
-            <Link
-              key={filter.value}
-              href={
-                filter.value === "ALL"
-                  ? "/applications"
-                  : `/applications?status=${filter.value}`
-              }
-              className={`inline-flex h-7 items-center rounded-md px-2.5 text-sm font-medium transition-colors ${
-                selectedFilter === filter.value
-                  ? "bg-foreground text-background"
-                  : "text-muted-foreground hover:bg-muted hover:text-foreground"
-              }`}
-            >
-              {filter.label}
-              {count > 0 ? (
-                <span className="ml-1.5 text-xs opacity-60">{count}</span>
-              ) : null}
-            </Link>
-          );
-        })}
-      </div>
+      <ApplicationsOverviewBar
+        shownCount={data.applications.length}
+        totalCount={data.totalApplicationCount}
+        activeCount={data.activeCount}
+        expiredCount={expiredCount}
+      />
 
-      {/* List */}
-      <div className="pt-1">
-        {filteredHistory.length === 0 ? (
-          <div className="rounded-md border border-dashed border-border px-4 py-10 text-center">
-            <p className="text-sm font-medium text-foreground">
-              No applications in this view
-            </p>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Start from your shortlist or feed to create your first tracked
-              package and submission record.
-            </p>
-            <div className="mt-3 flex items-center justify-center gap-3">
-              <Link
-                href="/saved"
-                className="text-sm text-muted-foreground underline-offset-4 hover:underline"
-              >
-                Open saved jobs
-              </Link>
-              <Link
-                href="/jobs"
-                className="text-sm text-muted-foreground underline-offset-4 hover:underline"
-              >
-                Browse jobs
-              </Link>
-            </div>
-          </div>
-        ) : (
+      <section className="surface-panel p-4 sm:p-5">
+        <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
-            {filteredHistory.map((item) => (
-              <ApplicationRow key={item.job.id} item={item} />
-            ))}
+            <h2 className="text-base font-semibold text-foreground">Your applications</h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Jobs submitted from the feed appear here automatically.
+            </p>
           </div>
-        )}
-      </div>
+          <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
+            <Link href="/documents/compare" className="hover:text-foreground">
+              Compare documents
+            </Link>
+            <Link href="/settings" className="hover:text-foreground">
+              Settings
+            </Link>
+          </div>
+        </div>
+
+        <form
+          method="GET"
+          className="mt-4 grid gap-3 rounded-xl border border-border/60 bg-background/60 p-4 lg:grid-cols-[1fr_1fr_1fr_auto]"
+        >
+          <label className="grid gap-1.5 text-sm">
+            <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+              Status
+            </span>
+            <select
+              name="status"
+              defaultValue={status}
+              className="h-9 rounded-lg border border-input/80 bg-background/70 px-3 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
+            >
+              <option value="ALL">All statuses</option>
+              <option value="WISHLIST">Wishlist</option>
+              <option value="PREPARING">Preparing</option>
+              <option value="APPLIED">Applied</option>
+              <option value="SCREEN">Screen</option>
+              <option value="INTERVIEW">Interview</option>
+              <option value="OFFER">Offer</option>
+              <option value="REJECTED">Rejected</option>
+              <option value="WITHDRAWN">Withdrawn</option>
+            </select>
+          </label>
+
+          <label className="grid gap-1.5 text-sm">
+            <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+              Deadline
+            </span>
+            <select
+              name="deadline"
+              defaultValue={deadline}
+              className="h-9 rounded-lg border border-input/80 bg-background/70 px-3 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
+            >
+              <option value="ALL">All deadlines</option>
+              <option value="UPCOMING">Upcoming</option>
+              <option value="OVERDUE">Overdue</option>
+              <option value="NO_DEADLINE">No deadline</option>
+            </select>
+          </label>
+
+          <label className="grid gap-1.5 text-sm">
+            <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+              Sort
+            </span>
+            <select
+              name="sort"
+              defaultValue={sort}
+              className="h-9 rounded-lg border border-input/80 bg-background/70 px-3 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
+            >
+              <option value="UPDATED_DESC">Updated (newest)</option>
+              <option value="UPDATED_ASC">Updated (oldest)</option>
+              <option value="DEADLINE_ASC">Deadline (earliest)</option>
+              <option value="DEADLINE_DESC">Deadline (latest)</option>
+              <option value="COMPANY_ASC">Company (A-Z)</option>
+              <option value="COMPANY_DESC">Company (Z-A)</option>
+            </select>
+          </label>
+
+          <div className="flex items-end gap-3">
+            {selectedTags.length > 0 ? (
+              <input type="hidden" name="tags" value={selectedTags.join(",")} />
+            ) : null}
+            <button
+              type="submit"
+              className="h-9 rounded-lg bg-foreground px-4 text-sm font-medium text-background"
+            >
+              Apply
+            </button>
+            {hasActiveFilters ? (
+              <Link
+                href="/applications"
+                className="text-sm text-muted-foreground hover:text-foreground"
+              >
+                Reset
+              </Link>
+            ) : null}
+          </div>
+        </form>
+
+        {data.userTags.length > 0 ? (
+          <div className="mt-3 flex flex-wrap gap-2">
+            {data.userTags.map((tag) => {
+              const active = selectedTags.includes(tag.name);
+              return (
+                <Link
+                  key={tag.id}
+                  href={buildApplicationsUrl({
+                    status,
+                    deadline,
+                    sort,
+                    tags: toggleTag(selectedTags, tag.name),
+                  })}
+                  className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors ${
+                    active
+                      ? "border-foreground bg-foreground text-background"
+                      : "border-border/70 bg-background/60 text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  {tag.name}
+                </Link>
+              );
+            })}
+          </div>
+        ) : null}
+
+        <div className="mt-4">
+          {data.applications.length === 0 ? (
+            <div className="rounded-lg border border-dashed border-border px-4 py-10 text-center">
+              <p className="text-sm font-medium text-foreground">
+                No applications in this view
+              </p>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Add a manual entry or use the jobs feed to start building your tracker.
+              </p>
+            </div>
+          ) : (
+            <ul className="mt-4 divide-y divide-border/60">
+              {data.applications.map((application) => (
+                <li
+                  key={application.id}
+                  className="py-4 first:pt-0 last:pb-0"
+                  id={`application-${application.id}`}
+                >
+                  <div className="flex flex-wrap items-start justify-between gap-3">
+                    <div className="min-w-0 flex-1">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <Link
+                          href={`/applications/${application.id}`}
+                          className="inline-block max-w-full truncate text-base font-semibold text-foreground transition hover:underline"
+                        >
+                          {application.company}
+                        </Link>
+                        <span
+                          className={`rounded-full px-2 py-0.5 text-xs font-medium ${trackedStatusClass(application.status)}`}
+                        >
+                          {TRACKED_STATUS_LABEL[application.status]}
+                        </span>
+                        {application.canonicalJob ? (
+                          <span className="text-xs text-muted-foreground">
+                            Feed-linked
+                          </span>
+                        ) : null}
+                      </div>
+                      <p className="text-sm text-muted-foreground">
+                        <Link
+                          href={`/applications/${application.id}`}
+                          className="transition hover:text-foreground"
+                        >
+                          {application.roleTitle}
+                        </Link>
+                        {application.canonicalJob?.location
+                          ? ` · ${application.canonicalJob.location}`
+                          : ""}
+                        {application.canonicalJob?.workMode
+                          ? ` · ${application.canonicalJob.workMode.toLowerCase()}`
+                          : ""}
+                      </p>
+                      {application.roleUrl ? (
+                        <a
+                          className="mt-0.5 inline-block text-xs text-muted-foreground underline-offset-2 hover:text-foreground hover:underline"
+                          href={application.roleUrl}
+                          rel="noreferrer"
+                          target="_blank"
+                        >
+                          Posting
+                        </a>
+                      ) : null}
+                      <p className="mt-2 text-sm text-muted-foreground">
+                        Deadline: {formatTrackerDate(application.deadline)}
+                      </p>
+                      {application.notes ? (
+                        <p className="mt-2 line-clamp-2 text-sm text-muted-foreground">
+                          {application.notes}
+                        </p>
+                      ) : null}
+                      {application.tags.length > 0 ? (
+                        <div className="mt-3 flex flex-wrap gap-1.5">
+                          {application.tags.map(({ tag }) => (
+                            <span
+                              key={tag.id}
+                              className="rounded-full border border-border/70 px-2.5 py-0.5 text-xs text-muted-foreground"
+                            >
+                              {tag.name}
+                            </span>
+                          ))}
+                        </div>
+                      ) : null}
+                    </div>
+
+                    <div className="flex shrink-0 flex-col items-start gap-2 sm:items-end">
+                      <Link
+                        href={`/applications/${application.id}`}
+                        className="text-sm font-medium text-foreground hover:underline"
+                      >
+                        Open workspace
+                      </Link>
+                      {application.canonicalJobId ? (
+                        <Link
+                          href={`/jobs/${application.canonicalJobId}`}
+                          className="text-sm text-muted-foreground hover:text-foreground"
+                        >
+                          Open job
+                        </Link>
+                      ) : null}
+                      <DeleteApplicationButton
+                        applicationId={application.id}
+                        className="px-0 text-sm text-muted-foreground hover:text-destructive"
+                        size="sm"
+                        variant="ghost"
+                      />
+                    </div>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </section>
     </div>
   );
-}
-
-// ─── Row ──────────────────────────────────────────────────────────────────────
-
-function ApplicationRow({ item }: { item: ApplicationHistoryItem }) {
-  const submissionMeta = getSubmissionMeta(item.job);
-  const primaryAction = getPrimaryAction(item);
-  const statusSummary = getStatusSummary(item);
-  const activityNote = getActivityNote(item);
-  const lifecycleLabel = getLifecycleLabel(item.job.status);
-
-  return (
-    <article className="border-b border-border/60 py-4 first:pt-2 last:border-b-0 last:pb-0">
-      <div className="flex items-start justify-between gap-4">
-        <div className="min-w-0 flex-1">
-          {/* Title + status */}
-          <div className="flex flex-wrap items-baseline gap-2">
-            <h2 className="truncate text-[15px] font-semibold text-foreground">
-              <Link
-                href={`/jobs/${item.job.id}`}
-                className="hover:underline underline-offset-2"
-              >
-                {item.job.title}
-              </Link>
-            </h2>
-            <span
-              className={`shrink-0 text-xs font-medium ${statusColor(item.latestStatus)}`}
-            >
-              {statusLabel(item.latestStatus)}
-            </span>
-            {lifecycleLabel ? (
-              <span className={`shrink-0 text-xs font-medium ${lifecycleLabel.color}`}>
-                {lifecycleLabel.label}
-              </span>
-            ) : null}
-          </div>
-
-          {/* Company · location · work mode */}
-          <p className="mt-0.5 text-sm text-muted-foreground">
-            {item.job.company}
-            <Sep />
-            {item.job.location}
-            <Sep />
-            {formatDisplayLabel(item.job.workMode)}
-          </p>
-
-          <p className="mt-1 text-sm text-foreground/80">{statusSummary}</p>
-
-          {/* Submission category · resume · activity */}
-          <p className="mt-1 text-xs text-muted-foreground/70">
-            <span
-              className={`font-medium ${submissionCategoryColor(item.job.eligibility?.submissionCategory)}`}
-            >
-              {submissionMeta.label}
-            </span>
-            <Sep />
-            {item.latestPackage
-              ? `Resume: ${item.latestPackage.resumeVariant.label}`
-              : "No package"}
-            <Sep />
-            {activityNote}
-          </p>
-        </div>
-
-        {/* Actions column */}
-        <div className="flex shrink-0 flex-col items-end gap-2">
-          <Button
-            size="sm"
-            variant={primaryAction.variant}
-            render={<Link href={primaryAction.href} />}
-          >
-            {primaryAction.label}
-          </Button>
-          <div className="flex items-center gap-2">
-            <Link
-              href={`/jobs/${item.job.id}`}
-              className="text-xs text-muted-foreground underline-offset-2 hover:text-foreground hover:underline"
-            >
-              Details
-            </Link>
-            {primaryAction.href !== `/jobs/${item.job.id}/apply` ? (
-              <Link
-                href={`/jobs/${item.job.id}/apply`}
-                className="text-xs text-muted-foreground underline-offset-2 hover:text-foreground hover:underline"
-              >
-                Review
-              </Link>
-            ) : null}
-          </div>
-          <ApplicationRowActions
-            jobId={item.job.id}
-            latestStatus={item.latestStatus}
-          />
-        </div>
-      </div>
-    </article>
-  );
-}
-
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-
-function Sep() {
-  return <span className="mx-1.5 text-border">·</span>;
-}
-
-function getApplicationFilter(
-  value: string | string[] | undefined
-): ApplicationFilterValue {
-  const normalizedValue = Array.isArray(value) ? value[0] : value;
-  return APPLICATION_FILTERS.some((filter) => filter.value === normalizedValue)
-    ? (normalizedValue as ApplicationFilterValue)
-    : "ALL";
-}
-
-function getPrimaryAction(item: ApplicationHistoryItem) {
-  switch (item.latestStatus) {
-    case "DRAFT":
-      return {
-        href: `/jobs/${item.job.id}/apply`,
-        label: "Start review",
-        variant: "default" as const,
-      };
-    case "PACKAGE_ONLY":
-      return {
-        href: `/jobs/${item.job.id}/apply`,
-        label: "Continue review",
-        variant: "default" as const,
-      };
-    case "READY":
-      return {
-        href: `/jobs/${item.job.id}/apply`,
-        label: "Finish review",
-        variant: "default" as const,
-      };
-    case "SUBMITTED":
-      return {
-        href: `/jobs/${item.job.id}/apply`,
-        label: "View review",
-        variant: "secondary" as const,
-      };
-    case "CONFIRMED":
-      return {
-        href: `/jobs/${item.job.id}/apply`,
-        label: "View review",
-        variant: "secondary" as const,
-      };
-    case "FAILED":
-      return {
-        href: `/jobs/${item.job.id}/apply`,
-        label: "Revisit",
-        variant: "outline" as const,
-      };
-    case "WITHDRAWN":
-      return {
-        href: `/jobs/${item.job.id}/apply`,
-        label: "View review",
-        variant: "outline" as const,
-      };
-    default:
-      return {
-        href: `/jobs/${item.job.id}/apply`,
-        label: "Review",
-        variant: "outline" as const,
-      };
-  }
-}
-
-function getStatusSummary(item: ApplicationHistoryItem) {
-  const lifecycleSuffix =
-    item.job.status === "LIVE"
-      ? ""
-      : " The posting is no longer fully live, so use this as a tracking view.";
-
-  switch (item.latestStatus) {
-    case "DRAFT":
-      return `No review package yet. Open review to choose a resume and start the application package.${lifecycleSuffix}`;
-    case "PACKAGE_ONLY":
-      return `A package exists, but it has not been moved into a ready submission state yet.${lifecycleSuffix}`;
-    case "READY":
-      return `This application is prepared and waiting for a final submit decision.${lifecycleSuffix}`;
-    case "SUBMITTED":
-      return "Submitted and waiting for an outcome update.";
-    case "CONFIRMED":
-      return "Outcome recorded as confirmed.";
-    case "FAILED":
-      return "Outcome recorded as unsuccessful.";
-    case "WITHDRAWN":
-      return "Application was withdrawn from consideration.";
-    default:
-      return "Tracked in the application review flow.";
-  }
-}
-
-function getActivityNote(item: ApplicationHistoryItem) {
-  const latestSubmission = item.latestSubmission;
-
-  if (!latestSubmission) {
-    return item.latestPackage
-      ? `Package updated ${formatRelativeAge(item.latestPackage.updatedAt)}`
-      : `Opened ${formatRelativeAge(item.latestActivityAt)}`;
-  }
-
-  if (latestSubmission.status === "SUBMITTED" && latestSubmission.submittedAt) {
-    return `Submitted ${formatRelativeAge(latestSubmission.submittedAt)} via ${
-      latestSubmission.submissionMethod ?? "tracked flow"
-    }`;
-  }
-
-  if (latestSubmission.status === "READY") {
-    return `Ready for submission · updated ${formatRelativeAge(latestSubmission.updatedAt)}`;
-  }
-
-  return `${statusLabel(latestSubmission.status)} · updated ${formatRelativeAge(
-    latestSubmission.updatedAt
-  )}`;
-}
-
-function getLifecycleLabel(status: ApplicationHistoryItem["job"]["status"]) {
-  switch (status) {
-    case "STALE":
-      return { label: "Stale posting", color: "text-amber-600" };
-    case "EXPIRED":
-      return { label: "Expired posting", color: "text-destructive" };
-    case "REMOVED":
-      return { label: "Removed posting", color: "text-muted-foreground" };
-    default:
-      return null;
-  }
 }

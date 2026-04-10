@@ -143,6 +143,7 @@ export function createUsaJobsConnector(
         now: fetchOptions.now,
         limit: fetchOptions.limit,
         signal: fetchOptions.signal,
+        log: fetchOptions.log,
       });
       fetchCache.set(cacheKey, request);
       return request;
@@ -173,6 +174,7 @@ async function fetchUsaJobsJobs({
   now,
   limit,
   signal,
+  log = console.log,
 }: {
   keyword: string;
   apiKey: string;
@@ -180,6 +182,7 @@ async function fetchUsaJobsJobs({
   now: Date;
   limit?: number;
   signal?: AbortSignal;
+  log?: (message: string) => void;
 }): Promise<SourceConnectorFetchResult> {
   const allJobs: SourceConnectorJob[] = [];
   const seenIds = new Set<string>();
@@ -214,7 +217,7 @@ async function fetchUsaJobsJobs({
 
     if (!response.ok) {
       if (response.status === 429) {
-        console.log(`[usajobs:${keyword || "all"}] Rate limited on page ${page}`);
+        log(`[usajobs:${keyword || "all"}] Rate limited on page ${page}`);
         break;
       }
       throw new Error(
