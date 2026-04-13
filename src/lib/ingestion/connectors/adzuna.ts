@@ -124,6 +124,8 @@ type AdzunaProfile = {
   categoryStrategy: "SEQUENTIAL" | "ROUND_ROBIN";
 };
 
+const ADZUNA_ALLOWED_COUNTRIES = new Set(["us", "ca"]);
+
 const ADZUNA_PROFILES: Record<string, AdzunaProfile> = {
   baseline: {
     name: "baseline",
@@ -178,6 +180,13 @@ export function createAdzunaConnector(
   options: AdzunaConnectorOptions = {}
 ): SourceConnector {
   const country = (options.country ?? "ca").trim().toLowerCase();
+  const allowNonNa =
+    (process.env.ADZUNA_ALLOW_NON_NA ?? "").trim().toLowerCase() === "true";
+  if (!allowNonNa && !ADZUNA_ALLOWED_COUNTRIES.has(country)) {
+    throw new Error(
+      `Adzuna connector country '${country}' is out of scope for this North America-only product.`
+    );
+  }
   const appId = options.appId ?? process.env.ADZUNA_APP_ID ?? "";
   const appKey = options.appKey ?? process.env.ADZUNA_APP_KEY ?? "";
   const selectedProfile: AdzunaProfile =

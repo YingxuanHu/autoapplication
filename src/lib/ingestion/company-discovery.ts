@@ -14,6 +14,7 @@ import {
 import {
   buildDiscoveredSourceName,
   createConnectorForCandidate,
+  isKnownAtsHost,
   type DiscoveredSourceCandidate,
 } from "@/lib/ingestion/discovery/sources";
 import {
@@ -48,6 +49,7 @@ const COMPANY_SOURCE_POLL_LIMIT = 500;
 const REDISCOVERY_TASK_LIMIT = 80;
 const DEFAULT_SOURCE_POLL_CADENCE_MINUTES = 180;
 const MAX_CAREER_PAGE_INSPECTIONS = 6;
+const MAX_CAREER_PAGE_INSPECTIONS_CSV_IMPORT = 10;
 const REDISCOVERY_FAILURE_THRESHOLD = 3;
 const DEFAULT_COMPANY_CATALOG_SEED_LIMIT = 1_000;
 const DEFAULT_COMPANY_CORPUS_SEED_LIMIT = 5_000;
@@ -87,6 +89,19 @@ const DETERMINISTIC_ATS_HARD_INVALID_CONNECTORS = new Set([
   "greenhouse",
   "lever",
   "ashby",
+]);
+const PRODUCTIVE_IMPORTED_POLL_CONNECTORS = new Set([
+  "greenhouse",
+  "lever",
+  "ashby",
+]);
+const LOW_SIGNAL_IMPORTED_POLL_CONNECTORS = new Set([
+  "workable",
+  "smartrecruiters",
+  "workday",
+  "successfactors",
+  "icims",
+  "recruitee",
 ]);
 
 function clampScore(value: number, min: number, max: number) {
@@ -156,10 +171,19 @@ function computeValidationPriorityScore(input: {
   consecutiveFailures: number;
   validationAttemptCount: number;
   validationSuccessCount: number;
+  sourceType: string | null;
+  parserVersion: string | null;
 }) {
   const validationSuccessRate =
     input.validationAttemptCount > 0
       ? input.validationSuccessCount / input.validationAttemptCount
+      : 0;
+  const csvImportBoost =
+    input.parserVersion === "csv-import:v1" && input.sourceType === "ATS" ? 18 : 0;
+  const structuredCompanySiteBoost =
+    input.sourceType === "COMPANY_JSON" &&
+    Boolean(input.parserVersion?.startsWith("company-site:"))
+      ? 16
       : 0;
 
   return (
@@ -170,6 +194,8 @@ function computeValidationPriorityScore(input: {
     (input.validationState === "UNVALIDATED" ? 40 : 0) +
     (input.validationState === "SUSPECT" ? 20 : 0) +
     (input.validationState === "NEEDS_REDISCOVERY" ? 10 : 0) +
+    csvImportBoost +
+    structuredCompanySiteBoost +
     Math.round(validationSuccessRate * 20) -
     Math.max(0, input.consecutiveFailures * 5) +
     Math.round(input.discoveryConfidence * 10)
@@ -177,6 +203,7 @@ function computeValidationPriorityScore(input: {
 }
 
 function computePollPriorityScore(input: {
+  connectorName: string;
   priorityScore: number;
   sourceQualityScore: number;
   yieldScore: number;
@@ -191,6 +218,8 @@ function computePollPriorityScore(input: {
   lastJobsAcceptedCount: number;
   lastJobsCreatedCount: number;
   retainedLiveJobCount: number;
+  sourceType: string | null;
+  parserVersion: string | null;
 }) {
   const pollSuccessRate =
     input.pollAttemptCount > 0
@@ -202,10 +231,36 @@ function computePollPriorityScore(input: {
     input.pollSuccessCount > 0 ? input.jobsCreatedCount / input.pollSuccessCount : 0;
   const bootstrapBoost =
     input.pollAttemptCount === 0 ? 42 : input.pollSuccessCount === 0 ? 18 : 0;
+  const csvImportBootstrapBoost =
+    input.parserVersion === "csv-import:v1" &&
+    input.sourceType === "ATS" &&
+    input.pollAttemptCount === 0
+      ? 18
+      : 0;
+  const productiveImportedConnectorBoost =
+    input.parserVersion === "csv-import:v1" &&
+    PRODUCTIVE_IMPORTED_POLL_CONNECTORS.has(input.connectorName)
+      ? input.pollAttemptCount === 0
+        ? 26
+        : 18
+      : 0;
+  const structuredCompanySiteBootstrapBoost =
+    input.sourceType === "COMPANY_JSON" &&
+    Boolean(input.parserVersion?.startsWith("company-site:")) &&
+    input.pollAttemptCount === 0
+      ? 24
+      : 0;
   const lowYieldPenalty =
     input.pollSuccessCount >= 3 && input.jobsCreatedCount === 0 ? 35 : 0;
   const emptyPenalty =
     input.pollSuccessCount >= 2 && input.jobsAcceptedCount === 0 ? 20 : 0;
+  const importedLowSignalPenalty =
+    input.parserVersion === "csv-import:v1" &&
+    LOW_SIGNAL_IMPORTED_POLL_CONNECTORS.has(input.connectorName) &&
+    input.pollAttemptCount >= 2 &&
+    input.jobsCreatedCount === 0
+      ? 28
+      : 0;
 
   return (
     Math.round(input.priorityScore * 100) / 100 +
@@ -219,11 +274,15 @@ function computePollPriorityScore(input: {
     Math.min(40, input.lastJobsAcceptedCount * 0.25) +
     Math.min(90, input.lastJobsCreatedCount * 8) +
     bootstrapBoost +
+    csvImportBootstrapBoost +
+    productiveImportedConnectorBoost +
+    structuredCompanySiteBootstrapBoost +
     (input.status === "DEGRADED" ? 10 : 0) +
     Math.max(0, 15 - input.consecutiveFailures * 3) +
     Math.round(input.discoveryConfidence * 10) -
     lowYieldPenalty -
-    emptyPenalty
+    emptyPenalty -
+    importedLowSignalPenalty
   );
 }
 
@@ -566,9 +625,13 @@ export async function enqueueCompanyDiscoveryTasks(options: {
 
   const companies = candidates
     .sort((left, right) => {
+      const leftSeedSource = readSeedSource(left.metadataJson);
+      const rightSeedSource = readSeedSource(right.metadataJson);
       const leftScore =
         (left.sources.length === 0 ? 50 : 0) +
         (left.detectedAts ? 40 : 0) +
+        (left.careersUrl ? 18 : 0) +
+        (leftSeedSource === "csv-job-board-seed" ? 22 : 0) +
         Math.round(left.discoveryConfidence * 20) +
         Math.min(30, left.jobs.length * 3) +
         (left.discoveryStatus === "FAILED" ? -20 : 0) +
@@ -576,6 +639,8 @@ export async function enqueueCompanyDiscoveryTasks(options: {
       const rightScore =
         (right.sources.length === 0 ? 50 : 0) +
         (right.detectedAts ? 40 : 0) +
+        (right.careersUrl ? 18 : 0) +
+        (rightSeedSource === "csv-job-board-seed" ? 22 : 0) +
         Math.round(right.discoveryConfidence * 20) +
         Math.min(30, right.jobs.length * 3) +
         (right.discoveryStatus === "FAILED" ? -20 : 0) +
@@ -587,9 +652,12 @@ export async function enqueueCompanyDiscoveryTasks(options: {
     .slice(0, options.limit ?? DISCOVERY_TASK_LIMIT);
 
   for (const company of companies) {
+    const seedSource = readSeedSource(company.metadataJson);
     const priorityScore =
       Math.min(40, company.jobs.length * 3) +
       (company.sources.length === 0 ? 30 : 0) +
+      (company.careersUrl ? 12 : 0) +
+      (seedSource === "csv-job-board-seed" ? 18 : 0) +
       (company.discoveryStatus === "FAILED" ? -10 : 15) +
       Math.max(0, 20 - Math.round(company.discoveryConfidence * 20));
 
@@ -687,6 +755,8 @@ export async function enqueueSourceValidationTasks(options: {
       consecutiveFailures: source.consecutiveFailures,
       validationAttemptCount: source.validationAttemptCount,
       validationSuccessCount: source.validationSuccessCount,
+      sourceType: source.sourceType,
+      parserVersion: source.parserVersion,
     });
 
     await enqueueUniqueSourceTask({
@@ -738,6 +808,7 @@ export async function enqueueCompanySourcePollTasks(options: {
   const scoredSources = candidates.map((source) => {
     const historicalYield = source.company.jobs.length;
     const priorityScore = computePollPriorityScore({
+      connectorName: source.connectorName,
       priorityScore: source.priorityScore,
       sourceQualityScore: source.sourceQualityScore,
       yieldScore: source.yieldScore,
@@ -752,6 +823,8 @@ export async function enqueueCompanySourcePollTasks(options: {
       lastJobsAcceptedCount: source.lastJobsAcceptedCount,
       lastJobsCreatedCount: source.lastJobsCreatedCount,
       retainedLiveJobCount: source.retainedLiveJobCount,
+      sourceType: source.sourceType,
+      parserVersion: source.parserVersion,
     });
 
     return { source, priorityScore };
@@ -1142,7 +1215,14 @@ async function discoverCompanySurface(
     metadata: Record<string, Prisma.InputJsonValue | null>;
   } | null = null;
 
-  for (const pageUrl of [...candidatePages].slice(0, MAX_CAREER_PAGE_INSPECTIONS)) {
+  const seedSource = readSeedSource(company.metadataJson);
+  const orderedCandidatePages = prioritizeCareerPageUrls([...candidatePages]);
+  const inspectionLimit =
+    seedSource === "csv-job-board-seed"
+      ? Math.min(MAX_CAREER_PAGE_INSPECTIONS_CSV_IMPORT, orderedCandidatePages.length)
+      : Math.min(MAX_CAREER_PAGE_INSPECTIONS, orderedCandidatePages.length);
+
+  for (const pageUrl of orderedCandidatePages.slice(0, inspectionLimit)) {
     try {
       const inspection = await inspectCompanySiteRoute(pageUrl);
       await prisma.companyDiscoveryPage.upsert({
@@ -1216,7 +1296,17 @@ async function discoverCompanySurface(
   const fallbackRoute = bestCustomRoute ?? buildWeakFallbackRoute(company);
 
   let customSourceProvisioned = false;
-  if (fallbackRoute && discoveredSourceCount === 0) {
+  const shouldProvisionParallelCompanySite =
+    seedSource === "csv-job-board-seed" &&
+    bestCustomRoute !== null &&
+    bestCustomRoute.extractionRoute !== "HTML_FALLBACK" &&
+    bestCustomRoute.confidence >= 0.7 &&
+    !isKnownAtsBoardUrl(bestCustomRoute.url);
+
+  if (
+    fallbackRoute &&
+    (discoveredSourceCount === 0 || shouldProvisionParallelCompanySite)
+  ) {
     await provisionCompanySiteSource(company.id, company.companyKey, fallbackRoute, now);
     customSourceProvisioned = true;
   }
@@ -1483,6 +1573,34 @@ function buildWeakFallbackRoute(company: {
   };
 }
 
+function prioritizeCareerPageUrls(urls: string[]) {
+  return [...urls].sort((left, right) => scoreCareerPageUrl(right) - scoreCareerPageUrl(left));
+}
+
+function scoreCareerPageUrl(url: string) {
+  try {
+    const parsed = new URL(url);
+    const host = parsed.hostname.replace(/^www\./i, "").toLowerCase();
+    const path = parsed.pathname.toLowerCase();
+    return (
+      (isKnownAtsHost(host) ? -20 : 25) +
+      (/\/careers?|\/jobs?|\/join|\/work/.test(path) ? 20 : 0) +
+      (/\/job\/|\/jobs\/[^/]+/.test(path) ? 6 : 0) +
+      (path === "/" ? -8 : 0)
+    );
+  } catch {
+    return 0;
+  }
+}
+
+function isKnownAtsBoardUrl(url: string) {
+  try {
+    return isKnownAtsHost(new URL(url).hostname.replace(/^www\./i, "").toLowerCase());
+  } catch {
+    return false;
+  }
+}
+
 async function runSourceValidation(companySourceId: string, now: Date) {
   const source = await prisma.companySource.findUnique({
     where: { id: companySourceId },
@@ -1574,13 +1692,20 @@ async function runSourceValidation(companySourceId: string, now: Date) {
   });
 
   if (result.kind === "VALIDATED") {
-    await enqueueUniqueSourceTask({
-      kind: "CONNECTOR_POLL",
-      companyId: source.companyId,
-      companySourceId: source.id,
-      priorityScore: Math.max(70, Math.round(source.priorityScore * 100)),
-      notBeforeAt: now,
-    });
+    const shouldFastTrackPoll =
+      result.jobsFound > 0 ||
+      source.pollSuccessCount > 0 ||
+      source.retainedLiveJobCount > 0;
+
+    if (shouldFastTrackPoll) {
+      await enqueueUniqueSourceTask({
+        kind: "CONNECTOR_POLL",
+        companyId: source.companyId,
+        companySourceId: source.id,
+        priorityScore: Math.max(70, Math.round(source.priorityScore * 100)),
+        notBeforeAt: now,
+      });
+    }
     return;
   }
 
@@ -1687,6 +1812,18 @@ async function pollCompanySource(
       },
     },
   });
+  const importedAtsZeroYield =
+    source.parserVersion === "csv-import:v1" &&
+    source.sourceType === "ATS" &&
+    retainedLiveJobCount === 0 &&
+    nextPollSuccessCount >= 2 &&
+    nextJobsAcceptedCount === 0;
+  const importedAtsLowYield =
+    source.parserVersion === "csv-import:v1" &&
+    source.sourceType === "ATS" &&
+    retainedLiveJobCount === 0 &&
+    nextPollSuccessCount >= 3 &&
+    nextJobsCreatedCount === 0;
   const nextYieldScore = computeSourceYieldScore({
     sourceQualityScore: Math.max(
       taleoZeroYield
@@ -1711,16 +1848,26 @@ async function pollCompanySource(
   await prisma.companySource.update({
     where: { id: source.id },
     data: {
-      status: repeatedTaleoZeroYield ? "DEGRADED" : "ACTIVE",
+      status:
+        repeatedTaleoZeroYield || importedAtsZeroYield || importedAtsLowYield
+          ? "DEGRADED"
+          : "ACTIVE",
       validationState: "VALIDATED",
-      pollState: taleoZeroYield ? "BACKOFF" : "READY",
+      pollState:
+        taleoZeroYield || importedAtsZeroYield || importedAtsLowYield
+          ? "BACKOFF"
+          : "READY",
       lastValidatedAt: source.lastValidatedAt ?? now,
       lastSuccessfulPollAt: now,
       lastHttpStatus: 200,
       cooldownUntil: new Date(
         now.getTime() +
           (
-            taleoZeroYield
+            importedAtsLowYield
+              ? 48 * 60
+              : importedAtsZeroYield
+                ? 24 * 60
+              : taleoZeroYield
               ? repeatedTaleoZeroYield
                 ? 24 * 60
                 : 12 * 60
@@ -1744,19 +1891,30 @@ async function pollCompanySource(
       failureStreak: 0,
       lastFailureAt: null,
       priorityScore: predictedPriority,
-      sourceQualityScore: taleoZeroYield
-        ? Math.max(
-            0.12,
-            Math.min(source.sourceQualityScore, repeatedTaleoZeroYield ? 0.22 : 0.32)
-          )
-        : Math.max(source.sourceQualityScore, Math.min(0.99, predictedPriority / 1.5)),
+      sourceQualityScore:
+        importedAtsLowYield || importedAtsZeroYield
+          ? Math.max(
+              0.1,
+              Math.min(source.sourceQualityScore, importedAtsLowYield ? 0.18 : 0.26)
+            )
+          : taleoZeroYield
+            ? Math.max(
+                0.12,
+                Math.min(source.sourceQualityScore, repeatedTaleoZeroYield ? 0.22 : 0.32)
+              )
+            : Math.max(source.sourceQualityScore, Math.min(0.99, predictedPriority / 1.5)),
       yieldScore: nextYieldScore,
       overlapRatio,
-      validationMessage: taleoZeroYield
-        ? repeatedTaleoZeroYield
-          ? "Taleo source returned zero listings in consecutive polls and was cooled down aggressively."
-          : "Taleo source returned zero listings and was backed off for a longer cooldown."
-        : null,
+      validationMessage:
+        importedAtsLowYield
+          ? "Imported ATS source has produced no new canonicals after repeated successful polls and was cooled down aggressively."
+          : importedAtsZeroYield
+            ? "Imported ATS source validated but has not yielded accepted jobs after repeated polls and was backed off."
+            : taleoZeroYield
+              ? repeatedTaleoZeroYield
+                ? "Taleo source returned zero listings in consecutive polls and was cooled down aggressively."
+                : "Taleo source returned zero listings and was backed off for a longer cooldown."
+              : null,
       metadataJson: {
         lastSummary: {
           fetchedCount: summary.fetchedCount,
@@ -2121,4 +2279,9 @@ function readStringArray(value: Prisma.JsonValue | undefined) {
 
 function readStringValue(value: Prisma.JsonValue | undefined) {
   return typeof value === "string" && value.trim().length > 0 ? value.trim() : null;
+}
+
+function readSeedSource(value: Prisma.JsonValue | null | undefined) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return null;
+  return readStringValue((value as Record<string, Prisma.JsonValue>).seedSource);
 }

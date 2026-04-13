@@ -71,6 +71,60 @@ const US_STATE_CODES = new Set([
   "DC",
 ]);
 
+const US_STATE_NAMES = new Set([
+  "ALABAMA",
+  "ALASKA",
+  "ARIZONA",
+  "ARKANSAS",
+  "CALIFORNIA",
+  "COLORADO",
+  "CONNECTICUT",
+  "DELAWARE",
+  "FLORIDA",
+  "GEORGIA",
+  "HAWAII",
+  "IDAHO",
+  "ILLINOIS",
+  "INDIANA",
+  "IOWA",
+  "KANSAS",
+  "KENTUCKY",
+  "LOUISIANA",
+  "MAINE",
+  "MARYLAND",
+  "MASSACHUSETTS",
+  "MICHIGAN",
+  "MINNESOTA",
+  "MISSISSIPPI",
+  "MISSOURI",
+  "MONTANA",
+  "NEBRASKA",
+  "NEVADA",
+  "NEW HAMPSHIRE",
+  "NEW JERSEY",
+  "NEW MEXICO",
+  "NEW YORK",
+  "NORTH CAROLINA",
+  "NORTH DAKOTA",
+  "OHIO",
+  "OKLAHOMA",
+  "OREGON",
+  "PENNSYLVANIA",
+  "RHODE ISLAND",
+  "SOUTH CAROLINA",
+  "SOUTH DAKOTA",
+  "TENNESSEE",
+  "TEXAS",
+  "UTAH",
+  "VERMONT",
+  "VIRGINIA",
+  "WASHINGTON",
+  "WEST VIRGINIA",
+  "WISCONSIN",
+  "WYOMING",
+  "DISTRICT OF COLUMBIA",
+]);
+
 const CA_PROVINCE_CODES = new Set([
   "AB",
   "BC",
@@ -85,6 +139,22 @@ const CA_PROVINCE_CODES = new Set([
   "QC",
   "SK",
   "YT",
+]);
+
+const CA_PROVINCE_NAMES = new Set([
+  "ALBERTA",
+  "BRITISH COLUMBIA",
+  "MANITOBA",
+  "NEW BRUNSWICK",
+  "NEWFOUNDLAND AND LABRADOR",
+  "NOVA SCOTIA",
+  "NORTHWEST TERRITORIES",
+  "NUNAVUT",
+  "ONTARIO",
+  "PRINCE EDWARD ISLAND",
+  "QUEBEC",
+  "SASKATCHEWAN",
+  "YUKON",
 ]);
 
 const US_CITY_MARKERS = [
@@ -654,7 +724,7 @@ export function normalizeSourceJob({
   };
 }
 
-function inferRegion(location: string): Region | null {
+export function inferRegion(location: string): Region | null {
   const normalizedLocation = location.toUpperCase();
   if (
     normalizedLocation.includes("NORTH AMERICA") ||
@@ -714,6 +784,10 @@ function inferRegion(location: string): Region | null {
 
   if (US_STATE_CODES.has(trailingPart)) return "US";
   if (CA_PROVINCE_CODES.has(trailingPart)) return "CA";
+  if (US_STATE_NAMES.has(trailingPart)) return "US";
+  if (CA_PROVINCE_NAMES.has(trailingPart)) return "CA";
+  if (US_STATE_NAMES.has(secondTrailingPart)) return "US";
+  if (CA_PROVINCE_NAMES.has(secondTrailingPart)) return "CA";
 
   // Handle remote, worldwide, and work-from-home locations.
   // Pure "Remote" and similar strings are treated as US-eligible: the structured

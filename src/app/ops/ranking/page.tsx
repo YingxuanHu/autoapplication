@@ -32,6 +32,8 @@ export default async function RankingDebugPage() {
         id: true,
         title: true,
         company: true,
+        location: true,
+        region: true,
         roleFamily: true,
         workMode: true,
         postedAt: true,

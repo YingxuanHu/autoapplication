@@ -61,6 +61,7 @@ export function JobSummaryCard({
           <JobMetaRow
             company={job.company}
             location={job.location}
+            geoScope={job.geoScope}
             workMode={job.workMode}
             salaryMin={job.salaryMin}
             salaryMax={job.salaryMax}

@@ -105,6 +105,7 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
           <JobMetaRow
             company={job.company}
             location={job.location}
+            geoScope={job.geoScope}
             workMode={job.workMode}
             salaryMin={displaySalary.salaryMin}
             salaryMax={displaySalary.salaryMax}

@@ -17,6 +17,7 @@ import type {
   JobLinkTrustLevel,
   JobResolvedLink,
 } from "@/lib/job-links";
+import type { GeoScope } from "@/lib/geo-scope";
 
 export type JobWithEligibility = JobCanonical & {
   eligibility: JobEligibility | null;
@@ -46,6 +47,7 @@ export type JobCardData = {
   title: string;
   company: string;
   location: string;
+  geoScope: GeoScope;
   workMode: WorkMode;
   industry: Industry | null;
   status: JobStatus;

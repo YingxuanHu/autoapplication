@@ -6,10 +6,13 @@ import {
 } from "@/lib/job-display";
 import type { JobResolvedLink } from "@/lib/job-links";
 import { cn } from "@/lib/utils";
+import { formatGeoScopeLabel } from "@/lib/geo-scope";
+import type { GeoScope } from "@/lib/geo-scope";
 
 type JobMetaRowProps = {
   company: string;
   location: string;
+  geoScope?: GeoScope;
   workMode: string;
   salaryMin: number | null;
   salaryMax: number | null;
@@ -22,6 +25,7 @@ type JobMetaRowProps = {
 export function JobMetaRow({
   company,
   location,
+  geoScope,
   workMode,
   salaryMin,
   salaryMax,
@@ -70,6 +74,16 @@ export function JobMetaRow({
 
       <MetaItem variant={variant} icon={<MapPin className="h-3.5 w-3.5 shrink-0" />}>
         <span className="truncate">{location}</span>
+        {geoScope && geoScope !== "US" && geoScope !== "CA" && geoScope !== "UNKNOWN" ? (
+          <span
+            className={cn(
+              "inline-flex items-center rounded-full border border-border/70 bg-background/90 font-semibold tracking-wide text-foreground/75",
+              isDetail ? "px-1.5 py-0.5 text-[10px]" : "px-1.5 py-0.5 text-[9px]"
+            )}
+          >
+            {formatGeoScopeLabel(geoScope)}
+          </span>
+        ) : null}
       </MetaItem>
 
       {workMode !== "UNKNOWN" ? (

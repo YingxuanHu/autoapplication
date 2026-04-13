@@ -4,6 +4,7 @@ import type { Prisma } from "@/generated/prisma/client";
 import { DEMO_SOURCE_NAMES } from "@/lib/job-links";
 import { getOptionalCurrentProfileId } from "@/lib/current-user";
 import { getIngestionHeartbeat } from "@/lib/queries/ingestion";
+import { inferGeoScope } from "@/lib/geo-scope";
 import {
   CAREER_STAGE_DEFINITIONS,
   normalizeCareerStageFilterValue,
@@ -368,6 +369,7 @@ export type ScoreBreakdown = {
   eligibility: number;
   freshness: number;
   availability: number;
+  regionConfidence: number;
   prefRoleFamily: number;
   prefWorkMode: number;
   behaviorRoleFamily: number;
@@ -378,9 +380,11 @@ export type ScoreBreakdown = {
 };
 
 export type ScoringJobInput = {
+  location: string;
   postedAt: Date | null;
   status: string | null;
   availabilityScore: number;
+  region: string | null;
   workMode: string | null;
   roleFamily: string | null;
   company: string | null;
@@ -417,6 +421,7 @@ export function scoreJobDetailed(
   let eligibility = 0;
   let freshness = 0;
   let availability = 0;
+  let regionConfidence = 0;
   let prefRoleFamily = 0;
   let prefWorkMode = 0;
   let behaviorRoleFamily = 0;
@@ -454,6 +459,16 @@ export function scoreJobDetailed(
   else if (job.availabilityScore >= 45) availability += 1;
   else if (job.availabilityScore >= 30) availability -= 3;
   else availability -= 6;
+
+  const geoScope = inferGeoScope(job.location, job.region as "US" | "CA" | null);
+
+  // Geography confidence: prefer jobs clearly in the product's NA footprint,
+  // demote explicit out-of-scope geographies, and mildly penalize unknowns.
+  if (geoScope === "US" || geoScope === "CA") regionConfidence = 6;
+  else if (geoScope === "NORTH_AMERICA") regionConfidence = 3;
+  else if (geoScope === "GLOBAL") regionConfidence = -6;
+  else if (geoScope === "UNKNOWN") regionConfidence = -4;
+  else regionConfidence = -14;
 
   // Role family match vs explicit prefs (0-15)
   if (
@@ -512,6 +527,7 @@ export function scoreJobDetailed(
       eligibility +
       freshness +
       availability +
+      regionConfidence +
       prefRoleFamily +
       prefWorkMode +
       behaviorRoleFamily +
@@ -522,6 +538,7 @@ export function scoreJobDetailed(
     eligibility,
     freshness,
     availability,
+    regionConfidence,
     prefRoleFamily,
     prefWorkMode,
     behaviorRoleFamily,
@@ -690,6 +707,17 @@ function isDemoOnlySourceMappings(sourceMappings: DemoSourceMapping[]) {
   return (
     sourceMappings.length > 0 &&
     sourceMappings.every((mapping) => DEMO_SOURCE_NAME_SET.has(mapping.sourceName))
+  );
+}
+
+function isExplicitlyOutOfScopeGeoScope(
+  scope: ReturnType<typeof inferGeoScope>
+) {
+  return (
+    scope === "EUROPE" ||
+    scope === "LATAM" ||
+    scope === "APAC" ||
+    scope === "MIDDLE_EAST_AFRICA"
   );
 }
 
@@ -891,9 +919,11 @@ async function getJobsByRelevance(
     select: {
       id: true,
       title: true,
+      location: true,
       postedAt: true,
       status: true,
       availabilityScore: true,
+      region: true,
       workMode: true,
       roleFamily: true,
       company: true,
@@ -922,7 +952,11 @@ async function getJobsByRelevance(
 
   const visibleScoringJobs = useSqlDemoVisibilityFilter
     ? scoringJobs
-    : scoringJobs.filter((job) => !isDemoOnlySourceMappings(job.sourceMappings));
+    : scoringJobs.filter(
+        (job) =>
+          !isDemoOnlySourceMappings(job.sourceMappings) &&
+          !isExplicitlyOutOfScopeGeoScope(inferGeoScope(job.location, job.region))
+      );
   const diversifiedSelectionLimit = Math.min(
     visibleScoringJobs.length,
     skip + PAGE_SIZE + DIVERSIFICATION_OVERSCAN

@@ -1,5 +1,6 @@
 import { resolveJobLinks, getSourceTrust } from "@/lib/job-links";
 import { resolveJobSalaryRange } from "@/lib/salary-extraction";
+import { inferGeoScope } from "@/lib/geo-scope";
 import type {
   JobCardData,
   JobCardEligibility,
@@ -54,6 +55,7 @@ export function serializeJobCardData(job: JobSerializationInput): JobCardData {
     title: job.title,
     company: job.company,
     location: job.location,
+    geoScope: inferGeoScope(job.location, job.region ?? null),
     workMode: job.workMode,
     industry: job.industry,
     status: job.status,

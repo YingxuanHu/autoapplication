@@ -30,6 +30,16 @@ async function main() {
       pollState: {
         not: "DISABLED",
       },
+      ...(args.csvImportOnly
+        ? {
+            parserVersion: "csv-import:v1",
+          }
+        : {}),
+      ...(args.connector
+        ? {
+            connectorName: args.connector,
+          }
+        : {}),
     },
     orderBy: [{ yieldScore: "asc" }, { failureStreak: "desc" }, { updatedAt: "asc" }],
     select: {
@@ -252,8 +262,11 @@ function decidePruneAction(
 }
 
 function parseArgs(rawArgs: string[]) {
+  const connectorArg = rawArgs.find((arg) => arg.startsWith("--connector="));
   return {
     apply: rawArgs.includes("--apply"),
+    csvImportOnly: rawArgs.includes("--csv-import-only"),
+    connector: connectorArg ? connectorArg.split("=", 2)[1] : undefined,
   };
 }
 
