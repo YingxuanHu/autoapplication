@@ -42,21 +42,47 @@ import type {
   SourceTask,
 } from "@/generated/prisma/client";
 
-const DISCOVERY_TASK_LIMIT = 75;
-const SOURCE_VALIDATION_TASK_LIMIT = 180;
-const COMPANY_SOURCE_POLL_LIMIT = 260;
-const REDISCOVERY_TASK_LIMIT = 25;
+const DISCOVERY_TASK_LIMIT = 200;
+const SOURCE_VALIDATION_TASK_LIMIT = 500;
+const COMPANY_SOURCE_POLL_LIMIT = 500;
+const REDISCOVERY_TASK_LIMIT = 80;
 const DEFAULT_SOURCE_POLL_CADENCE_MINUTES = 180;
-const MAX_CAREER_PAGE_INSPECTIONS = 12;
+const MAX_CAREER_PAGE_INSPECTIONS = 6;
 const REDISCOVERY_FAILURE_THRESHOLD = 3;
 const DEFAULT_COMPANY_CATALOG_SEED_LIMIT = 1_000;
 const DEFAULT_COMPANY_CORPUS_SEED_LIMIT = 5_000;
 const DEFAULT_COMPANY_INVENTORY_SEED_LIMIT = 8_000;
 const DEFAULT_EXISTING_ATS_SEED_LIMIT = 2_000;
-const DISCOVERY_QUEUE_CONCURRENCY = 8;
-const SOURCE_VALIDATION_QUEUE_CONCURRENCY = 16;
-const COMPANY_SOURCE_POLL_CONCURRENCY = 16;
+const DISCOVERY_QUEUE_CONCURRENCY = 24;
+const SOURCE_VALIDATION_QUEUE_CONCURRENCY = 32;
+const COMPANY_SOURCE_POLL_CONCURRENCY = 32;
+const COMPANY_SOURCE_POLL_LOW_TIME_CONCURRENCY = 4;
+const COMPANY_SOURCE_POLL_CRITICAL_TIME_CONCURRENCY = 1;
 const HARD_FAILURE_REDISCOVERY_THRESHOLD = 2;
+const WORKDAY_BLOCKED_REDISCOVERY_THRESHOLD = 2;
+// Per-cycle cap on how many sources of a given connector can be polled.
+// Workday's myworkdayjobs.com infrastructure rate-limits aggressively — hitting
+// many tenants simultaneously triggers Cloudflare bot detection for all of them.
+// Taleo is also intentionally capped because its headless+sitemap fallback path
+// is much slower than the ATS APIs and can monopolize the cycle.
+const CONNECTOR_POLL_CYCLE_CAPS: Record<string, number> = {
+  workday: 6,
+  taleo: 2,
+};
+// Per-source connector runtime cap (passed to ingestConnector).
+// Kept below the stale-run recovery windows so a slow source fails within the
+// same cycle instead of lingering as RUNNING into the next one.
+const COMPANY_SOURCE_POLL_MAX_RUNTIME_MS = 4 * 60 * 1000;
+// Wall-clock cap for the entire poll queue across all batches.
+// With the daemon running every 10 minutes in dev and every 30 minutes in the
+// standalone script, letting source polling consume 25+ minutes starves the
+// rest of the cycle. Keep this tighter and adapt batch runtime as the queue
+// approaches the deadline.
+const COMPANY_SOURCE_POLL_QUEUE_WALL_CLOCK_MS = 12 * 60 * 1000;
+const COMPANY_SOURCE_POLL_MIN_REMAINING_BUDGET_MS = 90 * 1000;
+const COMPANY_SOURCE_POLL_BATCH_GRACE_MS = 90 * 1000;
+const COMPANY_SOURCE_POLL_LATE_STAGE_WINDOW_MS = 5 * 60 * 1000;
+const COMPANY_SOURCE_POLL_END_STAGE_WINDOW_MS = 2 * 60 * 1000;
 const DETERMINISTIC_ATS_HARD_INVALID_CONNECTORS = new Set([
   "greenhouse",
   "lever",
@@ -264,6 +290,66 @@ function pickBalancedPollSources<T extends { source: { connectorName: string }; 
   return selected;
 }
 
+function applyConnectorPollCycleCaps<
+  T extends { source: { id: string; connectorName: string }; priorityScore: number }
+>(candidates: T[], limit: number, existingPendingCounts: Record<string, number> = {}) {
+  if (limit <= 0 || candidates.length === 0) {
+    return [] as T[];
+  }
+
+  const selected: T[] = [];
+  const selectedIds = new Set<string>();
+  // Seed connector counts with already-pending tasks so restarts don't exceed the cap.
+  const connectorCounts = new Map<string, number>(
+    Object.entries(existingPendingCounts)
+  );
+
+  const tryTakeCandidate = (candidate: T) => {
+    if (selectedIds.has(candidate.source.id)) {
+      return false;
+    }
+
+    const connectorName = candidate.source.connectorName;
+    const connectorCap = CONNECTOR_POLL_CYCLE_CAPS[connectorName];
+    const currentCount = connectorCounts.get(connectorName) ?? 0;
+
+    if (typeof connectorCap === "number" && currentCount >= connectorCap) {
+      return false;
+    }
+
+    selected.push(candidate);
+    selectedIds.add(candidate.source.id);
+    connectorCounts.set(connectorName, currentCount + 1);
+    return true;
+  };
+
+  for (const candidate of candidates) {
+    if (selected.length >= limit) break;
+    tryTakeCandidate(candidate);
+  }
+
+  if (selected.length >= limit) {
+    return selected;
+  }
+
+  const fallbacks = [...candidates]
+    .filter((candidate) => !selectedIds.has(candidate.source.id))
+    .sort((left, right) => {
+      if (right.priorityScore !== left.priorityScore) {
+        return right.priorityScore - left.priorityScore;
+      }
+
+      return left.source.connectorName.localeCompare(right.source.connectorName);
+    });
+
+  for (const candidate of fallbacks) {
+    if (selected.length >= limit) break;
+    tryTakeCandidate(candidate);
+  }
+
+  return selected;
+}
+
 export async function syncCompaniesFromJobs(options: { limit?: number } = {}) {
   const rows = await prisma.jobCanonical.findMany({
     where: {
@@ -447,12 +533,13 @@ export async function enqueueCompanyDiscoveryTasks(options: {
   now?: Date;
 } = {}) {
   const now = options.now ?? new Date();
-  await syncCompaniesFromJobs({ limit: (options.limit ?? DISCOVERY_TASK_LIMIT) * 20 });
+  const discoveryLimit = options.limit ?? DISCOVERY_TASK_LIMIT;
+  await syncCompaniesFromJobs({ limit: discoveryLimit * 30 });
   await seedCompanyDiscoveryUniverse({
-    inventoryLimit: Math.max(2_000, (options.limit ?? DISCOVERY_TASK_LIMIT) * 80),
-    existingAtsLimit: Math.max(500, (options.limit ?? DISCOVERY_TASK_LIMIT) * 20),
-    catalogLimit: Math.max(500, (options.limit ?? DISCOVERY_TASK_LIMIT) * 12),
-    corpusLimit: Math.max(2_500, (options.limit ?? DISCOVERY_TASK_LIMIT) * 50),
+    inventoryLimit: Math.max(3_000, discoveryLimit * 100),
+    existingAtsLimit: Math.max(750, discoveryLimit * 24),
+    catalogLimit: Math.max(600, discoveryLimit * 14),
+    corpusLimit: Math.max(3_500, discoveryLimit * 70),
   });
 
   const candidates = await prisma.company.findMany({
@@ -687,7 +774,40 @@ export async function enqueueCompanySourcePollTasks(options: {
       (right.source.lastSuccessfulPollAt?.getTime() ?? 0)
   );
 
-  const sources = [...bootstrapSources, ...establishedSources];
+  // Count existing PENDING tasks per capped connector so restarts don't
+  // accumulate stale tasks above the per-cycle budget.
+  const existingPendingCounts: Record<string, number> = {};
+  if (Object.keys(CONNECTOR_POLL_CYCLE_CAPS).length > 0) {
+    const pendingRows = await prisma.sourceTask.findMany({
+      where: {
+        kind: "CONNECTOR_POLL",
+        status: "PENDING",
+        companySourceId: {
+          in: [...bootstrapSources, ...establishedSources]
+            .map(({ source }) => source.id),
+        },
+      },
+      select: { companySourceId: true },
+    });
+    const pendingSourceIds = new Set(
+      pendingRows.map((r) => r.companySourceId).filter(Boolean) as string[]
+    );
+    for (const { source } of [...bootstrapSources, ...establishedSources]) {
+      if (
+        pendingSourceIds.has(source.id) &&
+        CONNECTOR_POLL_CYCLE_CAPS[source.connectorName] !== undefined
+      ) {
+        existingPendingCounts[source.connectorName] =
+          (existingPendingCounts[source.connectorName] ?? 0) + 1;
+      }
+    }
+  }
+
+  const sources = applyConnectorPollCycleCaps(
+    [...bootstrapSources, ...establishedSources],
+    pollLimit,
+    existingPendingCounts
+  );
 
   for (const { source, priorityScore } of sources) {
 
@@ -784,55 +904,108 @@ export async function runSourceValidationQueue(options: {
 export async function runCompanySourcePollQueue(options: {
   limit?: number;
   now?: Date;
+  maxWallClockMs?: number;
 } = {}) {
-  const now = options.now ?? new Date();
-  const tasks = await claimSourceTasks(
-    "CONNECTOR_POLL",
-    options.limit ?? COMPANY_SOURCE_POLL_LIMIT,
-    now
-  );
-
+  const maxTasks = options.limit ?? COMPANY_SOURCE_POLL_LIMIT;
+  const maxWallClockMs = options.maxWallClockMs ?? COMPANY_SOURCE_POLL_QUEUE_WALL_CLOCK_MS;
+  const queueStart = Date.now();
   let successCount = 0;
   let failedCount = 0;
-  let cursor = 0;
+  let processedCount = 0;
 
-  async function worker() {
-    while (cursor < tasks.length) {
-      const task = tasks[cursor]!;
-      cursor += 1;
+  while (processedCount < maxTasks) {
+    const elapsed = Date.now() - queueStart;
+    const remainingWallClockMs = maxWallClockMs - elapsed;
+    if (remainingWallClockMs <= COMPANY_SOURCE_POLL_MIN_REMAINING_BUDGET_MS) {
+      console.log(
+        `[sourcePollQueue] Wall-clock cap reached (${Math.round(elapsed / 1000)}s / ${Math.round(maxWallClockMs / 1000)}s) — stopping after ${processedCount} tasks`
+      );
+      break;
+    }
 
-      try {
-        if (!task.companySourceId) {
-          await finishSourceTask(task.id, "SKIPPED", {
-            finishedAt: now,
-            lastError: "No company source is attached to connector poll task.",
+    const remaining = maxTasks - processedCount;
+    const batchConcurrency =
+      remainingWallClockMs <= COMPANY_SOURCE_POLL_END_STAGE_WINDOW_MS
+        ? COMPANY_SOURCE_POLL_CRITICAL_TIME_CONCURRENCY
+        : remainingWallClockMs <= COMPANY_SOURCE_POLL_LATE_STAGE_WINDOW_MS
+          ? COMPANY_SOURCE_POLL_LOW_TIME_CONCURRENCY
+          : COMPANY_SOURCE_POLL_CONCURRENCY;
+    const effectiveRemainingMs = Math.max(
+      0,
+      remainingWallClockMs - COMPANY_SOURCE_POLL_BATCH_GRACE_MS
+    );
+    const batchRuntimeCeilingMs =
+      remainingWallClockMs <= COMPANY_SOURCE_POLL_END_STAGE_WINDOW_MS
+        ? Math.floor(effectiveRemainingMs * 0.5)
+        : remainingWallClockMs <= COMPANY_SOURCE_POLL_LATE_STAGE_WINDOW_MS
+          ? Math.floor(effectiveRemainingMs * 0.7)
+          : effectiveRemainingMs;
+    const batchRuntimeMs = Math.max(
+      COMPANY_SOURCE_POLL_MIN_REMAINING_BUDGET_MS,
+      Math.min(
+        COMPANY_SOURCE_POLL_MAX_RUNTIME_MS,
+        batchRuntimeCeilingMs
+      )
+    );
+    const batchNow = new Date();
+    const tasks = await claimSourceTasks(
+      "CONNECTOR_POLL",
+      Math.min(batchConcurrency, remaining),
+      batchNow
+    );
+
+    if (tasks.length === 0) {
+      break;
+    }
+
+    let cursor = 0;
+
+    async function worker() {
+      while (cursor < tasks.length) {
+        const task = tasks[cursor]!;
+        cursor += 1;
+
+        try {
+          if (!task.companySourceId) {
+            await finishSourceTask(task.id, "SKIPPED", {
+              finishedAt: new Date(),
+              lastError: "No company source is attached to connector poll task.",
+            });
+            continue;
+          }
+
+          const taskStartedAt = new Date();
+          await pollCompanySource(task.companySourceId, taskStartedAt, batchRuntimeMs);
+          successCount += 1;
+          await finishSourceTask(task.id, "SUCCESS", { finishedAt: new Date() });
+        } catch (error) {
+          failedCount += 1;
+          const taskFailedAt = new Date();
+          const cooldownUntil = await handleCompanySourcePollFailure(
+            task.companySourceId,
+            taskFailedAt,
+            error
+          );
+          await finishSourceTask(task.id, "FAILED", {
+            lastError: error instanceof Error ? error.message : String(error),
+            retryAt: cooldownUntil ?? new Date(taskFailedAt.getTime() + 60 * 60 * 1000),
           });
-          continue;
         }
-
-        await pollCompanySource(task.companySourceId, now);
-        successCount += 1;
-        await finishSourceTask(task.id, "SUCCESS", { finishedAt: now });
-      } catch (error) {
-        failedCount += 1;
-        await handleCompanySourcePollFailure(task.companySourceId, now, error);
-        await finishSourceTask(task.id, "FAILED", {
-          lastError: error instanceof Error ? error.message : String(error),
-          retryAt: new Date(now.getTime() + 60 * 60 * 1000),
-        });
       }
     }
+
+    await Promise.all(
+      Array.from(
+        { length: Math.min(batchConcurrency, tasks.length) },
+        () => worker()
+      )
+    );
+
+    processedCount += tasks.length;
   }
 
-  await Promise.all(
-    Array.from(
-      { length: Math.min(COMPANY_SOURCE_POLL_CONCURRENCY, tasks.length) },
-      () => worker()
-    )
-  );
-
   return {
-    processedCount: tasks.length,
+    processedCount,
     successCount,
     failedCount,
   };
@@ -1436,7 +1609,11 @@ async function runSourceValidation(companySourceId: string, now: Date) {
   }
 }
 
-async function pollCompanySource(companySourceId: string, now: Date) {
+async function pollCompanySource(
+  companySourceId: string,
+  now: Date,
+  maxRuntimeMs: number = COMPANY_SOURCE_POLL_MAX_RUNTIME_MS
+) {
   const source = await prisma.companySource.findUnique({
     where: { id: companySourceId },
     include: { company: true },
@@ -1463,6 +1640,7 @@ async function pollCompanySource(companySourceId: string, now: Date) {
   const summary = await ingestConnector(connector, {
     now,
     runMode: "SCHEDULED",
+    maxRuntimeMs,
     triggerLabel: `company-source:${source.id}`,
     scheduleCadenceMinutes: source.pollingCadenceMinutes,
     runMetadata: {
@@ -1477,6 +1655,15 @@ async function pollCompanySource(companySourceId: string, now: Date) {
 
   const overlapRatio =
     summary.fetchedCount > 0 ? summary.dedupedCount / summary.fetchedCount : source.overlapRatio;
+  const taleoZeroYield =
+    source.connectorName === "taleo" &&
+    summary.fetchedCount === 0 &&
+    summary.acceptedCount === 0;
+  const repeatedTaleoZeroYield =
+    taleoZeroYield &&
+    source.lastJobsFetchedCount === 0 &&
+    source.lastJobsAcceptedCount === 0 &&
+    source.pollSuccessCount > 0;
   const predictedPriority = Math.max(
     0.1,
     Math.min(
@@ -1502,8 +1689,15 @@ async function pollCompanySource(companySourceId: string, now: Date) {
   });
   const nextYieldScore = computeSourceYieldScore({
     sourceQualityScore: Math.max(
-      source.sourceQualityScore,
-      Math.min(0.99, predictedPriority / 1.5)
+      taleoZeroYield
+        ? Math.max(
+            0.12,
+            Math.min(source.sourceQualityScore, repeatedTaleoZeroYield ? 0.22 : 0.32)
+          )
+        : source.sourceQualityScore,
+      taleoZeroYield
+        ? Math.min(0.38, predictedPriority / 1.5)
+        : Math.min(0.99, predictedPriority / 1.5)
     ),
     pollAttemptCount: nextPollAttemptCount,
     pollSuccessCount: nextPollSuccessCount,
@@ -1517,14 +1711,23 @@ async function pollCompanySource(companySourceId: string, now: Date) {
   await prisma.companySource.update({
     where: { id: source.id },
     data: {
-      status: "ACTIVE",
+      status: repeatedTaleoZeroYield ? "DEGRADED" : "ACTIVE",
       validationState: "VALIDATED",
-      pollState: "READY",
+      pollState: taleoZeroYield ? "BACKOFF" : "READY",
       lastValidatedAt: source.lastValidatedAt ?? now,
       lastSuccessfulPollAt: now,
       lastHttpStatus: 200,
       cooldownUntil: new Date(
-        now.getTime() + (source.pollingCadenceMinutes ?? DEFAULT_SOURCE_POLL_CADENCE_MINUTES) * 60 * 1000
+        now.getTime() +
+          (
+            taleoZeroYield
+              ? repeatedTaleoZeroYield
+                ? 24 * 60
+                : 12 * 60
+              : source.pollingCadenceMinutes ?? DEFAULT_SOURCE_POLL_CADENCE_MINUTES
+          ) *
+            60 *
+            1000
       ),
       pollAttemptCount: nextPollAttemptCount,
       pollSuccessCount: nextPollSuccessCount,
@@ -1541,10 +1744,19 @@ async function pollCompanySource(companySourceId: string, now: Date) {
       failureStreak: 0,
       lastFailureAt: null,
       priorityScore: predictedPriority,
-      sourceQualityScore: Math.max(source.sourceQualityScore, Math.min(0.99, predictedPriority / 1.5)),
+      sourceQualityScore: taleoZeroYield
+        ? Math.max(
+            0.12,
+            Math.min(source.sourceQualityScore, repeatedTaleoZeroYield ? 0.22 : 0.32)
+          )
+        : Math.max(source.sourceQualityScore, Math.min(0.99, predictedPriority / 1.5)),
       yieldScore: nextYieldScore,
       overlapRatio,
-      validationMessage: null,
+      validationMessage: taleoZeroYield
+        ? repeatedTaleoZeroYield
+          ? "Taleo source returned zero listings in consecutive polls and was cooled down aggressively."
+          : "Taleo source returned zero listings and was backed off for a longer cooldown."
+        : null,
       metadataJson: {
         lastSummary: {
           fetchedCount: summary.fetchedCount,
@@ -1561,7 +1773,7 @@ async function pollCompanySource(companySourceId: string, now: Date) {
     where: { id: source.companyId },
     data: {
       lastSuccessfulPollAt: now,
-      crawlStatus: "IDLE",
+      crawlStatus: taleoZeroYield ? "DEGRADED" : "IDLE",
       discoveryStatus: "DISCOVERED",
     },
   });
@@ -1571,8 +1783,8 @@ async function handleCompanySourcePollFailure(
   companySourceId: string | null,
   now: Date,
   error: unknown
-) {
-  if (!companySourceId) return;
+): Promise<Date | null> {
+  if (!companySourceId) return null;
 
   const source = await prisma.companySource.findUnique({
     where: { id: companySourceId },
@@ -1597,11 +1809,21 @@ async function handleCompanySourcePollFailure(
     },
   });
 
-  if (!source) return;
+  if (!source) return null;
 
   const errorMessage = error instanceof Error ? error.message : String(error);
-  const hardFailure = /\b(404|410)\b/.test(errorMessage);
+  // 400 is treated as hard failure alongside 404/410: a Bad Request from a
+  // company career page almost always means a misconfigured or defunct source URL.
+  const hardFailure = /\b(400|404|410)\b/.test(errorMessage);
   const blockedFailure = /\b(401|403|429)\b/.test(errorMessage);
+  // Workday returns 500/502/503/504 and text/html as bot-detection responses,
+  // not as genuine server errors. Treat all of these as blocked failures so they
+  // get the 12h/24h/36h cooldown ladder rather than the 1h generic ladder.
+  const workdayBlockedFailure =
+    source.connectorName === "workday" &&
+    (blockedFailure ||
+      /\b(500|502|503|504)\b/.test(errorMessage) ||
+      /bot detection|text\/html|content.type/i.test(errorMessage));
   const deterministicHardInvalid =
     hardFailure && DETERMINISTIC_ATS_HARD_INVALID_CONNECTORS.has(source.connectorName);
   const nextFailureStreak = source.failureStreak + 1;
@@ -1612,6 +1834,8 @@ async function handleCompanySourcePollFailure(
       ? true
       : hardFailure
       ? nextConsecutiveFailures >= HARD_FAILURE_REDISCOVERY_THRESHOLD
+      : workdayBlockedFailure
+        ? nextConsecutiveFailures >= WORKDAY_BLOCKED_REDISCOVERY_THRESHOLD
       : nextFailureStreak >= REDISCOVERY_FAILURE_THRESHOLD;
   const nextStatus: CompanySourceStatus = shouldRediscover ? "REDISCOVER_REQUIRED" : "DEGRADED";
   const nextValidationState: CompanySourceValidationState =
@@ -1621,7 +1845,7 @@ async function handleCompanySourcePollFailure(
       ? shouldRediscover
         ? "INVALID"
         : "SUSPECT"
-      : blockedFailure
+      : (blockedFailure || workdayBlockedFailure)
         ? "BLOCKED"
         : "SUSPECT";
   const nextPollState: CompanySourcePollState = shouldRediscover
@@ -1641,6 +1865,17 @@ async function handleCompanySourcePollFailure(
     overlapRatio: source.overlapRatio,
   });
 
+  const cooldownHours = deterministicHardInvalid
+    ? 12
+    : hardFailure
+      ? nextConsecutiveFailures * 4        // 400/404/410: 4h, 8h, 12h…
+      : workdayBlockedFailure
+        ? nextConsecutiveFailures * 12     // Workday 403/429: 12h, 24h, 36h…
+        : blockedFailure
+          ? nextConsecutiveFailures * 8    // other 403/429: 8h, 16h, 24h…
+          : nextFailureStreak;             // generic failures: 1h, 2h, 3h…
+  const cooldownUntil = new Date(now.getTime() + cooldownHours * 60 * 60 * 1000);
+
   await prisma.companySource.update({
     where: { id: source.id },
     data: {
@@ -1652,17 +1887,7 @@ async function handleCompanySourcePollFailure(
       pollAttemptCount: nextPollAttemptCount,
       consecutiveFailures: nextConsecutiveFailures,
       failureStreak: nextFailureStreak,
-      cooldownUntil: new Date(
-        now.getTime() +
-          (deterministicHardInvalid
-            ? 12
-            : hardFailure
-              ? nextConsecutiveFailures * 4
-              : nextFailureStreak) *
-            60 *
-            60 *
-            1000
-      ),
+      cooldownUntil,
       sourceQualityScore: nextSourceQualityScore,
       yieldScore: nextYieldScore,
       validationMessage: errorMessage,
@@ -1693,6 +1918,8 @@ async function handleCompanySourcePollFailure(
       notBeforeAt: now,
     });
   }
+
+  return cooldownUntil;
 }
 
 async function handleCompanySourceValidationFailure(

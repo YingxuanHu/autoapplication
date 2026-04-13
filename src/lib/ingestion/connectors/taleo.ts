@@ -38,6 +38,9 @@ import { renderPage, disposeBrowser } from "@/lib/ingestion/headless";
 const TALEO_DETAIL_CONCURRENCY = 4;
 const TALEO_REST_PAGE_SIZE = 25;
 const TALEO_SOURCE_TOKEN_SEPARATOR = "/";
+const TALEO_HEADLESS_FALLBACK_BATCH_SIZE = 60;
+const TALEO_DETAIL_TIMEOUT_MS = 20_000;
+const TALEO_DETAIL_NAVIGATION_TIMEOUT_MS = 18_000;
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -91,6 +94,13 @@ type TaleoJobDetail = {
   salaryMax: number | null;
   salaryCurrency: string | null;
 };
+
+type TaleoCheckpoint =
+  | {
+      strategy: "sitemap_headless";
+      offset: number;
+    }
+  | null;
 
 // ─── Token helpers ───────────────────────────────────────────────────────────
 
@@ -165,6 +175,8 @@ export function createTaleoConnector(
         limit: fetchOptions.limit,
         signal: fetchOptions.signal,
         log: fetchOptions.log,
+        checkpoint: parseTaleoCheckpoint(fetchOptions.checkpoint),
+        onCheckpoint: fetchOptions.onCheckpoint,
       });
       fetchCache.set(cacheKey, request);
       return request;
@@ -181,6 +193,8 @@ async function fetchTaleoJobs({
   limit,
   signal,
   log = console.log,
+  checkpoint,
+  onCheckpoint,
 }: {
   target: TaleoTarget;
   fallbackCompanyName: string;
@@ -188,6 +202,8 @@ async function fetchTaleoJobs({
   limit?: number;
   signal?: AbortSignal;
   log?: (message: string) => void;
+  checkpoint?: TaleoCheckpoint;
+  onCheckpoint?: (checkpoint: Prisma.InputJsonValue | null) => Promise<void> | void;
 }): Promise<SourceConnectorFetchResult> {
   throwIfAborted(signal);
 
@@ -197,11 +213,20 @@ async function fetchTaleoJobs({
     return restResult;
   }
 
-  // Step 2: Fall back to sitemap + headless detail rendering
+  // Step 2: Fall back to sitemap + headless detail rendering.
   log(
     `[taleo:${buildTaleoSourceToken(target)}] REST API unavailable, falling back to sitemap + headless detail`
   );
-  return fetchViaSitemapAndHeadless(target, fallbackCompanyName, now, limit, signal, log);
+  return fetchViaSitemapAndHeadless(
+    target,
+    fallbackCompanyName,
+    now,
+    limit,
+    signal,
+    log,
+    checkpoint,
+    onCheckpoint
+  );
 }
 
 // ─── REST API path ──────────────────────────────────────────────────────────
@@ -430,14 +455,26 @@ async function fetchViaSitemapAndHeadless(
   now: Date,
   limit?: number,
   signal?: AbortSignal,
-  log: (message: string) => void = console.log
+  log: (message: string) => void = console.log,
+  checkpoint?: TaleoCheckpoint,
+  onCheckpoint?: (checkpoint: Prisma.InputJsonValue | null) => Promise<void> | void
 ): Promise<SourceConnectorFetchResult> {
   const sitemapEntries = await fetchSitemap(target);
-  const entriesToProcess =
-    typeof limit === "number" ? sitemapEntries.slice(0, limit) : sitemapEntries;
+  const startingOffset =
+    checkpoint?.strategy === "sitemap_headless" ? checkpoint.offset : 0;
+  const maxBatchSize =
+    typeof limit === "number"
+      ? Math.min(limit, TALEO_HEADLESS_FALLBACK_BATCH_SIZE)
+      : TALEO_HEADLESS_FALLBACK_BATCH_SIZE;
+  const entriesToProcess = sitemapEntries.slice(
+    startingOffset,
+    startingOffset + maxBatchSize
+  );
+  const nextOffset = startingOffset + entriesToProcess.length;
+  const exhausted = nextOffset >= sitemapEntries.length;
 
   log(
-    `[taleo:${buildTaleoSourceToken(target)}] Sitemap has ${sitemapEntries.length} entries, processing ${entriesToProcess.length}`
+    `[taleo:${buildTaleoSourceToken(target)}] Sitemap has ${sitemapEntries.length} entries, processing ${entriesToProcess.length} (offset ${startingOffset})`
   );
 
   const jobs: SourceConnectorJob[] = [];
@@ -494,8 +531,24 @@ async function fetchViaSitemapAndHeadless(
   // Clean up headless browser after batch
   await disposeBrowser();
 
+  if (exhausted) {
+    await onCheckpoint?.(null);
+  } else {
+    await onCheckpoint?.({
+      strategy: "sitemap_headless",
+      offset: nextOffset,
+    } satisfies TaleoCheckpoint);
+  }
+
   return {
     jobs,
+    checkpoint: exhausted
+      ? null
+      : ({
+          strategy: "sitemap_headless",
+          offset: nextOffset,
+        } satisfies TaleoCheckpoint),
+    exhausted,
     metadata: {
       tenant: target.tenant,
       careerSection: target.careerSection,
@@ -503,9 +556,35 @@ async function fetchViaSitemapAndHeadless(
       boardUrl: buildTaleoBoardUrl(target),
       sitemapUrl: buildTaleoSitemapUrl(target),
       sitemapEntryCount: sitemapEntries.length,
+      startingOffset,
+      nextOffset,
+      exhausted,
       fetchedAt: now.toISOString(),
       totalFetched: jobs.length,
     } as Prisma.InputJsonValue,
+  };
+}
+
+function parseTaleoCheckpoint(
+  value: Prisma.InputJsonValue | null | undefined
+): TaleoCheckpoint {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    return null;
+  }
+
+  const record = value as Record<string, unknown>;
+  if (record.strategy !== "sitemap_headless") {
+    return null;
+  }
+
+  const offset = typeof record.offset === "number" ? record.offset : null;
+  if (offset == null || !Number.isFinite(offset) || offset < 0) {
+    return null;
+  }
+
+  return {
+    strategy: "sitemap_headless",
+    offset,
   };
 }
 
@@ -553,12 +632,15 @@ async function fetchJobDetailViaHeadless(
 ): Promise<TaleoJobDetail | null> {
   const detailUrl = buildTaleoJobDetailUrl(target, entry.jobId);
 
+  // Taleo detail pages are server-rendered FreeMarker — job data is in the
+  // initial HTML. Waiting for networkidle causes indefinite hangs because Taleo
+  // keeps background polling requests alive. domcontentloaded is sufficient.
   const result = await renderPage({
     url: detailUrl,
-    waitForNetworkIdle: true,
-    extraWaitMs: 2500,
-    timeoutMs: 35_000,
-    navigationTimeoutMs: 25_000,
+    waitForNetworkIdle: false,
+    extraWaitMs: 0,
+    timeoutMs: TALEO_DETAIL_TIMEOUT_MS,
+    navigationTimeoutMs: TALEO_DETAIL_NAVIGATION_TIMEOUT_MS,
   });
 
   const html = result.html;

@@ -230,6 +230,36 @@ export const RECRUITEE_DEFAULT_COMPANY_TOKENS = [
   "basispathinc",
 ] as const;
 
+export const JOBVITE_DEFAULT_COMPANY_TOKENS = [
+  "ornge",
+  "triton-digital",
+  "ninjaone",
+  "4ccareers",
+  "optimizely",
+  "uplight",
+  "windriver",
+  "venterra",
+  "pointofrental",
+  "forescout",
+  "voices",
+  "securityfinance",
+  "egnyte",
+  "mattamyhomes",
+  "versa-networks",
+  "barcodesinc",
+  "consumer-tech",
+  "absolute",
+  "longos",
+  "pinnaclelive",
+  "moneycorp",
+  "openlending",
+] as const;
+
+export const TEAMTAILOR_DEFAULT_COMPANY_TOKENS = [
+  "ecoonline",
+  "career",
+] as const;
+
 export const ASHBY_DEFAULT_ORG_TOKENS = [
   "openai",
   "perplexity",

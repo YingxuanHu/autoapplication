@@ -7,6 +7,8 @@ import {
   createHimalayasConnector,
   createIcimsConnector,
   createJobicyConnector,
+  createJobviteConnector,
+  createTeamtailorConnector,
   createLeverConnector,
   createMuseConnector,
   createRemotiveConnector,
@@ -24,11 +26,13 @@ import {
 import {
   ASHBY_DEFAULT_ORG_TOKENS,
   GREENHOUSE_DEFAULT_BOARD_TOKENS,
+  JOBVITE_DEFAULT_COMPANY_TOKENS,
   LEVER_DEFAULT_SITE_TOKENS,
   RECRUITEE_DEFAULT_COMPANY_TOKENS,
   RIPPLING_DEFAULT_BOARD_TOKENS,
   SMARTRECRUITERS_DEFAULT_COMPANY_TOKENS,
   TALEO_DEFAULT_SOURCE_TOKENS,
+  TEAMTAILOR_DEFAULT_COMPANY_TOKENS,
   WORKABLE_DEFAULT_ACCOUNT_TOKENS,
 } from "@/lib/ingestion/coverage";
 import type { SourceConnector } from "@/lib/ingestion/types";
@@ -40,6 +44,8 @@ export type SupportedConnectorName =
   | "himalayas"
   | "icims"
   | "jobicy"
+  | "jobvite"
+  | "teamtailor"
   | "lever"
   | "remotive"
   | "themuse"
@@ -97,6 +103,10 @@ const DEFAULT_RIPPLING_BOARDS = RIPPLING_DEFAULT_BOARD_TOKENS.join(",");
 
 const DEFAULT_ASHBY_ORGS = ASHBY_DEFAULT_ORG_TOKENS.join(",");
 
+const DEFAULT_JOBVITE_COMPANIES = JOBVITE_DEFAULT_COMPANY_TOKENS.join(",");
+
+const DEFAULT_TEAMTAILOR_COMPANIES = TEAMTAILOR_DEFAULT_COMPANY_TOKENS.join(",");
+
 const DEFAULT_TALEO_SOURCES = TALEO_DEFAULT_SOURCE_TOKENS.join(",");
 
 const DISCOVERY_STORE_PATH = path.resolve(
@@ -129,6 +139,44 @@ export function resolveConnectors(
 
   if (connectorName === "jobicy") {
     return [createJobicyConnector()];
+  }
+
+  if (connectorName === "jobvite") {
+    const companyTokens = resolveTokens(
+      args.companies ??
+        args.company ??
+        process.env.JOBVITE_COMPANY_TOKENS ??
+        DEFAULT_JOBVITE_COMPANIES
+    );
+
+    if (companyTokens.length === 0) {
+      throw new Error(
+        "No Jobvite companies configured. Pass --company=ornge or set JOBVITE_COMPANY_TOKENS."
+      );
+    }
+
+    return companyTokens.map((companyToken) =>
+      createJobviteConnector({ companyToken })
+    );
+  }
+
+  if (connectorName === "teamtailor") {
+    const companyTokens = resolveTokens(
+      args.companies ??
+        args.company ??
+        process.env.TEAMTAILOR_COMPANY_TOKENS ??
+        DEFAULT_TEAMTAILOR_COMPANIES
+    );
+
+    if (companyTokens.length === 0) {
+      throw new Error(
+        "No Teamtailor companies configured. Pass --company=ecoonline or set TEAMTAILOR_COMPANY_TOKENS."
+      );
+    }
+
+    return companyTokens.map((companyToken) =>
+      createTeamtailorConnector({ companyToken })
+    );
   }
 
   if (connectorName === "remotive") {
@@ -431,6 +479,10 @@ export function getScheduledConnectors(): ScheduledConnectorDefinition[] {
     ...resolveOptionalWorkableScheduledConnectors(
       promotedDiscoveryTargets.workable
     ),
+    ...resolveOptionalJobviteScheduledConnectors(promotedDiscoveryTargets.jobvite),
+    ...resolveOptionalTeamtailorScheduledConnectors(
+      promotedDiscoveryTargets.teamtailor
+    ),
     ...resolveOptionalWorkdayScheduledConnectors(promotedDiscoveryTargets.workday),
     ...resolveOptionalAdzunaScheduledConnectors(),
     ...resolveOptionalHimalayasScheduledConnectors(),
@@ -504,6 +556,42 @@ function resolveOptionalWorkableScheduledConnectors(promotedTokens: string[]) {
   }));
 }
 
+function resolveOptionalJobviteScheduledConnectors(promotedTokens: string[]) {
+  const tokens = resolveTokens(
+    mergeTokenValues(
+      process.env.JOBVITE_COMPANY_TOKENS ?? DEFAULT_JOBVITE_COMPANIES,
+      promotedTokens
+    )
+  );
+  if (tokens.length === 0) return [];
+
+  return tokens.map((companyToken) => ({
+    connector: createJobviteConnector({ companyToken }),
+    cadenceMinutes: resolveCadenceMinutes(
+      process.env.JOBVITE_SCHEDULE_MINUTES,
+      240
+    ),
+  }));
+}
+
+function resolveOptionalTeamtailorScheduledConnectors(promotedTokens: string[]) {
+  const tokens = resolveTokens(
+    mergeTokenValues(
+      process.env.TEAMTAILOR_COMPANY_TOKENS ?? DEFAULT_TEAMTAILOR_COMPANIES,
+      promotedTokens
+    )
+  );
+  if (tokens.length === 0) return [];
+
+  return tokens.map((companyToken) => ({
+    connector: createTeamtailorConnector({ companyToken }),
+    cadenceMinutes: resolveCadenceMinutes(
+      process.env.TEAMTAILOR_SCHEDULE_MINUTES,
+      240
+    ),
+  }));
+}
+
 function resolveOptionalIcimsScheduledConnectors(promotedTokens: string[]) {
   const tokens = resolveTokens(
     mergeTokenValues(process.env.ICIMS_PORTAL_TOKENS ?? "", promotedTokens)
@@ -571,9 +659,11 @@ function resolveOptionalAdzunaScheduledConnectors() {
   const appKey = process.env.ADZUNA_APP_KEY ?? "";
   if (!appId || !appKey) return [];
 
+  // Default to NA-only. The product is North America first — pulling all 16
+  // Adzuna countries stores tens of thousands of out-of-scope jobs that never
+  // appear in the feed and bloat the DB. Override via ADZUNA_COUNTRIES env var.
   const countries = resolveTokens(
-    process.env.ADZUNA_COUNTRIES ??
-      "au,be,br,ca,de,fr,gb,in,it,mx,nl,nz,pl,sg,us,za"
+    process.env.ADZUNA_COUNTRIES ?? "us,ca"
   );
   const cadence = resolveCadenceMinutes(process.env.ADZUNA_SCHEDULE_MINUTES, 360);
 
@@ -696,6 +786,8 @@ function loadPromotedDiscoveryTargets() {
     himalayas: [],
     icims: [],
     jobicy: [],
+    jobvite: [],
+    teamtailor: [],
     lever: [],
     remotive: [],
     themuse: [],

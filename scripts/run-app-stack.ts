@@ -203,6 +203,14 @@ async function main() {
   if (withDaemon) {
     const existingDaemon = await getRunningDaemonLock();
     if (existingDaemon) {
+      if (mode === "dev") {
+        console.log(
+          `[stack] Replacing existing ingest daemon pid ${existingDaemon.pid} in dev mode`
+        );
+        await replaceExistingDaemon(existingDaemon);
+        daemon = startDaemon();
+        children.add(daemon);
+      } else {
       const desiredIntervalMinutes = getDesiredDaemonIntervalMinutes();
       const existingIntervalMinutes = getDaemonIntervalMinutes(existingDaemon.argv);
 
@@ -219,6 +227,7 @@ async function main() {
         console.log(
           `[stack] Reusing existing ingest daemon pid ${existingDaemon.pid}${existingArgs}`
         );
+      }
       }
     } else {
       daemon = startDaemon();

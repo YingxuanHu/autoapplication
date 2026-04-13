@@ -29,8 +29,8 @@ import type {
 } from "@/generated/prisma/client";
 import { Prisma } from "@/generated/prisma/client";
 
-const RUNNING_LOCK_WINDOW_MINUTES = 90;
-const RUNNING_PROGRESS_STALE_MINUTES = 45;
+const RUNNING_LOCK_WINDOW_MINUTES = 30;
+const RUNNING_PROGRESS_STALE_MINUTES = 15;
 const APPLY_URL_CHECK_INTERVAL_HOURS = 18;
 const APPLY_URL_CHECK_TIMEOUT_MS = 5000;
 
@@ -313,6 +313,81 @@ export async function reconcileCanonicalLifecycle(options: { now?: Date } = {}) 
     canonicalJobs.map((job) => job.id),
     now
   );
+}
+
+/**
+ * Fast bulk status sync — O(1) DB operations instead of N+1.
+ *
+ * Syncs `status` to match the stored `availabilityScore` for all non-REMOVED
+ * jobs using a single SQL UPDATE.  Then runs the full per-job reconcile for a
+ * limited cohort of at-risk jobs (AGING/STALE) so that freshness timestamps,
+ * apply-URL checks, and expiry transitions are still applied incrementally.
+ *
+ * This replaces `reconcileCanonicalLifecycle` in daemon cycles where
+ * processing all 300k+ jobs per cycle is too slow.
+ */
+export async function bulkSyncCanonicalStatuses(options: {
+  now?: Date;
+  /** Max number of AGING/STALE jobs to run the full per-job refresh on. Default 3000. */
+  perJobLimit?: number;
+} = {}) {
+  const now = options.now ?? new Date();
+  const perJobLimit = options.perJobLimit ?? 3_000;
+
+  // 1. Bulk SQL status sync based on stored availabilityScore.
+  //    Also applies the confirmation floor inline: a URL-confirmed-alive job within
+  //    3 days always has its availabilityScore bumped to at least 72 (LIVE floor from
+  //    getRecentAliveConfirmationFloor), so status correctly reflects the confirmation.
+  //    This avoids needing a per-job refresh for every recently-confirmed job.
+  //    REMOVED jobs are never touched.
+  const syncResult = await prisma.$executeRaw`
+    UPDATE "JobCanonical"
+    SET
+      "availabilityScore" = CASE
+        WHEN "lastConfirmedAliveAt" >= NOW() - INTERVAL '3 days'
+          THEN GREATEST("availabilityScore", 72)
+        ELSE "availabilityScore"
+      END,
+      status = CASE
+        WHEN "lastConfirmedAliveAt" >= NOW() - INTERVAL '3 days' THEN 'LIVE'::"JobStatus"
+        WHEN "availabilityScore" >= 72 THEN 'LIVE'::"JobStatus"
+        WHEN "availabilityScore" >= 48 THEN 'AGING'::"JobStatus"
+        WHEN "availabilityScore" >= 22 THEN 'STALE'::"JobStatus"
+        ELSE                                'EXPIRED'::"JobStatus"
+      END
+    WHERE status != 'REMOVED'::"JobStatus"
+  `;
+
+  // 2. Incremental per-job refresh for AGING/STALE cohort — these are most
+  //    likely to transition and need freshness/expiry logic applied.
+  const atRiskJobs = await prisma.jobCanonical.findMany({
+    where: { status: { in: ["AGING", "STALE"] } },
+    select: { id: true },
+    orderBy: { lastApplyCheckAt: "asc" }, // oldest-checked first
+    take: perJobLimit,
+  });
+
+  const tally = await refreshCanonicalStatuses(
+    atRiskJobs.map((j) => j.id),
+    now
+  );
+
+  // Build aggregate counts for the full pool (cheap count queries).
+  const [liveCount, agingCount, staleCount, expiredCount] = await Promise.all([
+    prisma.jobCanonical.count({ where: { status: "LIVE" } }),
+    prisma.jobCanonical.count({ where: { status: "AGING" } }),
+    prisma.jobCanonical.count({ where: { status: "STALE" } }),
+    prisma.jobCanonical.count({ where: { status: "EXPIRED" } }),
+  ]);
+
+  return {
+    liveCount,
+    agingCount,
+    staleCount,
+    expiredCount,
+    removedCount: 0,
+    updatedCount: (syncResult as number) + tally.updatedCount,
+  };
 }
 
 export async function reconcileCanonicalLifecycleByIds(
@@ -1799,15 +1874,19 @@ function getRecentAliveConfirmationFloor(
   const daysSinceConfirmed =
     (now.getTime() - lastConfirmedAliveAt.getTime()) / (24 * 60 * 60 * 1000);
 
-  if (daysSinceConfirmed <= 1) {
-    return activeMappingsCount > 0 ? 72 : 56;
-  }
-
+  // A URL confirmed alive within 3 days is the strongest freshness signal —
+  // treat as LIVE regardless of whether sources are currently listing the job.
+  // Aggregator/board sources routinely drop and re-add listings without the
+  // underlying job closing, so active mapping count is a poor proxy for liveness.
   if (daysSinceConfirmed <= 3) {
-    return activeMappingsCount > 0 ? 60 : 48;
+    return 72;
   }
 
   if (daysSinceConfirmed <= 7) {
+    return activeMappingsCount > 0 ? 60 : 48;
+  }
+
+  if (daysSinceConfirmed <= 14) {
     return activeMappingsCount > 0 ? 48 : 30;
   }
 
@@ -1884,12 +1963,18 @@ async function checkApplyUrlAvailability(
   applyUrl: string,
   now: Date
 ): Promise<ApplyUrlCheckOutcome> {
+  // Use HEAD to avoid reading a response body. Some ATS pages (e.g. Taleo)
+  // return response headers promptly but stream the body forever, causing
+  // response.text() to hang indefinitely and keep the Node.js event loop alive.
+  // HEAD is body-less by spec — the connection completes as soon as headers arrive.
+  // Body-based dead-signal detection (detectDeadSignal) is intentionally skipped
+  // here; it's done during full connector indexing where the HTML is already fetched.
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), APPLY_URL_CHECK_TIMEOUT_MS);
 
   try {
     const response = await fetch(applyUrl, {
-      method: "GET",
+      method: "HEAD",
       redirect: "follow",
       signal: controller.signal,
       headers: {
@@ -1897,35 +1982,18 @@ async function checkApplyUrlAvailability(
       },
     });
 
-    if ([404, 410, 451].includes(response.status)) {
+    const status = response.status;
+
+    if ([404, 410, 451].includes(status)) {
       return {
         checkedAt: now,
         aliveConfirmedAt: null,
         deadSignalAt: now,
-        deadSignalReason: `Apply URL returned HTTP ${response.status}.`,
+        deadSignalReason: `Apply URL returned HTTP ${status}.`,
       };
     }
 
-    const contentType = response.headers.get("content-type") ?? "";
-    const shouldInspectBody = contentType.includes("text") || contentType.includes("html");
-    const bodyText = shouldInspectBody ? await response.text() : "";
-    const deadSignal = detectDeadSignal({
-      title: "",
-      description: bodyText,
-      deadline: null,
-      fetchedAt: now,
-    });
-
-    if (deadSignal.detected) {
-      return {
-        checkedAt: now,
-        aliveConfirmedAt: null,
-        deadSignalAt: now,
-        deadSignalReason: deadSignal.reason,
-      };
-    }
-
-    if (response.ok || (response.status >= 300 && response.status < 400)) {
+    if (response.ok || (status >= 300 && status < 400)) {
       return {
         checkedAt: now,
         aliveConfirmedAt: now,
@@ -1934,6 +2002,7 @@ async function checkApplyUrlAvailability(
       };
     }
 
+    // 405 (HEAD not supported), 4xx, 5xx etc. — treat as unknown
     return {
       checkedAt: now,
       aliveConfirmedAt: null,
@@ -1952,12 +2021,20 @@ async function checkApplyUrlAvailability(
   }
 }
 
+/** Strip PostgreSQL-unsafe C0 control characters (notably \u0000) from a string. */
+function stripUnsafeChars(s: string | null | undefined): string | undefined {
+  if (s == null) return undefined;
+  return s.replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, "");
+}
+
 function buildRawPayload(sourceJob: SourceConnectorJob, fetchedAt: Date) {
   return {
     title: sourceJob.title,
     company: sourceJob.company,
     location: sourceJob.location,
-    description: sourceJob.description,
+    // Strip null bytes before storing as JSON — PostgreSQL rejects \u0000 in
+    // jsonb columns and this is the raw (pre-normalization) description path.
+    description: stripUnsafeChars(sourceJob.description),
     applyUrl: sourceJob.applyUrl,
     sourceUrl: sourceJob.sourceUrl,
     postedAt: sourceJob.postedAt?.toISOString() ?? null,

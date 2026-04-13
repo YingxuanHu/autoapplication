@@ -11,9 +11,108 @@ const STALE_RUNNING_TASK_WINDOW_MINUTES: Record<SourceTaskKind, number> = {
   COMPANY_DISCOVERY: 180,
   REDISCOVERY: 180,
   SOURCE_VALIDATION: 60,
-  CONNECTOR_POLL: 120,
+  CONNECTOR_POLL: 20,
   URL_HEALTH: 45,
 };
+
+const ACTIVE_UNIQUE_SOURCE_TASK_STATUSES: SourceTaskStatus[] = [
+  "PENDING",
+  "RUNNING",
+];
+
+function buildSourceTaskUniquenessWhere(input: {
+  kind: SourceTaskKind;
+  companyId?: string | null;
+  companySourceId?: string | null;
+  canonicalJobId?: string | null;
+}) {
+  if (input.companySourceId) {
+    return {
+      kind: input.kind,
+      companySourceId: input.companySourceId,
+    } satisfies Prisma.SourceTaskWhereInput;
+  }
+
+  if (input.canonicalJobId) {
+    return {
+      kind: input.kind,
+      canonicalJobId: input.canonicalJobId,
+    } satisfies Prisma.SourceTaskWhereInput;
+  }
+
+  return {
+    kind: input.kind,
+    companyId: input.companyId ?? null,
+    companySourceId: null,
+    canonicalJobId: null,
+  } satisfies Prisma.SourceTaskWhereInput;
+}
+
+function buildSourceTaskUniquenessKey(task: {
+  kind: SourceTaskKind;
+  companyId: string | null;
+  companySourceId: string | null;
+  canonicalJobId: string | null;
+}) {
+  if (task.companySourceId) {
+    return [task.kind, "source", task.companySourceId].join("|");
+  }
+
+  if (task.canonicalJobId) {
+    return [task.kind, "canonical", task.canonicalJobId].join("|");
+  }
+
+  return [task.kind, "company", task.companyId ?? "none"].join("|");
+}
+
+async function collapseDuplicatePendingSourceTasks(
+  kind: SourceTaskKind,
+  now: Date
+) {
+  const pendingTasks = await prisma.sourceTask.findMany({
+    where: { kind, status: "PENDING" },
+    select: {
+      id: true,
+      kind: true,
+      companyId: true,
+      companySourceId: true,
+      canonicalJobId: true,
+    },
+    orderBy: [{ priorityScore: "desc" }, { createdAt: "asc" }],
+  });
+
+  const seen = new Set<string>();
+  const duplicateIds: string[] = [];
+
+  for (const task of pendingTasks) {
+    const key = buildSourceTaskUniquenessKey(task);
+    if (seen.has(key)) {
+      duplicateIds.push(task.id);
+      continue;
+    }
+
+    seen.add(key);
+  }
+
+  if (duplicateIds.length === 0) {
+    return 0;
+  }
+
+  const result = await prisma.sourceTask.updateMany({
+    where: {
+      id: { in: duplicateIds },
+      status: "PENDING",
+    },
+    data: {
+      status: "SKIPPED",
+      finishedAt: now,
+      lastError:
+        "Skipped duplicate pending source task because an equivalent task was already queued.",
+    },
+  });
+
+  return result.count;
+}
 
 async function recoverStaleRunningSourceTasks(
   kind: SourceTaskKind,
@@ -21,21 +120,67 @@ async function recoverStaleRunningSourceTasks(
 ) {
   const staleAfterMinutes = STALE_RUNNING_TASK_WINDOW_MINUTES[kind] ?? 120;
   const staleCutoff = new Date(now.getTime() - staleAfterMinutes * 60 * 1000);
-
-  return prisma.sourceTask.updateMany({
+  const staleTasks = await prisma.sourceTask.findMany({
     where: {
       kind,
       status: "RUNNING",
       startedAt: { lt: staleCutoff },
     },
-    data: {
-      status: "PENDING",
-      startedAt: null,
-      finishedAt: null,
-      notBeforeAt: now,
-      lastError: `Recovered stale RUNNING task after exceeding ${staleAfterMinutes} minute lease window.`,
+    select: {
+      id: true,
+      kind: true,
+      companyId: true,
+      companySourceId: true,
+      canonicalJobId: true,
     },
   });
+
+  let recoveredCount = 0;
+
+  for (const task of staleTasks) {
+    const activeDuplicate = await prisma.sourceTask.findFirst({
+      where: {
+        ...buildSourceTaskUniquenessWhere(task),
+        id: { not: task.id },
+        status: { in: ACTIVE_UNIQUE_SOURCE_TASK_STATUSES },
+      },
+      select: { id: true },
+    });
+
+    if (activeDuplicate) {
+      await prisma.sourceTask.updateMany({
+        where: {
+          id: task.id,
+          status: "RUNNING",
+        },
+        data: {
+          status: "SKIPPED",
+          finishedAt: now,
+          lastError:
+            "Skipped stale RUNNING task because an equivalent source task was already active.",
+        },
+      });
+      continue;
+    }
+
+    const updated = await prisma.sourceTask.updateMany({
+      where: {
+        id: task.id,
+        status: "RUNNING",
+      },
+      data: {
+        status: "PENDING",
+        startedAt: null,
+        finishedAt: null,
+        notBeforeAt: now,
+        lastError: `Recovered stale RUNNING task after exceeding ${staleAfterMinutes} minute lease window.`,
+      },
+    });
+
+    recoveredCount += updated.count;
+  }
+
+  return recoveredCount;
 }
 
 export async function enqueueSourceTask(input: {
@@ -74,16 +219,17 @@ export async function enqueueUniqueSourceTask(input: {
 }) {
   const existing = await prisma.sourceTask.findFirst({
     where: {
-      kind: input.kind,
-      status: "PENDING",
-      companyId: input.companyId ?? null,
-      companySourceId: input.companySourceId ?? null,
-      canonicalJobId: input.canonicalJobId ?? null,
+      ...buildSourceTaskUniquenessWhere(input),
+      status: { in: ACTIVE_UNIQUE_SOURCE_TASK_STATUSES },
     },
     orderBy: [{ priorityScore: "desc" }, { createdAt: "asc" }],
   });
 
   if (existing) {
+    if (existing.status === "RUNNING") {
+      return existing;
+    }
+
     return prisma.sourceTask.update({
       where: { id: existing.id },
       data: {
@@ -111,6 +257,7 @@ export async function claimSourceTasks(
   now: Date = new Date()
 ) {
   await recoverStaleRunningSourceTasks(kind, now);
+  await collapseDuplicatePendingSourceTasks(kind, now);
 
   const tasks = await prisma.sourceTask.findMany({
     where: {
@@ -123,7 +270,49 @@ export async function claimSourceTasks(
   });
 
   const claimed = [];
+  const claimedKeys = new Set<string>();
   for (const task of tasks) {
+    const taskKey = buildSourceTaskUniquenessKey(task);
+    if (claimedKeys.has(taskKey)) {
+      await prisma.sourceTask.updateMany({
+        where: {
+          id: task.id,
+          status: "PENDING",
+        },
+        data: {
+          status: "SKIPPED",
+          finishedAt: now,
+          lastError:
+            "Skipped duplicate source task because an equivalent task was already claimed in this batch.",
+        },
+      });
+      continue;
+    }
+
+    const runningDuplicate = await prisma.sourceTask.findFirst({
+      where: {
+        ...buildSourceTaskUniquenessWhere(task),
+        status: "RUNNING",
+      },
+      select: { id: true },
+    });
+
+    if (runningDuplicate) {
+      await prisma.sourceTask.updateMany({
+        where: {
+          id: task.id,
+          status: "PENDING",
+        },
+        data: {
+          status: "SKIPPED",
+          finishedAt: now,
+          lastError:
+            "Skipped duplicate source task because an equivalent task is already running.",
+        },
+      });
+      continue;
+    }
+
     const updated = await prisma.sourceTask.updateMany({
       where: {
         id: task.id,
@@ -138,6 +327,7 @@ export async function claimSourceTasks(
 
     if (updated.count === 1) {
       claimed.push(task);
+      claimedKeys.add(taskKey);
     }
   }
 

@@ -20,6 +20,7 @@
     "enterprise:preflight": "tsx -r dotenv/config scripts/preflight-enterprise.ts",
     "enterprise:corpus": "tsx -r dotenv/config scripts/discover-company-corpus.ts",
     "enterprise:corpus:batches": "tsx -r dotenv/config scripts/run-company-corpus-batches.ts",
+    "company:import-csv": "tsx -r dotenv/config scripts/import-company-seed-csv.ts",
     "workday:scout": "tsx -r dotenv/config scripts/scout-workday.ts",
     "rippling:discover": "tsx -r dotenv/config scripts/discover-rippling.ts",
     "rippling:intake": "tsx -r dotenv/config scripts/discover-rippling.ts --no-search",

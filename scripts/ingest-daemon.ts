@@ -7,10 +7,10 @@
  *   npm run ingest:daemon -- --force          (ignore cadence on first cycle)
  *
  * What it does each cycle:
- *   1. Runs all scheduled connectors that are due (respects cadence)
- *   2. Schedules and runs discovery, rediscovery, company-source polling, and URL health queues
+ *   1. Schedules and runs discovery, rediscovery, company-source polling, and URL health queues
+ *   2. Runs a bounded pass of legacy scheduled connectors that are due
  *   3. Reconciles canonical job lifecycle (LIVE → AGING → STALE → EXPIRED → REMOVED)
- *   3. Sleeps until the next cycle
+ *   4. Sleeps until the next cycle
  *
  * Leave it running in a terminal. Ctrl+C to stop gracefully.
  */
@@ -23,10 +23,31 @@ import {
 } from "../src/lib/ingestion/network-orchestrator";
 import { runScheduledIngestion } from "../src/lib/ingestion/scheduler";
 import { prisma } from "../src/lib/db";
+import type { SourceTaskKind } from "../src/generated/prisma/client";
 
 const DEFAULT_INTERVAL_MINUTES = 10;
 const MIN_INTERVAL_MINUTES = 5;
 const MAX_INTERVAL_MINUTES = 360;
+const STEADY_DISCOVERY_LIMIT = 300;        // up from 200 — faster company pipeline
+const STEADY_VALIDATION_LIMIT = 700;       // up from 500
+const STEADY_SOURCE_POLL_LIMIT = 700;      // up from 500
+const STEADY_REDISCOVERY_LIMIT = 120;      // up from 80
+const STEADY_URL_HEALTH_LIMIT = 3_000;     // up from 2,000 — matches new concurrency
+const BURST_DISCOVERY_LIMIT = 500;         // up from 300
+const BURST_VALIDATION_LIMIT = 1_000;      // up from 700
+const BURST_SOURCE_POLL_LIMIT = 1_000;     // up from 700
+const BURST_REDISCOVERY_LIMIT = 200;       // up from 120
+const BURST_URL_HEALTH_LIMIT = 5_000;      // up from 3,000 — clear the backlog faster
+const STEADY_LEGACY_SCHEDULED_CONNECTOR_CYCLE_BUDGET_MS = 3 * 60 * 1000;
+const STEADY_LEGACY_SCHEDULED_CONNECTOR_MAX_RUNS = 36;
+const BURST_LEGACY_SCHEDULED_CONNECTOR_CYCLE_BUDGET_MS = 6 * 60 * 1000;
+const BURST_LEGACY_SCHEDULED_CONNECTOR_MAX_RUNS = 72;
+const DUE_BACKLOG_CATCH_UP_SLEEP_MS = 15 * 1000;
+const DUE_BACKLOG_STALLED_RETRY_SLEEP_MS = 60 * 1000;
+const DUE_BACKLOG_POLL_THRESHOLD = 100;
+const DUE_BACKLOG_VALIDATION_THRESHOLD = 25;
+const DUE_BACKLOG_DISCOVERY_THRESHOLD = 100;
+const DUE_BACKLOG_REDISCOVERY_THRESHOLD = 50;
 const DAEMON_RUNTIME_DIR = path.join(process.cwd(), ".runtime");
 const DAEMON_LOCK_PATH = path.join(DAEMON_RUNTIME_DIR, "ingest-daemon.lock.json");
 
@@ -35,6 +56,99 @@ type DaemonLock = {
   startedAt: string;
   argv: string[];
 };
+
+type CycleQueueProfile = {
+  discoveryLimit: number;
+  validationLimit: number;
+  sourcePollLimit: number;
+  rediscoveryLimit: number;
+  urlHealthLimit: number;
+  legacyBudgetMs: number;
+  legacyMaxRuns: number;
+  label: "burst" | "steady";
+};
+
+type DueOperationalBacklog = {
+  companyDiscovery: number;
+  sourceValidation: number;
+  connectorPoll: number;
+  rediscovery: number;
+  total: number;
+};
+
+function getCycleQueueProfile(isFirstCycle: boolean): CycleQueueProfile {
+  if (isFirstCycle) {
+    return {
+      discoveryLimit: BURST_DISCOVERY_LIMIT,
+      validationLimit: BURST_VALIDATION_LIMIT,
+      sourcePollLimit: BURST_SOURCE_POLL_LIMIT,
+      rediscoveryLimit: BURST_REDISCOVERY_LIMIT,
+      urlHealthLimit: BURST_URL_HEALTH_LIMIT,
+      legacyBudgetMs: BURST_LEGACY_SCHEDULED_CONNECTOR_CYCLE_BUDGET_MS,
+      legacyMaxRuns: BURST_LEGACY_SCHEDULED_CONNECTOR_MAX_RUNS,
+      label: "burst",
+    };
+  }
+
+  return {
+    discoveryLimit: STEADY_DISCOVERY_LIMIT,
+    validationLimit: STEADY_VALIDATION_LIMIT,
+    sourcePollLimit: STEADY_SOURCE_POLL_LIMIT,
+    rediscoveryLimit: STEADY_REDISCOVERY_LIMIT,
+    urlHealthLimit: STEADY_URL_HEALTH_LIMIT,
+    legacyBudgetMs: STEADY_LEGACY_SCHEDULED_CONNECTOR_CYCLE_BUDGET_MS,
+    legacyMaxRuns: STEADY_LEGACY_SCHEDULED_CONNECTOR_MAX_RUNS,
+    label: "steady",
+  };
+}
+
+async function getDueOperationalBacklog(now: Date): Promise<DueOperationalBacklog> {
+  const grouped = await prisma.sourceTask.groupBy({
+    by: ["kind"],
+    where: {
+      status: "PENDING",
+      notBeforeAt: { lte: now },
+      kind: {
+        in: [
+          "COMPANY_DISCOVERY",
+          "SOURCE_VALIDATION",
+          "CONNECTOR_POLL",
+          "REDISCOVERY",
+        ] satisfies SourceTaskKind[],
+      },
+    },
+    _count: { _all: true },
+  });
+
+  const counts = new Map(
+    grouped.map((row) => [row.kind, row._count._all] as const)
+  );
+
+  const backlog = {
+    companyDiscovery: counts.get("COMPANY_DISCOVERY") ?? 0,
+    sourceValidation: counts.get("SOURCE_VALIDATION") ?? 0,
+    connectorPoll: counts.get("CONNECTOR_POLL") ?? 0,
+    rediscovery: counts.get("REDISCOVERY") ?? 0,
+    total: 0,
+  };
+
+  backlog.total =
+    backlog.companyDiscovery +
+    backlog.sourceValidation +
+    backlog.connectorPoll +
+    backlog.rediscovery;
+
+  return backlog;
+}
+
+function hasSignificantDueBacklog(backlog: DueOperationalBacklog) {
+  return (
+    backlog.connectorPoll >= DUE_BACKLOG_POLL_THRESHOLD ||
+    backlog.sourceValidation >= DUE_BACKLOG_VALIDATION_THRESHOLD ||
+    backlog.companyDiscovery >= DUE_BACKLOG_DISCOVERY_THRESHOLD ||
+    backlog.rediscovery >= DUE_BACKLOG_REDISCOVERY_THRESHOLD
+  );
+}
 
 async function processExists(pid: number) {
   try {
@@ -108,9 +222,23 @@ async function main() {
   let running = true;
   let shutdownRequested = false;
   let forceExitRequested = false;
+  let immediateExitRequested = false;
 
-  // Graceful shutdown
-  const shutdown = () => {
+  const exitImmediately = (signal: NodeJS.Signals, code: number) => {
+    if (immediateExitRequested) {
+      return;
+    }
+
+    immediateExitRequested = true;
+    forceExitRequested = true;
+    running = false;
+    console.log(`\n[daemon] Immediate shutdown (${signal}).`);
+    void releaseDaemonLock().finally(() => {
+      process.exit(code);
+    });
+  };
+
+  const requestGracefulShutdown = () => {
     if (forceExitRequested) {
       return;
     }
@@ -118,40 +246,61 @@ async function main() {
     if (shutdownRequested) {
       forceExitRequested = true;
       console.log("\n[daemon] Force shutdown requested. Exiting now.");
-      process.exit(130);
+      exitImmediately("SIGINT", 130);
+      return;
     }
 
     shutdownRequested = true;
     console.log("\n[daemon] Shutting down after current cycle...");
     running = false;
   };
-  process.on("SIGINT", shutdown);
-  process.on("SIGTERM", shutdown);
+  process.on("SIGINT", requestGracefulShutdown);
+  process.on("SIGTERM", () => exitImmediately("SIGTERM", 143));
 
   while (running) {
     cycleCount++;
     const cycleStart = new Date();
     const isFirstCycle = cycleCount === 1;
+    const profile = getCycleQueueProfile(isFirstCycle);
+
+    // Kill any leftover Chromium zombie processes from previous headless renders.
+    // These accumulate when Playwright tasks time out without cleaning up the
+    // underlying browser process.
+    try {
+      const { execSync } = await import("node:child_process");
+      execSync("pkill -9 -f 'chromium' 2>/dev/null || true", { stdio: "ignore" });
+    } catch { /* not critical */ }
 
     console.log(
       `\n[daemon] ─── Cycle #${cycleCount} starting at ${cycleStart.toISOString()} ───`
     );
+    console.log(
+      `[daemon] Cycle profile: ${profile.label} (discovery ${profile.discoveryLimit}, validation ${profile.validationLimit}, source poll ${profile.sourcePollLimit}, rediscovery ${profile.rediscoveryLimit}, url health ${profile.urlHealthLimit}, legacy budget ${Math.round(profile.legacyBudgetMs / 60_000)}min/${profile.legacyMaxRuns} runs)`
+    );
 
     try {
+      const scheduledQueues = await scheduleOperationalQueues({
+        now: cycleStart,
+        discoveryLimit: profile.discoveryLimit,
+        validationLimit: profile.validationLimit,
+        sourcePollLimit: profile.sourcePollLimit,
+        rediscoveryLimit: profile.rediscoveryLimit,
+        urlHealthLimit: profile.urlHealthLimit,
+      });
+      const queueResult = await runOperationalQueues({
+        now: cycleStart,
+        discoveryLimit: profile.discoveryLimit,
+        validationLimit: profile.validationLimit,
+        sourcePollLimit: profile.sourcePollLimit,
+        rediscoveryLimit: profile.rediscoveryLimit,
+        urlHealthLimit: profile.urlHealthLimit,
+      });
       const result = await runScheduledIngestion({
         now: cycleStart,
         force: isFirstCycle && args.force,
         triggerLabel: "script.ingest.daemon",
-      });
-      const scheduledQueues = await scheduleOperationalQueues({
-        now: cycleStart,
-        validationLimit: 180,
-        sourcePollLimit: 260,
-      });
-      const queueResult = await runOperationalQueues({
-        now: cycleStart,
-        validationLimit: 180,
-        sourcePollLimit: 260,
+        maxCycleDurationMs: profile.legacyBudgetMs,
+        maxConnectorRuns: profile.legacyMaxRuns,
       });
 
       const executedCount = result.executedRuns.length;
@@ -179,8 +328,11 @@ async function main() {
         const managedCount = result.skippedConnectors.filter(
           (entry) => entry.reason === "managed_by_company_source"
         ).length;
+        const cycleBudgetCount = result.skippedConnectors.filter(
+          (entry) => entry.reason === "cycle_budget_exhausted"
+        ).length;
         console.log(
-          `[daemon] Skipped ${skippedCount} connector(s): ${notDueCount} not due, ${managedCount} routed to CompanySource`
+          `[daemon] Skipped ${skippedCount} connector(s): ${notDueCount} not due, ${managedCount} routed to CompanySource, ${cycleBudgetCount} deferred by cycle budget`
         );
       }
 
@@ -190,6 +342,12 @@ async function main() {
       console.log(
         `[daemon] Queues processed: discovery ${queueResult.discovery.successCount}/${queueResult.discovery.processedCount}, validation ${queueResult.validation.successCount}/${queueResult.validation.processedCount}, source poll ${queueResult.sourcePoll.successCount}/${queueResult.sourcePoll.processedCount}, rediscovery ${queueResult.rediscovery.successCount}/${queueResult.rediscovery.processedCount}, health ${queueResult.urlHealth.checkedJobCount}/${queueResult.urlHealth.processedCount}`
       );
+      if ("executionPolicy" in queueResult) {
+        const policy = queueResult.executionPolicy;
+        console.log(
+          `[daemon] Queue policy: pending poll ${policy.pendingPollCount}, pending validation ${policy.pendingValidationCount}, discovery ${policy.throttledDiscovery ? "throttled" : "full"} (${policy.discoveryLimit ?? 0}), rediscovery ${policy.rediscoveryLimit ?? 0}`
+        );
+      }
 
       // Lifecycle summary
       const lc = result.lifecycle;
@@ -206,6 +364,28 @@ async function main() {
         console.log(
           `[daemon] +${totalNewThisCycle} new jobs this cycle → ${lc.liveCount} total live`
         );
+      }
+
+      const dueBacklog = await getDueOperationalBacklog(new Date());
+      const operationalProcessedCount =
+        queueResult.discovery.processedCount +
+        queueResult.validation.processedCount +
+        queueResult.sourcePoll.processedCount +
+        queueResult.rediscovery.processedCount;
+      const madeProgress = operationalProcessedCount > 0 || executedCount > 0;
+
+      if (running && hasSignificantDueBacklog(dueBacklog)) {
+        const catchUpSleepMs = madeProgress
+          ? DUE_BACKLOG_CATCH_UP_SLEEP_MS
+          : DUE_BACKLOG_STALLED_RETRY_SLEEP_MS;
+        console.log(
+          `[daemon] Due backlog remains: discovery ${dueBacklog.companyDiscovery}, validation ${dueBacklog.sourceValidation}, source poll ${dueBacklog.connectorPoll}, rediscovery ${dueBacklog.rediscovery}`
+        );
+        console.log(
+          `[daemon] Starting catch-up cycle in ${(catchUpSleepMs / 1000).toFixed(0)}s instead of sleeping ${intervalMinutes}min`
+        );
+        await interruptibleSleep(catchUpSleepMs, () => !running);
+        continue;
       }
     } catch (error) {
       console.error(

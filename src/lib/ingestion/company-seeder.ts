@@ -27,6 +27,8 @@ type AtsSourceSeedRow = {
 const ATS_PREFIX_TO_CONNECTOR: Record<string, DiscoveredSourceCandidate["connectorName"]> = {
   Ashby: "ashby",
   Greenhouse: "greenhouse",
+  Jobvite: "jobvite",
+  Teamtailor: "teamtailor",
   Lever: "lever",
   Recruitee: "recruitee",
   Rippling: "rippling",

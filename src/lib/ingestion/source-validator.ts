@@ -3,7 +3,12 @@ import type {
   CompanySourceValidationState,
   ExtractionRouteKind,
 } from "@/generated/prisma/client";
-import { createCompanySiteConnector, inspectCompanySiteRoute } from "@/lib/ingestion/connectors";
+import {
+  createCompanySiteConnector,
+  inspectCompanySiteRoute,
+  parseTaleoSourceToken,
+  validateTaleoPortal,
+} from "@/lib/ingestion/connectors";
 import { createConnectorForCandidate } from "@/lib/ingestion/discovery/sources";
 import type { SourceConnectorFetchResult } from "@/lib/ingestion/types";
 
@@ -57,6 +62,10 @@ export async function validateCompanySource(
     return validateCompanySiteSource(source, now);
   }
 
+  if (source.connectorName === "taleo") {
+    return validateTaleoSource(source);
+  }
+
   const connector = createConnectorForCandidate({
     input: source.boardUrl,
     connectorName: source.connectorName as Parameters<typeof createConnectorForCandidate>[0]["connectorName"],
@@ -74,6 +83,51 @@ export async function validateCompanySource(
       log: () => {},
     });
     return classifyConnectorFetch(source, result);
+  } catch (error) {
+    return classifyThrownError(source, error);
+  }
+}
+
+async function validateTaleoSource(
+  source: ValidatableCompanySource
+): Promise<SourceValidationResult> {
+  try {
+    const target = parseTaleoSourceToken(source.token);
+    const result = await validateTaleoPortal(target.tenant, target.careerSection);
+
+    if (result.valid && result.sitemapEntryCount > 0) {
+      const sourceQualityScore = clampQualityScore(
+        result.sitemapEntryCount >= 25 ? 0.84 : result.sitemapEntryCount >= 5 ? 0.76 : 0.68
+      );
+
+      return {
+        kind: "VALIDATED",
+        validationState: "VALIDATED",
+        pollState: "READY",
+        httpStatus: 200,
+        jobsFound: Math.min(result.sitemapEntryCount, 1),
+        message: `Validated Taleo source via sitemap with ${result.sitemapEntryCount} ${result.sitemapEntryCount === 1 ? "entry" : "entries"}.`,
+        sourceQualityScore,
+        recommendedCooldownMinutes: 0,
+      };
+    }
+
+    const shouldRediscover =
+      source.validationState === "SUSPECT" || source.consecutiveFailures >= 1;
+    const message = result.error
+      ? `Taleo sitemap validation failed: ${result.error}`
+      : "Taleo sitemap exposed no listings for this career section.";
+
+    return {
+      kind: shouldRediscover ? "NEEDS_REDISCOVERY" : "SUSPECT",
+      validationState: shouldRediscover ? "NEEDS_REDISCOVERY" : "SUSPECT",
+      pollState: shouldRediscover ? "QUARANTINED" : "BACKOFF",
+      httpStatus: null,
+      jobsFound: 0,
+      message,
+      sourceQualityScore: shouldRediscover ? 0.08 : 0.18,
+      recommendedCooldownMinutes: shouldRediscover ? 720 : 360,
+    };
   } catch (error) {
     return classifyThrownError(source, error);
   }

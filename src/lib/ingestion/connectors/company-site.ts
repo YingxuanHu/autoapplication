@@ -15,6 +15,8 @@ const FETCH_TIMEOUT_MS = 15_000;
 const MAX_LISTING_PAGES = 8;
 const MAX_DETAIL_PAGES = 80;
 const MAX_LINKS_PER_PAGE = 40;
+const MAX_SITEMAP_FILES = 8;
+const MAX_SITEMAP_JOB_URLS = 250;
 const JOB_LINK_RE =
   /(job|career|position|opening|opportunit|vacanc|posting|requisition|role)/i;
 const PAGINATION_RE = /(next|more|older|page \d+)/i;
@@ -54,6 +56,12 @@ type StructuredJobPosting = {
 type ParsedLink = {
   href: string;
   text: string;
+};
+
+type SitemapInspection = {
+  sitemapUrl: string;
+  scannedCount: number;
+  jobUrls: string[];
 };
 
 export function createCompanySiteConnector(
@@ -107,6 +115,21 @@ export async function inspectCompanySiteRoute(
     };
   }
 
+  const sitemap = await inspectSitemapCandidates(page.url, page.html, signal);
+  if (sitemap.jobUrls.length > 0) {
+    return {
+      finalUrl: sitemap.sitemapUrl,
+      extractionRoute: "STRUCTURED_SITEMAP",
+      parserVersion: "company-site:v3",
+      confidence: Math.min(0.91, 0.58 + sitemap.jobUrls.length * 0.003),
+      metadata: {
+        sitemapUrl: sitemap.sitemapUrl,
+        sitemapCount: sitemap.scannedCount,
+        sitemapJobCount: sitemap.jobUrls.length,
+      },
+    };
+  }
+
   const htmlLinks = extractCandidateJobLinks(page.html, page.url);
   if (htmlLinks.length > 0) {
     return {
@@ -146,6 +169,10 @@ async function fetchCompanySiteJobs(
   options: CompanySiteConnectorOptions,
   fetchOptions: SourceConnectorFetchOptions
 ): Promise<SourceConnectorFetchResult> {
+  if (options.extractionRoute === "STRUCTURED_SITEMAP") {
+    return fetchCompanySiteJobsFromSitemap(options, fetchOptions);
+  }
+
   const listingPages = await crawlListingPages(options.boardUrl, fetchOptions.signal);
   const jobsById = new Map<string, SourceConnectorJob>();
 
@@ -193,6 +220,38 @@ async function fetchCompanySiteJobs(
   }
 
   return buildFetchResult(options, jobsById, listingPages.length, false);
+}
+
+async function fetchCompanySiteJobsFromSitemap(
+  options: CompanySiteConnectorOptions,
+  fetchOptions: SourceConnectorFetchOptions
+): Promise<SourceConnectorFetchResult> {
+  const sitemap = await inspectSitemapCandidates(options.boardUrl, null, fetchOptions.signal);
+  const jobsById = new Map<string, SourceConnectorJob>();
+  const toVisit = sitemap.jobUrls.slice(
+    0,
+    typeof fetchOptions.limit === "number"
+      ? Math.min(MAX_DETAIL_PAGES, Math.max(fetchOptions.limit * 3, fetchOptions.limit))
+      : MAX_DETAIL_PAGES
+  );
+
+  for (const href of toVisit) {
+    const detailPage = await fetchHtml(href, fetchOptions.signal);
+    const jobs = extractStructuredJobs(detailPage.html, detailPage.url, options.companyName);
+    const extracted =
+      jobs.length > 0
+        ? jobs
+        : extractHtmlDetailJob(detailPage.html, detailPage.url, "", options.companyName);
+
+    for (const job of extracted) {
+      jobsById.set(job.sourceId, job);
+      if (typeof fetchOptions.limit === "number" && jobsById.size >= fetchOptions.limit) {
+        return buildFetchResult(options, jobsById, sitemap.scannedCount, true);
+      }
+    }
+  }
+
+  return buildFetchResult(options, jobsById, sitemap.scannedCount, true);
 }
 
 function buildFetchResult(
@@ -409,6 +468,7 @@ function mapStructuredCandidate(candidate: unknown, pageUrl: string): Structured
 
   const title = asString(record.title ?? record.jobTitle ?? record.name);
   const description = stripHtml(asString(record.description));
+  const structuredSalary = extractStructuredSalary(record);
   const applyUrl =
     asString(record.url) ??
     asString(record.applicationUrl) ??
@@ -427,17 +487,21 @@ function mapStructuredCandidate(candidate: unknown, pageUrl: string): Structured
       asString((record.hiringOrganization as Record<string, unknown> | undefined)?.name) ??
       asString(record.company) ??
       "",
-    location: extractStructuredLocation(record) ?? asString(record.location) ?? "",
+    location:
+      extractStructuredLocation(record) ??
+      asString(record.location) ??
+      asString(record.jobLocationText) ??
+      "",
     description,
     applyUrl,
     postedAt: parseDateValue(record.datePosted ?? record.postedDate),
     deadline: parseDateValue(record.validThrough ?? record.closeDate),
     employmentType: inferEmploymentType(baseText),
-    workMode: inferWorkMode(baseText),
-    salaryMin: salary.salaryMin,
-    salaryMax: salary.salaryMax,
-    salaryCurrency: salary.salaryCurrency,
-    requisitionId: asString(record.identifier) ?? asString(record.reqId) ?? null,
+    workMode: extractStructuredWorkMode(record) ?? inferWorkMode(baseText),
+    salaryMin: structuredSalary.salaryMin ?? salary.salaryMin,
+    salaryMax: structuredSalary.salaryMax ?? salary.salaryMax,
+    salaryCurrency: structuredSalary.salaryCurrency ?? salary.salaryCurrency,
+    requisitionId: extractStructuredIdentifier(record),
     metadata: {
       structuredType: asString(record["@type"] ?? record.type),
     },
@@ -446,26 +510,24 @@ function mapStructuredCandidate(candidate: unknown, pageUrl: string): Structured
 
 function extractStructuredLocation(record: Record<string, unknown>) {
   const rawJobLocation = record.jobLocation;
-  const jobLocation =
-    Array.isArray(rawJobLocation) && rawJobLocation.length > 0
-      ? rawJobLocation[0]
-      : rawJobLocation;
+  const locations = Array.isArray(rawJobLocation) ? rawJobLocation : [rawJobLocation];
+  const parsed = locations
+    .map((jobLocation) => {
+      if (!jobLocation || typeof jobLocation !== "object") return null;
+      const addressValue = (jobLocation as Record<string, unknown>).address;
+      if (!addressValue || typeof addressValue !== "object") return null;
 
-  if (!jobLocation || typeof jobLocation !== "object") {
-    return null;
-  }
+      const address = addressValue as Record<string, unknown>;
+      const parts = [
+        asString(address.addressLocality),
+        asString(address.addressRegion),
+        asString(address.addressCountry),
+      ].filter((value): value is string => Boolean(value));
+      return parts.length > 0 ? parts.join(", ") : asString(address.streetAddress);
+    })
+    .filter((value): value is string => Boolean(value));
 
-  const addressValue = (jobLocation as Record<string, unknown>).address;
-  if (!addressValue || typeof addressValue !== "object") {
-    return null;
-  }
-
-  const address = addressValue as Record<string, unknown>;
-  return (
-    asString(address.addressLocality) ??
-    asString(address.addressRegion) ??
-    asString(address.streetAddress)
-  );
+  return parsed.length > 0 ? parsed.join(" | ") : null;
 }
 
 function dedupeStructuredJobs(jobs: StructuredJobPosting[]) {
@@ -483,7 +545,10 @@ function collectDetailLinks(listingPages: HtmlFetchResult[]) {
   const links: ParsedLink[] = [];
 
   for (const page of listingPages) {
-    for (const link of extractCandidateJobLinks(page.html, page.url)) {
+    for (const link of [
+      ...extractCandidateJobLinks(page.html, page.url),
+      ...extractCandidateJobLinksFromScripts(page.html, page.url),
+    ]) {
       if (seen.has(link.href)) continue;
       seen.add(link.href);
       links.push(link);
@@ -498,13 +563,43 @@ function extractCandidateJobLinks(html: string, pageUrl: string) {
     .filter((link) => {
       const text = link.text.trim();
       return (
-        text.length >= 4 &&
         text.length <= 140 &&
         JOB_LINK_RE.test(`${text} ${link.href}`) &&
         !PAGINATION_RE.test(text)
       );
     })
     .slice(0, MAX_LINKS_PER_PAGE);
+}
+
+function extractCandidateJobLinksFromScripts(html: string, pageUrl: string) {
+  const base = new URL(pageUrl);
+  const seen = new Set<string>();
+  const links: ParsedLink[] = [];
+  const scripts = [...html.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/gi)];
+  const directUrlMatches = /https?:\/\/[^"'`\s<>]+|\/(?:jobs?|careers?|positions?|openings?)[^"'`\s<>]*/gi;
+
+  for (const match of scripts) {
+    const script = decodeHtmlEntities(match[1] ?? "");
+    const candidates = script.match(directUrlMatches) ?? [];
+
+    for (const candidate of candidates.slice(0, 200)) {
+      try {
+        const href = new URL(candidate, base).toString();
+        if (new URL(href).hostname !== base.hostname) continue;
+        if (!JOB_LINK_RE.test(href)) continue;
+        if (seen.has(href)) continue;
+        seen.add(href);
+        links.push({
+          href,
+          text: href.split("/").pop()?.replace(/[-_]+/g, " ").slice(0, 140) ?? href,
+        });
+      } catch {
+        continue;
+      }
+    }
+  }
+
+  return links.slice(0, MAX_LINKS_PER_PAGE);
 }
 
 function extractPaginationLinks(html: string, pageUrl: string) {
@@ -692,4 +787,211 @@ function decodeHtmlEntities(input: string) {
     .replace(/&mdash;/gi, "—")
     .replace(/&ndash;/gi, "–")
     .replace(/&nbsp;/gi, " ");
+}
+
+async function inspectSitemapCandidates(
+  pageUrl: string,
+  pageHtml: string | null,
+  signal?: AbortSignal
+): Promise<SitemapInspection> {
+  const base = new URL(pageUrl);
+  const queue: string[] = [];
+  const visited = new Set<string>();
+  const jobUrls = new Set<string>();
+  let primarySitemapUrl = pageUrl;
+  let scannedCount = 0;
+
+  const enqueue = (candidate: string | null | undefined) => {
+    if (!candidate) return;
+    try {
+      const url = new URL(candidate, base).toString();
+      if (new URL(url).hostname !== base.hostname) return;
+      if (!looksLikeSitemapUrl(url)) return;
+      if (visited.has(url) || queue.includes(url)) return;
+      queue.push(url);
+    } catch {
+      return;
+    }
+  };
+
+  if (pageHtml && looksLikeSitemapXml(pageHtml)) {
+    enqueue(pageUrl);
+  } else {
+    enqueue(new URL("/sitemap.xml", base).toString());
+    enqueue(new URL("/sitemap_index.xml", base).toString());
+    for (const candidate of extractSitemapHintsFromHtml(pageHtml ?? "", pageUrl)) {
+      enqueue(candidate);
+    }
+    for (const candidate of await fetchRobotsSitemaps(base, signal)) {
+      enqueue(candidate);
+    }
+  }
+
+  while (queue.length > 0 && visited.size < MAX_SITEMAP_FILES && jobUrls.size < MAX_SITEMAP_JOB_URLS) {
+    const next = queue.shift();
+    if (!next || visited.has(next)) continue;
+    visited.add(next);
+    primarySitemapUrl = next;
+
+    let xml: string;
+    try {
+      xml = next === pageUrl && pageHtml && looksLikeSitemapXml(pageHtml) ? pageHtml : (await fetchHtml(next, signal)).html;
+    } catch {
+      continue;
+    }
+
+    if (!looksLikeSitemapXml(xml)) continue;
+    scannedCount += 1;
+
+    for (const loc of extractSitemapLocs(xml)) {
+      try {
+        const href = new URL(loc, base).toString();
+        if (new URL(href).hostname !== base.hostname) continue;
+        if (looksLikeSitemapUrl(href)) {
+          enqueue(href);
+          continue;
+        }
+        if (looksLikeJobUrl(href)) {
+          jobUrls.add(href);
+          if (jobUrls.size >= MAX_SITEMAP_JOB_URLS) break;
+        }
+      } catch {
+        continue;
+      }
+    }
+  }
+
+  return {
+    sitemapUrl: primarySitemapUrl,
+    scannedCount,
+    jobUrls: [...jobUrls],
+  };
+}
+
+function looksLikeSitemapXml(input: string) {
+  return /<(urlset|sitemapindex)\b/i.test(input);
+}
+
+function looksLikeSitemapUrl(url: string) {
+  return /sitemap/i.test(url) && /\.xml(?:\.gz)?(?:$|\?)/i.test(url);
+}
+
+function extractSitemapHintsFromHtml(html: string, pageUrl: string) {
+  const hints = new Set<string>();
+  const base = new URL(pageUrl);
+  const relMatches = [...html.matchAll(/<link\b[^>]*rel=["'][^"']*sitemap[^"']*["'][^>]*href=["']([^"']+)["'][^>]*>/gi)];
+  const directMatches = html.match(/https?:\/\/[^"'`\s<>]*sitemap[^"'`\s<>]*\.xml(?:\.gz)?/gi) ?? [];
+
+  for (const match of relMatches) {
+    const href = decodeHtmlEntities(match[1] ?? "").trim();
+    try {
+      hints.add(new URL(href, base).toString());
+    } catch {
+      continue;
+    }
+  }
+
+  for (const candidate of directMatches) {
+    try {
+      hints.add(new URL(candidate, base).toString());
+    } catch {
+      continue;
+    }
+  }
+
+  return [...hints];
+}
+
+async function fetchRobotsSitemaps(base: URL, signal?: AbortSignal) {
+  try {
+    const robots = await fetchHtml(new URL("/robots.txt", base).toString(), signal);
+    return robots.html
+      .split(/\r?\n/)
+      .map((line) => line.trim())
+      .filter((line) => /^sitemap:/i.test(line))
+      .map((line) => line.replace(/^sitemap:\s*/i, "").trim())
+      .filter(Boolean);
+  } catch {
+    return [];
+  }
+}
+
+function extractSitemapLocs(xml: string) {
+  return [...xml.matchAll(/<loc>\s*([\s\S]*?)\s*<\/loc>/gi)].map((match) =>
+    decodeHtmlEntities(match[1] ?? "").trim()
+  );
+}
+
+function looksLikeJobUrl(url: string) {
+  return JOB_LINK_RE.test(url) || /\/(jobs?|careers?|positions?|openings?)\//i.test(url);
+}
+
+function extractStructuredSalary(record: Record<string, unknown>) {
+  const baseSalary = record.baseSalary;
+  if (!baseSalary || typeof baseSalary !== "object") {
+    return {
+      salaryMin: null,
+      salaryMax: null,
+      salaryCurrency: null,
+    };
+  }
+
+  const salaryRecord = baseSalary as Record<string, unknown>;
+  const value = salaryRecord.value;
+  const currency = asString(salaryRecord.currency);
+  if (!value || typeof value !== "object") {
+    return {
+      salaryMin: null,
+      salaryMax: null,
+      salaryCurrency: currency,
+    };
+  }
+
+  const range = value as Record<string, unknown>;
+  const min = asNumber(range.minValue ?? range.value);
+  const max = asNumber(range.maxValue ?? range.value);
+
+  return {
+    salaryMin: min,
+    salaryMax: max,
+    salaryCurrency: currency,
+  };
+}
+
+function extractStructuredWorkMode(record: Record<string, unknown>) {
+  const locationType = asString(record.jobLocationType);
+  if (locationType && /telecommute/i.test(locationType)) {
+    return "REMOTE" as const;
+  }
+
+  const applicantRequirements = Array.isArray(record.applicantLocationRequirements)
+    ? record.applicantLocationRequirements
+    : [record.applicantLocationRequirements];
+  const combined = applicantRequirements
+    .map((entry) => JSON.stringify(entry))
+    .filter(Boolean)
+    .join("\n");
+
+  return inferWorkMode(combined);
+}
+
+function extractStructuredIdentifier(record: Record<string, unknown>) {
+  const identifier = record.identifier;
+  if (typeof identifier === "string") {
+    return asString(identifier);
+  }
+  if (identifier && typeof identifier === "object") {
+    const value = identifier as Record<string, unknown>;
+    return asString(value.value) ?? asString(value.name) ?? null;
+  }
+  return asString(record.reqId) ?? null;
+}
+
+function asNumber(value: unknown) {
+  if (typeof value === "number" && Number.isFinite(value)) return value;
+  if (typeof value === "string") {
+    const parsed = Number(value.replace(/,/g, ""));
+    return Number.isFinite(parsed) ? parsed : null;
+  }
+  return null;
 }

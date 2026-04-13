@@ -7,6 +7,8 @@ import {
   createHimalayasConnector,
   createIcimsConnector,
   createJobicyConnector,
+  createJobviteConnector,
+  createTeamtailorConnector,
   createLeverConnector,
   createMuseConnector,
   createRemoteOkConnector,
@@ -60,6 +62,22 @@ export const ATS_SEARCH_DEFAULT_QUERIES: Array<{
       '"boards.greenhouse.io" careers "Software Engineer"',
       '"job-boards.greenhouse.io" careers apply',
       '"boards.greenhouse.io" hiring engineering',
+    ],
+  },
+  {
+    family: "jobvite",
+    queries: [
+      '"jobs.jobvite.com" careers "Software Engineer"',
+      '"jobs.jobvite.com" careers "Product Manager"',
+      '"jobs.jobvite.com" jobs apply hiring',
+    ],
+  },
+  {
+    family: "teamtailor",
+    queries: [
+      '"teamtailor.com/jobs" careers "Software Engineer"',
+      '"teamtailor.com/jobs" careers "Product Manager"',
+      '"teamtailor.com/jobs" Toronto hiring',
     ],
   },
   {
@@ -248,6 +266,10 @@ export function buildDiscoveredSourceUrl(
       return buildWorkdayBoardUrl(token);
     case "workable":
       return `https://apply.workable.com/${normalizedToken}/`;
+    case "jobvite":
+      return `https://jobs.jobvite.com/${normalizedToken}/jobs`;
+    case "teamtailor":
+      return `https://${normalizedToken}.teamtailor.com/jobs`;
     case "icims":
       return `https://${normalizedToken}.icims.com/jobs/search`;
     case "taleo": {
@@ -321,6 +343,8 @@ export function isKnownAtsHost(hostname: string) {
     normalizedHost === "careers.smartrecruiters.com" ||
     normalizedHost === "api.smartrecruiters.com" ||
     normalizedHost === "apply.workable.com" ||
+    normalizedHost === "jobs.jobvite.com" ||
+    normalizedHost.endsWith(".teamtailor.com") ||
     normalizedHost === "www.workable.com" ||
     normalizedHost.endsWith(".myworkdayjobs.com") ||
     normalizedHost.endsWith(".myworkdaysite.com") ||
@@ -749,6 +773,8 @@ const ATS_URL_FRAGMENT_PATTERNS = [
   /(?:https?:)?\/\/jobs\.smartrecruiters\.com\/[^\s"'<>\\]+/gi,
   /(?:https?:)?\/\/careers\.smartrecruiters\.com\/[^\s"'<>\\]+/gi,
   /(?:https?:)?\/\/apply\.workable\.com\/[^\s"'<>\\]+/gi,
+  /(?:https?:)?\/\/jobs\.jobvite\.com\/[^\s"'<>\\]+/gi,
+  /(?:https?:)?\/\/[a-z0-9-]+\.teamtailor\.com\/jobs[^\s"'<>\\]*/gi,
   /(?:https?:)?\/\/[a-z0-9-]+\.icims\.com\/jobs[^\s"'<>\\]*/gi,
   /(?:https?:)?\/\/[a-z0-9-]+\.taleo\.net\/careersection\/[^\s"'<>\\]+/gi,
   /(?:https?:)?\/\/[a-z0-9-]+\.(?:wd\d+)\.myworkdayjobs\.com\/[^\s"'<>\\]+/gi,
@@ -1206,6 +1232,31 @@ function matchAtsSource(parsedUrl: URL): AtsMatch | null {
   }
 
   if (
+    hostname === "jobs.jobvite.com" &&
+    pathSegments[0] &&
+    (pathSegments.length === 1 ||
+      pathSegments[1] === "jobs" ||
+      pathSegments[1] === "job")
+  ) {
+    return {
+      connectorName: "jobvite",
+      token: pathSegments[0].toLowerCase(),
+    };
+  }
+
+  const teamtailorMatch = hostname.match(/^([a-z0-9-]+)\.teamtailor\.com$/i);
+  if (
+    teamtailorMatch?.[1] &&
+    pathSegments[0] === "jobs" &&
+    (pathSegments.length === 1 || pathSegments[1])
+  ) {
+    return {
+      connectorName: "teamtailor",
+      token: teamtailorMatch[1].toLowerCase(),
+    };
+  }
+
+  if (
     hostname === "www.workable.com" &&
     pathSegments[0] === "api" &&
     pathSegments[1] === "accounts" &&
@@ -1323,6 +1374,10 @@ export function createConnectorForCandidate(candidate: DiscoveredSourceCandidate
       });
     case "workable":
       return createWorkableConnector({ accountToken: candidate.token });
+    case "jobvite":
+      return createJobviteConnector({ companyToken: candidate.token });
+    case "teamtailor":
+      return createTeamtailorConnector({ companyToken: candidate.token });
     case "icims":
       return createIcimsConnector({ portalSubdomain: candidate.token });
     case "taleo":

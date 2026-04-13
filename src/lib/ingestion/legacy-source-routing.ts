@@ -12,6 +12,8 @@ import type { Prisma } from "@/generated/prisma/client";
 const COMPANY_SOURCE_AUTHORITY_PREFIXES = new Set([
   "Ashby",
   "Greenhouse",
+  "Jobvite",
+  "Teamtailor",
   "Lever",
   "Recruitee",
   "Rippling",
@@ -26,6 +28,8 @@ const COMPANY_SOURCE_AUTHORITY_PREFIXES = new Set([
 const SOURCE_PREFIX_TO_CONNECTOR: Record<string, SupportedConnectorName> = {
   Ashby: "ashby",
   Greenhouse: "greenhouse",
+  Jobvite: "jobvite",
+  Teamtailor: "teamtailor",
   Lever: "lever",
   Recruitee: "recruitee",
   Rippling: "rippling",

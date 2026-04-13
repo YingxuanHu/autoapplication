@@ -978,7 +978,12 @@ function compactWhitespace(value: unknown) {
 }
 
 function asText(value: unknown) {
-  if (typeof value === "string") return value;
+  // Strip null bytes (\u0000) and other PostgreSQL-unsafe C0 control characters
+  // before any further processing. These appear in scraped HTML from some company
+  // career pages (e.g. Deloitte, KPMG, EY) and cause a DriverAdapterError when
+  // Prisma tries to store the value in a PostgreSQL text or jsonb column.
+  const strip = (s: string) => s.replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, "");
+  if (typeof value === "string") return strip(value);
   if (typeof value === "number" || typeof value === "boolean") {
     return String(value);
   }

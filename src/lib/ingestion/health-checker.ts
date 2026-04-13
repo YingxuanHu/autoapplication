@@ -13,6 +13,9 @@ import type {
 } from "@/generated/prisma/client";
 
 const URL_HEALTH_TIMEOUT_MS = 10_000;
+const URL_HEALTH_QUEUE_CONCURRENCY = 32;   // up from 24 — more concurrent fetches
+const URL_HEALTH_QUEUE_DEFAULT_LIMIT = 3_000;  // up from 2,000 — more per cycle
+const URL_HEALTH_ENQUEUE_DEFAULT_LIMIT = 6_000; // up from 4,000 — larger candidate pool
 const MAX_RESPONSE_SNIPPET_LENGTH = 1_200;
 
 type UrlHealthOutcome = {
@@ -43,22 +46,48 @@ export async function enqueuePriorityUrlHealthTasks(options: {
   limit?: number;
   now?: Date;
 }) {
-  const candidates = await selectHealthCandidates(options.limit ?? 100, options.now ?? new Date());
-  const tasks = [];
+  const now = options.now ?? new Date();
+  const limit = options.limit ?? URL_HEALTH_ENQUEUE_DEFAULT_LIMIT;
+  const candidates = await selectHealthCandidates(limit, now);
 
-  for (const candidate of candidates) {
-    tasks.push(
-      await enqueueUniqueSourceTask({
-        kind: "URL_HEALTH",
-        canonicalJobId: candidate.id,
-        priorityScore: computeHealthPriority(candidate, options.now ?? new Date()),
-      })
-    );
+  if (candidates.length === 0) {
+    return { enqueuedCount: 0, candidateIds: [] as string[] };
+  }
+
+  const candidateIds = candidates.map((c) => c.id);
+
+  // Single query to find which candidates already have an active URL_HEALTH task —
+  // avoids N+1 findFirst calls (one per candidate).
+  const existingTasks = await prisma.sourceTask.findMany({
+    where: {
+      kind: "URL_HEALTH",
+      canonicalJobId: { in: candidateIds },
+      status: { in: ["PENDING", "RUNNING"] },
+    },
+    select: { canonicalJobId: true },
+  });
+
+  const alreadyEnqueued = new Set(
+    existingTasks.map((t) => t.canonicalJobId).filter((id): id is string => id !== null)
+  );
+
+  const newCandidates = candidates.filter((c) => !alreadyEnqueued.has(c.id));
+
+  if (newCandidates.length > 0) {
+    await prisma.sourceTask.createMany({
+      data: newCandidates.map((c) => ({
+        kind: "URL_HEALTH" as const,
+        canonicalJobId: c.id,
+        priorityScore: computeHealthPriority(c, now),
+        notBeforeAt: now,
+      })),
+      skipDuplicates: true,
+    });
   }
 
   return {
-    enqueuedCount: tasks.length,
-    candidateIds: tasks.map((task) => task.canonicalJobId).filter(Boolean),
+    enqueuedCount: newCandidates.length,
+    candidateIds: newCandidates.map((c) => c.id),
   };
 }
 
@@ -67,29 +96,58 @@ export async function runUrlHealthTaskQueue(options: {
   now?: Date;
 } = {}) {
   const now = options.now ?? new Date();
-  const tasks = await claimSourceTasks("URL_HEALTH", options.limit ?? 25, now);
+  const maxTasks = options.limit ?? URL_HEALTH_QUEUE_DEFAULT_LIMIT;
+  let processedCount = 0;
   const checkedJobIds = new Set<string>();
 
-  for (const task of tasks) {
-    try {
-      if (!task.canonicalJobId) {
-        await finishSourceTask(task.id, "SKIPPED", {
-          finishedAt: now,
-          lastError: "No canonical job attached to URL health task.",
-        });
-        continue;
-      }
+  // Process in concurrent batches to maximise throughput.
+  // URL health checks are I/O-bound HTTP fetches — high concurrency is safe.
+  while (processedCount < maxTasks) {
+    const remaining = maxTasks - processedCount;
+    // Use wall-clock time for claiming so tasks enqueued after cycleStart are
+    // still eligible (avoids the cycleStart < notBeforeAt edge case in cycle #1).
+    const claimNow = new Date();
+    const tasks = await claimSourceTasks(
+      "URL_HEALTH",
+      Math.min(URL_HEALTH_QUEUE_CONCURRENCY, remaining),
+      claimNow
+    );
 
-      await runJobHealthCheck(task.canonicalJobId, now);
-      checkedJobIds.add(task.canonicalJobId);
-      await finishSourceTask(task.id, "SUCCESS", { finishedAt: now });
-    } catch (error) {
-      const retryAt = new Date(now.getTime() + 30 * 60 * 1000);
-      await finishSourceTask(task.id, "FAILED", {
-        lastError: error instanceof Error ? error.message : String(error),
-        retryAt,
-      });
+    if (tasks.length === 0) break;
+
+    let cursor = 0;
+
+    async function worker() {
+      while (cursor < tasks.length) {
+        const task = tasks[cursor++]!;
+
+        try {
+          if (!task.canonicalJobId) {
+            await finishSourceTask(task.id, "SKIPPED", {
+              finishedAt: now,
+              lastError: "No canonical job attached to URL health task.",
+            });
+            continue;
+          }
+
+          await runJobHealthCheck(task.canonicalJobId, now);
+          checkedJobIds.add(task.canonicalJobId);
+          await finishSourceTask(task.id, "SUCCESS", { finishedAt: now });
+        } catch (error) {
+          const retryAt = new Date(now.getTime() + 30 * 60 * 1000);
+          await finishSourceTask(task.id, "FAILED", {
+            lastError: error instanceof Error ? error.message : String(error),
+            retryAt,
+          });
+        }
+      }
     }
+
+    await Promise.all(
+      Array.from({ length: Math.min(URL_HEALTH_QUEUE_CONCURRENCY, tasks.length) }, () => worker())
+    );
+
+    processedCount += tasks.length;
   }
 
   if (checkedJobIds.size > 0) {
@@ -97,7 +155,7 @@ export async function runUrlHealthTaskQueue(options: {
   }
 
   return {
-    processedCount: tasks.length,
+    processedCount,
     checkedJobCount: checkedJobIds.size,
   };
 }
@@ -205,53 +263,77 @@ export async function runJobHealthCheck(canonicalJobId: string, now: Date = new 
 }
 
 async function selectHealthCandidates(limit: number, now: Date) {
-  const jobs = await prisma.jobCanonical.findMany({
-    where: {
-      status: { in: ["LIVE", "AGING", "STALE"] },
-      OR: [{ deadSignalAt: null }, { status: { in: ["AGING", "STALE"] } }],
-    },
-    select: {
-      id: true,
-      status: true,
-      applyUrl: true,
-      deadline: true,
-      availabilityScore: true,
-      lastApplyCheckAt: true,
-      lastConfirmedAliveAt: true,
-      deadSignalAt: true,
-      sourceMappings: {
-        where: { removedAt: null, isPrimary: true },
-        select: { sourceUrl: true },
-        take: 1,
+  // Fetch AGING and STALE jobs first (they have the highest priority and are a small
+  // population). Then backfill with LIVE jobs. This avoids the in-memory sort over
+  // a huge LIVE pool drowning out the critical AGING/STALE candidates.
+  const [agingStale, live] = await Promise.all([
+    prisma.jobCanonical.findMany({
+      where: {
+        status: { in: ["AGING", "STALE"] },
       },
-      _count: {
-        select: {
-          savedJobs: true,
-          applicationSubmissions: true,
+      // Cap to limit rows — prevents loading all 32k AGING rows into memory.
+      // Ordered by lastApplyCheckAt asc so we get the most overdue candidates.
+      take: Math.max(limit, 2_000),
+      select: {
+        id: true,
+        status: true,
+        applyUrl: true,
+        deadline: true,
+        availabilityScore: true,
+        lastApplyCheckAt: true,
+        lastConfirmedAliveAt: true,
+        deadSignalAt: true,
+        sourceMappings: {
+          where: { removedAt: null, isPrimary: true },
+          select: { sourceUrl: true },
+          take: 1,
         },
+        _count: { select: { savedJobs: true, applicationSubmissions: true } },
       },
-    },
-    take: Math.max(limit * 3, limit),
+      orderBy: { lastApplyCheckAt: "asc" },
+    }),
+    prisma.jobCanonical.findMany({
+      where: {
+        status: "LIVE",
+        OR: [{ deadSignalAt: null }],
+      },
+      select: {
+        id: true,
+        status: true,
+        applyUrl: true,
+        deadline: true,
+        availabilityScore: true,
+        lastApplyCheckAt: true,
+        lastConfirmedAliveAt: true,
+        deadSignalAt: true,
+        sourceMappings: {
+          where: { removedAt: null, isPrimary: true },
+          select: { sourceUrl: true },
+          take: 1,
+        },
+        _count: { select: { savedJobs: true, applicationSubmissions: true } },
+      },
+      orderBy: { lastApplyCheckAt: "asc" },
+      take: Math.max(limit, 500),
+    }),
+  ]);
+
+  const toCandidate = (job: typeof agingStale[number]) => ({
+    id: job.id,
+    status: job.status as "LIVE" | "AGING" | "STALE",
+    applyUrl: job.applyUrl,
+    deadline: job.deadline,
+    availabilityScore: job.availabilityScore,
+    lastApplyCheckAt: job.lastApplyCheckAt,
+    lastConfirmedAliveAt: job.lastConfirmedAliveAt,
+    deadSignalAt: job.deadSignalAt,
+    sourcePostingUrl: job.sourceMappings[0]?.sourceUrl ?? null,
+    savedCount: job._count.savedJobs,
+    applicationCount: job._count.applicationSubmissions,
   });
 
-  return jobs
-    .map((job) => ({
-      id: job.id,
-      status: job.status,
-      applyUrl: job.applyUrl,
-      deadline: job.deadline,
-      availabilityScore: job.availabilityScore,
-      lastApplyCheckAt: job.lastApplyCheckAt,
-      lastConfirmedAliveAt: job.lastConfirmedAliveAt,
-      deadSignalAt: job.deadSignalAt,
-      sourcePostingUrl: job.sourceMappings[0]?.sourceUrl ?? null,
-      savedCount: job._count.savedJobs,
-      applicationCount: job._count.applicationSubmissions,
-    }))
-    .sort(
-      (left, right) =>
-        computeHealthPriority(right, now) - computeHealthPriority(left, now)
-    )
+  return [...agingStale.map(toCandidate), ...live.map(toCandidate)]
+    .sort((left, right) => computeHealthPriority(right, now) - computeHealthPriority(left, now))
     .slice(0, limit);
 }
 

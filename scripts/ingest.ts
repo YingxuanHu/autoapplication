@@ -1,7 +1,6 @@
 import "dotenv/config";
 import {
   previewConnectorIngestion,
-  reconcileCanonicalLifecycle,
   ingestConnector,
 } from "../src/lib/ingestion/pipeline";
 import {
@@ -27,9 +26,10 @@ async function main() {
         });
     summaries.push(summary);
   }
-  const lifecycle = args.dryRun ? null : await reconcileCanonicalLifecycle();
-
-  console.log(JSON.stringify({ dryRun: args.dryRun ?? false, summaries, lifecycle }, null, 2));
+  // reconcileCanonicalLifecycle() sweeps all 300k+ canonical jobs — only run
+  // it from the daemon. The CLI already gets per-run lifecycle tallies from
+  // ingestConnector's own refreshCanonicalStatuses call.
+  console.log(JSON.stringify({ dryRun: args.dryRun ?? false, summaries }, null, 2));
 }
 
 function parseArgs(rawArgs: string[]) {

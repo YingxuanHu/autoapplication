@@ -6,7 +6,7 @@ import {
   extractSourceCandidateFromUrl,
 } from "@/lib/ingestion/discovery/sources";
 
-const CAREER_PAGE_FETCH_TIMEOUT_MS = 12_000;
+const CAREER_PAGE_FETCH_TIMEOUT_MS = 8_000;
 const MAX_PAGES_PER_COMPANY = 18;
 const CAREER_PAGE_CONCURRENCY = 8;
 const COMPANY_CRAWL_CONCURRENCY = 6;

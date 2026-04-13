@@ -6,15 +6,18 @@ import { useRouter } from "next/navigation";
 type JobsAutoRefreshProps = {
   initialLastUpdatedAt: string | null;
   statusPollIntervalMs?: number;
+  minStatusCheckGapMs?: number;
 };
 
 export function JobsAutoRefresh({
   initialLastUpdatedAt,
-  statusPollIntervalMs = 30_000,
+  statusPollIntervalMs = 120_000,
+  minStatusCheckGapMs = 15_000,
 }: JobsAutoRefreshProps) {
   const router = useRouter();
   const lastSeenUpdatedAtRef = useRef(initialLastUpdatedAt);
   const refreshInFlightRef = useRef(false);
+  const lastStatusCheckAtRef = useRef(0);
 
   useEffect(() => {
     lastSeenUpdatedAtRef.current = initialLastUpdatedAt;
@@ -23,7 +26,7 @@ export function JobsAutoRefresh({
   useEffect(() => {
     let cancelled = false;
 
-    const checkStatus = async () => {
+    const pollHeartbeat = async () => {
       if (typeof document !== "undefined" && document.visibilityState !== "visible") {
         return;
       }
@@ -36,8 +39,14 @@ export function JobsAutoRefresh({
         return;
       }
 
+      const now = Date.now();
+      if (now - lastStatusCheckAtRef.current < minStatusCheckGapMs) {
+        return;
+      }
+      lastStatusCheckAtRef.current = now;
+
       try {
-        const response = await fetch("/api/ingestion/status", {
+        const response = await fetch("/api/ingestion/status?mode=heartbeat", {
           cache: "no-store",
         });
 
@@ -71,25 +80,25 @@ export function JobsAutoRefresh({
       }
     };
 
-    const timer = window.setInterval(checkStatus, statusPollIntervalMs);
+    const timer = window.setInterval(pollHeartbeat, statusPollIntervalMs);
     const handleVisibilityChange = () => {
       if (document.visibilityState === "visible") {
-        void checkStatus();
+        void pollHeartbeat();
       }
     };
 
-    window.addEventListener("focus", checkStatus);
-    window.addEventListener("online", checkStatus);
+    window.addEventListener("focus", pollHeartbeat);
+    window.addEventListener("online", pollHeartbeat);
     document.addEventListener("visibilitychange", handleVisibilityChange);
 
     return () => {
       cancelled = true;
       window.clearInterval(timer);
-      window.removeEventListener("focus", checkStatus);
-      window.removeEventListener("online", checkStatus);
+      window.removeEventListener("focus", pollHeartbeat);
+      window.removeEventListener("online", pollHeartbeat);
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
-  }, [router, statusPollIntervalMs]);
+  }, [minStatusCheckGapMs, router, statusPollIntervalMs]);
 
   return null;
 }

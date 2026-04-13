@@ -1,4 +1,7 @@
-import { getIngestionStatus } from "@/lib/queries/ingestion";
+import {
+  getIngestionHeartbeat,
+  getIngestionStatus,
+} from "@/lib/queries/ingestion";
 import { errorResponse, successResponse } from "@/lib/api-utils";
 
 export const dynamic = "force-dynamic";
@@ -11,10 +14,16 @@ export const dynamic = "force-dynamic";
  * source platform count. Intentionally minimal — does not expose operational
  * detail from /api/ingestion/schedule.
  */
-export async function GET() {
+export async function GET(request: Request) {
   try {
-    const status = await getIngestionStatus();
-    return successResponse(status, 200, {
+    const url = new URL(request.url);
+    const mode = url.searchParams.get("mode");
+    const payload =
+      mode === "heartbeat"
+        ? await getIngestionHeartbeat()
+        : await getIngestionStatus();
+
+    return successResponse(payload, 200, {
       "Cache-Control": "no-store, max-age=0",
     });
   } catch (error) {

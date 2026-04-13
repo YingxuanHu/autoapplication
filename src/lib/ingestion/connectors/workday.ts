@@ -18,7 +18,13 @@ const WORKDAY_LIST_TIMEOUT_MS = 25_000;
 const WORKDAY_DETAIL_TIMEOUT_MS = 20_000;
 const WORKDAY_FETCH_MAX_ATTEMPTS = 3;
 const WORKDAY_FETCH_RETRY_DELAY_MS = 1_500;
-const WORKDAY_RETRYABLE_STATUSES = new Set([408, 429, 500, 502, 503, 504]);
+// 500/502/503/504 are NOT retried — on myworkdayjobs.com these are bot-detection
+// responses (Cloudflare challenge / overloaded infra), not transient server errors.
+// Retrying immediately just wastes time and burns through the source's failure budget.
+const WORKDAY_RETRYABLE_STATUSES = new Set([408, 429]);
+const WORKDAY_HARD_FAILURE_STATUSES = new Set([401, 403, 404, 410, 500, 502, 503, 504]);
+const WORKDAY_BROWSER_USER_AGENT =
+  "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36";
 
 type WorkdayConnectorOptions = {
   sourceToken?: string;
@@ -311,11 +317,11 @@ async function fetchListingPage(
       const response = await fetch(buildWorkdayApiUrl(target), {
         method: "POST",
         signal: buildTimeoutSignal(signal, WORKDAY_LIST_TIMEOUT_MS),
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          "User-Agent": "Mozilla/5.0 (compatible; autoapplication-workday/1.0)",
-        },
+        headers: buildWorkdayRequestHeaders(target, {
+          accept: "application/json, text/plain, */*",
+          contentType: "application/json",
+          mode: "api",
+        }),
         body: JSON.stringify({
           appliedFacets: {},
           limit: requestedLimit,
@@ -336,6 +342,15 @@ async function fetchListingPage(
           continue;
         }
 
+        if (
+          WORKDAY_HARD_FAILURE_STATUSES.has(response.status) ||
+          WORKDAY_RETRYABLE_STATUSES.has(response.status)
+        ) {
+          throw new Error(
+            `Fetch failed: ${response.status} ${response.statusText}`
+          );
+        }
+
         log(
           `[workday:${sourceToken}] Fetch failed: ${response.status} ${response.statusText}`
         );
@@ -344,10 +359,9 @@ async function fetchListingPage(
 
       const contentType = response.headers.get("content-type") ?? "";
       if (!contentType.includes("application/json")) {
-        log(
-          `[workday:${sourceToken}] Unexpected content-type: ${contentType} (likely bot detection)`
+        throw new Error(
+          `Unexpected content-type: ${contentType || "unknown"} (likely bot detection)`
         );
-        return { jobPostings: [], total: 0 } as WorkdayListResponse;
       }
 
       return (await response.json()) as WorkdayListResponse;
@@ -368,11 +382,13 @@ async function fetchListingPage(
       log(
         `[workday:${sourceToken}] Fetch error: ${formatErrorMessage(error)}`
       );
-      return { jobPostings: [], total: 0 } as WorkdayListResponse;
+      throw error instanceof Error
+        ? error
+        : new Error(formatErrorMessage(error));
     }
   }
 
-  return { jobPostings: [], total: 0 } as WorkdayListResponse;
+  throw new Error("Fetch failed after exhausting Workday retries.");
 }
 
 async function buildSourceJob({
@@ -468,10 +484,11 @@ async function fetchJobDetail(
     try {
       response = await fetch(pageUrl, {
         signal: buildTimeoutSignal(signal, WORKDAY_DETAIL_TIMEOUT_MS),
-        headers: {
-          Accept: "text/html",
-          "User-Agent": "Mozilla/5.0 (compatible; autoapplication-workday/1.0)",
-        },
+        headers: buildWorkdayRequestHeaders(target, {
+          accept:
+            "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
+          mode: "detail",
+        }),
       });
     } catch {
       continue;
@@ -514,12 +531,47 @@ function buildTimeoutSignal(signal: AbortSignal | undefined, timeoutMs: number) 
   return abortSignalAny ? abortSignalAny([signal, timeoutSignal]) : timeoutSignal;
 }
 
+function buildWorkdayRequestHeaders(
+  target: WorkdaySourceTarget,
+  options: {
+    accept: string;
+    contentType?: string;
+    mode: "api" | "detail";
+  }
+) {
+  const origin = `https://${target.host}`;
+  const referer = `${origin}/${target.site}`;
+
+  return {
+    Accept: options.accept,
+    ...(options.contentType ? { "Content-Type": options.contentType } : {}),
+    "Accept-Encoding": "gzip, deflate, br, zstd",
+    "Accept-Language": "en-US,en;q=0.9",
+    Origin: origin,
+    Referer: referer,
+    "Sec-Ch-Ua": '"Google Chrome";v="135", "Not-A.Brand";v="8", "Chromium";v="135"',
+    "Sec-Ch-Ua-Mobile": "?0",
+    "Sec-Ch-Ua-Platform": '"macOS"',
+    "Sec-Fetch-Dest": options.mode === "api" ? "empty" : "document",
+    "Sec-Fetch-Mode": options.mode === "api" ? "cors" : "navigate",
+    "Sec-Fetch-Site": "same-origin",
+    "Upgrade-Insecure-Requests": options.mode === "detail" ? "1" : "0",
+    "User-Agent": WORKDAY_BROWSER_USER_AGENT,
+    "X-Requested-With": "XMLHttpRequest",
+  } satisfies Record<string, string>;
+}
+
 function formatErrorMessage(error: unknown) {
   return error instanceof Error ? error.message : String(error);
 }
 
 function isTransientWorkdayError(error: unknown) {
   const message = formatErrorMessage(error).toLowerCase();
+  const hardStatusMatch = message.match(/\b(401|403|404|410)\b/);
+  if (hardStatusMatch) {
+    return false;
+  }
+
   return (
     message.includes("fetch failed") ||
     message.includes("timeout") ||

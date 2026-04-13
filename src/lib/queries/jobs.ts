@@ -3,6 +3,7 @@ import { PAGE_SIZE } from "@/lib/constants";
 import type { Prisma } from "@/generated/prisma/client";
 import { DEMO_SOURCE_NAMES } from "@/lib/job-links";
 import { getOptionalCurrentProfileId } from "@/lib/current-user";
+import { getIngestionHeartbeat } from "@/lib/queries/ingestion";
 import {
   CAREER_STAGE_DEFINITIONS,
   normalizeCareerStageFilterValue,
@@ -23,10 +24,14 @@ const DEFAULT_VISIBLE_JOB_STATUSES = ["LIVE", "AGING"] as const;
 const DEFAULT_SEARCH_VISIBLE_JOB_STATUSES = ["LIVE", "AGING", "STALE"] as const;
 const DEFAULT_MIN_AVAILABILITY_SCORE = 35;
 const DEFAULT_SEARCH_MIN_AVAILABILITY_SCORE = 20;
-const JOB_FEED_SUMMARY_TTL_MS = 15_000;
-const JOB_FEED_QUERY_TTL_MS = 5_000;
+const JOB_FEED_SUMMARY_TTL_MS = 60_000;
+const JOB_FEED_QUERY_TTL_MS = 15_000;
+const HOT_FEED_QUERY_TTL_MS = 120_000;
 const TIMED_CACHE_MAX_ENTRIES = 64;
+const DIVERSIFICATION_OVERSCAN = 80;
+const DEMO_SOURCE_NAME_SET = new Set<string>(DEMO_SOURCE_NAMES);
 const timedCacheStore = new Map<string, { expiresAt: number; value: unknown }>();
+const inflightJobsQueryStore = new Map<string, Promise<JobsResult>>();
 const JOB_CARD_INCLUDE = (viewerProfileId: string | null) =>
   ({
     eligibility: true,
@@ -545,14 +550,17 @@ type RankedFeedCandidate = {
   baseScore: number;
 };
 
-function diversifyRankedJobs(candidates: RankedFeedCandidate[]) {
+function diversifyRankedJobs(
+  candidates: RankedFeedCandidate[],
+  limit: number = candidates.length
+) {
   const remaining = [...candidates];
   const selected: RankedFeedCandidate[] = [];
   const companyCounts = new Map<string, number>();
   const companyTitleCounts = new Map<string, number>();
   const sourceFamilyCounts = new Map<string, number>();
 
-  while (remaining.length > 0) {
+  while (remaining.length > 0 && selected.length < limit) {
     let bestIndex = 0;
     let bestScore = Number.NEGATIVE_INFINITY;
 
@@ -674,6 +682,51 @@ type JobsResult = Awaited<ReturnType<typeof getJobsByRelevance>> & {
   summary: JobFeedSummary;
 };
 
+type DemoSourceMapping = {
+  sourceName: string;
+};
+
+function isDemoOnlySourceMappings(sourceMappings: DemoSourceMapping[]) {
+  return (
+    sourceMappings.length > 0 &&
+    sourceMappings.every((mapping) => DEMO_SOURCE_NAME_SET.has(mapping.sourceName))
+  );
+}
+
+async function getHiddenDemoOnlySummaryCounts(startOfToday: Date): Promise<JobFeedSummary> {
+  // A job is "demo-only" if every source mapping belongs to a demo source.
+  // Expressed as: has at least one demo mapping AND has no non-demo mappings.
+  const demoOnlyWhere: Prisma.JobCanonicalWhereInput = {
+    sourceMappings: {
+      some: { sourceName: { in: [...DEMO_SOURCE_NAMES] } },
+      none: { sourceName: { notIn: [...DEMO_SOURCE_NAMES] } },
+    },
+  };
+
+  const [liveJobCount, addedTodayCount, expiredTodayCount, removedTodayCount] =
+    await Promise.all([
+      prisma.jobCanonical.count({
+        where: { ...demoOnlyWhere, status: { in: [...DEFAULT_VISIBLE_JOB_STATUSES] } },
+      }),
+      prisma.jobCanonical.count({
+        where: {
+          ...demoOnlyWhere,
+          status: { in: [...DEFAULT_VISIBLE_JOB_STATUSES] },
+          firstSeenAt: { gte: startOfToday },
+        },
+      }),
+      prisma.jobCanonical.count({
+        where: { ...demoOnlyWhere, status: "EXPIRED", expiredAt: { gte: startOfToday } },
+      }),
+      prisma.jobCanonical.count({
+        where: { ...demoOnlyWhere, status: "REMOVED", removedAt: { gte: startOfToday } },
+      }),
+    ]);
+
+  return { liveJobCount, addedTodayCount, expiredTodayCount, removedTodayCount };
+}
+
+
 function readTimedCache<T>(key: string): T | null {
   const entry = timedCacheStore.get(key);
   if (!entry) return null;
@@ -707,7 +760,8 @@ function writeTimedCache<T>(key: string, value: T, ttlMs: number) {
 
 function buildJobsCacheKey(
   viewerProfileId: string | null,
-  filters: JobFilterParams
+  filters: JobFilterParams,
+  cacheEpoch: string | null = null
 ) {
   return `jobs:${viewerProfileId ?? "anon"}:${JSON.stringify({
     search: filters.search ?? null,
@@ -721,7 +775,24 @@ function buildJobsCacheKey(
     status: filters.status ?? null,
     sortBy: filters.sortBy ?? null,
     page: filters.page ?? 1,
+    cacheEpoch,
   })}`;
+}
+
+function isHotDefaultFeedRequest(filters: JobFilterParams) {
+  return !(
+    filters.search ||
+    filters.region ||
+    filters.workMode ||
+    filters.industry ||
+    filters.roleFamily ||
+    filters.salaryMin ||
+    filters.experienceLevel ||
+    filters.submissionCategory ||
+    filters.status
+  ) &&
+    (!filters.sortBy || filters.sortBy === "relevance") &&
+    (filters.page ?? 1) === 1;
 }
 
 async function getJobFeedSummary() {
@@ -732,49 +803,39 @@ async function getJobFeedSummary() {
   const startOfToday = new Date(now);
   startOfToday.setHours(0, 0, 0, 0);
 
-  const visibleSourceFilter = {
-    some: {
-      sourceName: {
-        notIn: [...DEMO_SOURCE_NAMES],
-      },
-    },
-  } satisfies Prisma.JobCanonicalWhereInput["sourceMappings"];
-
-  const [liveJobCount, addedTodayCount, expiredTodayCount, removedTodayCount] = await Promise.all([
+  const [liveJobCount, addedTodayCount, expiredTodayCount, removedTodayCount, hiddenDemoCounts] =
+    await Promise.all([
     prisma.jobCanonical.count({
       where: {
         status: { in: [...DEFAULT_VISIBLE_JOB_STATUSES] },
-        sourceMappings: visibleSourceFilter,
       },
     }),
     prisma.jobCanonical.count({
       where: {
         status: { in: [...DEFAULT_VISIBLE_JOB_STATUSES] },
-        postedAt: { gte: startOfToday },
-        sourceMappings: visibleSourceFilter,
+        firstSeenAt: { gte: startOfToday },
       },
     }),
     prisma.jobCanonical.count({
       where: {
         status: "EXPIRED",
         expiredAt: { gte: startOfToday },
-        sourceMappings: visibleSourceFilter,
       },
     }),
     prisma.jobCanonical.count({
       where: {
         status: "REMOVED",
         removedAt: { gte: startOfToday },
-        sourceMappings: visibleSourceFilter,
       },
     }),
+    getHiddenDemoOnlySummaryCounts(startOfToday),
   ]);
 
   return writeTimedCache("jobs:summary", {
-    liveJobCount,
-    addedTodayCount,
-    expiredTodayCount,
-    removedTodayCount,
+    liveJobCount: Math.max(0, liveJobCount - hiddenDemoCounts.liveJobCount),
+    addedTodayCount: Math.max(0, addedTodayCount - hiddenDemoCounts.addedTodayCount),
+    expiredTodayCount: Math.max(0, expiredTodayCount - hiddenDemoCounts.expiredTodayCount),
+    removedTodayCount: Math.max(0, removedTodayCount - hiddenDemoCounts.removedTodayCount),
   } satisfies JobFeedSummary, JOB_FEED_SUMMARY_TTL_MS);
 }
 
@@ -782,7 +843,8 @@ async function getJobsByRelevance(
   filters: JobFilterParams,
   where: Prisma.JobCanonicalWhereInput,
   viewerProfileId: string | null,
-  includeExactTotal: boolean
+  includeExactTotal: boolean,
+  useSqlDemoVisibilityFilter: boolean
 ) {
   const page = filters.page ?? 1;
   const skip = (page - 1) * PAGE_SIZE;
@@ -837,11 +899,11 @@ async function getJobsByRelevance(
       company: true,
       eligibility: { select: { submissionCategory: true } },
       sourceMappings: {
-        where: { removedAt: null },
         select: {
           sourceName: true,
           sourceQualityRank: true,
           sourceReliability: true,
+          removedAt: true,
         },
       },
     },
@@ -858,26 +920,55 @@ async function getJobsByRelevance(
     totalPromise,
   ]);
 
+  const visibleScoringJobs = useSqlDemoVisibilityFilter
+    ? scoringJobs
+    : scoringJobs.filter((job) => !isDemoOnlySourceMappings(job.sourceMappings));
+  const diversifiedSelectionLimit = Math.min(
+    visibleScoringJobs.length,
+    skip + PAGE_SIZE + DIVERSIFICATION_OVERSCAN
+  );
+
   // Score → diversify → paginate in memory.
   const sorted = diversifyRankedJobs(
-    scoringJobs
+    visibleScoringJobs
       .map((job) => ({
         id: job.id,
         title: job.title,
         company: job.company,
         postedAt: job.postedAt,
-        sourceMappings: job.sourceMappings,
-        baseScore: scoreJob(job, prefs, behavior),
+        sourceMappings: job.sourceMappings
+          .filter((mapping) => mapping.removedAt === null)
+          .map(({ sourceName, sourceQualityRank, sourceReliability }) => ({
+            sourceName,
+            sourceQualityRank,
+            sourceReliability,
+          })),
+        baseScore: scoreJob(
+          {
+            ...job,
+            sourceMappings: job.sourceMappings
+              .filter((mapping) => mapping.removedAt === null)
+              .map(({ sourceName, sourceQualityRank, sourceReliability }) => ({
+                sourceName,
+                sourceQualityRank,
+                sourceReliability,
+              })),
+          },
+          prefs,
+          behavior
+        ),
       }))
       .sort(
         (a, b) =>
           b.baseScore - a.baseScore ||
           (b.postedAt?.getTime() ?? 0) - (a.postedAt?.getTime() ?? 0)
-      )
+      ),
+    diversifiedSelectionLimit
   );
 
   const pageIds = sorted.slice(skip, skip + PAGE_SIZE).map((job) => job.id);
-  const hasNextPage = sorted.length > skip + PAGE_SIZE;
+  const hasNextPage =
+    total !== null ? skip + PAGE_SIZE < total : sorted.length > skip + PAGE_SIZE;
 
   if (pageIds.length === 0) {
     return { data: [], total, hasNextPage: false, page, pageSize: PAGE_SIZE };
@@ -915,237 +1006,274 @@ export type JobFilterParams = {
   page?: number;
 };
 
-export async function getJobs(filters: JobFilterParams) {
-  const viewerProfileId = await getOptionalCurrentProfileId();
-  const cacheKey = buildJobsCacheKey(viewerProfileId, filters);
+export async function getJobs(
+  filters: JobFilterParams,
+  options?: { viewerProfileId?: string | null }
+) {
+  const viewerProfileId =
+    options && "viewerProfileId" in options
+      ? (options.viewerProfileId ?? null)
+      : await getOptionalCurrentProfileId();
+  const useHotFeedSnapshot = isHotDefaultFeedRequest(filters);
+  const heartbeat = useHotFeedSnapshot ? await getIngestionHeartbeat() : null;
+  const cacheKey = buildJobsCacheKey(
+    viewerProfileId,
+    filters,
+    useHotFeedSnapshot ? (heartbeat?.lastUpdatedAt ?? "none") : null
+  );
   const cached = readTimedCache<JobsResult>(cacheKey);
   if (cached) return cached;
+  const inflight = inflightJobsQueryStore.get(cacheKey);
+  if (inflight) return inflight;
 
-  const page = filters.page ?? 1;
-  const skip = (page - 1) * PAGE_SIZE;
-  const summaryPromise = getJobFeedSummary();
-  const includeExactTotal = Boolean(
-    filters.search ||
-      filters.region ||
-      filters.workMode ||
-      filters.industry ||
-      filters.roleFamily ||
-      filters.salaryMin ||
-      filters.experienceLevel ||
-      filters.submissionCategory ||
-      filters.status
-  );
-  const cacheResult = (result: JobsResult) =>
-    writeTimedCache(cacheKey, result, JOB_FEED_QUERY_TTL_MS);
+  const request = (async () => {
+    const page = filters.page ?? 1;
+    const skip = (page - 1) * PAGE_SIZE;
+    const summaryPromise = getJobFeedSummary();
+    const includeExactTotal = Boolean(
+      filters.search ||
+        filters.region ||
+        filters.workMode ||
+        filters.industry ||
+        filters.roleFamily ||
+        filters.salaryMin ||
+        filters.experienceLevel ||
+        filters.submissionCategory ||
+        filters.status
+    );
+    const isExplicitSort = Boolean(filters.sortBy && filters.sortBy !== "relevance");
+    const defaultScoringWindowPages = Math.floor(DEFAULT_SCORING_WINDOW_SIZE / PAGE_SIZE);
+    const useSqlDemoVisibilityFilter =
+      includeExactTotal || isExplicitSort || page > defaultScoringWindowPages;
+    const cacheResult = (result: JobsResult) =>
+      writeTimedCache(
+        cacheKey,
+        result,
+        useHotFeedSnapshot ? HOT_FEED_QUERY_TTL_MS : JOB_FEED_QUERY_TTL_MS
+      );
 
-  const where: Prisma.JobCanonicalWhereInput = {
-    sourceMappings: {
-      some: {
-        sourceName: {
-          notIn: [...DEMO_SOURCE_NAMES],
-        },
-      },
-    },
-  };
+    const where: Prisma.JobCanonicalWhereInput = {};
 
-  if (viewerProfileId) {
-    where.behaviorSignals = {
-      none: {
-        userId: viewerProfileId,
-        action: "PASS",
-      },
-    };
-  }
-
-  if (filters.search) {
-    const matchingIds = await searchJobIds(filters.search);
-    if (matchingIds !== null) {
-      if (matchingIds.length === 0) {
-        // No search results — short-circuit to empty response
-        return cacheResult({
-          data: [],
-          total: 0,
-          hasNextPage: false,
-          page: filters.page ?? 1,
-          pageSize: PAGE_SIZE,
-          summary: await summaryPromise,
-        });
-      }
-      where.id = { in: matchingIds };
-    }
-  }
-
-  if (filters.region) {
-    const regions = filters.region.split(",");
-    where.region = { in: regions as ("US" | "CA")[] };
-  }
-
-  if (filters.workMode) {
-    const modes = filters.workMode.split(",");
-    where.workMode = {
-      in: modes as ("REMOTE" | "HYBRID" | "ONSITE" | "FLEXIBLE")[],
-    };
-  }
-
-  if (filters.industry) {
-    const industries = filters.industry.split(",");
-    where.industry = { in: industries as ("TECH" | "FINANCE")[] };
-  }
-
-  if (filters.roleFamily) {
-    const families = filters.roleFamily.split(",").map((f) => f.trim()).filter(Boolean);
-    if (families.length === 1) {
-      where.roleFamily = { contains: families[0], mode: "insensitive" };
-    } else if (families.length > 1) {
-      where.roleFamily = { in: families };
-    }
-  }
-
-  if (filters.salaryMin) {
-    where.salaryMax = { gte: filters.salaryMin };
-  }
-
-  if (filters.experienceLevel) {
-    const stages = splitFilterValues(normalizeCareerStageFilterValue(filters.experienceLevel));
-    const matchingIds = await searchCareerStageJobIds(stages as CareerStageFilter[]);
-
-    if (matchingIds !== null) {
-      if (matchingIds.length === 0) {
-        return cacheResult({
-          data: [],
-          total: 0,
-          hasNextPage: false,
-          page: filters.page ?? 1,
-          pageSize: PAGE_SIZE,
-          summary: await summaryPromise,
-        });
-      }
-
-      where.id = mergeMatchingIds(where.id, matchingIds);
-
-      if ("in" in where.id && Array.isArray(where.id.in) && where.id.in.length === 0) {
-        return cacheResult({
-          data: [],
-          total: 0,
-          hasNextPage: false,
-          page: filters.page ?? 1,
-          pageSize: PAGE_SIZE,
-          summary: await summaryPromise,
-        });
-      }
-    }
-  }
-
-  if (filters.submissionCategory) {
-    const selectedCategories = filters.submissionCategory
-      .split(",")
-      .map((entry) => entry.trim())
-      .filter(Boolean);
-    const expandedCategories = new Set<"AUTO_SUBMIT_READY" | "AUTO_FILL_REVIEW" | "MANUAL_ONLY">();
-
-    for (const category of selectedCategories) {
-      if (category === "AUTO_SUBMIT_READY") {
-        expandedCategories.add("AUTO_SUBMIT_READY");
-      } else if (category === "MANUAL_ONLY" || category === "AUTO_FILL_REVIEW") {
-        expandedCategories.add("MANUAL_ONLY");
-        expandedCategories.add("AUTO_FILL_REVIEW");
-      }
-    }
-
-    const categoryList = [...expandedCategories];
-
-    if (categoryList.length === 1) {
-      where.eligibility = {
-        submissionCategory: categoryList[0],
-      };
-    } else if (categoryList.length > 1) {
-      where.eligibility = {
-        submissionCategory: {
-          in: categoryList,
+    if (useSqlDemoVisibilityFilter) {
+      where.sourceMappings = {
+        some: {
+          sourceName: {
+            notIn: [...DEMO_SOURCE_NAMES],
+          },
         },
       };
     }
-  }
 
-  if (filters.status) {
-    where.status = filters.status as
-      | "AGING"
-      | "LIVE"
-      | "EXPIRED"
-      | "REMOVED"
-      | "STALE";
-  } else {
-    // Default feed stays cleaner than the full inventory. Search can reach
-    // slightly broader inventory, including stale-but-still-searchable jobs.
-    where.status = {
-      in: filters.search
-        ? [...DEFAULT_SEARCH_VISIBLE_JOB_STATUSES]
-        : [...DEFAULT_VISIBLE_JOB_STATUSES],
+    if (viewerProfileId) {
+      where.behaviorSignals = {
+        none: {
+          userId: viewerProfileId,
+          action: "PASS",
+        },
+      };
+    }
+
+    if (filters.search) {
+      const matchingIds = await searchJobIds(filters.search);
+      if (matchingIds !== null) {
+        if (matchingIds.length === 0) {
+          // No search results — short-circuit to empty response
+          return cacheResult({
+            data: [],
+            total: 0,
+            hasNextPage: false,
+            page: filters.page ?? 1,
+            pageSize: PAGE_SIZE,
+            summary: await summaryPromise,
+          });
+        }
+        where.id = { in: matchingIds };
+      }
+    }
+
+    if (filters.region) {
+      const regions = filters.region.split(",");
+      where.region = { in: regions as ("US" | "CA")[] };
+    }
+
+    if (filters.workMode) {
+      const modes = filters.workMode.split(",");
+      where.workMode = {
+        in: modes as ("REMOTE" | "HYBRID" | "ONSITE" | "FLEXIBLE")[],
+      };
+    }
+
+    if (filters.industry) {
+      const industries = filters.industry.split(",");
+      where.industry = { in: industries as ("TECH" | "FINANCE")[] };
+    }
+
+    if (filters.roleFamily) {
+      const families = filters.roleFamily.split(",").map((f) => f.trim()).filter(Boolean);
+      if (families.length === 1) {
+        where.roleFamily = { contains: families[0], mode: "insensitive" };
+      } else if (families.length > 1) {
+        where.roleFamily = { in: families };
+      }
+    }
+
+    if (filters.salaryMin) {
+      where.salaryMax = { gte: filters.salaryMin };
+    }
+
+    if (filters.experienceLevel) {
+      const stages = splitFilterValues(normalizeCareerStageFilterValue(filters.experienceLevel));
+      const matchingIds = await searchCareerStageJobIds(stages as CareerStageFilter[]);
+
+      if (matchingIds !== null) {
+        if (matchingIds.length === 0) {
+          return cacheResult({
+            data: [],
+            total: 0,
+            hasNextPage: false,
+            page: filters.page ?? 1,
+            pageSize: PAGE_SIZE,
+            summary: await summaryPromise,
+          });
+        }
+
+        where.id = mergeMatchingIds(where.id, matchingIds);
+
+        if ("in" in where.id && Array.isArray(where.id.in) && where.id.in.length === 0) {
+          return cacheResult({
+            data: [],
+            total: 0,
+            hasNextPage: false,
+            page: filters.page ?? 1,
+            pageSize: PAGE_SIZE,
+            summary: await summaryPromise,
+          });
+        }
+      }
+    }
+
+    if (filters.submissionCategory) {
+      const selectedCategories = filters.submissionCategory
+        .split(",")
+        .map((entry) => entry.trim())
+        .filter(Boolean);
+      const expandedCategories = new Set<"AUTO_SUBMIT_READY" | "AUTO_FILL_REVIEW" | "MANUAL_ONLY">();
+
+      for (const category of selectedCategories) {
+        if (category === "AUTO_SUBMIT_READY") {
+          expandedCategories.add("AUTO_SUBMIT_READY");
+        } else if (category === "MANUAL_ONLY" || category === "AUTO_FILL_REVIEW") {
+          expandedCategories.add("MANUAL_ONLY");
+          expandedCategories.add("AUTO_FILL_REVIEW");
+        }
+      }
+
+      const categoryList = [...expandedCategories];
+
+      if (categoryList.length === 1) {
+        where.eligibility = {
+          submissionCategory: categoryList[0],
+        };
+      } else if (categoryList.length > 1) {
+        where.eligibility = {
+          submissionCategory: {
+            in: categoryList,
+          },
+        };
+      }
+    }
+
+    if (filters.status) {
+      where.status = filters.status as
+        | "AGING"
+        | "LIVE"
+        | "EXPIRED"
+        | "REMOVED"
+        | "STALE";
+    } else {
+      where.status = {
+        in: filters.search
+          ? [...DEFAULT_SEARCH_VISIBLE_JOB_STATUSES]
+          : [...DEFAULT_VISIBLE_JOB_STATUSES],
+      };
+      where.AND = [
+        buildAvailabilityVisibilityWhere(
+          filters.search
+            ? DEFAULT_SEARCH_MIN_AVAILABILITY_SCORE
+            : DEFAULT_MIN_AVAILABILITY_SCORE
+        ),
+      ];
+    }
+
+    if (!filters.sortBy || filters.sortBy === "relevance") {
+      const [result, summary] = await Promise.all([
+        getJobsByRelevance(
+          filters,
+          where,
+          viewerProfileId,
+          includeExactTotal,
+          useSqlDemoVisibilityFilter
+        ),
+        summaryPromise,
+      ]);
+      return cacheResult({ ...result, summary });
+    }
+
+    let orderBy: Prisma.JobCanonicalOrderByWithRelationInput = {
+      postedAt: "desc",
     };
-    where.AND = [
-      buildAvailabilityVisibilityWhere(
-        filters.search
-          ? DEFAULT_SEARCH_MIN_AVAILABILITY_SCORE
-          : DEFAULT_MIN_AVAILABILITY_SCORE
-      ),
-    ];
-  }
+    if (filters.sortBy === "salary") {
+      orderBy = { salaryMax: "desc" };
+    }
 
-  // Relevance sort: score-based ranking with user preference signals
-  if (!filters.sortBy || filters.sortBy === "relevance") {
-    const [result, summary] = await Promise.all([
-      getJobsByRelevance(filters, where, viewerProfileId, includeExactTotal),
-      summaryPromise,
-    ]);
-    return cacheResult({ ...result, summary });
-  }
+    const jobs = await prisma.jobCanonical.findMany({
+      where,
+      include: JOB_CARD_INCLUDE(viewerProfileId),
+      orderBy,
+      skip,
+      take: PAGE_SIZE + 1,
+    });
 
-  // Explicit sorts: salary or newest
-  let orderBy: Prisma.JobCanonicalOrderByWithRelationInput = {
-    postedAt: "desc",
-  };
-  if (filters.sortBy === "salary") {
-    orderBy = { salaryMax: "desc" };
-  }
+    const data = jobs.slice(0, PAGE_SIZE).map((job) => {
+      const { savedJobs, ...rest } = job;
+      return {
+        ...rest,
+        isSaved: savedJobs.length > 0,
+      };
+    });
 
-  const jobs = await prisma.jobCanonical.findMany({
-    where,
-    include: JOB_CARD_INCLUDE(viewerProfileId),
-    orderBy,
-    skip,
-    take: PAGE_SIZE + 1,
-  });
+    if (!includeExactTotal) {
+      return cacheResult({
+        data,
+        total: null,
+        hasNextPage: jobs.length > PAGE_SIZE,
+        page,
+        pageSize: PAGE_SIZE,
+        summary: await summaryPromise,
+      });
+    }
 
-  // Transform to add isSaved flag
-  const data = jobs.slice(0, PAGE_SIZE).map((job) => {
-    const { savedJobs, ...rest } = job;
-    return {
-      ...rest,
-      isSaved: savedJobs.length > 0,
-    };
-  });
+    const total = await prisma.jobCanonical.count({ where });
 
-  if (!includeExactTotal) {
     return cacheResult({
       data,
-      total: null,
-      hasNextPage: jobs.length > PAGE_SIZE,
+      total,
+      hasNextPage: skip + PAGE_SIZE < total,
       page,
       pageSize: PAGE_SIZE,
       summary: await summaryPromise,
     });
+  })();
+
+  inflightJobsQueryStore.set(cacheKey, request);
+
+  try {
+    return await request;
+  } finally {
+    if (inflightJobsQueryStore.get(cacheKey) === request) {
+      inflightJobsQueryStore.delete(cacheKey);
+    }
   }
-
-  const total = await prisma.jobCanonical.count({ where });
-
-  return cacheResult({
-    data,
-    total,
-    hasNextPage: skip + PAGE_SIZE < total,
-    page,
-    pageSize: PAGE_SIZE,
-    summary: await summaryPromise,
-  });
 }
 
 export async function getJobById(id: string) {

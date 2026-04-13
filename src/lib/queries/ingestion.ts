@@ -8,6 +8,14 @@ import type {
 
 const RECENT_RUN_LIMIT = 20;
 const VISIBLE_JOB_STATUSES = ["LIVE", "AGING"] as const;
+const ACTIVE_COMPANY_SOURCE_POLL_STATES = ["READY", "ACTIVE", "BACKOFF"] as const;
+const INGESTION_STATUS_TTL_MS = 60_000;
+const INGESTION_HEARTBEAT_TTL_MS = 30_000;
+const scheduledConnectorNames = new Set(
+  getScheduledConnectorSnapshot().map((source) => source.sourceName)
+);
+let ingestionStatusCache: { expiresAt: number; value: IngestionStatus } | null = null;
+let ingestionHeartbeatCache: { expiresAt: number; value: IngestionHeartbeat } | null = null;
 
 export type IngestionStatus = {
   /** ISO timestamp of the most recent successful ingestion run, or null if none. */
@@ -18,34 +26,77 @@ export type IngestionStatus = {
   activeSourceCount: number;
 };
 
+export type IngestionHeartbeat = Pick<IngestionStatus, "lastUpdatedAt">;
+
 /**
  * Lightweight status query for the user-facing feed.
  * Runs 3 small queries in parallel — does NOT call getIngestionOverview.
  */
 export async function getIngestionStatus(): Promise<IngestionStatus> {
-  const [lastSuccessRun, liveJobCount, successSourceNames] = await Promise.all([
+  const now = Date.now();
+  if (ingestionStatusCache && ingestionStatusCache.expiresAt > now) {
+    return ingestionStatusCache.value;
+  }
+
+  const [lastSuccessRun, liveJobCount, activeManagedSources] = await Promise.all([
     prisma.ingestionRun.findFirst({
       where: { status: "SUCCESS" },
-      orderBy: { endedAt: "desc" },
+      orderBy: { startedAt: "desc" },
       select: { endedAt: true, startedAt: true },
     }),
     prisma.jobCanonical.count({
       where: { status: { in: [...VISIBLE_JOB_STATUSES] } },
     }),
-    prisma.ingestionRun.findMany({
-      where: { status: "SUCCESS" },
+    prisma.companySource.findMany({
+      where: {
+        validationState: "VALIDATED",
+        pollState: { in: [...ACTIVE_COMPANY_SOURCE_POLL_STATES] },
+      },
       select: { sourceName: true },
-      distinct: ["sourceName"],
     }),
   ]);
 
-  return {
+  const activeSourceNames = new Set(scheduledConnectorNames);
+  for (const source of activeManagedSources) {
+    activeSourceNames.add(source.sourceName);
+  }
+
+  const value = {
     lastUpdatedAt: lastSuccessRun
       ? (lastSuccessRun.endedAt ?? lastSuccessRun.startedAt).toISOString()
       : null,
     liveJobCount,
-    activeSourceCount: successSourceNames.length,
+    activeSourceCount: activeSourceNames.size,
+  } satisfies IngestionStatus;
+
+  ingestionStatusCache = {
+    expiresAt: now + INGESTION_STATUS_TTL_MS,
+    value,
   };
+
+  return value;
+}
+
+export async function getIngestionHeartbeat(): Promise<IngestionHeartbeat> {
+  const now = Date.now();
+  if (ingestionHeartbeatCache && ingestionHeartbeatCache.expiresAt > now) {
+    return ingestionHeartbeatCache.value;
+  }
+
+  const lastSuccessRun = await prisma.ingestionRun.findFirst({
+    where: { status: "SUCCESS" },
+    orderBy: { startedAt: "desc" },
+    select: { endedAt: true, startedAt: true },
+  });
+
+  const value = {
+    lastUpdatedAt: lastSuccessRun
+      ? (lastSuccessRun.endedAt ?? lastSuccessRun.startedAt).toISOString()
+      : null,
+  };
+
+  ingestionHeartbeatCache = { expiresAt: now + INGESTION_HEARTBEAT_TTL_MS, value };
+  return value;
 }
 
 export async function getIngestionOverview(): Promise<IngestionOverview> {

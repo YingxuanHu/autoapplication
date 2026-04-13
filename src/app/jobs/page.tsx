@@ -7,7 +7,7 @@ import { JobsAutoRefresh } from "@/components/jobs/jobs-auto-refresh";
 import { JobsFeedList } from "@/components/jobs/jobs-feed-list";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { getOptionalSessionUser } from "@/lib/current-user";
+import { getOptionalCurrentProfileId } from "@/lib/current-user";
 import { normalizeCareerStageFilterValue } from "@/lib/career-stage";
 import { formatPostedAge } from "@/lib/job-display";
 import { serializeJobCardData } from "@/lib/job-serialization";
@@ -68,8 +68,8 @@ const SORT_OPTIONS: Array<{ label: string; value: string | undefined }> = [
 export default async function JobsPage({ searchParams }: JobsPageProps) {
   await connection();
 
-  const sessionUser = await getOptionalSessionUser();
-  if (!sessionUser) {
+  const viewerProfileId = await getOptionalCurrentProfileId();
+  if (!viewerProfileId) {
     redirect("/sign-in");
   }
 
@@ -77,7 +77,7 @@ export default async function JobsPage({ searchParams }: JobsPageProps) {
   const filters = parseJobFilters(resolvedSearchParams);
 
   const [jobsResult, ingestionStatus] = await Promise.all([
-    getJobs(filters),
+    getJobs(filters, { viewerProfileId }),
     getIngestionStatus(),
   ]);
 
@@ -148,13 +148,13 @@ export default async function JobsPage({ searchParams }: JobsPageProps) {
           <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm sm:text-[15px]">
             <span className="text-foreground">
               <span className="font-medium">{jobsResult.summary.addedTodayCount.toLocaleString()}</span>{" "}
-              added today
+              found today
             </span>
             <span className="text-muted-foreground">
               <span className="font-medium text-foreground">
                 {jobsResult.summary.expiredTodayCount.toLocaleString()}
               </span>{" "}
-              expired today
+              marked expired today
             </span>
             <span className="text-muted-foreground">
               <span className="font-medium text-foreground">
