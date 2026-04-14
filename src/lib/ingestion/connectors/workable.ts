@@ -7,6 +7,10 @@ import type {
   SourceConnectorFetchOptions,
   SourceConnectorFetchResult,
 } from "@/lib/ingestion/types";
+import {
+  buildTimeoutSignal,
+  throwIfAborted,
+} from "@/lib/ingestion/runtime-control";
 
 type WorkableConnectorOptions = {
   accountToken: string;
@@ -58,8 +62,12 @@ export function createWorkableConnector({
     async fetchJobs(
       options: SourceConnectorFetchOptions
     ): Promise<SourceConnectorFetchResult> {
+      throwIfAborted(options.signal);
       const response = await fetch(
-        `https://www.workable.com/api/accounts/${accountToken}`
+        `https://www.workable.com/api/accounts/${accountToken}`,
+        {
+          signal: buildTimeoutSignal(options.signal, 45_000),
+        }
       );
 
       const log = options.log ?? console.log;
@@ -76,6 +84,7 @@ export function createWorkableConnector({
         };
       }
 
+      throwIfAborted(options.signal);
       const text = await response.text();
       const payload = parseWorkableAccountResponse(accountToken, text);
       const resolvedCompanyName =

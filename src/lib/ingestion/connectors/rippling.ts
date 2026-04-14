@@ -4,6 +4,10 @@ import type {
   SourceConnectorFetchOptions,
   SourceConnectorFetchResult,
 } from "@/lib/ingestion/types";
+import {
+  buildTimeoutSignal,
+  throwIfAborted,
+} from "@/lib/ingestion/runtime-control";
 
 type RipplingConnectorOptions = {
   boardSlug: string;
@@ -42,7 +46,7 @@ export function createRipplingConnector({
     async fetchJobs(
       options: SourceConnectorFetchOptions
     ): Promise<SourceConnectorFetchResult> {
-      const jobs = await fetchJobs(boardSlug, options.limit);
+      const jobs = await fetchJobs(boardSlug, options.limit, options.signal);
 
       return {
         jobs: jobs.map((job) => ({
@@ -73,10 +77,14 @@ export function createRipplingConnector({
   };
 }
 
-async function fetchJobs(boardSlug: string, limit?: number) {
+async function fetchJobs(boardSlug: string, limit?: number, signal?: AbortSignal) {
+  throwIfAborted(signal);
   const response = await fetch(
     `https://api.rippling.com/platform/api/ats/v1/board/${boardSlug}/jobs`,
-    { headers: { Accept: "application/json" } }
+    {
+      headers: { Accept: "application/json" },
+      signal: buildTimeoutSignal(signal, 45_000),
+    }
   );
 
   if (!response.ok) {
@@ -85,6 +93,7 @@ async function fetchJobs(boardSlug: string, limit?: number) {
     );
   }
 
+  throwIfAborted(signal);
   const payload = (await response.json()) as RipplingJob[];
   if (!Array.isArray(payload)) {
     throw new Error(

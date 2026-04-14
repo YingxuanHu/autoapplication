@@ -26,7 +26,10 @@ import {
   seedCompaniesFromCanonicalInventory,
   seedCompanySourcesFromExistingAts,
 } from "@/lib/ingestion/company-seeder";
-import { ingestConnector } from "@/lib/ingestion/pipeline";
+import {
+  ingestConnector,
+  recoverStaleRunningIngestionRuns,
+} from "@/lib/ingestion/pipeline";
 import { validateCompanySource } from "@/lib/ingestion/source-validator";
 import {
   claimSourceTasks,
@@ -62,13 +65,15 @@ const COMPANY_SOURCE_POLL_LOW_TIME_CONCURRENCY = 4;
 const COMPANY_SOURCE_POLL_CRITICAL_TIME_CONCURRENCY = 1;
 const HARD_FAILURE_REDISCOVERY_THRESHOLD = 2;
 const WORKDAY_BLOCKED_REDISCOVERY_THRESHOLD = 2;
+const WORKDAY_TIER_A_VALUE_SCORE = 60;
+const WORKDAY_TIER_B_VALUE_SCORE = 20;
 // Per-cycle cap on how many sources of a given connector can be polled.
 // Workday's myworkdayjobs.com infrastructure rate-limits aggressively — hitting
 // many tenants simultaneously triggers Cloudflare bot detection for all of them.
 // Taleo is also intentionally capped because its headless+sitemap fallback path
 // is much slower than the ATS APIs and can monopolize the cycle.
 const CONNECTOR_POLL_CYCLE_CAPS: Record<string, number> = {
-  workday: 6,
+  workday: 4,
   taleo: 2,
 };
 // Per-source connector runtime cap (passed to ingestConnector).
@@ -85,6 +90,17 @@ const COMPANY_SOURCE_POLL_MIN_REMAINING_BUDGET_MS = 90 * 1000;
 const COMPANY_SOURCE_POLL_BATCH_GRACE_MS = 90 * 1000;
 const COMPANY_SOURCE_POLL_LATE_STAGE_WINDOW_MS = 5 * 60 * 1000;
 const COMPANY_SOURCE_POLL_END_STAGE_WINDOW_MS = 2 * 60 * 1000;
+const COMPANY_SOURCE_POLL_ADMISSION_BUDGET_RATIO = 0.88;
+const COMPANY_SOURCE_POLL_SOFT_STOP_RATIO = 0.88;
+const COMPANY_SOURCE_POLL_TIER_1_BUDGET_RATIO = 0.65;
+const COMPANY_SOURCE_POLL_TIER_2_BUDGET_RATIO = 0.25;
+const COMPANY_SOURCE_POLL_TIER_3_BUDGET_RATIO = 0.1;
+const COMPANY_SOURCE_POLL_PREVIEW_MULTIPLIER = 3;
+const COMPANY_SOURCE_POLL_DEFER_TIER_2_MINUTES = 10;
+const COMPANY_SOURCE_POLL_DEFER_TIER_3_MINUTES = 30;
+const WORKDAY_HOST_BLOCK_STREAK_THRESHOLD = 3;
+const WORKDAY_HOST_COOLDOWN_HOURS = 12;
+const WORKDAY_BLOCKED_HTTP_STATUSES = new Set([401, 403, 429, 500, 502, 503, 504]);
 const DETERMINISTIC_ATS_HARD_INVALID_CONNECTORS = new Set([
   "greenhouse",
   "lever",
@@ -103,6 +119,60 @@ const LOW_SIGNAL_IMPORTED_POLL_CONNECTORS = new Set([
   "icims",
   "recruitee",
 ]);
+const TIER_1_POLL_CONNECTORS = new Set([
+  "greenhouse",
+  "lever",
+  "ashby",
+  "jobvite",
+  "teamtailor",
+]);
+const TIER_1_CONDITIONAL_CONNECTORS = new Set([
+  "smartrecruiters",
+  "icims",
+]);
+const DEFAULT_CONNECTOR_POLL_RUNTIME_MS: Record<string, number> = {
+  ashby: 22_000,
+  "company-site": 55_000,
+  greenhouse: 16_000,
+  icims: 34_000,
+  jobvite: 24_000,
+  lever: 15_000,
+  recruitee: 18_000,
+  rippling: 16_000,
+  smartrecruiters: 24_000,
+  successfactors: 42_000,
+  taleo: 70_000,
+  teamtailor: 24_000,
+  workable: 20_000,
+  workday: 55_000,
+};
+const HARD_CONNECTOR_POLL_TIMEOUT_MS: Record<string, number> = {
+  ashby: 60_000,
+  greenhouse: 45_000,
+  icims: 90_000,
+  jobvite: 75_000,
+  lever: 45_000,
+  recruitee: 60_000,
+  rippling: 60_000,
+  smartrecruiters: 75_000,
+  successfactors: 120_000,
+  taleo: 120_000,
+  teamtailor: 75_000,
+  workable: 60_000,
+  workday: 120_000,
+  "company-site": 120_000,
+};
+
+type PollTier = "TIER_1" | "TIER_2" | "TIER_3";
+
+type WorkdayHostMetrics = {
+  host: string;
+  avgRuntimeMs: number | null;
+  blockedSourceCount: number;
+  blockedStreak: number;
+  cooldownUntil: Date | null;
+  recentSuccessCount: number;
+};
 
 function clampScore(value: number, min: number, max: number) {
   return Math.min(Math.max(value, min), max);
@@ -261,6 +331,18 @@ function computePollPriorityScore(input: {
     input.jobsCreatedCount === 0
       ? 28
       : 0;
+  const workdayPriorityAdjustment =
+    input.connectorName === "workday"
+      ? computeWorkdayPollPriorityAdjustment({
+          pollAttemptCount: input.pollAttemptCount,
+          pollSuccessCount: input.pollSuccessCount,
+          jobsAcceptedCount: input.jobsAcceptedCount,
+          retainedLiveJobCount: input.retainedLiveJobCount,
+          lastJobsAcceptedCount: input.lastJobsAcceptedCount,
+          lastJobsCreatedCount: input.lastJobsCreatedCount,
+          consecutiveFailures: input.consecutiveFailures,
+        })
+      : 0;
 
   return (
     Math.round(input.priorityScore * 100) / 100 +
@@ -277,6 +359,7 @@ function computePollPriorityScore(input: {
     csvImportBootstrapBoost +
     productiveImportedConnectorBoost +
     structuredCompanySiteBootstrapBoost +
+    workdayPriorityAdjustment +
     (input.status === "DEGRADED" ? 10 : 0) +
     Math.max(0, 15 - input.consecutiveFailures * 3) +
     Math.round(input.discoveryConfidence * 10) -
@@ -284,6 +367,62 @@ function computePollPriorityScore(input: {
     emptyPenalty -
     importedLowSignalPenalty
   );
+}
+
+type WorkdayValueScoreInput = {
+  pollAttemptCount: number;
+  pollSuccessCount: number;
+  jobsAcceptedCount: number;
+  retainedLiveJobCount: number;
+};
+
+function computeWorkdayValueScore(input: WorkdayValueScoreInput) {
+  const recentSuccessRate =
+    input.pollAttemptCount > 0 ? input.pollSuccessCount / input.pollAttemptCount : 0;
+
+  return (
+    input.retainedLiveJobCount * 0.5 +
+    input.jobsAcceptedCount * 0.3 +
+    recentSuccessRate * 100 * 0.2
+  );
+}
+
+function getWorkdayTier(valueScore: number) {
+  if (valueScore >= WORKDAY_TIER_A_VALUE_SCORE) return "A" as const;
+  if (valueScore >= WORKDAY_TIER_B_VALUE_SCORE) return "B" as const;
+  return "C" as const;
+}
+
+function computeWorkdayPollPriorityAdjustment(
+  input: WorkdayValueScoreInput & {
+    lastJobsAcceptedCount: number;
+    lastJobsCreatedCount: number;
+    consecutiveFailures: number;
+  }
+) {
+  const valueScore = computeWorkdayValueScore(input);
+  const tier = getWorkdayTier(valueScore);
+  const tierBoost = tier === "A" ? 120 : tier === "B" ? 55 : -28;
+  const recentWindowBoost =
+    input.lastJobsAcceptedCount > 0
+      ? Math.min(40, input.lastJobsAcceptedCount * 2)
+      : input.lastJobsCreatedCount > 0
+        ? Math.min(28, input.lastJobsCreatedCount * 4)
+        : 0;
+  const blockedDrag =
+    input.consecutiveFailures <= 1
+      ? 0
+      : tier === "A"
+        ? Math.min(18, input.consecutiveFailures * 4)
+        : tier === "B"
+          ? Math.min(30, input.consecutiveFailures * 6)
+          : Math.min(48, input.consecutiveFailures * 10);
+
+  return tierBoost + recentWindowBoost - blockedDrag;
+}
+
+function isHighValueWorkdaySource(input: WorkdayValueScoreInput) {
+  return getWorkdayTier(computeWorkdayValueScore(input)) !== "C";
 }
 
 function pickBalancedPollSources<T extends { source: { connectorName: string }; priorityScore: number }>(
@@ -349,64 +488,438 @@ function pickBalancedPollSources<T extends { source: { connectorName: string }; 
   return selected;
 }
 
-function applyConnectorPollCycleCaps<
-  T extends { source: { id: string; connectorName: string }; priorityScore: number }
->(candidates: T[], limit: number, existingPendingCounts: Record<string, number> = {}) {
-  if (limit <= 0 || candidates.length === 0) {
-    return [] as T[];
+function readJsonRecord(value: Prisma.JsonValue | null | undefined) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    return {} as Record<string, unknown>;
   }
 
-  const selected: T[] = [];
-  const selectedIds = new Set<string>();
-  // Seed connector counts with already-pending tasks so restarts don't exceed the cap.
-  const connectorCounts = new Map<string, number>(
-    Object.entries(existingPendingCounts)
+  return value as Record<string, unknown>;
+}
+
+function readNumberValue(value: unknown) {
+  if (typeof value === "number" && Number.isFinite(value)) {
+    return value;
+  }
+
+  if (typeof value === "string" && value.trim().length > 0) {
+    const parsed = Number(value);
+    return Number.isFinite(parsed) ? parsed : null;
+  }
+
+  return null;
+}
+
+function mergeMetadataJson(
+  currentValue: Prisma.JsonValue | null | undefined,
+  nextValue: Record<string, unknown>
+) {
+  const current = readJsonRecord(currentValue);
+  const merged: Record<string, unknown> = { ...current };
+
+  for (const [key, value] of Object.entries(nextValue)) {
+    if (value === undefined) continue;
+
+    const existing = merged[key];
+
+    if (Array.isArray(existing) && Array.isArray(value)) {
+      merged[key] = [...new Set([...existing, ...value])];
+      continue;
+    }
+
+    if (
+      existing &&
+      value &&
+      typeof existing === "object" &&
+      typeof value === "object" &&
+      !Array.isArray(existing) &&
+      !Array.isArray(value)
+    ) {
+      merged[key] = {
+        ...(existing as Record<string, unknown>),
+        ...(value as Record<string, unknown>),
+      };
+      continue;
+    }
+
+    merged[key] = value;
+  }
+
+  return merged as Prisma.InputJsonValue;
+}
+
+function computePollAdmissionBudgetMs(
+  maxWallClockMs: number = COMPANY_SOURCE_POLL_QUEUE_WALL_CLOCK_MS
+) {
+  return Math.max(
+    COMPANY_SOURCE_POLL_MIN_REMAINING_BUDGET_MS * 2,
+    Math.floor(maxWallClockMs * COMPANY_SOURCE_POLL_ADMISSION_BUDGET_RATIO)
   );
+}
 
-  const tryTakeCandidate = (candidate: T) => {
-    if (selectedIds.has(candidate.source.id)) {
-      return false;
-    }
+function computePollSoftStopMs(
+  maxWallClockMs: number = COMPANY_SOURCE_POLL_QUEUE_WALL_CLOCK_MS
+) {
+  return Math.max(
+    COMPANY_SOURCE_POLL_MIN_REMAINING_BUDGET_MS * 2,
+    Math.floor(maxWallClockMs * COMPANY_SOURCE_POLL_SOFT_STOP_RATIO)
+  );
+}
 
-    const connectorName = candidate.source.connectorName;
-    const connectorCap = CONNECTOR_POLL_CYCLE_CAPS[connectorName];
-    const currentCount = connectorCounts.get(connectorName) ?? 0;
+function getWorkdayHostKey(input: {
+  connectorName: string;
+  token: string;
+  boardUrl: string;
+}) {
+  if (input.connectorName !== "workday") return null;
 
-    if (typeof connectorCap === "number" && currentCount >= connectorCap) {
-      return false;
-    }
+  const tokenHost = input.token.split("|")[0]?.trim().toLowerCase();
+  if (tokenHost) return tokenHost;
 
-    selected.push(candidate);
-    selectedIds.add(candidate.source.id);
-    connectorCounts.set(connectorName, currentCount + 1);
-    return true;
-  };
+  try {
+    return new URL(input.boardUrl).hostname.toLowerCase();
+  } catch {
+    return null;
+  }
+}
 
-  for (const candidate of candidates) {
-    if (selected.length >= limit) break;
-    tryTakeCandidate(candidate);
+function getAveragePollRuntimeMs(metadataJson: Prisma.JsonValue | null | undefined) {
+  const metadata = readJsonRecord(metadataJson);
+  const pollRuntime = readJsonRecord(metadata.pollRuntime as Prisma.JsonValue | undefined);
+  const avgMs = readNumberValue(pollRuntime.avgMs);
+  if (avgMs != null) {
+    return avgMs;
   }
 
-  if (selected.length >= limit) {
-    return selected;
+  const lastSummary = readJsonRecord(metadata.lastSummary as Prisma.JsonValue | undefined);
+  return readNumberValue(lastSummary.runtimeMs);
+}
+
+function estimateSourcePollRuntimeMs(input: {
+  connectorName: string;
+  sourceType: string | null;
+  metadataJson: Prisma.JsonValue | null | undefined;
+  pollAttemptCount: number;
+  consecutiveFailures: number;
+  hostMetrics?: WorkdayHostMetrics | null;
+}) {
+  const runtimeFromMetadata = getAveragePollRuntimeMs(input.metadataJson);
+  const connectorBaseline =
+    DEFAULT_CONNECTOR_POLL_RUNTIME_MS[input.connectorName] ?? 28_000;
+
+  let estimateMs = runtimeFromMetadata ?? connectorBaseline;
+
+  if (input.sourceType === "COMPANY_HTML") {
+    estimateMs *= 1.35;
+  } else if (input.sourceType === "COMPANY_JSON") {
+    estimateMs *= 1.1;
   }
 
-  const fallbacks = [...candidates]
-    .filter((candidate) => !selectedIds.has(candidate.source.id))
-    .sort((left, right) => {
-      if (right.priorityScore !== left.priorityScore) {
-        return right.priorityScore - left.priorityScore;
-      }
+  if (input.pollAttemptCount === 0) {
+    estimateMs *= 1.15;
+  }
 
-      return left.source.connectorName.localeCompare(right.source.connectorName);
+  if (input.consecutiveFailures > 0) {
+    estimateMs *= 1 + Math.min(0.35, input.consecutiveFailures * 0.08);
+  }
+
+  if (input.connectorName === "workday" && input.hostMetrics?.avgRuntimeMs) {
+    estimateMs = Math.max(estimateMs, input.hostMetrics.avgRuntimeMs);
+  }
+
+  return Math.round(
+    clampScore(
+      estimateMs,
+      8_000,
+      COMPANY_SOURCE_POLL_MAX_RUNTIME_MS
+    )
+  );
+}
+
+function computeBlockedRisk(input: {
+  connectorName: string;
+  pollState: string;
+  consecutiveFailures: number;
+  lastHttpStatus: number | null;
+  hostMetrics?: WorkdayHostMetrics | null;
+}) {
+  let blockedRisk = 0;
+
+  if (input.pollState === "BACKOFF") {
+    blockedRisk += 0.2;
+  }
+
+  if (input.consecutiveFailures > 0) {
+    blockedRisk += Math.min(0.45, input.consecutiveFailures * 0.1);
+  }
+
+  if (input.lastHttpStatus && WORKDAY_BLOCKED_HTTP_STATUSES.has(input.lastHttpStatus)) {
+    blockedRisk += 0.3;
+  }
+
+  if (input.connectorName === "workday") {
+    blockedRisk += 0.15;
+
+    if (input.hostMetrics?.blockedSourceCount) {
+      blockedRisk += Math.min(0.45, input.hostMetrics.blockedSourceCount * 0.12);
+    }
+
+    if (input.hostMetrics?.blockedStreak) {
+      blockedRisk += Math.min(0.35, input.hostMetrics.blockedStreak * 0.08);
+    }
+
+    if (input.hostMetrics?.cooldownUntil) {
+      blockedRisk = 1.5;
+    }
+  }
+
+  return clampScore(blockedRisk, 0, 1.5);
+}
+
+function computeExpectedAcceptedJobs(input: {
+  connectorName: string;
+  sourceQualityScore: number;
+  yieldScore: number;
+  pollAttemptCount: number;
+  pollSuccessCount: number;
+  jobsAcceptedCount: number;
+  jobsCreatedCount: number;
+  lastJobsAcceptedCount: number;
+  lastJobsCreatedCount: number;
+  retainedLiveJobCount: number;
+}) {
+  const acceptedPerSuccessfulPoll =
+    input.pollSuccessCount > 0 ? input.jobsAcceptedCount / input.pollSuccessCount : 0;
+  const createdPerSuccessfulPoll =
+    input.pollSuccessCount > 0 ? input.jobsCreatedCount / input.pollSuccessCount : 0;
+  const bootstrapExpectation =
+    input.pollAttemptCount === 0
+      ? TIER_1_POLL_CONNECTORS.has(input.connectorName) ||
+        TIER_1_CONDITIONAL_CONNECTORS.has(input.connectorName)
+        ? 4
+        : 1.5
+      : 0;
+
+  return Math.max(
+    bootstrapExpectation,
+    input.lastJobsAcceptedCount * 0.7 +
+      input.lastJobsCreatedCount * 2.5 +
+      acceptedPerSuccessfulPoll * 0.45 +
+      createdPerSuccessfulPoll * 3.5 +
+      input.retainedLiveJobCount * 0.1 +
+      input.sourceQualityScore * 10 +
+      input.yieldScore * 18
+  );
+}
+
+function classifyPollTier(input: {
+  connectorName: string;
+  sourceType: string | null;
+  pollAttemptCount: number;
+  pollSuccessCount: number;
+  retainedLiveJobCount: number;
+  blockedRisk: number;
+  workdayTier: ReturnType<typeof getWorkdayTier> | null;
+}) {
+  if (input.connectorName === "workday") {
+    return input.workdayTier === "A"
+      ? "TIER_1"
+      : input.workdayTier === "B"
+        ? "TIER_2"
+        : "TIER_3";
+  }
+
+  if (TIER_1_POLL_CONNECTORS.has(input.connectorName)) {
+    return "TIER_1";
+  }
+
+  if (TIER_1_CONDITIONAL_CONNECTORS.has(input.connectorName)) {
+    return input.pollSuccessCount > 0 || input.retainedLiveJobCount > 0
+      ? "TIER_1"
+      : "TIER_2";
+  }
+
+  if (input.blockedRisk >= 0.6) {
+    return "TIER_3";
+  }
+
+  if (
+    input.sourceType === "COMPANY_JSON" &&
+    (input.pollSuccessCount > 0 || input.retainedLiveJobCount > 0)
+  ) {
+    return "TIER_2";
+  }
+
+  if (input.pollAttemptCount === 0) {
+    return "TIER_3";
+  }
+
+  return input.retainedLiveJobCount > 0 || input.pollSuccessCount > 0
+    ? "TIER_2"
+    : "TIER_3";
+}
+
+function computePollEfficiencyScore(input: {
+  basePriorityScore: number;
+  estimatedRuntimeMs: number;
+  expectedAcceptedJobs: number;
+  blockedRisk: number;
+  recentSuccessRate: number;
+  retainedLiveJobCount: number;
+}) {
+  const score =
+    input.expectedAcceptedJobs * 5 +
+    input.retainedLiveJobCount * 0.2 +
+    input.recentSuccessRate * 20 +
+    input.basePriorityScore * 0.12 -
+    input.blockedRisk * 30;
+
+  return score / Math.max(input.estimatedRuntimeMs / 1000, 1);
+}
+
+function computeQueuePriorityScore(input: {
+  tier: PollTier;
+  efficiencyScore: number;
+  basePriorityScore: number;
+}) {
+  const tierBoost =
+    input.tier === "TIER_1" ? 4_000 : input.tier === "TIER_2" ? 2_500 : 1_000;
+
+  return tierBoost + input.efficiencyScore * 100 + input.basePriorityScore;
+}
+
+async function buildWorkdayHostMetrics(now: Date) {
+  const recentFailureCutoff = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+  const recentSuccessCutoff = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+  const sources = await prisma.companySource.findMany({
+    where: { connectorName: "workday" },
+    select: {
+      token: true,
+      boardUrl: true,
+      cooldownUntil: true,
+      lastFailureAt: true,
+      lastSuccessfulPollAt: true,
+      lastHttpStatus: true,
+      consecutiveFailures: true,
+      metadataJson: true,
+    },
+  });
+
+  const runtimeTotals = new Map<string, { totalMs: number; samples: number }>();
+  const metrics = new Map<string, WorkdayHostMetrics>();
+
+  for (const source of sources) {
+    const host = getWorkdayHostKey({
+      connectorName: "workday",
+      token: source.token,
+      boardUrl: source.boardUrl,
     });
+    if (!host) continue;
 
-  for (const candidate of fallbacks) {
-    if (selected.length >= limit) break;
-    tryTakeCandidate(candidate);
+    const entry = metrics.get(host) ?? {
+      host,
+      avgRuntimeMs: null,
+      blockedSourceCount: 0,
+      blockedStreak: 0,
+      cooldownUntil: null,
+      recentSuccessCount: 0,
+    };
+
+    if (
+      source.lastFailureAt &&
+      source.lastFailureAt >= recentFailureCutoff &&
+      source.lastHttpStatus &&
+      WORKDAY_BLOCKED_HTTP_STATUSES.has(source.lastHttpStatus)
+    ) {
+      entry.blockedSourceCount += 1;
+      entry.blockedStreak = Math.max(entry.blockedStreak, source.consecutiveFailures);
+    }
+
+    if (source.lastSuccessfulPollAt && source.lastSuccessfulPollAt >= recentSuccessCutoff) {
+      entry.recentSuccessCount += 1;
+    }
+
+    if (source.cooldownUntil && source.cooldownUntil > now) {
+      entry.cooldownUntil =
+        entry.cooldownUntil && entry.cooldownUntil > source.cooldownUntil
+          ? entry.cooldownUntil
+          : source.cooldownUntil;
+    }
+
+    const avgRuntimeMs = getAveragePollRuntimeMs(source.metadataJson);
+    if (avgRuntimeMs != null) {
+      const existing = runtimeTotals.get(host) ?? { totalMs: 0, samples: 0 };
+      existing.totalMs += avgRuntimeMs;
+      existing.samples += 1;
+      runtimeTotals.set(host, existing);
+    }
+
+    metrics.set(host, entry);
   }
 
-  return selected;
+  for (const [host, totals] of runtimeTotals.entries()) {
+    const entry = metrics.get(host);
+    if (!entry || totals.samples === 0) continue;
+    entry.avgRuntimeMs = Math.round(totals.totalMs / totals.samples);
+    metrics.set(host, entry);
+  }
+
+  return metrics;
+}
+
+function estimateClaimablePollTaskCountFromPreview(
+  tasks: Array<{ payloadJson: Prisma.JsonValue | null }>,
+  limit: number,
+  remainingBudgetMs: number
+) {
+  if (limit <= 0 || tasks.length === 0 || remainingBudgetMs <= 0) {
+    return 0;
+  }
+
+  let admitted = 0;
+  let consumedMs = 0;
+
+  for (const task of tasks) {
+    if (admitted >= limit) break;
+
+    const payload = readJsonRecord(task.payloadJson);
+    const estimatedRuntimeMs = Math.round(
+      clampScore(
+        readNumberValue(payload.estimatedRuntimeMs) ??
+          DEFAULT_CONNECTOR_POLL_RUNTIME_MS["company-site"],
+        8_000,
+        COMPANY_SOURCE_POLL_MAX_RUNTIME_MS
+      )
+    );
+
+    if (consumedMs + estimatedRuntimeMs > remainingBudgetMs && admitted > 0) {
+      break;
+    }
+
+    consumedMs += estimatedRuntimeMs;
+    admitted += 1;
+  }
+
+  return admitted;
+}
+
+function resolveConnectorPollTimeoutMs(input: {
+  connectorName: string;
+  sourceType: string | null;
+  maxRuntimeMs: number;
+}) {
+  const connectorKey =
+    input.connectorName === "company-site"
+      ? "company-site"
+      : input.connectorName;
+  const configured =
+    HARD_CONNECTOR_POLL_TIMEOUT_MS[connectorKey] ??
+    HARD_CONNECTOR_POLL_TIMEOUT_MS[input.sourceType ?? ""] ??
+    90_000;
+
+  return Math.max(
+    15_000,
+    Math.min(input.maxRuntimeMs, configured)
+  );
 }
 
 export async function syncCompaniesFromJobs(options: { limit?: number } = {}) {
@@ -780,7 +1293,8 @@ export async function enqueueCompanySourcePollTasks(options: {
 } = {}) {
   const now = options.now ?? new Date();
   const pollLimit = options.limit ?? COMPANY_SOURCE_POLL_LIMIT;
-  const bootstrapQuota = Math.max(12, Math.min(Math.floor(pollLimit * 0.3), 60));
+  const admissionBudgetMs = computePollAdmissionBudgetMs();
+  const workdayHostMetrics = await buildWorkdayHostMetrics(now);
   const candidates = await prisma.companySource.findMany({
     where: {
       status: { in: ["PROVISIONED", "ACTIVE", "DEGRADED"] },
@@ -802,12 +1316,12 @@ export async function enqueueCompanySourcePollTasks(options: {
       },
     },
     orderBy: [{ priorityScore: "desc" }, { lastSuccessfulPollAt: "asc" }],
-    take: Math.max(pollLimit * 4, pollLimit + bootstrapQuota),
+    take: Math.max(pollLimit * 6, pollLimit + 600),
   });
 
   const scoredSources = candidates.map((source) => {
     const historicalYield = source.company.jobs.length;
-    const priorityScore = computePollPriorityScore({
+    const basePriorityScore = computePollPriorityScore({
       connectorName: source.connectorName,
       priorityScore: source.priorityScore,
       sourceQualityScore: source.sourceQualityScore,
@@ -826,76 +1340,248 @@ export async function enqueueCompanySourcePollTasks(options: {
       sourceType: source.sourceType,
       parserVersion: source.parserVersion,
     });
+    const workdayHost = getWorkdayHostKey({
+      connectorName: source.connectorName,
+      token: source.token,
+      boardUrl: source.boardUrl,
+    });
+    const hostMetrics = workdayHost ? workdayHostMetrics.get(workdayHost) ?? null : null;
 
-    return { source, priorityScore };
-  });
+    const workdayValueScore =
+      source.connectorName === "workday"
+        ? computeWorkdayValueScore({
+            pollAttemptCount: source.pollAttemptCount,
+            pollSuccessCount: source.pollSuccessCount,
+            jobsAcceptedCount: source.jobsAcceptedCount,
+            retainedLiveJobCount: source.retainedLiveJobCount,
+          })
+        : null;
+    const recentSuccessRate =
+      source.pollAttemptCount > 0 ? source.pollSuccessCount / source.pollAttemptCount : 0;
+    const estimatedRuntimeMs = estimateSourcePollRuntimeMs({
+      connectorName: source.connectorName,
+      sourceType: source.sourceType,
+      metadataJson: source.metadataJson,
+      pollAttemptCount: source.pollAttemptCount,
+      consecutiveFailures: source.consecutiveFailures,
+      hostMetrics,
+    });
+    const blockedRisk = computeBlockedRisk({
+      connectorName: source.connectorName,
+      pollState: source.pollState,
+      consecutiveFailures: source.consecutiveFailures,
+      lastHttpStatus: source.lastHttpStatus,
+      hostMetrics,
+    });
+    const expectedAcceptedJobs = computeExpectedAcceptedJobs({
+      connectorName: source.connectorName,
+      sourceQualityScore: source.sourceQualityScore,
+      yieldScore: source.yieldScore,
+      pollAttemptCount: source.pollAttemptCount,
+      pollSuccessCount: source.pollSuccessCount,
+      jobsAcceptedCount: source.jobsAcceptedCount,
+      jobsCreatedCount: source.jobsCreatedCount,
+      lastJobsAcceptedCount: source.lastJobsAcceptedCount,
+      lastJobsCreatedCount: source.lastJobsCreatedCount,
+      retainedLiveJobCount: source.retainedLiveJobCount,
+    });
+    const workdayTier =
+      workdayValueScore === null ? null : getWorkdayTier(workdayValueScore);
+    const tier = classifyPollTier({
+      connectorName: source.connectorName,
+      sourceType: source.sourceType,
+      pollAttemptCount: source.pollAttemptCount,
+      pollSuccessCount: source.pollSuccessCount,
+      retainedLiveJobCount: source.retainedLiveJobCount,
+      blockedRisk,
+      workdayTier,
+    });
+    const efficiencyScore = computePollEfficiencyScore({
+      basePriorityScore,
+      estimatedRuntimeMs,
+      expectedAcceptedJobs,
+      blockedRisk,
+      recentSuccessRate,
+      retainedLiveJobCount: source.retainedLiveJobCount,
+    });
+    const priorityScore = computeQueuePriorityScore({
+      tier,
+      efficiencyScore,
+      basePriorityScore,
+    });
 
-  const bootstrapSources = pickBalancedPollSources(
-    scoredSources.filter(({ source }) => source.pollAttemptCount === 0),
-    bootstrapQuota,
-    (left, right) =>
-      (right.source.lastValidatedAt?.getTime() ?? 0) -
-      (left.source.lastValidatedAt?.getTime() ?? 0)
+    return {
+      source,
+      priorityScore,
+      basePriorityScore,
+      workdayValueScore,
+      workdayTier,
+      tier,
+      workdayHost,
+      hostMetrics,
+      recentSuccessRate,
+      estimatedRuntimeMs,
+      expectedAcceptedJobs,
+      blockedRisk,
+      efficiencyScore,
+    };
+  }).filter(({ hostMetrics }) => !(hostMetrics?.cooldownUntil && hostMetrics.cooldownUntil > now));
+
+  const orderedByTier = (tier: PollTier) =>
+    pickBalancedPollSources(
+      scoredSources.filter((candidate) => candidate.tier === tier),
+      scoredSources.length,
+      (left, right) => {
+        if (right.efficiencyScore !== left.efficiencyScore) {
+          return right.efficiencyScore - left.efficiencyScore;
+        }
+
+        return (
+          (left.source.lastSuccessfulPollAt?.getTime() ?? 0) -
+          (right.source.lastSuccessfulPollAt?.getTime() ?? 0)
+        );
+      }
+    );
+
+  const tierCandidates = {
+    TIER_1: orderedByTier("TIER_1"),
+    TIER_2: orderedByTier("TIER_2"),
+    TIER_3: orderedByTier("TIER_3"),
+  } satisfies Record<PollTier, typeof scoredSources>;
+
+  const connectorCounts = new Map<string, number>();
+  const selectedSources: typeof scoredSources = [];
+  const selectedIds = new Set<string>();
+  let carryBudgetMs = 0;
+
+  const tierConfigs: Array<{ tier: PollTier; budgetRatio: number }> = [
+    { tier: "TIER_1", budgetRatio: COMPANY_SOURCE_POLL_TIER_1_BUDGET_RATIO },
+    { tier: "TIER_2", budgetRatio: COMPANY_SOURCE_POLL_TIER_2_BUDGET_RATIO },
+    { tier: "TIER_3", budgetRatio: COMPANY_SOURCE_POLL_TIER_3_BUDGET_RATIO },
+  ];
+
+  for (const { tier, budgetRatio } of tierConfigs) {
+    const candidatesForTier = tierCandidates[tier];
+    const tierBudgetMs = Math.round(admissionBudgetMs * budgetRatio) + carryBudgetMs;
+    let tierUsedMs = 0;
+
+    for (const candidate of candidatesForTier) {
+      if (selectedSources.length >= pollLimit) break;
+      if (selectedIds.has(candidate.source.id)) continue;
+
+      const connectorCap = CONNECTOR_POLL_CYCLE_CAPS[candidate.source.connectorName];
+      const currentConnectorCount = connectorCounts.get(candidate.source.connectorName) ?? 0;
+      if (typeof connectorCap === "number" && currentConnectorCount >= connectorCap) {
+        continue;
+      }
+
+      const projectedMs = tierUsedMs + candidate.estimatedRuntimeMs;
+      if (projectedMs > tierBudgetMs && tierUsedMs > 0) {
+        continue;
+      }
+
+      selectedSources.push(candidate);
+      selectedIds.add(candidate.source.id);
+      connectorCounts.set(candidate.source.connectorName, currentConnectorCount + 1);
+      tierUsedMs = projectedMs;
+    }
+
+    carryBudgetMs = Math.max(0, tierBudgetMs - tierUsedMs);
+  }
+
+  const remainingCandidates = [...scoredSources]
+    .filter((candidate) => !selectedIds.has(candidate.source.id))
+    .sort((left, right) => {
+      if (right.priorityScore !== left.priorityScore) {
+        return right.priorityScore - left.priorityScore;
+      }
+
+      return right.efficiencyScore - left.efficiencyScore;
+    });
+
+  let totalSelectedRuntimeMs = selectedSources.reduce(
+    (sum, candidate) => sum + candidate.estimatedRuntimeMs,
+    0
   );
 
-  const bootstrapIds = new Set(bootstrapSources.map(({ source }) => source.id));
-  const establishedSources = pickBalancedPollSources(
-    scoredSources.filter(({ source }) => !bootstrapIds.has(source.id)),
-    Math.max(0, pollLimit - bootstrapSources.length),
-    (left, right) =>
-      (left.source.lastSuccessfulPollAt?.getTime() ?? 0) -
-      (right.source.lastSuccessfulPollAt?.getTime() ?? 0)
-  );
+  for (const candidate of remainingCandidates) {
+    if (selectedSources.length >= pollLimit) break;
+    if (totalSelectedRuntimeMs + candidate.estimatedRuntimeMs > admissionBudgetMs) break;
 
-  // Count existing PENDING tasks per capped connector so restarts don't
-  // accumulate stale tasks above the per-cycle budget.
-  const existingPendingCounts: Record<string, number> = {};
-  if (Object.keys(CONNECTOR_POLL_CYCLE_CAPS).length > 0) {
-    const pendingRows = await prisma.sourceTask.findMany({
+    const connectorCap = CONNECTOR_POLL_CYCLE_CAPS[candidate.source.connectorName];
+    const currentConnectorCount = connectorCounts.get(candidate.source.connectorName) ?? 0;
+    if (typeof connectorCap === "number" && currentConnectorCount >= connectorCap) {
+      continue;
+    }
+
+    selectedSources.push(candidate);
+    selectedIds.add(candidate.source.id);
+    connectorCounts.set(candidate.source.connectorName, currentConnectorCount + 1);
+    totalSelectedRuntimeMs += candidate.estimatedRuntimeMs;
+  }
+
+  const deferredTier2SourceIds = scoredSources
+    .filter((candidate) => candidate.tier === "TIER_2" && !selectedIds.has(candidate.source.id))
+    .map((candidate) => candidate.source.id);
+  const deferredTier3SourceIds = scoredSources
+    .filter((candidate) => candidate.tier === "TIER_3" && !selectedIds.has(candidate.source.id))
+    .map((candidate) => candidate.source.id);
+
+  if (deferredTier2SourceIds.length > 0) {
+    await prisma.sourceTask.updateMany({
       where: {
         kind: "CONNECTOR_POLL",
         status: "PENDING",
-        companySourceId: {
-          in: [...bootstrapSources, ...establishedSources]
-            .map(({ source }) => source.id),
-        },
+        notBeforeAt: { lte: now },
+        companySourceId: { in: deferredTier2SourceIds },
       },
-      select: { companySourceId: true },
+      data: {
+        notBeforeAt: new Date(
+          now.getTime() + COMPANY_SOURCE_POLL_DEFER_TIER_2_MINUTES * 60 * 1000
+        ),
+      },
     });
-    const pendingSourceIds = new Set(
-      pendingRows.map((r) => r.companySourceId).filter(Boolean) as string[]
-    );
-    for (const { source } of [...bootstrapSources, ...establishedSources]) {
-      if (
-        pendingSourceIds.has(source.id) &&
-        CONNECTOR_POLL_CYCLE_CAPS[source.connectorName] !== undefined
-      ) {
-        existingPendingCounts[source.connectorName] =
-          (existingPendingCounts[source.connectorName] ?? 0) + 1;
-      }
-    }
   }
 
-  const sources = applyConnectorPollCycleCaps(
-    [...bootstrapSources, ...establishedSources],
-    pollLimit,
-    existingPendingCounts
-  );
+  if (deferredTier3SourceIds.length > 0) {
+    await prisma.sourceTask.updateMany({
+      where: {
+        kind: "CONNECTOR_POLL",
+        status: "PENDING",
+        notBeforeAt: { lte: now },
+        companySourceId: { in: deferredTier3SourceIds },
+      },
+      data: {
+        notBeforeAt: new Date(
+          now.getTime() + COMPANY_SOURCE_POLL_DEFER_TIER_3_MINUTES * 60 * 1000
+        ),
+      },
+    });
+  }
 
-  for (const { source, priorityScore } of sources) {
-
+  for (const candidate of selectedSources) {
     await enqueueUniqueSourceTask({
       kind: "CONNECTOR_POLL",
-      companyId: source.companyId,
-      companySourceId: source.id,
-      priorityScore,
+      companyId: candidate.source.companyId,
+      companySourceId: candidate.source.id,
+      priorityScore: candidate.priorityScore,
       notBeforeAt: now,
+      payloadJson: {
+        blockedRisk: Math.round(candidate.blockedRisk * 1000) / 1000,
+        efficiencyScore: Math.round(candidate.efficiencyScore * 1000) / 1000,
+        estimatedRuntimeMs: candidate.estimatedRuntimeMs,
+        expectedAcceptedJobs:
+          Math.round(candidate.expectedAcceptedJobs * 100) / 100,
+        tier: candidate.tier,
+        workdayHost: candidate.workdayHost,
+        workdayTier: candidate.workdayTier,
+      },
     });
   }
 
   return {
-    enqueuedCount: sources.length,
-    companySourceIds: sources.map(({ source }) => source.id),
+    enqueuedCount: selectedSources.length,
+    companySourceIds: selectedSources.map(({ source }) => source.id),
   };
 }
 
@@ -981,6 +1667,7 @@ export async function runCompanySourcePollQueue(options: {
 } = {}) {
   const maxTasks = options.limit ?? COMPANY_SOURCE_POLL_LIMIT;
   const maxWallClockMs = options.maxWallClockMs ?? COMPANY_SOURCE_POLL_QUEUE_WALL_CLOCK_MS;
+  const softStopMs = computePollSoftStopMs(maxWallClockMs);
   const queueStart = Date.now();
   let successCount = 0;
   let failedCount = 0;
@@ -992,6 +1679,12 @@ export async function runCompanySourcePollQueue(options: {
     if (remainingWallClockMs <= COMPANY_SOURCE_POLL_MIN_REMAINING_BUDGET_MS) {
       console.log(
         `[sourcePollQueue] Wall-clock cap reached (${Math.round(elapsed / 1000)}s / ${Math.round(maxWallClockMs / 1000)}s) — stopping after ${processedCount} tasks`
+      );
+      break;
+    }
+    if (elapsed >= softStopMs) {
+      console.log(
+        `[sourcePollQueue] Soft stop reached (${Math.round(elapsed / 1000)}s / ${Math.round(maxWallClockMs / 1000)}s) — stopping admissions after ${processedCount} tasks`
       );
       break;
     }
@@ -1021,9 +1714,37 @@ export async function runCompanySourcePollQueue(options: {
       )
     );
     const batchNow = new Date();
+    const previewTasks = await prisma.sourceTask.findMany({
+      where: {
+        kind: "CONNECTOR_POLL",
+        status: "PENDING",
+        notBeforeAt: { lte: batchNow },
+      },
+      orderBy: [{ priorityScore: "desc" }, { createdAt: "asc" }],
+      take: Math.max(
+        Math.min(batchConcurrency, remaining) * COMPANY_SOURCE_POLL_PREVIEW_MULTIPLIER,
+        Math.min(batchConcurrency, remaining)
+      ),
+      select: {
+        payloadJson: true,
+      },
+    });
+    const claimLimit = estimateClaimablePollTaskCountFromPreview(
+      previewTasks,
+      Math.min(batchConcurrency, remaining),
+      Math.max(0, effectiveRemainingMs)
+    );
+
+    if (claimLimit === 0) {
+      console.log(
+        `[sourcePollQueue] Remaining budget too small to admit another poll batch (${Math.round(remainingWallClockMs / 1000)}s left) — stopping after ${processedCount} tasks`
+      );
+      break;
+    }
+
     const tasks = await claimSourceTasks(
       "CONNECTOR_POLL",
-      Math.min(batchConcurrency, remaining),
+      claimLimit,
       batchNow
     );
 
@@ -1754,6 +2475,12 @@ async function pollCompanySource(
     );
   }
 
+  const effectiveMaxRuntimeMs = resolveConnectorPollTimeoutMs({
+    connectorName: source.connectorName,
+    sourceType: source.sourceType,
+    maxRuntimeMs,
+  });
+
   await prisma.companySource.update({
     where: { id: source.id },
     data: {
@@ -1762,10 +2489,19 @@ async function pollCompanySource(
   });
 
   const connector = buildConnectorForCompanySource(source);
+  const staleRunRecovery = await recoverStaleRunningIngestionRuns({
+    now,
+    connectorKeys: [connector.key],
+  });
+  if (staleRunRecovery.recoveredCount > 0) {
+    console.log(
+      `[companySourcePoll] Recovered ${staleRunRecovery.recoveredCount} stale RUNNING ingestion run(s) for ${connector.key}`
+    );
+  }
   const summary = await ingestConnector(connector, {
     now,
     runMode: "SCHEDULED",
-    maxRuntimeMs,
+    maxRuntimeMs: effectiveMaxRuntimeMs,
     triggerLabel: `company-source:${source.id}`,
     scheduleCadenceMinutes: source.pollingCadenceMinutes,
     runMetadata: {
@@ -1777,6 +2513,21 @@ async function pollCompanySource(
       validationState: source.validationState,
     },
   });
+  const pollFinishedAt = new Date();
+  const runtimeMs = Math.max(1, pollFinishedAt.getTime() - now.getTime());
+  const existingPollRuntime = readJsonRecord(
+    readJsonRecord(source.metadataJson).pollRuntime as Prisma.JsonValue | undefined
+  );
+  const previousAvgRuntimeMs = readNumberValue(existingPollRuntime.avgMs) ?? runtimeMs;
+  const previousRuntimeSamples = readNumberValue(existingPollRuntime.sampleCount) ?? 0;
+  const nextRuntimeSamples = Math.min(previousRuntimeSamples + 1, 20);
+  const nextAvgRuntimeMs =
+    previousRuntimeSamples <= 0
+      ? runtimeMs
+      : Math.round(
+          (previousAvgRuntimeMs * previousRuntimeSamples + runtimeMs) /
+            Math.max(1, previousRuntimeSamples + 1)
+        );
 
   const overlapRatio =
     summary.fetchedCount > 0 ? summary.dedupedCount / summary.fetchedCount : source.overlapRatio;
@@ -1858,10 +2609,10 @@ async function pollCompanySource(
           ? "BACKOFF"
           : "READY",
       lastValidatedAt: source.lastValidatedAt ?? now,
-      lastSuccessfulPollAt: now,
+      lastSuccessfulPollAt: pollFinishedAt,
       lastHttpStatus: 200,
       cooldownUntil: new Date(
-        now.getTime() +
+        pollFinishedAt.getTime() +
           (
             importedAtsLowYield
               ? 48 * 60
@@ -1915,22 +2666,34 @@ async function pollCompanySource(
                 ? "Taleo source returned zero listings in consecutive polls and was cooled down aggressively."
                 : "Taleo source returned zero listings and was backed off for a longer cooldown."
               : null,
-      metadataJson: {
+      metadataJson: mergeMetadataJson(source.metadataJson, {
         lastSummary: {
-          fetchedCount: summary.fetchedCount,
           acceptedCount: summary.acceptedCount,
           canonicalCreatedCount: summary.canonicalCreatedCount,
           canonicalUpdatedCount: summary.canonicalUpdatedCount,
           dedupedCount: summary.dedupedCount,
+          fetchedCount: summary.fetchedCount,
+          runtimeMs,
         },
-      } as Prisma.InputJsonValue,
+        pollRuntime: {
+          avgMs: nextAvgRuntimeMs,
+          lastFinishedAt: pollFinishedAt.toISOString(),
+          lastMs: runtimeMs,
+          sampleCount: nextRuntimeSamples,
+        },
+        workdayHost: getWorkdayHostKey({
+          connectorName: source.connectorName,
+          token: source.token,
+          boardUrl: source.boardUrl,
+        }),
+      }),
     },
   });
 
   await prisma.company.update({
     where: { id: source.companyId },
     data: {
-      lastSuccessfulPollAt: now,
+      lastSuccessfulPollAt: pollFinishedAt,
       crawlStatus: taleoZeroYield ? "DEGRADED" : "IDLE",
       discoveryStatus: "DISCOVERED",
     },
@@ -1949,6 +2712,7 @@ async function handleCompanySourcePollFailure(
     select: {
       id: true,
       companyId: true,
+      boardUrl: true,
       connectorName: true,
       sourceQualityScore: true,
       yieldScore: true,
@@ -1964,6 +2728,8 @@ async function handleCompanySourcePollFailure(
       consecutiveFailures: true,
       failureStreak: true,
       status: true,
+      token: true,
+      metadataJson: true,
     },
   });
 
@@ -1974,20 +2740,38 @@ async function handleCompanySourcePollFailure(
   // company career page almost always means a misconfigured or defunct source URL.
   const hardFailure = /\b(400|404|410)\b/.test(errorMessage);
   const blockedFailure = /\b(401|403|429)\b/.test(errorMessage);
+  const timeoutFailure =
+    /TIME_BUDGET_EXCEEDED|ABORTED_BY_RUNNER|RuntimeBudgetExceededError|AbortError|runtime budget exceeded/i.test(
+      errorMessage
+    );
   // Workday returns 500/502/503/504 and text/html as bot-detection responses,
   // not as genuine server errors. Treat all of these as blocked failures so they
   // get the 12h/24h/36h cooldown ladder rather than the 1h generic ladder.
   const workdayBlockedFailure =
     source.connectorName === "workday" &&
-    (blockedFailure ||
+    (!timeoutFailure &&
+      (blockedFailure ||
       /\b(500|502|503|504)\b/.test(errorMessage) ||
-      /bot detection|text\/html|content.type/i.test(errorMessage));
+      /bot detection|text\/html|content.type/i.test(errorMessage)));
+  const protectedHighValueWorkday =
+    workdayBlockedFailure &&
+    isHighValueWorkdaySource({
+      pollAttemptCount: source.pollAttemptCount,
+      pollSuccessCount: source.pollSuccessCount,
+      jobsAcceptedCount: source.jobsAcceptedCount,
+      retainedLiveJobCount: source.retainedLiveJobCount,
+    });
   const deterministicHardInvalid =
     hardFailure && DETERMINISTIC_ATS_HARD_INVALID_CONNECTORS.has(source.connectorName);
   const nextFailureStreak = source.failureStreak + 1;
   const nextConsecutiveFailures = source.consecutiveFailures + 1;
   const nextPollAttemptCount = source.pollAttemptCount + 1;
   const shouldRediscover =
+    protectedHighValueWorkday
+      ? false
+      : timeoutFailure
+        ? false
+      :
     deterministicHardInvalid
       ? true
       : hardFailure
@@ -1995,8 +2779,20 @@ async function handleCompanySourcePollFailure(
       : workdayBlockedFailure
         ? nextConsecutiveFailures >= WORKDAY_BLOCKED_REDISCOVERY_THRESHOLD
       : nextFailureStreak >= REDISCOVERY_FAILURE_THRESHOLD;
-  const nextStatus: CompanySourceStatus = shouldRediscover ? "REDISCOVER_REQUIRED" : "DEGRADED";
+  const nextStatus: CompanySourceStatus =
+    protectedHighValueWorkday
+      ? "DEGRADED"
+      : timeoutFailure
+        ? "DEGRADED"
+      : shouldRediscover
+        ? "REDISCOVER_REQUIRED"
+        : "DEGRADED";
   const nextValidationState: CompanySourceValidationState =
+    protectedHighValueWorkday
+      ? "VALIDATED"
+      : timeoutFailure
+        ? "VALIDATED"
+      :
     deterministicHardInvalid
       ? "INVALID"
       : hardFailure
@@ -2006,12 +2802,21 @@ async function handleCompanySourcePollFailure(
       : (blockedFailure || workdayBlockedFailure)
         ? "BLOCKED"
         : "SUSPECT";
-  const nextPollState: CompanySourcePollState = shouldRediscover
-    ? "QUARANTINED"
-    : "BACKOFF";
+  const nextPollState: CompanySourcePollState =
+    protectedHighValueWorkday
+      ? "BACKOFF"
+      : timeoutFailure
+        ? "BACKOFF"
+      : shouldRediscover
+        ? "QUARANTINED"
+        : "BACKOFF";
   const statusMatch = errorMessage.match(/\b(401|403|404|410|429|500|502|503|504)\b/);
   const nextHttpStatus = statusMatch ? Number(statusMatch[1]) : null;
-  const nextSourceQualityScore = Math.max(0.02, source.failureStreak > 0 ? 0.12 : 0.2);
+  const nextSourceQualityScore = protectedHighValueWorkday
+    ? Math.max(0.45, source.sourceQualityScore * 0.88)
+    : timeoutFailure
+      ? Math.max(0.28, source.sourceQualityScore * 0.9)
+    : Math.max(0.02, source.failureStreak > 0 ? 0.12 : 0.2);
   const nextYieldScore = computeSourceYieldScore({
     sourceQualityScore: nextSourceQualityScore,
     pollAttemptCount: nextPollAttemptCount,
@@ -2022,9 +2827,18 @@ async function handleCompanySourcePollFailure(
     retainedLiveJobCount: source.retainedLiveJobCount,
     overlapRatio: source.overlapRatio,
   });
+  const workdayHost = getWorkdayHostKey({
+    connectorName: source.connectorName,
+    token: source.token,
+    boardUrl: source.boardUrl,
+  });
 
   const cooldownHours = deterministicHardInvalid
     ? 12
+    : protectedHighValueWorkday
+      ? nextConsecutiveFailures * 6
+    : timeoutFailure
+      ? Math.min(12, Math.max(2, nextConsecutiveFailures * 2))
     : hardFailure
       ? nextConsecutiveFailures * 4        // 400/404/410: 4h, 8h, 12h…
       : workdayBlockedFailure
@@ -2033,6 +2847,65 @@ async function handleCompanySourcePollFailure(
           ? nextConsecutiveFailures * 8    // other 403/429: 8h, 16h, 24h…
           : nextFailureStreak;             // generic failures: 1h, 2h, 3h…
   const cooldownUntil = new Date(now.getTime() + cooldownHours * 60 * 60 * 1000);
+  let hostCooldownUntil: Date | null = null;
+  let hostBlockedStreak = 0;
+
+  if (workdayBlockedFailure && workdayHost) {
+    const siblingSources = await prisma.companySource.findMany({
+      where: {
+        connectorName: "workday",
+        token: {
+          startsWith: `${workdayHost}|`,
+        },
+      },
+      select: {
+        cooldownUntil: true,
+        lastFailureAt: true,
+        lastHttpStatus: true,
+        consecutiveFailures: true,
+      },
+    });
+
+    const recentBlockedCutoff = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+    const recentBlockedSourceCount = siblingSources.filter(
+      (sibling) =>
+        sibling.lastFailureAt &&
+        sibling.lastFailureAt >= recentBlockedCutoff &&
+        sibling.lastHttpStatus &&
+        WORKDAY_BLOCKED_HTTP_STATUSES.has(sibling.lastHttpStatus)
+    ).length;
+    const maxSiblingConsecutiveFailures = siblingSources.reduce(
+      (maxStreak, sibling) => Math.max(maxStreak, sibling.consecutiveFailures),
+      0
+    );
+
+    hostBlockedStreak = Math.max(
+      recentBlockedSourceCount,
+      maxSiblingConsecutiveFailures,
+      nextConsecutiveFailures
+    );
+
+    if (hostBlockedStreak >= WORKDAY_HOST_BLOCK_STREAK_THRESHOLD) {
+      hostCooldownUntil = new Date(
+        now.getTime() + WORKDAY_HOST_COOLDOWN_HOURS * 60 * 60 * 1000
+      );
+
+      await prisma.companySource.updateMany({
+        where: {
+          connectorName: "workday",
+          token: {
+            startsWith: `${workdayHost}|`,
+          },
+          OR: [{ cooldownUntil: null }, { cooldownUntil: { lt: hostCooldownUntil } }],
+        },
+        data: {
+          cooldownUntil: hostCooldownUntil,
+          pollState: "BACKOFF",
+          status: "DEGRADED",
+        },
+      });
+    }
+  }
 
   await prisma.companySource.update({
     where: { id: source.id },
@@ -2045,10 +2918,45 @@ async function handleCompanySourcePollFailure(
       pollAttemptCount: nextPollAttemptCount,
       consecutiveFailures: nextConsecutiveFailures,
       failureStreak: nextFailureStreak,
-      cooldownUntil,
+      cooldownUntil: hostCooldownUntil ?? cooldownUntil,
       sourceQualityScore: nextSourceQualityScore,
       yieldScore: nextYieldScore,
-      validationMessage: errorMessage,
+      validationMessage: protectedHighValueWorkday
+        ? `High-value Workday source blocked; preserved with slower retry window. ${errorMessage}`
+        : timeoutFailure
+          ? `TIME_BUDGET_EXCEEDED: poll exceeded hard runtime budget and was released immediately. ${errorMessage}`
+        : workdayBlockedFailure && workdayHost
+          ? `Workday host ${workdayHost} blocked (${hostBlockedStreak} recent blocked source(s)); source backed off. ${errorMessage}`
+          : errorMessage,
+      metadataJson: mergeMetadataJson(source.metadataJson, {
+        lastFailure: {
+          failureType:
+            timeoutFailure && /ABORTED_BY_RUNNER/i.test(errorMessage)
+              ? "ABORTED_BY_RUNNER"
+              : timeoutFailure
+                ? "TIME_BUDGET_EXCEEDED"
+            : source.connectorName === "workday" && nextHttpStatus === 403
+              ? "BLOCKED_403"
+              : source.connectorName === "workday" && workdayBlockedFailure
+                ? "BLOCKED_WORKDAY"
+                : hardFailure
+                  ? "HARD_FAILURE"
+                  : blockedFailure
+                    ? "BLOCKED"
+                    : "GENERIC_FAILURE",
+          httpStatus: nextHttpStatus,
+          occurredAt: now.toISOString(),
+        },
+        workdayHost,
+        workdayHostState:
+          workdayHost && workdayBlockedFailure
+            ? {
+                blockedStreak: hostBlockedStreak,
+                cooldownUntil: (hostCooldownUntil ?? cooldownUntil).toISOString(),
+                lastBlockedAt: now.toISOString(),
+              }
+            : undefined,
+      }),
     },
   });
 
@@ -2077,7 +2985,7 @@ async function handleCompanySourcePollFailure(
     });
   }
 
-  return cooldownUntil;
+  return hostCooldownUntil ?? cooldownUntil;
 }
 
 async function handleCompanySourceValidationFailure(

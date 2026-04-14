@@ -260,6 +260,29 @@ export const TEAMTAILOR_DEFAULT_COMPANY_TOKENS = [
   "career",
 ] as const;
 
+export const ICIMS_DEFAULT_PORTAL_TOKENS = [
+  "careers-peraton",
+  "careers-vch",
+  "careers-teksynap",
+  "jobs-microsoft",
+  "careers-lmi",
+  "careers-sig",
+  "careers-envoyair",
+  "us-envoyair",
+  "careers-audacy",
+  "careers-carepartners",
+  "careers-amtrustgroup",
+  "careers-phc",
+  "careers-kinaxis",
+  "careers-cotiviti",
+  "jobs-trustmark",
+  "careers-hayward",
+  "careers-capreit",
+  "careers-quest",
+  "careers-appliedsystems",
+  "careers-peelregion",
+] as const;
+
 export const ASHBY_DEFAULT_ORG_TOKENS = [
   "openai",
   "perplexity",
@@ -365,6 +388,19 @@ export const SMARTRECRUITERS_DEFAULT_COMPANY_TOKENS = [
   "AmericanExpress",
   "CapitalOne",
   "Mastercard",
+  "AristaNetworks",
+  "Experian",
+  "MattelInc",
+  "Medfar",
+  "Vention",
+  "UniversityHealthNetwork",
+  "AmpleInsightInc",
+  "CanadianBankNoteCompany",
+  "Equinox",
+  "FLINTCorp1",
+  "WildBrain",
+  "HouseOfCommonsCanadaChambreDesCommunesCanada",
+  "Riskfuel",
 ] as const;
 
 export const WORKABLE_DEFAULT_ACCOUNT_TOKENS = [

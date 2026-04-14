@@ -9,6 +9,10 @@ import type {
   SourceConnectorFetchResult,
   SourceConnectorJob,
 } from "@/lib/ingestion/types";
+import {
+  buildTimeoutSignal,
+  throwIfAborted,
+} from "@/lib/ingestion/runtime-control";
 
 const SUCCESSFACTORS_PAGE_SIZE = 25;
 const SUCCESSFACTORS_DETAIL_CONCURRENCY = 6;
@@ -193,6 +197,7 @@ export function createSuccessFactorsConnector(
           options.companyName ?? deriveCompanyName(target.host),
         now: fetchOptions.now,
         limit: fetchOptions.limit,
+        signal: fetchOptions.signal,
       });
       fetchCache.set(cacheKey, request);
       return request;
@@ -205,13 +210,15 @@ async function fetchSuccessFactorsJobs({
   fallbackCompanyName,
   now,
   limit,
+  signal,
 }: {
   target: SuccessFactorsTarget;
   fallbackCompanyName: string;
   now: Date;
   limit?: number;
+  signal?: AbortSignal;
 }): Promise<SourceConnectorFetchResult> {
-  const listingJobs = await fetchListingJobs(target, limit);
+  const listingJobs = await fetchListingJobs(target, limit, signal);
   const jobs = await mapWithConcurrency(
     listingJobs,
     SUCCESSFACTORS_DETAIL_CONCURRENCY,
@@ -221,6 +228,7 @@ async function fetchSuccessFactorsJobs({
         fallbackCompanyName,
         listingJob,
         now,
+        signal,
       })
   );
 
@@ -238,7 +246,8 @@ async function fetchSuccessFactorsJobs({
 
 async function fetchListingJobs(
   target: SuccessFactorsTarget,
-  limit?: number
+  limit?: number,
+  signal?: AbortSignal
 ): Promise<SuccessFactorsListJob[]> {
   const jobs: SuccessFactorsListJob[] = [];
   let startRow = 0;
@@ -250,7 +259,7 @@ async function fetchListingJobs(
     if (remaining === 0) break;
 
     const url = buildSuccessFactorsSearchUrl(target, startRow);
-    const html = await fetchText(url);
+    const html = await fetchText(url, signal);
     const pageJobs = parseSearchResultsPage(html, target);
 
     if (pageJobs.length === 0) break;
@@ -312,16 +321,18 @@ async function buildSourceJob({
   fallbackCompanyName,
   listingJob,
   now,
+  signal,
 }: {
   target: SuccessFactorsTarget;
   fallbackCompanyName: string;
   listingJob: SuccessFactorsListJob;
   now: Date;
+  signal?: AbortSignal;
 }): Promise<SourceConnectorJob> {
   let detail: SuccessFactorsJobDetail | null = null;
 
   try {
-    const html = await fetchText(listingJob.detailUrl);
+    const html = await fetchText(listingJob.detailUrl, signal);
     detail = parseJobDetailPage(html, listingJob.detailUrl);
   } catch {
     detail = null;
@@ -466,12 +477,14 @@ function deriveCompanyName(host: string) {
     .join(" ");
 }
 
-async function fetchText(url: string) {
+async function fetchText(url: string, signal?: AbortSignal) {
+  throwIfAborted(signal);
   const response = await fetch(url, {
     headers: {
       Accept: "text/html,application/xhtml+xml",
       "User-Agent": "Mozilla/5.0 (compatible; autoapplication-successfactors/1.0)",
     },
+    signal: buildTimeoutSignal(signal, 45_000),
   });
 
   if (!response.ok) {
@@ -480,6 +493,7 @@ async function fetchText(url: string) {
     );
   }
 
+  throwIfAborted(signal);
   return response.text();
 }
 

@@ -21,6 +21,7 @@ import {
   runOperationalQueues,
   scheduleOperationalQueues,
 } from "../src/lib/ingestion/network-orchestrator";
+import { syncProductiveAtsTenantsToDiscoveryStore } from "../src/lib/ingestion/ats-tenant-store";
 import { runScheduledIngestion } from "../src/lib/ingestion/scheduler";
 import { prisma } from "../src/lib/db";
 import type { SourceTaskKind } from "../src/generated/prisma/client";
@@ -295,6 +296,9 @@ async function main() {
         rediscoveryLimit: profile.rediscoveryLimit,
         urlHealthLimit: profile.urlHealthLimit,
       });
+      const atsTenantSync = await syncProductiveAtsTenantsToDiscoveryStore({
+        now: new Date(),
+      });
       const result = await runScheduledIngestion({
         now: cycleStart,
         force: isFirstCycle && args.force,
@@ -341,6 +345,9 @@ async function main() {
       );
       console.log(
         `[daemon] Queues processed: discovery ${queueResult.discovery.successCount}/${queueResult.discovery.processedCount}, validation ${queueResult.validation.successCount}/${queueResult.validation.processedCount}, source poll ${queueResult.sourcePoll.successCount}/${queueResult.sourcePoll.processedCount}, rediscovery ${queueResult.rediscovery.successCount}/${queueResult.rediscovery.processedCount}, health ${queueResult.urlHealth.checkedJobCount}/${queueResult.urlHealth.processedCount}`
+      );
+      console.log(
+        `[daemon] ATS tenant sync: ${atsTenantSync.candidateCount} candidates, ${atsTenantSync.promotedCount} promoted, ${atsTenantSync.demotedCount} demoted`
       );
       if ("executionPolicy" in queueResult) {
         const policy = queueResult.executionPolicy;

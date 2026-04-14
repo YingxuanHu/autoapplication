@@ -26,6 +26,7 @@ import {
 import {
   ASHBY_DEFAULT_ORG_TOKENS,
   GREENHOUSE_DEFAULT_BOARD_TOKENS,
+  ICIMS_DEFAULT_PORTAL_TOKENS,
   JOBVITE_DEFAULT_COMPANY_TOKENS,
   LEVER_DEFAULT_SITE_TOKENS,
   RECRUITEE_DEFAULT_COMPANY_TOKENS,
@@ -329,7 +330,7 @@ export function resolveConnectors(
       args.sources ??
         args.source ??
         process.env.ICIMS_PORTAL_TOKENS ??
-        ""
+        ICIMS_DEFAULT_PORTAL_TOKENS.join(",")
     );
 
     if (portalTokens.length === 0) {
@@ -593,8 +594,9 @@ function resolveOptionalTeamtailorScheduledConnectors(promotedTokens: string[]) 
 }
 
 function resolveOptionalIcimsScheduledConnectors(promotedTokens: string[]) {
+  const defaults = ICIMS_DEFAULT_PORTAL_TOKENS.join(",");
   const tokens = resolveTokens(
-    mergeTokenValues(process.env.ICIMS_PORTAL_TOKENS ?? "", promotedTokens)
+    mergeTokenValues(process.env.ICIMS_PORTAL_TOKENS ?? defaults, promotedTokens)
   );
   if (tokens.length === 0) return [];
 

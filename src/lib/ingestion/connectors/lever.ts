@@ -8,6 +8,10 @@ import type {
   SourceConnectorFetchOptions,
   SourceConnectorFetchResult,
 } from "@/lib/ingestion/types";
+import {
+  buildTimeoutSignal,
+  throwIfAborted,
+} from "@/lib/ingestion/runtime-control";
 
 type LeverConnectorOptions = {
   siteToken: string;
@@ -60,12 +64,14 @@ export function createLeverConnector({
       options: SourceConnectorFetchOptions
     ): Promise<SourceConnectorFetchResult> {
       const log = options.log ?? console.error;
+      throwIfAborted(options.signal);
       const response = await fetch(
         `https://api.lever.co/v0/postings/${siteToken}?mode=json`,
         {
           headers: {
             Accept: "application/json",
           },
+          signal: buildTimeoutSignal(options.signal, 30_000),
         }
       );
 
@@ -83,6 +89,7 @@ export function createLeverConnector({
         };
       }
 
+      throwIfAborted(options.signal);
       const payload = (await response.json()) as LeverPosting[];
       const jobs = typeof options.limit === "number"
         ? payload.slice(0, options.limit)

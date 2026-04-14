@@ -16,6 +16,10 @@ import {
   deriveSourceLifecycleSnapshot,
   type SourceIdentitySnapshot,
 } from "@/lib/ingestion/source-quality";
+import {
+  createRuntimeBudgetExceededError,
+  throwIfAborted,
+} from "@/lib/ingestion/runtime-control";
 import type {
   IngestionSummary,
   NormalizedJobInput,
@@ -112,6 +116,11 @@ export async function ingestConnector(
   const runMode = options.runMode ?? "MANUAL";
   const startingCheckpoint = await loadResumeCheckpoint(connector.key);
   const runOptionsState = buildRunOptions(options, startingCheckpoint);
+  if (typeof options.maxRuntimeMs === "number" && options.maxRuntimeMs > 0) {
+    runOptionsState.leaseExpiresAt = new Date(
+      startedAt.getTime() + options.maxRuntimeMs
+    ).toISOString();
+  }
   const run = await createIngestionRun({
     connector,
     startedAt,
@@ -132,6 +141,7 @@ export async function ingestConnector(
   }
 
   try {
+    let lastHeartbeatAt = Date.now();
     const persistCheckpoint = async (checkpoint: Prisma.InputJsonValue | null) => {
       runOptionsState.checkpoint = checkpoint;
       runOptionsState.checkpointUpdatedAt = new Date().toISOString();
@@ -143,19 +153,50 @@ export async function ingestConnector(
         },
       });
     };
+    const persistHeartbeat = async (
+      details: Record<string, Prisma.InputJsonValue | null> = {}
+    ) => {
+      const nowMs = Date.now();
+      if (nowMs - lastHeartbeatAt < 15_000) {
+        return;
+      }
+
+      lastHeartbeatAt = nowMs;
+      runOptionsState.checkpointUpdatedAt = new Date(nowMs).toISOString();
+      const existingMetadata = (asJsonObject(
+        runOptionsState.runMetadata as Prisma.JsonValue | null
+      ) ?? {}) as Record<string, Prisma.InputJsonValue | null>;
+      runOptionsState.runMetadata = {
+        ...existingMetadata,
+        ...details,
+        heartbeatAt: runOptionsState.checkpointUpdatedAt,
+      };
+
+      await prisma.ingestionRun.update({
+        where: { id: run.id },
+        data: {
+          runOptions: runOptionsState as Prisma.InputJsonValue,
+        },
+      });
+    };
     const runtimeController =
       typeof options.maxRuntimeMs === "number" && options.maxRuntimeMs > 0
         ? new AbortController()
         : null;
+    const runtimeBudgetMs =
+      typeof options.maxRuntimeMs === "number" && options.maxRuntimeMs > 0
+        ? options.maxRuntimeMs
+        : null;
     const runtimeTimer =
-      runtimeController && typeof options.maxRuntimeMs === "number"
+      runtimeController && runtimeBudgetMs != null
         ? setTimeout(() => {
             runtimeController.abort(
-              new Error(
-                `Runtime budget exceeded after ${options.maxRuntimeMs}ms`
+              createRuntimeBudgetExceededError(
+                runtimeBudgetMs,
+                connector.sourceName
               )
             );
-          }, options.maxRuntimeMs)
+          }, runtimeBudgetMs)
         : null;
     runtimeTimer?.unref?.();
 
@@ -170,7 +211,8 @@ export async function ingestConnector(
         options.maxRuntimeMs,
         startingCheckpoint,
         persistCheckpoint,
-        createConnectorLogger(connector, runOptionsState.runMetadata)
+        createConnectorLogger(connector, runOptionsState.runMetadata),
+        persistHeartbeat
       );
     } finally {
       if (runtimeTimer) clearTimeout(runtimeTimer);
@@ -249,11 +291,38 @@ export async function recoverStaleRunningIngestionRuns(options: {
 
   const staleRuns = runningRuns.filter((run) => {
     const runOptions = asJsonObject(run.runOptions);
+    const leaseExpiresAtRaw = runOptions?.leaseExpiresAt;
+    const explicitLeaseExpiresAt =
+      typeof leaseExpiresAtRaw === "string" ? new Date(leaseExpiresAtRaw) : null;
+    const maxRuntimeMsRaw = runOptions?.maxRuntimeMs;
+    const maxRuntimeMs =
+      typeof maxRuntimeMsRaw === "number"
+        ? maxRuntimeMsRaw
+        : typeof maxRuntimeMsRaw === "string"
+          ? Number(maxRuntimeMsRaw)
+          : null;
+    const inferredLeaseExpiresAt =
+      maxRuntimeMs && Number.isFinite(maxRuntimeMs) && maxRuntimeMs > 0
+        ? new Date(run.startedAt.getTime() + maxRuntimeMs)
+        : null;
+    const leaseExpiresAt =
+      explicitLeaseExpiresAt &&
+      !Number.isNaN(explicitLeaseExpiresAt.getTime())
+        ? explicitLeaseExpiresAt
+        : inferredLeaseExpiresAt;
     const checkpointUpdatedAtRaw = runOptions?.checkpointUpdatedAt;
     const checkpointUpdatedAt =
       typeof checkpointUpdatedAtRaw === "string"
         ? new Date(checkpointUpdatedAtRaw)
         : null;
+
+    if (
+      leaseExpiresAt &&
+      !Number.isNaN(leaseExpiresAt.getTime()) &&
+      leaseExpiresAt < now
+    ) {
+      return true;
+    }
 
     if (
       checkpointUpdatedAt &&
@@ -284,7 +353,7 @@ export async function recoverStaleRunningIngestionRuns(options: {
           status: "FAILED",
           endedAt: now,
           errorSummary:
-            "Recovered stale RUNNING ingestion run before scheduling.",
+            "STALE_RECOVERED: recovered stale RUNNING ingestion run before scheduling.",
           runOptions: {
             ...runOptions,
             runMetadata: {
@@ -464,12 +533,15 @@ async function performConnectorIngestion(
   maxRuntimeMs?: number,
   checkpoint?: Prisma.InputJsonValue | null,
   onCheckpoint?: (checkpoint: Prisma.InputJsonValue | null) => Promise<void>,
-  log?: (message: string) => void
+  log?: (message: string) => void,
+  onHeartbeat?: (details?: Record<string, Prisma.InputJsonValue | null>) => Promise<void>
 ) {
   const seenSourceIds = new Set<string>();
   const freshnessCandidateIds = new Set<string>();
 
-  const fetchResult = await connector.fetchJobs({
+  throwIfAborted(signal);
+
+  const fetchResultPromise = connector.fetchJobs({
     now,
     limit,
     signal,
@@ -480,11 +552,40 @@ async function performConnectorIngestion(
     deadlineAt:
       typeof maxRuntimeMs === "number" ? new Date(now.getTime() + maxRuntimeMs) : undefined,
   });
+  const fetchResult =
+    typeof maxRuntimeMs === "number" && maxRuntimeMs > 0
+      ? await Promise.race([
+          fetchResultPromise,
+          new Promise<never>((_, reject) => {
+            const timer = setTimeout(() => {
+              reject(
+                createRuntimeBudgetExceededError(
+                  maxRuntimeMs,
+                  connector.sourceName
+                )
+              );
+            }, maxRuntimeMs);
+            timer.unref?.();
+            signal?.addEventListener(
+              "abort",
+              () => clearTimeout(timer),
+              { once: true }
+            );
+          }),
+        ])
+      : await fetchResultPromise;
   const fetchExhausted = fetchResult.exhausted ?? fetchResult.checkpoint == null;
   summary.checkpoint = fetchResult.checkpoint ?? null;
   summary.checkpointExhausted = fetchExhausted;
+  await onHeartbeat?.({
+    checkpointExhausted: summary.checkpointExhausted ?? false,
+    fetchedCount: fetchResult.jobs.length,
+    stage: "fetch_complete",
+  });
 
+  let processedCount = 0;
   for (const sourceJob of fetchResult.jobs) {
+    throwIfAborted(signal);
     summary.fetchedCount += 1;
     seenSourceIds.add(sourceJob.sourceId);
 
@@ -524,6 +625,16 @@ async function performConnectorIngestion(
         if (deadResult.canonicalId) {
           freshnessCandidateIds.add(deadResult.canonicalId);
         }
+      }
+      processedCount += 1;
+      if (processedCount % 25 === 0) {
+        await onHeartbeat?.({
+          acceptedCount: summary.acceptedCount,
+          fetchedCount: summary.fetchedCount,
+          processedCount,
+          rejectedCount: summary.rejectedCount,
+          stage: "processing",
+        });
       }
       continue;
     }
@@ -611,6 +722,17 @@ async function performConnectorIngestion(
     }
 
     await upsertEligibility(canonicalResult.id, normalizationResult.job, connector.sourceName);
+    processedCount += 1;
+    if (processedCount % 25 === 0) {
+      await onHeartbeat?.({
+        acceptedCount: summary.acceptedCount,
+        canonicalCreatedCount: summary.canonicalCreatedCount,
+        fetchedCount: summary.fetchedCount,
+        processedCount,
+        rejectedCount: summary.rejectedCount,
+        stage: "processing",
+      });
+    }
   }
 
   const shouldRunFreshnessRemoval =
@@ -639,6 +761,12 @@ async function performConnectorIngestion(
   summary.staleCount = statusTally.staleCount;
   summary.expiredCount = statusTally.expiredCount;
   summary.removedCount = statusTally.removedCount;
+  await onHeartbeat?.({
+    acceptedCount: summary.acceptedCount,
+    fetchedCount: summary.fetchedCount,
+    processedCount,
+    stage: "complete",
+  });
 }
 
 async function performConnectorPreview(

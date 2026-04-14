@@ -9,6 +9,10 @@ import type {
   SourceConnectorFetchResult,
   SourceConnectorJob,
 } from "@/lib/ingestion/types";
+import {
+  buildTimeoutSignal,
+  throwIfAborted,
+} from "@/lib/ingestion/runtime-control";
 
 type RecruiteeConnectorOptions = {
   companyIdentifier: string;
@@ -85,7 +89,7 @@ export function createRecruiteeConnector({
     async fetchJobs(
       options: SourceConnectorFetchOptions
     ): Promise<SourceConnectorFetchResult> {
-      const offers = await fetchOffers(companyIdentifier);
+      const offers = await fetchOffers(companyIdentifier, options.signal);
       const publishedOffers = offers.filter(
         (offer) => !offer.status || offer.status === "published"
       );
@@ -113,13 +117,15 @@ export function createRecruiteeConnector({
   };
 }
 
-async function fetchOffers(companyIdentifier: string) {
+async function fetchOffers(companyIdentifier: string, signal?: AbortSignal) {
+  throwIfAborted(signal);
   const response = await fetch(
     `https://${companyIdentifier}.recruitee.com/api/offers/`,
     {
       headers: {
         Accept: "application/json",
       },
+      signal: buildTimeoutSignal(signal, 45_000),
     }
   );
 
@@ -129,6 +135,7 @@ async function fetchOffers(companyIdentifier: string) {
     );
   }
 
+  throwIfAborted(signal);
   const payload = (await response.json()) as RecruiteeOffersResponse;
   if (Array.isArray(payload)) return payload;
   return payload.offers ?? [];

@@ -9,6 +9,10 @@ import type {
   SourceConnectorFetchResult,
   SourceConnectorJob,
 } from "@/lib/ingestion/types";
+import {
+  buildTimeoutSignal,
+  throwIfAborted,
+} from "@/lib/ingestion/runtime-control";
 
 type AshbyConnectorOptions = {
   orgSlug: string;
@@ -73,7 +77,7 @@ export function createAshbyConnector({
     ): Promise<SourceConnectorFetchResult> {
       const log = options.log ?? console.warn;
       // Stage 1: fetch listing page to get job summaries
-      const listingData = await fetchAshbyPage(`${BASE_URL}/${orgSlug}`);
+      const listingData = await fetchAshbyPage(`${BASE_URL}/${orgSlug}`, options.signal);
       const allListings = (listingData.jobBoard?.jobPostings ?? []).filter(
         (job) => job.isListed !== false
       );
@@ -95,7 +99,10 @@ export function createAshbyConnector({
         const batch = detailCandidates.slice(i, i + DETAIL_BATCH_SIZE);
         const results = await Promise.allSettled(
           batch.map(async (job) => {
-            const data = await fetchAshbyPage(`${BASE_URL}/${orgSlug}/${job.id}`);
+            const data = await fetchAshbyPage(
+              `${BASE_URL}/${orgSlug}/${job.id}`,
+              options.signal
+            );
             if (data.posting) detailMap.set(job.id, data.posting);
           })
         );
@@ -155,12 +162,14 @@ export function createAshbyConnector({
 
 // ─── HTML data extraction ─────────────────────────────────────────────────────
 
-async function fetchAshbyPage(url: string): Promise<AshbyAppData> {
+async function fetchAshbyPage(url: string, signal?: AbortSignal): Promise<AshbyAppData> {
+  throwIfAborted(signal);
   const response = await fetch(url, {
     headers: {
       "User-Agent": USER_AGENT,
       Accept: "text/html,application/xhtml+xml",
     },
+    signal: buildTimeoutSignal(signal, 45_000),
   });
 
   if (!response.ok) {
@@ -169,6 +178,7 @@ async function fetchAshbyPage(url: string): Promise<AshbyAppData> {
     );
   }
 
+  throwIfAborted(signal);
   const html = await response.text();
   return extractAppData(html, url);
 }
