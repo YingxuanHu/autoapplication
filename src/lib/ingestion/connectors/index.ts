@@ -52,6 +52,7 @@ export { createMuseConnector } from "./themuse";
 export { createUsaJobsConnector, createUsaJobsBatchConnectors } from "./usajobs";
 export { createWorkableConnector } from "./workable";
 export { createJobBankConnector } from "./jobbank";
+export { createWeWorkRemotelyConnector } from "./weworkremotely";
 export {
   createCompanySiteConnector,
   inspectCompanySiteRoute,

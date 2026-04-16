@@ -90,6 +90,7 @@ const COMPANY_SOURCE_POLL_MIN_REMAINING_BUDGET_MS = 90 * 1000;
 const COMPANY_SOURCE_POLL_BATCH_GRACE_MS = 90 * 1000;
 const COMPANY_SOURCE_POLL_LATE_STAGE_WINDOW_MS = 5 * 60 * 1000;
 const COMPANY_SOURCE_POLL_END_STAGE_WINDOW_MS = 2 * 60 * 1000;
+const COMPANY_SOURCE_STALE_RUN_RECOVERY_INTERVAL_MS = 60 * 1000;
 const COMPANY_SOURCE_POLL_ADMISSION_BUDGET_RATIO = 0.88;
 const COMPANY_SOURCE_POLL_SOFT_STOP_RATIO = 0.88;
 const COMPANY_SOURCE_POLL_TIER_1_BUDGET_RATIO = 0.65;
@@ -1672,9 +1673,28 @@ export async function runCompanySourcePollQueue(options: {
   let successCount = 0;
   let failedCount = 0;
   let processedCount = 0;
+  let lastStaleRunRecoveryAt = 0;
+
+  const recoverCompanySourceStaleRuns = async (recoveryNow: Date) => {
+    const recovery = await recoverStaleRunningIngestionRuns({
+      now: recoveryNow,
+      companySourceOnly: true,
+    });
+    if (recovery.recoveredCount > 0) {
+      console.log(
+        `[sourcePollQueue] Recovered ${recovery.recoveredCount} stale company-source ingestion run(s): ${recovery.connectorKeys.join(", ")}`
+      );
+    }
+    lastStaleRunRecoveryAt = Date.now();
+  };
+
+  await recoverCompanySourceStaleRuns(options.now ?? new Date());
 
   while (processedCount < maxTasks) {
     const elapsed = Date.now() - queueStart;
+    if (Date.now() - lastStaleRunRecoveryAt >= COMPANY_SOURCE_STALE_RUN_RECOVERY_INTERVAL_MS) {
+      await recoverCompanySourceStaleRuns(new Date());
+    }
     const remainingWallClockMs = maxWallClockMs - elapsed;
     if (remainingWallClockMs <= COMPANY_SOURCE_POLL_MIN_REMAINING_BUDGET_MS) {
       console.log(

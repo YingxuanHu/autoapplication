@@ -21,7 +21,9 @@ import { sleepWithAbort, throwIfAborted } from "@/lib/ingestion/runtime-control"
 
 const MUSE_API_BASE = "https://www.themuse.com/api/public/jobs";
 const MUSE_PAGE_SIZE = 20; // API returns 20 per page
-const MUSE_MAX_PAGES = 50; // 50 * 20 = 1,000 jobs max per category
+// TheMuse checkpoints per-category — each cycle advances until this cap is hit.
+// 150 pages × 20 = 3,000 jobs per category × 10 categories = 30k theoretical max.
+const MUSE_MAX_PAGES = 150; // 150 * 20 = 3,000 jobs max per category
 const MUSE_RATE_DELAY_MS = 800; // Stay under 500/hr limit
 
 // Tech/finance-relevant categories on The Muse

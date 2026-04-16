@@ -5,10 +5,12 @@ import { Button } from "@/components/ui/button";
 import {
   formatPostedAge,
   getDeadlineUrgency,
+  getExpiringSoonMeta,
   getSubmissionMeta,
   shouldShowSubmissionMeta,
   submissionCategoryColor,
 } from "@/lib/job-display";
+import { cn } from "@/lib/utils";
 import type { JobCardData } from "@/types";
 
 type JobSummaryCardProps = {
@@ -24,6 +26,7 @@ export function JobSummaryCard({
 }: JobSummaryCardProps) {
   const submissionMeta = getSubmissionMeta(job);
   const deadlineUrgency = getDeadlineUrgency(job.deadline);
+  const expiringSoon = getExpiringSoonMeta(job.deadline);
   const showSubmissionMeta = shouldShowSubmissionMeta(job);
 
   // Apply is available for active jobs unless they are explicitly expired/removed.
@@ -56,6 +59,18 @@ export function JobSummaryCard({
                 {submissionMeta.label}
               </span>
             ) : null}
+            {expiringSoon ? (
+              <span
+                className={cn(
+                  "shrink-0 rounded-full border px-2 py-0.5 text-[11px] font-semibold",
+                  expiringSoon.severity === "critical"
+                    ? "border-destructive/30 bg-destructive/10 text-destructive"
+                    : "border-amber-500/30 bg-amber-500/10 text-amber-700"
+                )}
+              >
+                {expiringSoon.label}
+              </span>
+            ) : null}
           </div>
 
           <JobMetaRow
@@ -79,7 +94,7 @@ export function JobSummaryCard({
                 <Sep />
                 <span className={`font-medium ${lifecycleCue.color}`}>{lifecycleCue.label}</span>
               </>
-            ) : deadlineUrgency ? (
+            ) : !expiringSoon && deadlineUrgency ? (
               <>
                 <Sep />
                 <span className={`font-medium ${deadlineUrgency.color}`}>

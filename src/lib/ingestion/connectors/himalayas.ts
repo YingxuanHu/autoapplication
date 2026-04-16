@@ -25,7 +25,10 @@ import type {
 const HIMALAYAS_API_BASE = "https://himalayas.app/jobs/api";
 const HIMALAYAS_SEARCH_API_BASE = "https://himalayas.app/jobs/api/search";
 const HIMALAYAS_PAGE_SIZE = 20; // API max per request
-const HIMALAYAS_MAX_PAGES = 600; // 600 * 20 = 12,000 jobs max per run
+// Himalayas checkpoints across segments — each cycle advances the cursor
+// until the cap is hit. Raising to 1500 pages × 20 = 30k jobs per segment
+// means we can reach the long tail across the 6 search segments.
+const HIMALAYAS_MAX_PAGES = 1500; // 1500 * 20 = 30,000 jobs max per run
 const HIMALAYAS_RATE_DELAY_MS = 1200; // Be respectful, avoid 429
 
 type HimalayasJob = {

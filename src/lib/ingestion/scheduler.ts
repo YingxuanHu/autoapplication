@@ -99,10 +99,23 @@ export async function runScheduledIngestion(options: {
       `[scheduler] Recovered ${staleRunRecovery.recoveredCount} stale RUNNING ingestion run(s): ${staleRunRecovery.connectorKeys.join(", ")}`
     );
   }
-  const scheduledDefinitions = getScheduledConnectors().filter((definition) => {
+  const allDefinitions = getScheduledConnectors().filter((definition) => {
     if (!options.connectorKeys || options.connectorKeys.length === 0) return true;
     return options.connectorKeys.includes(definition.connector.key);
   });
+
+  // Run legacy-only connectors (aggregator feeds, job boards) FIRST.
+  // There are only ~14 of these but they contribute 80k+ jobs. Without this
+  // priority ordering, they never run because the 1,300+ managed ATS connectors
+  // exhaust the cycle budget before the aggregator feeds get a turn.
+  const scheduledDefinitions = [
+    ...allDefinitions.filter(
+      (d) => !isCompanySourceManagedConnector(d.connector.sourceName)
+    ),
+    ...allDefinitions.filter((d) =>
+      isCompanySourceManagedConnector(d.connector.sourceName)
+    ),
+  ];
 
   const executedRuns: IngestionSummary[] = [];
   const skippedConnectors: ScheduledIngestionResult["skippedConnectors"] = [];

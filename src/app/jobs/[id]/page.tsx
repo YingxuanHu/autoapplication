@@ -19,10 +19,12 @@ import {
   formatPostedAge,
   formatSalary,
   getDeadlineUrgency,
+  getExpiringSoonMeta,
   getSubmissionMeta,
   shouldShowSubmissionMeta,
   submissionCategoryColor,
 } from "@/lib/job-display";
+import { cn } from "@/lib/utils";
 import { getOptionalSessionUser } from "@/lib/current-user";
 import { getApplicationReviewData } from "@/lib/queries/applications";
 import { resolveJobSalaryRange } from "@/lib/salary-extraction";
@@ -49,6 +51,7 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
   const submissionMeta = getSubmissionMeta(job);
   const reviewStateMeta = APPLICATION_REVIEW_STATE_META[reviewState];
   const deadlineUrgency = getDeadlineUrgency(job.deadline);
+  const expiringSoon = getExpiringSoonMeta(job.deadline);
   const deadlineValue = formatDeadlineValue(job.deadline);
   const canStartApplyFlow =
     reviewState !== "NOT_ELIGIBLE" &&
@@ -98,6 +101,18 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
                 className={`shrink-0 text-xs font-medium ${submissionCategoryColor(job.eligibility?.submissionCategory)}`}
               >
                 {submissionMeta.label}
+              </span>
+            ) : null}
+            {expiringSoon ? (
+              <span
+                className={cn(
+                  "shrink-0 rounded-full border px-2 py-0.5 text-[11px] font-semibold",
+                  expiringSoon.severity === "critical"
+                    ? "border-destructive/30 bg-destructive/10 text-destructive"
+                    : "border-amber-500/30 bg-amber-500/10 text-amber-700"
+                )}
+              >
+                {expiringSoon.label}
               </span>
             ) : null}
           </div>
@@ -176,7 +191,13 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
           <p className={DETAIL_SECTION_TITLE_CLASS}>Deadline</p>
           <p
             className={`mt-1 text-sm font-medium ${
-              deadlineUrgency ? deadlineUrgency.color : "text-foreground"
+              expiringSoon
+                ? expiringSoon.severity === "critical"
+                  ? "text-destructive"
+                  : "text-amber-700"
+                : deadlineUrgency
+                  ? deadlineUrgency.color
+                  : "text-foreground"
             }`}
           >
             {deadlineValue ?? "None listed"}

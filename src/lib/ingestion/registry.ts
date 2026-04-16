@@ -22,6 +22,7 @@ import {
   createWorkdayConnector,
   createWorkableConnector,
   createJobBankConnector,
+  createWeWorkRemotelyConnector,
 } from "@/lib/ingestion/connectors";
 import {
   ASHBY_DEFAULT_ORG_TOKENS,
@@ -59,7 +60,8 @@ export type SupportedConnectorName =
   | "usajobs"
   | "workday"
   | "workable"
-  | "jobbank";
+  | "jobbank"
+  | "weworkremotely";
 
 export type ConnectorResolutionArgs = {
   board?: string;
@@ -190,6 +192,10 @@ export function resolveConnectors(
 
   if (connectorName === "remoteok") {
     return [createRemoteOkConnector()];
+  }
+
+  if (connectorName === "weworkremotely") {
+    return [createWeWorkRemotelyConnector()];
   }
 
   if (connectorName === "usajobs") {
@@ -491,6 +497,7 @@ export function getScheduledConnectors(): ScheduledConnectorDefinition[] {
     ...resolveOptionalRemotiveScheduledConnectors(),
     ...resolveOptionalMuseScheduledConnectors(),
     ...resolveOptionalRemoteOkScheduledConnectors(),
+    ...resolveOptionalWeWorkRemotelyScheduledConnectors(),
     ...resolveOptionalUsaJobsScheduledConnectors(),
     ...resolveOptionalTaleoScheduledConnectors(promotedDiscoveryTargets.taleo),
     ...resolveOptionalIcimsScheduledConnectors(promotedDiscoveryTargets.icims),
@@ -699,6 +706,21 @@ function resolveOptionalRemoteOkScheduledConnectors() {
   ];
 }
 
+function resolveOptionalWeWorkRemotelyScheduledConnectors() {
+  // WWR listings turn over quickly (30-day expiry, fresh posts every few hours).
+  // 6h cadence is aggressive enough to keep freshness high without hammering
+  // their Cloudflare-fronted RSS endpoints.
+  return [
+    {
+      connector: createWeWorkRemotelyConnector(),
+      cadenceMinutes: resolveCadenceMinutes(
+        process.env.WEWORKREMOTELY_SCHEDULE_MINUTES,
+        360
+      ),
+    },
+  ];
+}
+
 function resolveOptionalUsaJobsScheduledConnectors() {
   const apiKey = process.env.USAJOBS_API_KEY ?? "";
   const email = process.env.USAJOBS_EMAIL ?? "";
@@ -803,6 +825,7 @@ function loadPromotedDiscoveryTargets() {
     workday: [],
     workable: [],
     jobbank: [],
+    weworkremotely: [],
   };
 
   if (!existsSync(DISCOVERY_STORE_PATH)) {

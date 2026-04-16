@@ -260,6 +260,7 @@ export async function ingestConnector(
 export async function recoverStaleRunningIngestionRuns(options: {
   now?: Date;
   connectorKeys?: string[];
+  companySourceOnly?: boolean;
 } = {}) {
   const now = options.now ?? new Date();
   const staleStartedBefore = new Date(
@@ -291,6 +292,13 @@ export async function recoverStaleRunningIngestionRuns(options: {
 
   const staleRuns = runningRuns.filter((run) => {
     const runOptions = asJsonObject(run.runOptions);
+    const runMetadata = asJsonObject(runOptions?.runMetadata as Prisma.JsonValue | null);
+    const origin = typeof runMetadata?.origin === "string" ? runMetadata.origin : null;
+
+    if (options.companySourceOnly && origin !== "company_source") {
+      return false;
+    }
+
     const leaseExpiresAtRaw = runOptions?.leaseExpiresAt;
     const explicitLeaseExpiresAt =
       typeof leaseExpiresAtRaw === "string" ? new Date(leaseExpiresAtRaw) : null;

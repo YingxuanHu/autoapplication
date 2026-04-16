@@ -23,7 +23,12 @@ import { sleepWithAbort, throwIfAborted } from "@/lib/ingestion/runtime-control"
 
 const ADZUNA_API_BASE = "https://api.adzuna.com/v1/api/jobs";
 const ADZUNA_PAGE_SIZE = 50; // max allowed by API
-const ADZUNA_MAX_PAGES = 50; // safety limit per category (50 pages × 50 = 2500 per category)
+// Adzuna uses checkpointing (see AdzunaCheckpoint) — each run advances pages until
+// this cap is hit, then starts over on the next refresh. Raising the cap lets us
+// pull deeper into the result set across multiple cycles. 200 pages × 50 = 10,000
+// jobs per category; with 5 categories per profile and multiple profiles this gives
+// meaningful headroom without changing the per-run runtime budget.
+const ADZUNA_MAX_PAGES = 200; // safety limit per category (200 pages × 50 = 10,000 per category)
 const ADZUNA_RATE_DELAY_MS = 3500; // keep request rate conservative
 const ADZUNA_RATE_LIMIT_MAX_ATTEMPTS = 2;
 const ADZUNA_RATE_LIMIT_BACKOFF_MS = 20_000;

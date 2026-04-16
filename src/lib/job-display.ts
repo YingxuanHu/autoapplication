@@ -110,6 +110,11 @@ export type DeadlineUrgency = {
   color: string;
 };
 
+export type ExpiringSoonMeta = {
+  label: string;
+  severity: "critical" | "warning";
+};
+
 /**
  * Returns an urgency descriptor when a deadline is within 7 days, null otherwise.
  * Also returns a descriptor for already-passed deadlines so callers can surface
@@ -128,6 +133,29 @@ export function getDeadlineUrgency(deadline: string | Date | null): DeadlineUrge
   if (daysUntil <= 3) return { label: `Closes in ${daysUntil} days`, color: "text-amber-600" };
   if (daysUntil <= 7) return { label: `Closes in ${daysUntil} days`, color: "text-muted-foreground" };
   return null;
+}
+
+export function getExpiringSoonMeta(
+  deadline: string | Date | null
+): ExpiringSoonMeta | null {
+  if (!deadline) return null;
+
+  const now = new Date();
+  const target = typeof deadline === "string" ? new Date(deadline) : deadline;
+  if (Number.isNaN(target.getTime())) return null;
+
+  const msUntil = target.getTime() - now.getTime();
+  const daysUntil = Math.ceil(msUntil / (1000 * 60 * 60 * 24));
+
+  if (daysUntil < 0 || daysUntil > 5) return null;
+  if (daysUntil === 0) {
+    return { label: "Expiring today", severity: "critical" };
+  }
+
+  return {
+    label: `Expiring in ${daysUntil} day${daysUntil === 1 ? "" : "s"}`,
+    severity: daysUntil === 1 ? "critical" : "warning",
+  };
 }
 
 /**

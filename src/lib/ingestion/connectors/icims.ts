@@ -28,7 +28,10 @@ import {
 
 const ICIMS_SEARCH_PAGE_SIZE = 20; // iCIMS default per page
 const DETAIL_BATCH_SIZE = 6; // concurrent detail fetches
-const MAX_PAGES = 100; // safety cap
+// iCIMS does NOT checkpoint — each run starts from page 1. The cap gates
+// per-run retrieval, so raising it directly increases per-run yield until
+// the portal runs out of results. 250 pages × 20 = 5,000 jobs per portal.
+const MAX_PAGES = 250; // safety cap
 
 type IcimsConnectorOptions = {
   /** The subdomain portion, e.g. "jobs-microsoft" */

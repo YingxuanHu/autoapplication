@@ -22,6 +22,10 @@ type RunningDaemonLock = {
   argv: string[];
 };
 
+const DAEMON_RESTART_BASE_DELAY_MS = 2_000;
+const DAEMON_RESTART_MAX_DELAY_MS = 30_000;
+const DAEMON_STABLE_WINDOW_MS = 2 * 60 * 1000;
+
 function parseArgs(rawArgs: string[]): ParsedArgs {
   let mode: Mode = "dev";
   let withDaemon = process.env.DISABLE_INGEST_DAEMON !== "1";
@@ -195,11 +199,39 @@ async function main() {
   let shuttingDown = false;
   let forceShutdown = false;
   let forcedShutdownTimer: NodeJS.Timeout | null = null;
+  let daemonRestartTimer: NodeJS.Timeout | null = null;
+  let daemonRestartAttempts = 0;
+  let daemonStartedAt = 0;
+  let resolveWhenDone: (() => void) | null = null;
+
+  const waitForChildrenToExit = new Promise<void>((resolve) => {
+    resolveWhenDone = resolve;
+  });
+
+  const maybeResolveWhenDone = () => {
+    if (children.size === 0 && !daemonRestartTimer) {
+      resolveWhenDone?.();
+    }
+  };
+
+  const clearDaemonRestartTimer = () => {
+    if (!daemonRestartTimer) return;
+    clearTimeout(daemonRestartTimer);
+    daemonRestartTimer = null;
+  };
 
   const web = startNext(mode);
   children.add(web);
 
   let daemon: ChildProcess | null = null;
+  const spawnManagedDaemon = () => {
+    const nextDaemon = startDaemon();
+    daemonStartedAt = Date.now();
+    daemon = nextDaemon;
+    children.add(nextDaemon);
+    registerExit("daemon", nextDaemon);
+    return nextDaemon;
+  };
   if (withDaemon) {
     const existingDaemon = await getRunningDaemonLock();
     if (existingDaemon) {
@@ -208,8 +240,7 @@ async function main() {
           `[stack] Replacing existing ingest daemon pid ${existingDaemon.pid} in dev mode`
         );
         await replaceExistingDaemon(existingDaemon);
-        daemon = startDaemon();
-        children.add(daemon);
+        daemon = spawnManagedDaemon();
       } else {
       const desiredIntervalMinutes = getDesiredDaemonIntervalMinutes();
       const existingIntervalMinutes = getDaemonIntervalMinutes(existingDaemon.argv);
@@ -219,8 +250,7 @@ async function main() {
           `[stack] Replacing existing ingest daemon pid ${existingDaemon.pid} (${existingIntervalMinutes}min) with ${desiredIntervalMinutes}min config`
         );
         await replaceExistingDaemon(existingDaemon);
-        daemon = startDaemon();
-        children.add(daemon);
+        daemon = spawnManagedDaemon();
       } else {
         const existingArgs =
           existingDaemon.argv.length > 0 ? ` (${existingDaemon.argv.join(" ")})` : "";
@@ -230,8 +260,7 @@ async function main() {
       }
       }
     } else {
-      daemon = startDaemon();
-      children.add(daemon);
+      daemon = spawnManagedDaemon();
     }
   }
 
@@ -248,6 +277,7 @@ async function main() {
         clearTimeout(forcedShutdownTimer);
         forcedShutdownTimer = null;
       }
+      clearDaemonRestartTimer();
       console.log(`\n[stack] Force shutdown (${signal})...`);
       for (const child of children) {
         killChildTree(child, "SIGKILL");
@@ -256,6 +286,7 @@ async function main() {
     }
 
     shuttingDown = true;
+    clearDaemonRestartTimer();
     console.log(`\n[stack] Shutting down (${signal})...`);
 
     for (const child of children) {
@@ -276,9 +307,12 @@ async function main() {
   process.on("SIGINT", () => shutdown("SIGINT"));
   process.on("SIGTERM", () => shutdown("SIGTERM"));
 
-  const registerExit = (name: string, child: ChildProcess) => {
+  function registerExit(name: string, child: ChildProcess) {
     child.on("exit", (code, signal) => {
       children.delete(child);
+      if (name === "daemon" && daemon === child) {
+        daemon = null;
+      }
 
       if (children.size === 0 && forcedShutdownTimer) {
         clearTimeout(forcedShutdownTimer);
@@ -292,32 +326,55 @@ async function main() {
         }
       }
 
+      if (name === "daemon" && withDaemon && !shuttingDown) {
+        const runtimeMs = daemonStartedAt > 0 ? Date.now() - daemonStartedAt : 0;
+        if (runtimeMs >= DAEMON_STABLE_WINDOW_MS) {
+          daemonRestartAttempts = 0;
+        } else {
+          daemonRestartAttempts += 1;
+        }
+
+        const restartDelayMs = Math.min(
+          DAEMON_RESTART_MAX_DELAY_MS,
+          DAEMON_RESTART_BASE_DELAY_MS *
+            2 ** Math.max(0, daemonRestartAttempts - 1)
+        );
+
+        console.log(
+          `[stack] daemon exited${signal ? ` via ${signal}` : ` with code ${code ?? 0}`}; restarting in ${(restartDelayMs / 1000).toFixed(0)}s`
+        );
+
+        clearDaemonRestartTimer();
+        daemonRestartTimer = setTimeout(() => {
+          daemonRestartTimer = null;
+          if (shuttingDown || !withDaemon) {
+            maybeResolveWhenDone();
+            return;
+          }
+
+          console.log("[stack] restarting ingest daemon");
+          spawnManagedDaemon();
+        }, restartDelayMs);
+        daemonRestartTimer.unref?.();
+        return;
+      }
+
       if (signal) {
         console.log(`[stack] ${name} exited via ${signal}`);
         process.exitCode = process.exitCode ?? 0;
+        maybeResolveWhenDone();
         return;
       }
 
       console.log(`[stack] ${name} exited with code ${code ?? 0}`);
       process.exitCode = process.exitCode ?? code ?? 0;
+      maybeResolveWhenDone();
     });
-  };
-
-  registerExit("web", web);
-  if (daemon) {
-    registerExit("daemon", daemon);
   }
 
-  await Promise.all(
-    [web, daemon]
-      .filter((child): child is ChildProcess => Boolean(child))
-      .map(
-        (child) =>
-          new Promise<void>((resolve) => {
-            child.on("exit", () => resolve());
-          })
-      )
-  );
+  registerExit("web", web);
+  maybeResolveWhenDone();
+  await waitForChildrenToExit;
 }
 
 main().catch((error) => {
