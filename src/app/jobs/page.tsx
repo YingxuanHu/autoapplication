@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { connection } from "next/server";
 import { redirect } from "next/navigation";
 import { ArrowUpDown, Check, ChevronDown, Search, SlidersHorizontal, X } from "lucide-react";
 
@@ -59,15 +58,23 @@ const INDUSTRY_OPTIONS: Array<{ label: string; value: string }> = [
   { label: "Finance", value: "FINANCE" },
 ];
 
+const EXPIRY_OPTIONS: Array<{ label: string; value: string }> = [
+  { label: "Expiring soon", value: "soon" },
+];
+
 const SORT_OPTIONS: Array<{ label: string; value: string | undefined }> = [
   { label: "Relevance", value: undefined },
   { label: "Newest", value: "newest" },
+  { label: "Expiry date", value: "deadline" },
   { label: "Salary", value: "salary" },
 ];
 
 export default async function JobsPage({ searchParams }: JobsPageProps) {
-  await connection();
-
+  // Note: `await searchParams` below already makes this page dynamic. We
+  // previously also called `connection()` here, but that was redundant and
+  // added a second opt-out marker that confused the runtime's cache
+  // heuristics. Dropping it lets the in-process TTL caches in getJobs /
+  // getIngestionStatus do their job on repeat tab/filter navigation.
   const viewerProfileId = await getOptionalCurrentProfileId();
   if (!viewerProfileId) {
     redirect("/sign-in");
@@ -116,6 +123,7 @@ export default async function JobsPage({ searchParams }: JobsPageProps) {
     roleFamily: undefined,
     salaryMin: undefined,
     experienceLevel: undefined,
+    expiry: undefined,
     submissionCategory: undefined,
   });
 
@@ -192,6 +200,7 @@ export default async function JobsPage({ searchParams }: JobsPageProps) {
                   {filters.salaryMin ? (
                     <input name="salaryMin" type="hidden" value={String(filters.salaryMin)} />
                   ) : null}
+                  {filters.expiry ? <input name="expiry" type="hidden" value={filters.expiry} /> : null}
 
                   <div className="relative min-w-0 flex-1">
                     <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -321,6 +330,18 @@ export default async function JobsPage({ searchParams }: JobsPageProps) {
                             title="Industry"
                           />
 
+                          <FilterDropdownField
+                            clearHref={buildJobsHref(resolvedSearchParams, {
+                              page: undefined,
+                              expiry: undefined,
+                            })}
+                            emptyLabel="Any deadline"
+                            name="expiry"
+                            options={EXPIRY_OPTIONS}
+                            selected={filters.expiry}
+                            title="Deadline"
+                          />
+
                           <div className="rounded-xl border border-border/60 bg-muted/15 p-3">
                             <FilterFieldLabel>Minimum salary</FilterFieldLabel>
                             <Input
@@ -411,7 +432,7 @@ export default async function JobsPage({ searchParams }: JobsPageProps) {
         </div>
       </section>
 
-      <section className="surface-panel p-4 sm:p-5">
+      <section className="surface-panel p-3 sm:p-4 lg:p-5">
         {jobCards.length === 0 ? (
           <div className="py-16 text-center">
             <p className="text-sm font-medium text-foreground">
@@ -513,6 +534,7 @@ function parseJobFilters(
     experienceLevel: normalizeCareerStageFilterValue(
       getMultiSearchParam(searchParams, "experienceLevel")
     ),
+    expiry: getSearchParam(searchParams, "expiry"),
     submissionCategory: normalizeSubmissionCategoryFilter(rawSubmissionCategory),
     status: getSearchParam(searchParams, "status"),
     sortBy: getSearchParam(searchParams, "sortBy"),
@@ -598,6 +620,7 @@ function countActiveFilters(filters: JobFilterParams) {
     "submissionCategory",
     "roleFamily",
     "experienceLevel",
+    "expiry",
   ];
 
   return keys.filter((key) => {
@@ -711,6 +734,7 @@ function hasFilterValue(current: string | undefined, optionValue: string) {
 
 function getSortLabel(sortBy?: string) {
   if (sortBy === "newest") return "Newest";
+  if (sortBy === "deadline") return "Expiry date";
   if (sortBy === "salary") return "Salary";
   return "Relevance";
 }
@@ -724,6 +748,7 @@ function buildActiveFilterChips(filters: JobFilterParams) {
   chips.push(...collectSelectedLabels(filters.workMode, WORK_MODE_OPTIONS));
   chips.push(...collectSelectedLabels(filters.region, REGION_OPTIONS));
   chips.push(...collectSelectedLabels(filters.industry, INDUSTRY_OPTIONS));
+  chips.push(...collectSelectedLabels(filters.expiry, EXPIRY_OPTIONS));
 
   if (filters.salaryMin) chips.push(`Min $${Number(filters.salaryMin).toLocaleString()}`);
   if (filters.search) chips.push(`Search: ${filters.search}`);

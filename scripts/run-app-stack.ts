@@ -1,7 +1,9 @@
 import { spawn, type ChildProcess } from "node:child_process";
-import { readFile } from "node:fs/promises";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import process from "node:process";
+import { PrismaPg } from "@prisma/adapter-pg";
+import { PrismaClient } from "../src/generated/prisma/client";
 
 type Mode = "dev" | "start";
 
@@ -22,9 +24,17 @@ type RunningDaemonLock = {
   argv: string[];
 };
 
+type DatabaseFingerprint = {
+  host: string;
+  port: number;
+  database: string;
+  schema: string | null;
+};
+
 const DAEMON_RESTART_BASE_DELAY_MS = 2_000;
 const DAEMON_RESTART_MAX_DELAY_MS = 30_000;
 const DAEMON_STABLE_WINDOW_MS = 2 * 60 * 1000;
+const DB_FINGERPRINT_PATH = path.join(process.cwd(), ".runtime", "db-fingerprint.json");
 
 function parseArgs(rawArgs: string[]): ParsedArgs {
   let mode: Mode = "dev";
@@ -93,6 +103,113 @@ function startDaemon() {
     shell: process.platform === "win32",
     detached: process.platform !== "win32",
   });
+}
+
+function getDatabaseFingerprint(connectionString: string): DatabaseFingerprint {
+  const parsed = new URL(connectionString);
+
+  return {
+    host: parsed.hostname,
+    port: parsed.port ? Number.parseInt(parsed.port, 10) : 5432,
+    database: parsed.pathname.replace(/^\//, ""),
+    schema: parsed.searchParams.get("schema"),
+  };
+}
+
+function formatDatabaseFingerprint(fingerprint: DatabaseFingerprint) {
+  return `${fingerprint.host}:${fingerprint.port}/${fingerprint.database}${fingerprint.schema ? `?schema=${fingerprint.schema}` : ""}`;
+}
+
+function fingerprintsDiffer(left: DatabaseFingerprint, right: DatabaseFingerprint) {
+  return (
+    left.host !== right.host ||
+    left.port !== right.port ||
+    left.database !== right.database ||
+    left.schema !== right.schema
+  );
+}
+
+async function readPreviousDatabaseFingerprint() {
+  try {
+    const raw = await readFile(DB_FINGERPRINT_PATH, "utf8");
+    return JSON.parse(raw) as DatabaseFingerprint;
+  } catch {
+    return null;
+  }
+}
+
+async function writeDatabaseFingerprint(fingerprint: DatabaseFingerprint) {
+  await mkdir(path.dirname(DB_FINGERPRINT_PATH), { recursive: true });
+  await writeFile(DB_FINGERPRINT_PATH, `${JSON.stringify(fingerprint, null, 2)}\n`, "utf8");
+}
+
+async function inspectDatabaseState() {
+  const connectionString = process.env.DATABASE_URL;
+  if (!connectionString) {
+    throw new Error("DATABASE_URL is not set");
+  }
+
+  const prisma = new PrismaClient({
+    adapter: new PrismaPg({ connectionString }),
+  });
+
+  try {
+    const [users, profiles, jobs, sources] = await Promise.all([
+      prisma.user.count(),
+      prisma.userProfile.count(),
+      prisma.jobCanonical.count(),
+      prisma.companySource.count(),
+    ]);
+
+    return {
+      fingerprint: getDatabaseFingerprint(connectionString),
+      users,
+      profiles,
+      jobs,
+      sources,
+    };
+  } finally {
+    await prisma.$disconnect().catch(() => undefined);
+  }
+}
+
+async function assertSafeDatabaseTarget() {
+  if (process.env.ALLOW_EMPTY_AUTH_DB === "1") {
+    return;
+  }
+
+  const current = await inspectDatabaseState();
+  const previous = await readPreviousDatabaseFingerprint();
+  const fingerprintChanged = previous
+    ? fingerprintsDiffer(previous, current.fingerprint)
+    : false;
+  const suspiciousAuthGap =
+    current.users === 0 && (current.profiles > 0 || current.jobs > 0 || current.sources > 0);
+
+  if (suspiciousAuthGap) {
+    const previousLine = previous
+      ? `Previous database: ${formatDatabaseFingerprint(previous)}\n`
+      : "";
+    const changeLine = fingerprintChanged
+      ? "Database target changed since the last successful stack run.\n"
+      : "";
+
+    throw new Error(
+      [
+        "Refusing to start against a suspicious database state.",
+        changeLine,
+        previousLine,
+        `Current database: ${formatDatabaseFingerprint(current.fingerprint)}`,
+        `Counts: users=${current.users}, profiles=${current.profiles}, jobs=${current.jobs}, sources=${current.sources}`,
+        "This usually means the app is pointed at a different local database than the one that held your auth data.",
+        "If this is intentional, set ALLOW_EMPTY_AUTH_DB=1 for this run.",
+      ]
+        .filter(Boolean)
+        .join("\n")
+    );
+  }
+
+  await writeDatabaseFingerprint(current.fingerprint);
 }
 
 const DAEMON_LOCK_PATH = path.join(
@@ -195,6 +312,7 @@ function killChildTree(child: ChildProcess, signal: NodeJS.Signals | number) {
 
 async function main() {
   const { mode, withDaemon } = parseArgs(process.argv.slice(2));
+  await assertSafeDatabaseTarget();
   const children = new Set<ChildProcess>();
   let shuttingDown = false;
   let forceShutdown = false;

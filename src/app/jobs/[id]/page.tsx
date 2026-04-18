@@ -1,17 +1,11 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
+import { Bot } from "lucide-react";
+import { JobDescriptionSection } from "@/components/jobs/job-description-section";
 import { JobDetailActions } from "@/components/jobs/job-detail-actions";
 import { ManualApplyMenu } from "@/components/jobs/manual-apply-menu";
 import { JobMetaRow } from "@/components/jobs/job-meta-row";
 import { Button } from "@/components/ui/button";
-import {
-  fetchFormattedJobDescriptionFromUrl,
-  getJobDescriptionSummaryBlocks,
-  isJobDescriptionSummaryUsable,
-  isLowQualityJobDescription,
-  pickBestFormattedJobDescription,
-  parseJobDescriptionBlocks,
-} from "@/lib/job-description-format";
 import {
   APPLICATION_REVIEW_STATE_META,
   formatDeadlineValue,
@@ -22,7 +16,6 @@ import {
   getExpiringSoonMeta,
   getSubmissionMeta,
   shouldShowSubmissionMeta,
-  submissionCategoryColor,
 } from "@/lib/job-display";
 import { cn } from "@/lib/utils";
 import { getOptionalSessionUser } from "@/lib/current-user";
@@ -60,27 +53,13 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
   const showSubmissionMeta = shouldShowSubmissionMeta(job);
   const manualApplyHref =
     job.primaryExternalLink?.href ?? job.sourcePostingLink?.href ?? job.applyUrl;
-  const descriptionSourceUrl =
-    job.sourcePostingLink?.href ?? job.primaryExternalLink?.href ?? job.applyUrl;
-  const storedDescriptionLowQuality = isLowQualityJobDescription(job.description);
-  const fetchedDescription =
-    storedDescriptionLowQuality && descriptionSourceUrl
-      ? await fetchFormattedJobDescriptionFromUrl(descriptionSourceUrl)
-      : null;
-  const displayDescription =
-    pickBestFormattedJobDescription([fetchedDescription, job.description]) ?? job.description;
   const displaySalary = resolveJobSalaryRange({
     salaryMin: job.salaryMin,
     salaryMax: job.salaryMax,
     salaryCurrency: job.salaryCurrency,
-    description: displayDescription,
+    description: job.description,
     regionHint: job.region,
   });
-  const summaryBlocks = getJobDescriptionSummaryBlocks(displayDescription, 8);
-  const descriptionBlocks =
-    summaryBlocks.length > 0 ? summaryBlocks : parseJobDescriptionBlocks(displayDescription);
-  const descriptionUsable = isJobDescriptionSummaryUsable(displayDescription);
-  const sourceAccessFailed = storedDescriptionLowQuality && descriptionSourceUrl && !fetchedDescription;
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
@@ -97,19 +76,18 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
           <div className="flex flex-wrap items-baseline gap-2">
             <h1 className="text-xl font-semibold tracking-tight">{job.title}</h1>
             {showSubmissionMeta ? (
-              <span
-                className={`shrink-0 text-xs font-medium ${submissionCategoryColor(job.eligibility?.submissionCategory)}`}
-              >
+              <span className="inline-flex shrink-0 items-center gap-1 rounded-md border border-emerald-500/20 bg-emerald-500/[0.06] px-1.5 py-0.5 text-[10px] font-medium tracking-normal text-emerald-700">
+                <Bot className="h-3 w-3" aria-hidden="true" />
                 {submissionMeta.label}
               </span>
             ) : null}
             {expiringSoon ? (
               <span
                 className={cn(
-                  "shrink-0 rounded-full border px-2 py-0.5 text-[11px] font-semibold",
+                  "shrink-0 rounded-md border px-1.5 py-0.5 text-[10px] font-medium tracking-normal",
                   expiringSoon.severity === "critical"
-                    ? "border-destructive/30 bg-destructive/10 text-destructive"
-                    : "border-amber-500/30 bg-amber-500/10 text-amber-700"
+                    ? "border-destructive/15 bg-destructive/[0.04] text-destructive/80"
+                    : "border-amber-500/15 bg-amber-500/[0.04] text-amber-700/80"
                 )}
               >
                 {expiringSoon.label}
@@ -130,7 +108,7 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
         </div>
 
         {canStartApplyFlow ? (
-          <div className="shrink-0">
+          <div className="flex shrink-0 items-center gap-2">
             {reviewState === "MANUAL_ONLY" ? (
               <ManualApplyMenu
                 align="end"
@@ -138,6 +116,19 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
                 buttonSize="sm"
                 jobId={job.id}
               />
+            ) : job.eligibility?.submissionCategory === "AUTO_SUBMIT_READY" ? (
+              <>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  render={<Link href={`/jobs/${job.id}/apply`} />}
+                >
+                  Prepare documentation
+                </Button>
+                <Button size="sm" render={<Link href={`/jobs/${job.id}/auto-apply`} />}>
+                  Auto apply
+                </Button>
+              </>
             ) : (
               <Button size="sm" render={<Link href={`/jobs/${job.id}/apply`} />}>
                 Apply
@@ -219,50 +210,7 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
         ) : null}
       </div>
 
-      {/* Full description */}
-      <div className="border-t border-border py-4">
-        <p className={DETAIL_SECTION_TITLE_CLASS}>Description</p>
-        <div className="mt-4 space-y-4 pl-4 text-sm text-foreground/80">
-          {descriptionUsable
-            ? descriptionBlocks.map((block, i) => {
-            if (block.kind === "header") {
-              return (
-                <p
-                  key={i}
-                  className="pt-2 text-[13px] font-semibold uppercase tracking-[0.14em] text-foreground/65 first:pt-0"
-                >
-                  {block.text}
-                </p>
-              );
-            }
-            if (block.kind === "list") {
-              return (
-                <ul key={i} className="ml-6 space-y-2 list-disc marker:text-muted-foreground/50">
-                  {block.items.map((item, j) => (
-                    <li key={j} className="leading-8">
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-              );
-            }
-            return (
-              <p key={i} className="pl-4 leading-8">
-                {block.text}
-              </p>
-            );
-          })
-            : null}
-          {!descriptionUsable ? (
-            <p className="pl-4 text-sm leading-8 text-muted-foreground">
-              {sourceAccessFailed
-                ? "The original job posting could not be accessed automatically, so a reliable description summary is not available."
-                : "A reliable description summary was not available from the current source."}{" "}
-              {descriptionSourceUrl ? "Open the posting link for the original page." : ""}
-            </p>
-          ) : null}
-        </div>
-      </div>
+      <JobDescriptionSection job={job} />
     </div>
   );
 }

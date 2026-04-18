@@ -28,7 +28,7 @@ module.exports = {
       env: {
         NODE_ENV: "development",
         DATABASE_URL:
-          "postgresql://alvinhu:alvinhu@localhost:5434/autoapplication?schema=public",
+          "postgresql://alvinhu:alvinhu@localhost:5432/autoapplication?schema=public",
       },
       // Memory guard — restart if daemon leaks past 512MB
       max_memory_restart: "512M",

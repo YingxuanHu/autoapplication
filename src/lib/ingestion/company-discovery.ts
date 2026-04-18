@@ -79,7 +79,7 @@ const CONNECTOR_POLL_CYCLE_CAPS: Record<string, number> = {
 // Per-source connector runtime cap (passed to ingestConnector).
 // Kept below the stale-run recovery windows so a slow source fails within the
 // same cycle instead of lingering as RUNNING into the next one.
-const COMPANY_SOURCE_POLL_MAX_RUNTIME_MS = 4 * 60 * 1000;
+const COMPANY_SOURCE_POLL_MAX_RUNTIME_MS = 5 * 60 * 1000;
 // Wall-clock cap for the entire poll queue across all batches.
 // With the daemon running every 10 minutes in dev and every 30 minutes in the
 // standalone script, letting source polling consume 25+ minutes starves the
@@ -131,36 +131,40 @@ const TIER_1_CONDITIONAL_CONNECTORS = new Set([
   "smartrecruiters",
   "icims",
 ]);
+// 2026-04-16: Raised defaults + hard caps for the top TIME_BUDGET offenders
+// (ashby/greenhouse/lever/workday). Big tenants like Coinbase, Affirm, Salesforce
+// Workday, etc. legitimately need more time for per-job detail fetches.
+// Trade-off: longer max cycle time, but fewer FAILED runs with live=0.
 const DEFAULT_CONNECTOR_POLL_RUNTIME_MS: Record<string, number> = {
-  ashby: 22_000,
+  ashby: 40_000,
   "company-site": 55_000,
-  greenhouse: 16_000,
+  greenhouse: 30_000,
   icims: 34_000,
   jobvite: 24_000,
-  lever: 15_000,
+  lever: 30_000,
   recruitee: 18_000,
   rippling: 16_000,
-  smartrecruiters: 24_000,
+  smartrecruiters: 30_000,
   successfactors: 42_000,
   taleo: 70_000,
   teamtailor: 24_000,
-  workable: 20_000,
-  workday: 55_000,
+  workable: 24_000,
+  workday: 90_000,
 };
 const HARD_CONNECTOR_POLL_TIMEOUT_MS: Record<string, number> = {
-  ashby: 60_000,
-  greenhouse: 45_000,
+  ashby: 120_000,
+  greenhouse: 90_000,
   icims: 90_000,
   jobvite: 75_000,
-  lever: 45_000,
+  lever: 90_000,
   recruitee: 60_000,
   rippling: 60_000,
-  smartrecruiters: 75_000,
-  successfactors: 120_000,
-  taleo: 120_000,
+  smartrecruiters: 90_000,
+  successfactors: 150_000,
+  taleo: 150_000,
   teamtailor: 75_000,
-  workable: 60_000,
-  workday: 120_000,
+  workable: 75_000,
+  workday: 180_000,
   "company-site": 120_000,
 };
 

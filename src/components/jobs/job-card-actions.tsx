@@ -12,6 +12,7 @@ type JobCardActionsProps = {
   initialSaved: boolean;
   align?: "start" | "end";
   onSavedChange?: (saved: boolean) => void;
+  compact?: boolean;
 };
 
 export function JobCardActions({
@@ -19,6 +20,7 @@ export function JobCardActions({
   initialSaved,
   align = "start",
   onSavedChange,
+  compact = false,
 }: JobCardActionsProps) {
   const { notify } = useNotifications();
   const [isSaved, setIsSaved] = useState(initialSaved);
@@ -80,13 +82,17 @@ export function JobCardActions({
     >
       <Button
         aria-label={isSaved ? "Remove from wishlist" : "Add to wishlist"}
-        className="gap-1.5"
+        className={cn(
+          "gap-1.5",
+          compact &&
+            "h-8 rounded-full border border-border/60 bg-background/75 px-3 text-[13px] font-medium text-muted-foreground hover:bg-muted/70 hover:text-foreground"
+        )}
         disabled={isSaving}
         onClick={handleSaveClick}
-        size="sm"
+        size={compact ? "sm" : "sm"}
         title={isSaved ? "Remove from wishlist" : "Add to wishlist"}
         type="button"
-        variant={isSaved ? "secondary" : "ghost"}
+        variant={compact ? "ghost" : isSaved ? "secondary" : "ghost"}
       >
         {isSaved ? (
           <BookmarkCheck className="h-3.5 w-3.5" />

@@ -162,8 +162,9 @@ export type JobFilters = {
   roleFamily?: string;
   salaryMin?: string;
   experienceLevel?: string;
+  expiry?: string;
   submissionCategory?: string;
   status?: string;
-  sortBy?: "relevance" | "freshness" | "salary";
+  sortBy?: "relevance" | "newest" | "deadline" | "salary";
   page?: string;
 };

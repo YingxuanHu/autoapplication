@@ -13,6 +13,8 @@
     "start:web": "next start",
     "lint": "eslint",
     "typecheck": "next typegen && tsc --noEmit",
+    "db:backup": "bash scripts/db-backup.sh",
+    "db:reset": "bash scripts/db-reset.sh",
     "ingest": "tsx -r dotenv/config scripts/ingest.ts",
     "source:discover": "tsx -r dotenv/config scripts/discover-sources.ts",
     "source:prune": "tsx -r dotenv/config scripts/prune-company-sources.ts",

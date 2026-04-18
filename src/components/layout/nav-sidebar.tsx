@@ -5,7 +5,6 @@ import { usePathname } from "next/navigation";
 import {
   Bell,
   Briefcase,
-  Database,
   FileCheck2,
   GitCompareArrows,
   Settings,
@@ -14,14 +13,15 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+// Primary surfaces only. Admin/diagnostic routes (/ops/*) stay out of the
+// primary nav, but document comparison is part of the main workspace.
 const NAV_ITEMS = [
   { href: "/jobs", label: "Jobs", icon: Briefcase },
   { href: "/applications", label: "Applications", icon: FileCheck2 },
-  { href: "/notifications", label: "Alerts", icon: Bell },
   { href: "/documents/compare", label: "Compare", icon: GitCompareArrows },
+  { href: "/notifications", label: "Notifications", icon: Bell },
   { href: "/profile", label: "Profile", icon: User },
   { href: "/settings", label: "Settings", icon: Settings },
-  { href: "/ops/ingestion", label: "Ops", icon: Database },
 ];
 
 const AUTH_ROUTES = new Set([

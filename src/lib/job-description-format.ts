@@ -3,6 +3,16 @@ export type DescriptionBlock =
   | { kind: "paragraph"; text: string }
   | { kind: "list"; items: string[] };
 
+type DescriptionSourceLinks = {
+  applyUrl?: string | null;
+  primaryExternalLink?: { href: string } | null;
+  sourcePostingLink?: { href: string } | null;
+  sourceMappings?: Array<{
+    sourceUrl: string | null;
+    isPrimary?: boolean;
+  }>;
+};
+
 const SECTION_HEADINGS = [
   "about the job",
   "about the role",
@@ -815,6 +825,70 @@ export function pickBestFormattedJobDescription(candidates: Array<string | null 
   return usable[0] ?? null;
 }
 
+function isCandidateDescriptionUrl(value: string | null | undefined): value is string {
+  if (!value) {
+    return false;
+  }
+
+  try {
+    const parsed = new URL(value);
+    return parsed.protocol === "http:" || parsed.protocol === "https:";
+  } catch {
+    return false;
+  }
+}
+
+export function getJobDescriptionCandidateUrls(links: DescriptionSourceLinks) {
+  const primarySourceUrls =
+    links.sourceMappings
+      ?.filter((mapping) => mapping.isPrimary)
+      .map((mapping) => mapping.sourceUrl)
+      .filter(isCandidateDescriptionUrl) ?? [];
+  const secondarySourceUrls =
+    links.sourceMappings
+      ?.filter((mapping) => !mapping.isPrimary)
+      .map((mapping) => mapping.sourceUrl)
+      .filter(isCandidateDescriptionUrl) ?? [];
+
+  return Array.from(
+    new Set(
+      [
+        links.sourcePostingLink?.href,
+        links.primaryExternalLink?.href,
+        ...primarySourceUrls,
+        links.applyUrl,
+        ...secondarySourceUrls,
+      ]
+        .filter(isCandidateDescriptionUrl)
+        .map((url) => url.trim())
+    )
+  );
+}
+
+export function isRenderableJobDescription(raw: string | null | undefined) {
+  if (!raw?.trim()) {
+    return false;
+  }
+
+  const cleaned = cleanupJobDescription(raw);
+  if (!cleaned) {
+    return false;
+  }
+
+  const blocks = parseJobDescriptionBlocks(cleaned);
+  if (blocks.length === 0) {
+    return false;
+  }
+
+  const structuredBlockCount = blocks.filter((block) => block.kind !== "paragraph").length;
+  const paragraphLength = blocks.reduce(
+    (sum, block) => sum + (block.kind === "paragraph" ? block.text.trim().length : 0),
+    0
+  );
+
+  return structuredBlockCount > 0 || paragraphLength >= 140;
+}
+
 export function isLowQualityJobDescription(raw: string | null | undefined) {
   if (!raw?.trim()) return true;
 
@@ -879,4 +953,24 @@ export async function fetchFormattedJobDescriptionFromUrl(url: string) {
   } catch {
     return null;
   }
+}
+
+export async function fetchBestFormattedJobDescriptionFromUrls(
+  urls: string[],
+  maxFetches = 3
+) {
+  const candidateUrls = Array.from(new Set(urls.filter(isCandidateDescriptionUrl))).slice(
+    0,
+    Math.max(1, maxFetches)
+  );
+
+  if (candidateUrls.length === 0) {
+    return null;
+  }
+
+  const fetchedDescriptions = await Promise.all(
+    candidateUrls.map((url) => fetchFormattedJobDescriptionFromUrl(url))
+  );
+
+  return pickBestFormattedJobDescription(fetchedDescriptions);
 }

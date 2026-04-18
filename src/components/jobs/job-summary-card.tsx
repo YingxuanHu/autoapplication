@@ -1,128 +1,106 @@
 import Link from "next/link";
+import { Bot } from "lucide-react";
 import { JobMetaRow } from "@/components/jobs/job-meta-row";
-import { ManualApplyMenu } from "@/components/jobs/manual-apply-menu";
-import { Button } from "@/components/ui/button";
 import {
   formatPostedAge,
   getDeadlineUrgency,
   getExpiringSoonMeta,
-  getSubmissionMeta,
   shouldShowSubmissionMeta,
-  submissionCategoryColor,
 } from "@/lib/job-display";
 import { cn } from "@/lib/utils";
 import type { JobCardData } from "@/types";
 
 type JobSummaryCardProps = {
   job: JobCardData;
-  primaryAction?: React.ReactNode;
   footerActions?: React.ReactNode;
 };
 
 export function JobSummaryCard({
   job,
-  primaryAction,
   footerActions,
 }: JobSummaryCardProps) {
-  const submissionMeta = getSubmissionMeta(job);
   const deadlineUrgency = getDeadlineUrgency(job.deadline);
   const expiringSoon = getExpiringSoonMeta(job.deadline);
   const showSubmissionMeta = shouldShowSubmissionMeta(job);
-
-  // Apply is available for active jobs unless they are explicitly expired/removed.
-  const canStartApplyFlow =
-    job.status !== "EXPIRED" && job.status !== "REMOVED" && job.eligibility !== null;
-  const manualApplyHref =
-    job.primaryExternalLink?.href ?? job.sourcePostingLink?.href ?? job.applyUrl;
 
   // Lifecycle cue shown in the secondary row for non-LIVE jobs
   const lifecycleCue = getLifecycleCue(job.status);
 
   return (
     <article
-      className={`rounded-2xl border border-border/70 bg-background/45 p-4 transition-colors hover:bg-background/60 ${
+      className={`group relative overflow-hidden rounded-[26px] border border-border/70 bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(248,250,252,0.92))] p-5 shadow-[0_10px_30px_rgba(15,23,42,0.04)] transition-[transform,box-shadow,border-color] hover:-translate-y-px hover:border-border/90 hover:shadow-[0_18px_44px_rgba(15,23,42,0.08)] dark:bg-[linear-gradient(180deg,rgba(12,18,28,0.96),rgba(10,15,24,0.92))] dark:shadow-[0_18px_44px_rgba(2,6,23,0.24)] sm:p-6 ${
         job.status === "EXPIRED" || job.status === "REMOVED" ? "opacity-60" : ""
       }`}
     >
-      <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-        <div className="min-w-0 flex-1">
-          <div className="flex flex-wrap items-baseline gap-2">
-            <h2 className="text-[15px] font-semibold text-foreground">
-              <Link href={`/jobs/${job.id}`} className="hover:underline underline-offset-2">
-                {job.title}
-              </Link>
-            </h2>
-            {showSubmissionMeta ? (
-              <span
-                className={`shrink-0 text-xs font-medium ${submissionCategoryColor(job.eligibility?.submissionCategory)}`}
-              >
-                {submissionMeta.label}
-              </span>
-            ) : null}
-            {expiringSoon ? (
-              <span
-                className={cn(
-                  "shrink-0 rounded-full border px-2 py-0.5 text-[11px] font-semibold",
-                  expiringSoon.severity === "critical"
-                    ? "border-destructive/30 bg-destructive/10 text-destructive"
-                    : "border-amber-500/30 bg-amber-500/10 text-amber-700"
-                )}
-              >
-                {expiringSoon.label}
-              </span>
-            ) : null}
+      <div className="flex flex-col gap-4">
+        <div className="flex items-start justify-between gap-4">
+          <div className="min-w-0 flex-1">
+            <div className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-2">
+              <h2 className="min-w-0 flex-1 text-[1.08rem] leading-7 font-semibold tracking-tight text-foreground sm:text-[1.18rem]">
+                <Link
+                  href={`/jobs/${job.id}`}
+                  className="transition-colors hover:text-foreground/80 hover:underline underline-offset-4"
+                >
+                  {job.title}
+                </Link>
+              </h2>
+              {showSubmissionMeta ? (
+                <span
+                  aria-label="Auto-apply ready"
+                  className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-emerald-500/20 bg-emerald-500/[0.07] text-emerald-700"
+                  title="Auto-apply ready"
+                >
+                  <Bot className="h-3.5 w-3.5" aria-hidden="true" />
+                </span>
+              ) : null}
+              {expiringSoon ? (
+                <span
+                  className={cn(
+                    "inline-flex h-8 shrink-0 items-center rounded-full border px-2.5 text-[11px] font-medium tracking-normal",
+                    expiringSoon.severity === "critical"
+                      ? "border-destructive/15 bg-destructive/[0.05] text-destructive/80"
+                      : "border-amber-500/15 bg-amber-500/[0.05] text-amber-700/85"
+                  )}
+                >
+                  {expiringSoon.label}
+                </span>
+              ) : null}
+            </div>
+
+            <JobMetaRow
+              className="mt-3"
+              company={job.company}
+              location={job.location}
+              geoScope={job.geoScope}
+              workMode={job.workMode}
+              salaryMin={job.salaryMin}
+              salaryMax={job.salaryMax}
+              salaryCurrency={job.salaryCurrency}
+              primaryExternalLink={job.primaryExternalLink}
+              variant="card"
+            />
           </div>
 
-          <JobMetaRow
-            company={job.company}
-            location={job.location}
-            geoScope={job.geoScope}
-            workMode={job.workMode}
-            salaryMin={job.salaryMin}
-            salaryMax={job.salaryMax}
-            salaryCurrency={job.salaryCurrency}
-            primaryExternalLink={job.primaryExternalLink}
-            variant="card"
-          />
-
-          <p className="mt-3 text-xs text-muted-foreground/70">
-            {formatPostedAge(job.postedAt)}
-            <Sep />
-            {job.roleFamily}
-            {lifecycleCue ? (
-              <>
-                <Sep />
-                <span className={`font-medium ${lifecycleCue.color}`}>{lifecycleCue.label}</span>
-              </>
-            ) : !expiringSoon && deadlineUrgency ? (
-              <>
-                <Sep />
-                <span className={`font-medium ${deadlineUrgency.color}`}>
-                  {deadlineUrgency.label}
-                </span>
-              </>
-            ) : null}
-          </p>
+          {footerActions ? <div className="flex h-8 shrink-0 items-center">{footerActions}</div> : null}
         </div>
 
-        <div className="flex shrink-0 items-center gap-2 self-start">
-          {primaryAction ??
-            (canStartApplyFlow ? (
-              job.eligibility?.submissionCategory === "AUTO_SUBMIT_READY" ? (
-                <Button size="sm" render={<Link href={`/jobs/${job.id}/apply`} />} variant="secondary">
-                  Apply
-                </Button>
-              ) : (
-                <ManualApplyMenu
-                  align="end"
-                  applyHref={manualApplyHref}
-                  buttonSize="sm"
-                  buttonVariant="secondary"
-                  jobId={job.id}
-                />
-              )
-            ) : null)}
-          {footerActions}
+        <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[12px] text-muted-foreground/75 sm:text-[13px]">
+          <span>{formatPostedAge(job.postedAt)}</span>
+          <Sep />
+          <span className="font-medium text-muted-foreground/80">{job.roleFamily}</span>
+          {lifecycleCue ? (
+            <>
+              <Sep />
+              <span className={`font-medium ${lifecycleCue.color}`}>{lifecycleCue.label}</span>
+            </>
+          ) : !expiringSoon && deadlineUrgency ? (
+            <>
+              <Sep />
+              <span className={`font-medium ${deadlineUrgency.color}`}>
+                {deadlineUrgency.label}
+              </span>
+            </>
+          ) : null}
         </div>
       </div>
     </article>

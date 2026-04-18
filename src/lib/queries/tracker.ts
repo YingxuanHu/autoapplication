@@ -442,7 +442,7 @@ export async function getNotificationCenterData() {
 export async function getTrackerSettingsData() {
   const userId = await requireCurrentAuthUserId();
 
-  const [user, unreadNotificationCount] = await Promise.all([
+  const [user, profile, unreadNotificationCount] = await Promise.all([
     prisma.user.findUnique({
       where: { id: userId },
       select: {
@@ -450,6 +450,27 @@ export async function getTrackerSettingsData() {
         emailNotificationsEnabled: true,
         emailVerified: true,
         name: true,
+        image: true,
+        createdAt: true,
+      },
+    }),
+    prisma.userProfile.findUnique({
+      where: { authUserId: userId },
+      select: {
+        id: true,
+        phone: true,
+        location: true,
+        headline: true,
+        linkedinUrl: true,
+        githubUrl: true,
+        portfolioUrl: true,
+        workAuthorization: true,
+        salaryMin: true,
+        salaryMax: true,
+        salaryCurrency: true,
+        preferredWorkMode: true,
+        experienceLevel: true,
+        automationMode: true,
       },
     }),
     prisma.notification.count({
@@ -459,6 +480,7 @@ export async function getTrackerSettingsData() {
 
   return {
     user,
+    profile,
     unreadNotificationCount,
   };
 }
@@ -1125,15 +1147,134 @@ export async function markAllNotificationsRead() {
   });
 }
 
+type AutomationModeInput =
+  | "DISCOVERY_ONLY"
+  | "ASSIST"
+  | "REVIEW_BEFORE_SUBMIT"
+  | "STRICT_AUTO_APPLY";
+
+type WorkModeInput = "REMOTE" | "HYBRID" | "ONSITE" | "FLEXIBLE" | "UNKNOWN";
+
+type ExperienceLevelInput =
+  | "ENTRY"
+  | "MID"
+  | "SENIOR"
+  | "LEAD"
+  | "EXECUTIVE"
+  | "UNKNOWN";
+
+function cleanOptional(value: string | null | undefined): string | null {
+  const trimmed = String(value ?? "").trim();
+  return trimmed.length ? trimmed : null;
+}
+
+function cleanOptionalUrl(value: string | null | undefined): string | null {
+  const trimmed = cleanOptional(value);
+  if (!trimmed) return null;
+  try {
+    return normalizeOptionalUrl(trimmed);
+  } catch {
+    return null;
+  }
+}
+
 export async function saveTrackerSettings(input: {
-  emailNotificationsEnabled: boolean;
+  emailNotificationsEnabled?: boolean;
+  name?: string | null;
+  automationMode?: AutomationModeInput | null;
+  preferredWorkMode?: WorkModeInput | null;
+  experienceLevel?: ExperienceLevelInput | null;
+  salaryMin?: number | null;
+  salaryMax?: number | null;
+  salaryCurrency?: string | null;
+  phone?: string | null;
+  location?: string | null;
+  headline?: string | null;
+  workAuthorization?: string | null;
+  linkedinUrl?: string | null;
+  githubUrl?: string | null;
+  portfolioUrl?: string | null;
 }) {
   const userId = await requireCurrentAuthUserId();
-  await prisma.user.update({
-    where: { id: userId },
-    data: {
-      emailNotificationsEnabled: input.emailNotificationsEnabled,
-    },
+
+  const userData: Prisma.UserUpdateInput = {};
+  if (typeof input.emailNotificationsEnabled === "boolean") {
+    userData.emailNotificationsEnabled = input.emailNotificationsEnabled;
+  }
+  if (typeof input.name === "string") {
+    const trimmed = input.name.trim();
+    if (trimmed.length) {
+      userData.name = trimmed;
+    }
+  }
+
+  const profileData: Prisma.UserProfileUpdateInput = {};
+  if (typeof input.name === "string") {
+    const trimmed = input.name.trim();
+    if (trimmed.length) {
+      profileData.name = trimmed;
+    }
+  }
+  if (input.automationMode !== undefined) {
+    profileData.automationMode = input.automationMode ?? "REVIEW_BEFORE_SUBMIT";
+  }
+  if (input.preferredWorkMode !== undefined) {
+    profileData.preferredWorkMode = input.preferredWorkMode ?? null;
+  }
+  if (input.experienceLevel !== undefined) {
+    profileData.experienceLevel = input.experienceLevel ?? null;
+  }
+  if (input.salaryMin !== undefined) {
+    profileData.salaryMin =
+      typeof input.salaryMin === "number" && Number.isFinite(input.salaryMin)
+        ? Math.max(0, Math.round(input.salaryMin))
+        : null;
+  }
+  if (input.salaryMax !== undefined) {
+    profileData.salaryMax =
+      typeof input.salaryMax === "number" && Number.isFinite(input.salaryMax)
+        ? Math.max(0, Math.round(input.salaryMax))
+        : null;
+  }
+  if (input.salaryCurrency !== undefined) {
+    profileData.salaryCurrency =
+      cleanOptional(input.salaryCurrency)?.toUpperCase().slice(0, 3) ?? "USD";
+  }
+  if (input.phone !== undefined) {
+    profileData.phone = cleanOptional(input.phone);
+  }
+  if (input.location !== undefined) {
+    profileData.location = cleanOptional(input.location);
+  }
+  if (input.headline !== undefined) {
+    profileData.headline = cleanOptional(input.headline);
+  }
+  if (input.workAuthorization !== undefined) {
+    profileData.workAuthorization = cleanOptional(input.workAuthorization);
+  }
+  if (input.linkedinUrl !== undefined) {
+    profileData.linkedinUrl = cleanOptionalUrl(input.linkedinUrl);
+  }
+  if (input.githubUrl !== undefined) {
+    profileData.githubUrl = cleanOptionalUrl(input.githubUrl);
+  }
+  if (input.portfolioUrl !== undefined) {
+    profileData.portfolioUrl = cleanOptionalUrl(input.portfolioUrl);
+  }
+
+  await prisma.$transaction(async (tx) => {
+    if (Object.keys(userData).length > 0) {
+      await tx.user.update({
+        where: { id: userId },
+        data: userData,
+      });
+    }
+    if (Object.keys(profileData).length > 0) {
+      await tx.userProfile.updateMany({
+        where: { authUserId: userId },
+        data: profileData,
+      });
+    }
   });
 }
 

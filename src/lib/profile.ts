@@ -39,6 +39,7 @@ export type ProfileProject = {
 export type ProfileFormValues = {
   headline: string;
   summary: string;
+  location: string;
   contact: ProfileContact;
   skills: ProfileSkill[];
   educations: ProfileEducation[];
@@ -47,6 +48,7 @@ export type ProfileFormValues = {
 };
 
 type StoredProfileLike = {
+  location?: string | null;
   headline?: string | null;
   summary?: string | null;
   skillsText?: string | null;
@@ -403,6 +405,7 @@ export function buildProfileFormValues(
   return {
     headline: profile?.headline?.trim() ?? "",
     summary: profile?.summary?.trim() ?? "",
+    location: profile?.location?.trim() || fallbackContact.location,
     contact: fallbackContact,
     skills:
       skills.length > 0

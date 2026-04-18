@@ -18,7 +18,11 @@ export function VerifyEmailCard({ defaultEmail = "" }: VerifyEmailCardProps) {
   const [email, setEmail] = useState(defaultEmail);
   const [pending, setPending] = useState(false);
   const [cooldownSeconds, setCooldownSeconds] = useState(0);
-  const [message, setMessage] = useState<string | null>(null);
+  const [message, setMessage] = useState<string | null>(
+    defaultEmail
+      ? `Verification email sent to ${defaultEmail}. Check your inbox and spam folder.`
+      : null
+  );
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {

@@ -25,6 +25,7 @@ type ProfileFormProps = {
   initialValues: {
     headline: string;
     summary: string;
+    location: string;
     contact: ProfileContact;
     skills: ProfileSkill[];
     educations: ProfileEducation[];
@@ -255,6 +256,7 @@ function normalizeContactSnapshot(contact: ProfileContact) {
 function serializeProfileSnapshot(input: {
   headline: string;
   summary: string;
+  location: string;
   contact: ProfileContact;
   skills: ProfileSkill[];
   educations: ProfileEducation[];
@@ -264,6 +266,7 @@ function serializeProfileSnapshot(input: {
   return JSON.stringify({
     headline: trimmed(input.headline),
     summary: input.summary.trim(),
+    location: trimmed(input.location),
     contact: normalizeContactSnapshot(input.contact),
     skills: normalizeSkillsSnapshot(input.skills),
     educations: normalizeEducationsSnapshot(input.educations),
@@ -279,6 +282,7 @@ export function ProfileForm({ initialValues }: ProfileFormProps) {
   const [activeSection, setActiveSection] = useState<ProfileSectionId | null>("overview");
   const [headline, setHeadline] = useState(initialValues.headline);
   const [summary, setSummary] = useState(initialValues.summary);
+  const [location, setLocation] = useState(initialValues.location);
   const [contact, setContact] = useState<ProfileContact>(initialValues.contact ?? makeEmptyContact());
   const [skills, setSkills] = useState<ProfileSkill[]>(
     initialValues.skills.length > 0 ? initialValues.skills : [makeEmptySkill()]
@@ -303,18 +307,20 @@ export function ProfileForm({ initialValues }: ProfileFormProps) {
       serializeProfileSnapshot({
         headline,
         summary,
+        location,
         contact,
         skills,
         educations,
         experiences,
         projects,
       }),
-    [contact, educations, experiences, headline, projects, skills, summary]
+    [contact, educations, experiences, headline, location, projects, skills, summary]
   );
   const [savedSnapshot, setSavedSnapshot] = useState(() =>
     serializeProfileSnapshot({
       headline: initialValues.headline,
       summary: initialValues.summary,
+      location: initialValues.location,
       contact: initialValues.contact ?? makeEmptyContact(),
       skills: initialValues.skills.length > 0 ? initialValues.skills : [makeEmptySkill()],
       educations:
@@ -386,8 +392,8 @@ export function ProfileForm({ initialValues }: ProfileFormProps) {
         setActiveSection={setActiveSection}
         title="Overview"
       >
-        <div className="grid gap-4">
-          <div className="space-y-1.5">
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div className="space-y-1.5 sm:col-span-2">
             <FieldLabel htmlFor="headline">Headline</FieldLabel>
             <Input
               id="headline"
@@ -399,9 +405,19 @@ export function ProfileForm({ initialValues }: ProfileFormProps) {
             />
           </div>
           <div className="space-y-1.5">
+            <FieldLabel htmlFor="location">Location</FieldLabel>
+            <Input
+              id="location"
+              name="location"
+              onChange={(event) => setLocation(event.target.value)}
+              placeholder="Toronto, ON, Canada"
+              value={location}
+            />
+          </div>
+          <div className="space-y-1.5">
             <FieldLabel htmlFor="summary">Summary</FieldLabel>
             <Textarea
-              className="min-h-[96px] resize-y"
+              className="min-h-[96px] resize-y sm:min-h-[120px]"
               id="summary"
               name="summary"
               onChange={(event) => setSummary(event.target.value)}

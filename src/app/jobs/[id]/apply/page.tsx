@@ -3,6 +3,7 @@ import { notFound, redirect } from "next/navigation";
 import { Bot, ExternalLink } from "lucide-react";
 import { ApplicationReviewActions } from "@/components/jobs/application-review-actions";
 import { AIWorkspace } from "@/components/jobs/ai-workspace";
+import { JobDescriptionSection } from "@/components/jobs/job-description-section";
 import { JobNotes } from "@/components/jobs/job-notes";
 import { getOptionalSessionUser } from "@/lib/current-user";
 import {
@@ -11,7 +12,6 @@ import {
   formatPostedAge,
   formatSalary,
   getEligibilityReasonDescription,
-  getSourceShortName,
   getSubmissionMeta,
   shouldShowSubmissionMeta,
   submissionCategoryColor,
@@ -52,7 +52,6 @@ export default async function JobApplyPage({ params }: JobApplyPageProps) {
   const submissionMeta = getSubmissionMeta(job);
   const reviewStateMeta = APPLICATION_REVIEW_STATE_META[reviewState];
   const canCreatePackage = recommendedResume !== null;
-  const sourceShortName = getSourceShortName(job.primaryExternalLink?.sourceName ?? null);
   const showSubmissionMeta = shouldShowSubmissionMeta(job);
 
   if (reviewState === "MANUAL_ONLY") {
@@ -87,12 +86,10 @@ export default async function JobApplyPage({ params }: JobApplyPageProps) {
             target="_blank"
             rel="noreferrer"
             title={`${job.primaryExternalLink.label} · ${job.primaryExternalLink.sourceName ?? "external source"}`}
-            className="inline-flex items-center gap-0.5 text-xs text-muted-foreground opacity-60 transition-opacity hover:opacity-100"
+            className="inline-flex items-center gap-1 text-xs text-muted-foreground transition hover:text-foreground"
           >
-            {sourceShortName ? (
-              <span className="font-semibold uppercase tracking-wide">{sourceShortName}</span>
-            ) : null}
             <ExternalLink className="h-3 w-3" />
+            <span>Open original posting</span>
           </a>
         ) : null}
       </div>
@@ -143,6 +140,8 @@ export default async function JobApplyPage({ params }: JobApplyPageProps) {
           atsName={atsName}
         />
       </div>
+
+      <JobDescriptionSection title="Job description" job={job} />
 
       {/* Resume — what will be used */}
       <div className="border-t border-border py-4">

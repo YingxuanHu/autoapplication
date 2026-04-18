@@ -31,13 +31,14 @@ export function JobsFeedList({ initialJobs }: { initialJobs: JobCardData[] }) {
   }
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
       {jobs.map((job) => (
         <div key={job.id}>
           <JobSummaryCard
             footerActions={
               <JobCardActions
-                align="start"
+                align="end"
+                compact
                 initialSaved={job.isSaved}
                 jobId={job.id}
                 onSavedChange={(saved) => handleSavedChange(job.id, saved)}

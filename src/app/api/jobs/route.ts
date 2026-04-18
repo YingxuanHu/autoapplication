@@ -13,6 +13,7 @@ export async function GET(request: NextRequest) {
       roleFamily: sp.get("roleFamily") ?? undefined,
       salaryMin: parseIntParam(sp.get("salaryMin"), 0) || undefined,
       experienceLevel: sp.get("experienceLevel") ?? undefined,
+      expiry: sp.get("expiry") ?? undefined,
       submissionCategory: sp.get("submissionCategory") ?? undefined,
       status: sp.get("status") ?? undefined,
       sortBy: sp.get("sortBy") ?? undefined,

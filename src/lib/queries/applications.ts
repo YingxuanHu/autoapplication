@@ -218,6 +218,95 @@ export async function updateApplicationSubmissionStatus(
   return serializeApplicationSubmission(updated);
 }
 
+/**
+ * Prepare an ApplicationPackage for the auto-apply flow using the user's
+ * explicit choices from the workspace (resume + optional cover letter +
+ * per-job answers). Unlike `prepareApplicationReview`, which picks the
+ * recommended resume silently, this variant respects what the user just
+ * selected.
+ *
+ * Returns the package id — the caller (auto-apply API) then passes it
+ * through to the automation engine.
+ */
+export async function prepareAutoApplyPackage(
+  jobId: string,
+  input: {
+    resumeVariantId: string;
+    coverLetterContent?: string | null;
+    savedAnswers?: Record<string, string>;
+  }
+): Promise<{ packageId: string }> {
+  const userId = await requireCurrentProfileId();
+
+  // Validate the resume variant belongs to this user.
+  const resumeVariant = await prisma.resumeVariant.findFirst({
+    where: { id: input.resumeVariantId, userId },
+    select: { id: true },
+  });
+  if (!resumeVariant) {
+    throw new Error("Selected resume is not available on your profile");
+  }
+
+  const context = await getMutableApplicationContext(jobId);
+  if (!context) throw new Error("Application context not found");
+
+  const { job, profile, latestPackage } = context;
+  // Resolve the chosen resume variant detail for the preview.
+  const chosenResume =
+    profile.resumeVariants.find((variant) => variant.id === input.resumeVariantId) ??
+    null;
+  if (!chosenResume) {
+    throw new Error("Selected resume not found on profile");
+  }
+
+  const packagePreview = buildPackagePreview(
+    serializeJobDetail(job),
+    profile,
+    chosenResume
+  );
+
+  // Merge the workspace-provided saved answers over the derived ones so
+  // the user's explicit overrides win.
+  const mergedAnswersMap: Record<string, string> = {
+    ...packagePreview.savedAnswers.reduce<Record<string, string>>(
+      (accumulator, entry) => {
+        accumulator[entry.label] = entry.value;
+        return accumulator;
+      },
+      {}
+    ),
+    ...(input.savedAnswers ?? {}),
+  };
+
+  const attachedLinksMap: Record<string, string> =
+    packagePreview.attachedLinks.reduce<Record<string, string>>(
+      (accumulator, entry) => {
+        accumulator[entry.label] = entry.value;
+        return accumulator;
+      },
+      {}
+    );
+
+  const data = {
+    userId,
+    canonicalJobId: jobId,
+    resumeVariantId: input.resumeVariantId,
+    coverLetterContent: input.coverLetterContent ?? null,
+    attachedLinks: attachedLinksMap as Prisma.InputJsonValue,
+    savedAnswers: mergedAnswersMap as Prisma.InputJsonValue,
+    whyItMatches: packagePreview.whyItMatches,
+  };
+
+  const packageRecord = latestPackage
+    ? await prisma.applicationPackage.update({
+        where: { id: latestPackage.id },
+        data,
+      })
+    : await prisma.applicationPackage.create({ data });
+
+  return { packageId: packageRecord.id };
+}
+
 export async function submitApplicationReview(jobId: string) {
   const userId = await requireCurrentProfileId();
   const context = await getMutableApplicationContext(jobId);

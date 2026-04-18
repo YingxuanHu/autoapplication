@@ -171,6 +171,7 @@ export async function saveProfile(
 
   const headline = String(formData.get("headline") ?? "").trim();
   const summary = String(formData.get("summary") ?? "").trim();
+  const location = String(formData.get("location") ?? "").trim();
   const legacyEducationText = String(formData.get("educationText") ?? "").trim();
   const contact = normalizeContact(parseJsonPayload(formData.get("contactJson")));
   const skills = normalizeSkills(parseJsonPayload(formData.get("skillsJson")));
@@ -204,6 +205,7 @@ export async function saveProfile(
       id: user.id,
     },
     data: {
+      location: location || null,
       headline: headline || null,
       summary: summary || null,
       skillsText: textCopies.skillsText,

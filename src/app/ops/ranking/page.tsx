@@ -36,6 +36,7 @@ export default async function RankingDebugPage() {
         region: true,
         roleFamily: true,
         workMode: true,
+        experienceLevel: true,
         postedAt: true,
         status: true,
         availabilityScore: true,
@@ -58,6 +59,7 @@ export default async function RankingDebugPage() {
     company: string;
     roleFamily: string | null;
     workMode: string | null;
+    experienceLevel: string | null;
     postedAt: Date | null;
     status: string | null;
     availabilityScore: number;
@@ -73,6 +75,7 @@ export default async function RankingDebugPage() {
     company: job.company,
     roleFamily: job.roleFamily,
     workMode: job.workMode,
+    experienceLevel: job.experienceLevel,
     postedAt: job.postedAt,
     status: job.status,
     availabilityScore: job.availabilityScore,
@@ -171,6 +174,7 @@ export default async function RankingDebugPage() {
               <th className="py-2 pr-2 font-medium text-center" title="Eligibility (0–20)">Elig</th>
               <th className="py-2 pr-2 font-medium text-center" title="Freshness (-10–20)">Fresh</th>
               <th className="py-2 pr-2 font-medium text-center" title="Availability / health (-14–18)">Avail</th>
+              <th className="py-2 pr-2 font-medium text-center" title="Profile match (0–28)">Prof</th>
               <th className="py-2 pr-2 font-medium text-center" title="Pref: Role Family (0–15)">PrfRF</th>
               <th className="py-2 pr-2 font-medium text-center" title="Pref: Work Mode (0–10)">PrfWM</th>
               <th className="py-2 pr-2 font-medium text-center" title="Behavior: Role Family (0–8)">BhvRF</th>
@@ -201,6 +205,7 @@ export default async function RankingDebugPage() {
                 <ScoreCell value={job.breakdown.eligibility} max={20} />
                 <ScoreCell value={job.breakdown.freshness} max={20} />
                 <ScoreCell value={job.breakdown.availability} max={18} />
+                <ScoreCell value={job.breakdown.profileMatch} max={28} />
                 <ScoreCell value={job.breakdown.prefRoleFamily} max={15} />
                 <ScoreCell value={job.breakdown.prefWorkMode} max={10} />
                 <ScoreCell value={job.breakdown.behaviorRoleFamily} max={8} />
