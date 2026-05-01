@@ -11,9 +11,13 @@ import {
   type CanonicalMatchResult,
 } from "@/lib/ingestion/dedupe";
 import { detectDeadSignal, normalizeSourceJob } from "@/lib/ingestion/normalize";
+import { upsertNormalizedJobRecordFromSourceJob } from "@/lib/ingestion/normalized-records";
+import { computeNormalizedQualityScore } from "@/lib/ingestion/quality";
+import { upsertJobFeedIndex } from "@/lib/ingestion/search-index";
 import {
   deriveSourceIdentitySnapshot,
   deriveSourceLifecycleSnapshot,
+  deriveSourceProvenanceMetadata,
   type SourceIdentitySnapshot,
 } from "@/lib/ingestion/source-quality";
 import {
@@ -437,17 +441,29 @@ export async function bulkSyncCanonicalStatuses(options: {
 
   // 2. Incremental per-job refresh for AGING/STALE cohort — these are most
   //    likely to transition and need freshness/expiry logic applied.
-  const atRiskJobs = await prisma.jobCanonical.findMany({
-    where: { status: { in: ["AGING", "STALE"] } },
-    select: { id: true },
-    orderBy: { lastApplyCheckAt: "asc" }, // oldest-checked first
-    take: perJobLimit,
-  });
+  const tally =
+    perJobLimit > 0
+      ? await (async () => {
+          const atRiskJobs = await prisma.jobCanonical.findMany({
+            where: { status: { in: ["AGING", "STALE"] } },
+            select: { id: true },
+            orderBy: { lastApplyCheckAt: "asc" }, // oldest-checked first
+            take: perJobLimit,
+          });
 
-  const tally = await refreshCanonicalStatuses(
-    atRiskJobs.map((j) => j.id),
-    now
-  );
+          return refreshCanonicalStatuses(
+            atRiskJobs.map((j) => j.id),
+            now
+          );
+        })()
+      : {
+          liveCount: 0,
+          agingCount: 0,
+          staleCount: 0,
+          expiredCount: 0,
+          removedCount: 0,
+          updatedCount: 0,
+        };
 
   // Build aggregate counts for the full pool (cheap count queries).
   const [liveCount, agingCount, staleCount, expiredCount] = await Promise.all([
@@ -603,6 +619,14 @@ async function performConnectorIngestion(
       fetchedAt: now,
     });
 
+    await upsertNormalizedJobRecordFromSourceJob({
+      rawJobId: rawJobResult.rawJob.id,
+      rawSourceName: connector.sourceName,
+      rawSourceId: sourceJob.sourceId,
+      rawPayload: rawJobResult.rawJob.rawPayload,
+      fetchedAt: now,
+    });
+
     if (rawJobResult.created) {
       summary.rawCreatedCount += 1;
     } else {
@@ -730,6 +754,13 @@ async function performConnectorIngestion(
     }
 
     await upsertEligibility(canonicalResult.id, normalizationResult.job, connector.sourceName);
+    await prisma.jobCanonical.update({
+      where: { id: canonicalResult.id },
+      data: {
+        qualityScore: computeNormalizedQualityScore(normalizationResult.job),
+      },
+    });
+    await upsertJobFeedIndex(canonicalResult.id);
     processedCount += 1;
     if (processedCount % 25 === 0) {
       await onHeartbeat?.({
@@ -1078,7 +1109,7 @@ async function upsertRawJob({
     sourceName: connector.sourceName,
     sourceTier: connector.sourceTier,
     fetchedAt,
-    rawPayload: buildRawPayload(sourceJob, fetchedAt),
+    rawPayload: buildRawPayload(connector, sourceJob, fetchedAt),
   } satisfies Prisma.JobRawUncheckedCreateInput;
 
   if (existingRawJob) {
@@ -1093,7 +1124,7 @@ async function upsertRawJob({
   return { rawJob, created: true as const };
 }
 
-async function findMappedCanonical(rawJobId: string) {
+export async function findMappedCanonical(rawJobId: string) {
   const mappingMatch = await prisma.jobSourceMapping.findFirst({
     where: { rawJobId },
     include: {
@@ -1133,7 +1164,7 @@ const canonicalMatchSelect = {
   workMode: true,
 } as const;
 
-async function upsertCanonicalJob({
+export async function upsertCanonicalJob({
   currentCanonicalId,
   normalizedJob,
   sourceIdentity,
@@ -1366,7 +1397,7 @@ async function upsertCanonicalJob({
   };
 }
 
-async function upsertSourceMapping({
+export async function upsertSourceMapping({
   canonicalId,
   connector,
   rawJobId,
@@ -1377,7 +1408,7 @@ async function upsertSourceMapping({
   now,
 }: {
   canonicalId: string;
-  connector: SourceConnector;
+  connector: Pick<SourceConnector, "key" | "sourceName" | "sourceTier" | "freshnessMode">;
   rawJobId: string;
   sourceUrl: string | null;
   sourceIdentity: SourceIdentitySnapshot;
@@ -1468,7 +1499,7 @@ async function upsertSourceMapping({
   };
 }
 
-async function upsertEligibility(
+export async function upsertEligibility(
   canonicalJobId: string,
   normalizedJob: NormalizedJobInput,
   sourceName: string
@@ -2163,7 +2194,20 @@ function stripUnsafeChars(s: string | null | undefined): string | undefined {
   return s.replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, "");
 }
 
-function buildRawPayload(sourceJob: SourceConnectorJob, fetchedAt: Date) {
+function buildRawPayload(
+  connector: Pick<SourceConnector, "sourceName" | "freshnessMode">,
+  sourceJob: SourceConnectorJob,
+  fetchedAt: Date
+) {
+  const provenance = deriveSourceProvenanceMetadata({
+    sourceName: connector.sourceName,
+    sourceId: sourceJob.sourceId,
+    sourceUrl: sourceJob.sourceUrl,
+    applyUrl: sourceJob.applyUrl,
+    metadata: sourceJob.metadata,
+    freshnessMode: connector.freshnessMode,
+  });
+
   return {
     title: sourceJob.title,
     company: sourceJob.company,
@@ -2179,8 +2223,25 @@ function buildRawPayload(sourceJob: SourceConnectorJob, fetchedAt: Date) {
     salaryMax: sourceJob.salaryMax,
     salaryCurrency: sourceJob.salaryCurrency,
     fetchedAt: fetchedAt.toISOString(),
-    metadata: sourceJob.metadata,
+    metadata: mergeSourceMetadata(sourceJob.metadata, provenance),
   } as Prisma.InputJsonValue;
+}
+
+function mergeSourceMetadata(
+  metadata: Prisma.InputJsonValue,
+  provenance: ReturnType<typeof deriveSourceProvenanceMetadata>
+) {
+  if (metadata && typeof metadata === "object" && !Array.isArray(metadata)) {
+    return {
+      ...(metadata as Record<string, Prisma.InputJsonValue | null>),
+      provenance,
+    } satisfies Record<string, Prisma.InputJsonValue | null>;
+  }
+
+  return {
+    providerMetadata: metadata,
+    provenance,
+  } satisfies Record<string, Prisma.InputJsonValue | null>;
 }
 
 async function refreshPrimarySourceMapping(canonicalJobId: string) {

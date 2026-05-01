@@ -20,11 +20,13 @@ const STRUCTURED_BOARD_PREFIXES = new Set([
   "JobBank",
   "TheMuse",
   "USAJobs",
+  "WeWorkRemotely",
 ]);
 
 const AGGREGATOR_PREFIXES = new Set([
   "Adzuna",
   "Jobicy",
+  "Jooble",
   "RemoteOK",
   "Remotive",
 ]);
@@ -41,6 +43,7 @@ const DIRECT_HOST_HINTS = [
   "taleo.net",
   "apply.workable.com",
   "myworkdayjobs.com",
+  "myworkdaysite.com",
   "icims.com",
 ];
 
@@ -49,10 +52,12 @@ const STRUCTURED_BOARD_HOST_HINTS = [
   "jobbank.gc.ca",
   "themuse.com",
   "usajobs.gov",
+  "weworkremotely.com",
 ];
 
 const AGGREGATOR_HOST_HINTS = [
   "adzuna.com",
+  "jooble.org",
   "jobicy.com",
   "remoteok.com",
   "remotive.com",
@@ -89,6 +94,8 @@ export type SourceIdentitySnapshot = {
   sourceFamily: string;
   sourceQualityKind: SourceQualityKind;
   sourceQualityRank: number;
+  sourceTrustTier: SourceTrustTier;
+  canonicalOriginPreference: CanonicalOriginPreference;
   applyUrlKey: string | null;
   sourceUrlKey: string | null;
   postingIdKey: string | null;
@@ -106,6 +113,27 @@ export type SourceLifecycleSnapshot = {
   sourceReliability: number;
   isFullSnapshot: boolean;
   pollPattern: ConnectorFreshnessMode;
+};
+
+export type SourceTrustTier = "HIGH" | "MEDIUM" | "LOW";
+
+export type CanonicalOriginPreference =
+  | "PRIMARY"
+  | "SECONDARY"
+  | "UNMATCHED_ONLY"
+  | "FALLBACK_ONLY";
+
+export type SourceProvenanceMetadata = {
+  sourceFamily: string;
+  sourceType: SourceLifecycleType;
+  sourceQualityKind: SourceQualityKind;
+  sourceQualityRank: number;
+  sourceTrustTier: SourceTrustTier;
+  canonicalOriginPreference: CanonicalOriginPreference;
+  sourceReliability: number;
+  pollPattern: ConnectorFreshnessMode;
+  isFullSnapshot: boolean;
+  attributionRequired: boolean;
 };
 
 export function deriveSourceIdentitySnapshot(input: {
@@ -135,6 +163,8 @@ export function deriveSourceIdentitySnapshot(input: {
     sourceFamily,
     sourceQualityKind: sourceQuality.kind,
     sourceQualityRank: sourceQuality.rank,
+    sourceTrustTier: mapTrustTierFromQualityKind(sourceQuality.kind),
+    canonicalOriginPreference: mapOriginPreferenceFromQualityKind(sourceQuality.kind),
     applyUrlKey,
     sourceUrlKey,
     postingIdKey,
@@ -255,6 +285,42 @@ export function deriveSourceLifecycleSnapshot(input: {
     isFullSnapshot: normalizedPollPattern === "FULL_SNAPSHOT",
     pollPattern: normalizedPollPattern,
   } satisfies SourceLifecycleSnapshot;
+}
+
+export function deriveSourceProvenanceMetadata(input: {
+  sourceName: string;
+  sourceId: string;
+  sourceUrl: string | null;
+  applyUrl: string | null;
+  metadata: Prisma.InputJsonValue;
+  freshnessMode: ConnectorFreshnessMode;
+}) {
+  const sourceIdentity = deriveSourceIdentitySnapshot({
+    sourceName: input.sourceName,
+    sourceId: input.sourceId,
+    sourceUrl: input.sourceUrl,
+    applyUrl: input.applyUrl,
+    metadata: input.metadata,
+  });
+  const sourceLifecycle = deriveSourceLifecycleSnapshot({
+    sourceName: input.sourceName,
+    sourceUrl: input.sourceUrl,
+    applyUrl: input.applyUrl,
+    freshnessMode: input.freshnessMode,
+  });
+
+  return {
+    sourceFamily: sourceIdentity.sourceFamily,
+    sourceType: sourceLifecycle.sourceType,
+    sourceQualityKind: sourceIdentity.sourceQualityKind,
+    sourceQualityRank: sourceIdentity.sourceQualityRank,
+    sourceTrustTier: sourceIdentity.sourceTrustTier,
+    canonicalOriginPreference: sourceIdentity.canonicalOriginPreference,
+    sourceReliability: sourceLifecycle.sourceReliability,
+    pollPattern: sourceLifecycle.pollPattern,
+    isFullSnapshot: sourceLifecycle.isFullSnapshot,
+    attributionRequired: isAttributionRequired(sourceIdentity.sourceFamily),
+  } satisfies SourceProvenanceMetadata;
 }
 
 export function normalizeUrlIdentityKey(url: string | null) {
@@ -411,7 +477,7 @@ function extractPostingIdFromUrl(url: string | null) {
       }
     }
 
-    if (host.includes("myworkdayjobs.com")) {
+    if (host.includes("myworkdayjobs.com") || host.includes("myworkdaysite.com")) {
       const workdayId =
         extractLastDelimitedToken(getLastSegment(segments)) ??
         normalizeStableIdentifier(parsed.searchParams.get("jobFamilyGroup")) ??
@@ -620,11 +686,13 @@ function guessFamilyFromHost(host: string) {
     if (host.includes("jobbank")) return "jobbank";
     if (host.includes("themuse")) return "themuse";
     if (host.includes("usajobs")) return "usajobs";
+    if (host.includes("weworkremotely")) return "weworkremotely";
     if (host.includes("himalayas")) return "himalayas";
   }
 
   if (hasHostSuffix(host, AGGREGATOR_HOST_HINTS)) {
     if (host.includes("adzuna")) return "adzuna";
+    if (host.includes("jooble")) return "jooble";
     if (host.includes("jobicy")) return "jobicy";
     if (host.includes("remoteok")) return "remoteok";
     if (host.includes("remotive")) return "remotive";
@@ -657,4 +725,43 @@ function tryParseUrl(url: string | null) {
 function hasHostSuffix(host: string | null, suffixes: string[]) {
   if (!host) return false;
   return suffixes.some((suffix) => host === suffix || host.endsWith(`.${suffix}`));
+}
+
+function mapTrustTierFromQualityKind(
+  qualityKind: SourceQualityKind
+): SourceTrustTier {
+  switch (qualityKind) {
+    case "DIRECT_COMPANY":
+      return "HIGH";
+    case "STRUCTURED_BOARD":
+      return "MEDIUM";
+    case "AGGREGATOR_REDIRECT":
+      return "LOW";
+    default:
+      return "LOW";
+  }
+}
+
+function mapOriginPreferenceFromQualityKind(
+  qualityKind: SourceQualityKind
+): CanonicalOriginPreference {
+  switch (qualityKind) {
+    case "DIRECT_COMPANY":
+      return "PRIMARY";
+    case "STRUCTURED_BOARD":
+      return "SECONDARY";
+    case "AGGREGATOR_REDIRECT":
+      return "UNMATCHED_ONLY";
+    default:
+      return "FALLBACK_ONLY";
+  }
+}
+
+function isAttributionRequired(sourceFamily: string) {
+  return new Set([
+    "jobicy",
+    "remotive",
+    "themuse",
+    "weworkremotely",
+  ]).has(sourceFamily);
 }

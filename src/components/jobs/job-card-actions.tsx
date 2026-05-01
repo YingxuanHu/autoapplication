@@ -4,6 +4,7 @@ import { useState } from "react";
 import { BookmarkCheck, BookmarkPlus } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { ConfirmActionDialog } from "@/components/ui/confirm-action-dialog";
 import { useNotifications } from "@/components/ui/notification-provider";
 import { cn } from "@/lib/utils";
 
@@ -26,11 +27,11 @@ export function JobCardActions({
   const [isSaved, setIsSaved] = useState(initialSaved);
   const [error, setError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [confirmRemoveOpen, setConfirmRemoveOpen] = useState(false);
 
-  function handleSaveClick() {
+  function updateSavedState(nextSaved: boolean) {
     if (isSaving) return;
 
-    const nextSaved = !isSaved;
     const previousSaved = isSaved;
 
     setError(null);
@@ -40,9 +41,12 @@ export function JobCardActions({
     setIsSaving(true);
     fetch(`/api/jobs/${jobId}/save`, {
       method: nextSaved ? "POST" : "DELETE",
-    })
+      })
       .then((response) => {
         if (!response.ok) throw new Error("save failed");
+        if (!nextSaved) {
+          setConfirmRemoveOpen(false);
+        }
         notify({
           title: nextSaved ? "Added to wishlist" : "Removed from wishlist",
           message: nextSaved
@@ -73,39 +77,65 @@ export function JobCardActions({
       });
   }
 
+  function handleSaveClick() {
+    if (isSaved) {
+      setConfirmRemoveOpen(true);
+      return;
+    }
+
+    updateSavedState(true);
+  }
+
+  function handleConfirmRemove() {
+    updateSavedState(false);
+  }
+
   return (
-    <div
-      className={cn(
-        "flex flex-col gap-1",
-        align === "end" ? "items-end" : "items-start"
-      )}
-    >
-      <Button
-        aria-label={isSaved ? "Remove from wishlist" : "Add to wishlist"}
+    <>
+      <div
         className={cn(
-          "gap-1.5",
-          compact &&
-            "h-8 rounded-full border border-border/60 bg-background/75 px-3 text-[13px] font-medium text-muted-foreground hover:bg-muted/70 hover:text-foreground"
+          "flex flex-col gap-1",
+          align === "end" ? "items-end" : "items-start"
         )}
-        disabled={isSaving}
-        onClick={handleSaveClick}
-        size={compact ? "sm" : "sm"}
-        title={isSaved ? "Remove from wishlist" : "Add to wishlist"}
-        type="button"
-        variant={compact ? "ghost" : isSaved ? "secondary" : "ghost"}
       >
-        {isSaved ? (
-          <BookmarkCheck className="h-3.5 w-3.5" />
-        ) : (
-          <BookmarkPlus className="h-3.5 w-3.5" />
-        )}
-        <span>{isSaved ? "In wishlist" : "Add to wishlist"}</span>
-      </Button>
-      {error ? (
-        <p aria-live="polite" className="text-xs text-destructive">
-          {error}
-        </p>
-      ) : null}
-    </div>
+        <Button
+          aria-label={isSaved ? "Remove from wishlist" : "Add to wishlist"}
+          className={cn(
+            "gap-1.5",
+            compact &&
+              "h-8 rounded-full border border-border/60 bg-background/75 px-3 text-[13px] font-medium text-muted-foreground hover:bg-muted/70 hover:text-foreground"
+          )}
+          disabled={isSaving}
+          onClick={handleSaveClick}
+          size={compact ? "sm" : "sm"}
+          title={isSaved ? "Remove from wishlist" : "Add to wishlist"}
+          type="button"
+          variant={compact ? "ghost" : isSaved ? "secondary" : "ghost"}
+        >
+          {isSaved ? (
+            <BookmarkCheck className="h-3.5 w-3.5" />
+          ) : (
+            <BookmarkPlus className="h-3.5 w-3.5" />
+          )}
+          <span>{isSaved ? "Remove from wishlist" : "Add to wishlist"}</span>
+        </Button>
+        {error ? (
+          <p aria-live="polite" className="text-xs text-destructive">
+            {error}
+          </p>
+        ) : null}
+      </div>
+      <ConfirmActionDialog
+        cancelLabel="Keep in wishlist"
+        confirmLabel={isSaving ? "Removing..." : "Remove"}
+        description="Remove this job from your wishlist?"
+        destructive
+        onConfirm={handleConfirmRemove}
+        onOpenChange={setConfirmRemoveOpen}
+        open={confirmRemoveOpen}
+        pending={isSaving}
+        title="Remove from wishlist?"
+      />
+    </>
   );
 }

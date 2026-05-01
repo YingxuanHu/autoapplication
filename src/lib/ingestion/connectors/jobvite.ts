@@ -2,6 +2,10 @@ import type {
   EmploymentType,
   WorkMode,
 } from "@/generated/prisma/client";
+import {
+  STRIP_TAGS_RE,
+  decodeHtmlEntitiesFull as decodeHtmlEntities,
+} from "@/lib/ingestion/html-description";
 import { throwIfAborted } from "@/lib/ingestion/runtime-control";
 import type {
   SourceConnector,
@@ -15,7 +19,6 @@ const JOBVITE_HEADERS = {
   Accept: "text/html,application/xhtml+xml",
   "User-Agent": "Mozilla/5.0 (compatible; autoapplication-jobvite/1.0)",
 } satisfies Record<string, string>;
-const STRIP_TAGS_RE = /<[^>]+>/g;
 
 type JobviteConnectorOptions = {
   companyToken: string;
@@ -531,19 +534,3 @@ function buildCompanyName(companyToken: string) {
     .join(" ");
 }
 
-function decodeHtmlEntities(input: string) {
-  return input
-    .replace(/&#x2013;/gi, "–")
-    .replace(/&#x2014;/gi, "—")
-    .replace(/&#x27;/gi, "'")
-    .replace(/&#39;/gi, "'")
-    .replace(/&quot;/gi, '"')
-    .replace(/&amp;/gi, "&")
-    .replace(/&lt;/gi, "<")
-    .replace(/&gt;/gi, ">")
-    .replace(/&#x2B;/gi, "+")
-    .replace(/&#xE3;/gi, "ã")
-    .replace(/&mdash;/gi, "—")
-    .replace(/&ndash;/gi, "–")
-    .replace(/&nbsp;/gi, " ");
-}

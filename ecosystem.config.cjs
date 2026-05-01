@@ -12,7 +12,7 @@ module.exports = {
     {
       name: "ingest-daemon",
       script: "node_modules/.bin/tsx",
-      args: "-r dotenv/config scripts/ingest-daemon.ts --interval=30 --force",
+      args: `-r dotenv/config scripts/ingest-daemon.ts --interval=${process.env.INGEST_DAEMON_INTERVAL_MINUTES || 30} --force`,
       cwd: __dirname,
       // Restart policy
       autorestart: true,
@@ -26,9 +26,9 @@ module.exports = {
       merge_logs: true,
       // Environment
       env: {
-        NODE_ENV: "development",
-        DATABASE_URL:
-          "postgresql://alvinhu:alvinhu@localhost:5432/autoapplication?schema=public",
+        ...process.env,
+        NODE_ENV: process.env.NODE_ENV || "production",
+        INGEST_CAPACITY_SCALE: process.env.INGEST_CAPACITY_SCALE || "2.25",
       },
       // Memory guard — restart if daemon leaks past 512MB
       max_memory_restart: "512M",

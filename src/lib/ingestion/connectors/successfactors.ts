@@ -9,6 +9,7 @@ import type {
   SourceConnectorFetchResult,
   SourceConnectorJob,
 } from "@/lib/ingestion/types";
+import { decodeHtmlEntitiesFull as decodeHtmlEntities } from "@/lib/ingestion/html-description";
 import {
   buildTimeoutSignal,
   throwIfAborted,
@@ -571,21 +572,6 @@ function cleanText(value: string | null | undefined) {
     .trim();
 }
 
-function decodeHtmlEntities(value: string) {
-  return value
-    .replace(/&#(\d+);/g, (_, code) =>
-      String.fromCodePoint(Number.parseInt(code, 10))
-    )
-    .replace(/&#x([0-9a-f]+);/gi, (_, code) =>
-      String.fromCodePoint(Number.parseInt(code, 16))
-    )
-    .replace(/&amp;/g, "&")
-    .replace(/&lt;/g, "<")
-    .replace(/&gt;/g, ">")
-    .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'")
-    .replace(/&nbsp;/g, " ");
-}
 
 function parseSuccessFactorsDate(value: string | null) {
   if (!value) return null;

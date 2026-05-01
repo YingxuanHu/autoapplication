@@ -87,6 +87,7 @@ export default async function JobsPage({ searchParams }: JobsPageProps) {
     getJobs(filters, { viewerProfileId }),
     getIngestionStatus(),
   ]);
+  const renderReferenceNow = new Date().toISOString();
 
   const jobCards = jobsResult.data.map((job) =>
     serializeJobCardData({
@@ -156,7 +157,7 @@ export default async function JobsPage({ searchParams }: JobsPageProps) {
           <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm sm:text-[15px]">
             <span className="text-foreground">
               <span className="font-medium">{jobsResult.summary.addedTodayCount.toLocaleString()}</span>{" "}
-              found today
+              first seen today
             </span>
             <span className="text-muted-foreground">
               <span className="font-medium text-foreground">
@@ -450,7 +451,11 @@ export default async function JobsPage({ searchParams }: JobsPageProps) {
             ) : null}
           </div>
         ) : (
-          <JobsFeedList initialJobs={jobCards} key={navigationKey} />
+          <JobsFeedList
+            initialJobs={jobCards}
+            key={navigationKey}
+            referenceNow={renderReferenceNow}
+          />
         )}
 
         {(currentPage > 1 || jobsResult.hasNextPage || (totalPages !== null && totalPages > 1)) ? (

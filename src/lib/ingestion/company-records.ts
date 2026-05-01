@@ -18,12 +18,15 @@ const THIRD_PARTY_JOB_HOST_HINTS = [
   "icims.com",
   "adzuna.com",
   "adzuna.ca",
+  "jooble.org",
   "jobicy.com",
   "remoteok.com",
   "remotive.com",
   "themuse.com",
   "himalayas.app",
   "jobbank.gc.ca",
+  "usajobs.gov",
+  "weworkremotely.com",
   "lensa.com",
 ];
 

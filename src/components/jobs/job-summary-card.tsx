@@ -3,8 +3,8 @@ import { Bot } from "lucide-react";
 import { JobMetaRow } from "@/components/jobs/job-meta-row";
 import {
   formatPostedAge,
-  getDeadlineUrgency,
-  getExpiringSoonMeta,
+  getDeadlineUrgencyAt,
+  getExpiringSoonMetaAt,
   shouldShowSubmissionMeta,
 } from "@/lib/job-display";
 import { cn } from "@/lib/utils";
@@ -12,15 +12,17 @@ import type { JobCardData } from "@/types";
 
 type JobSummaryCardProps = {
   job: JobCardData;
+  referenceNow?: string;
   footerActions?: React.ReactNode;
 };
 
 export function JobSummaryCard({
   job,
+  referenceNow,
   footerActions,
 }: JobSummaryCardProps) {
-  const deadlineUrgency = getDeadlineUrgency(job.deadline);
-  const expiringSoon = getExpiringSoonMeta(job.deadline);
+  const deadlineUrgency = getDeadlineUrgencyAt(job.deadline, referenceNow);
+  const expiringSoon = getExpiringSoonMetaAt(job.deadline, referenceNow);
   const showSubmissionMeta = shouldShowSubmissionMeta(job);
 
   // Lifecycle cue shown in the secondary row for non-LIVE jobs
@@ -85,7 +87,7 @@ export function JobSummaryCard({
         </div>
 
         <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[12px] text-muted-foreground/75 sm:text-[13px]">
-          <span>{formatPostedAge(job.postedAt)}</span>
+          <span>{formatPostedAge(job.postedAt, referenceNow)}</span>
           <Sep />
           <span className="font-medium text-muted-foreground/80">{job.roleFamily}</span>
           {lifecycleCue ? (

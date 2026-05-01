@@ -10,6 +10,13 @@ import type {
   SourceConnectorFetchResult,
   SourceConnectorJob,
 } from "@/lib/ingestion/types";
+import {
+  STRIP_TAGS_RE,
+  decodeHtmlEntitiesFull,
+  decodeHtmlEntitiesFull as decodeHtmlEntities,
+  extractDescriptionFromHtml,
+} from "@/lib/ingestion/html-description";
+import { isClearlyNonJobPosting } from "@/lib/job-integrity";
 
 const FETCH_TIMEOUT_MS = 15_000;
 const MAX_LISTING_PAGES = 8;
@@ -20,7 +27,6 @@ const MAX_SITEMAP_JOB_URLS = 250;
 const JOB_LINK_RE =
   /(job|career|position|opening|opportunit|vacanc|posting|requisition|role)/i;
 const PAGINATION_RE = /(next|more|older|page \d+)/i;
-const STRIP_TAGS_RE = /<[^>]+>/g;
 
 type CompanySiteConnectorOptions = {
   sourceName: string;
@@ -373,6 +379,19 @@ function extractHtmlDetailJob(
     return [];
   }
 
+  const applyUrl = extractApplyUrl(html, pageUrl) ?? pageUrl;
+  if (
+    isClearlyNonJobPosting({
+      title: heading,
+      description,
+      applyUrl,
+    })
+  ) {
+    return [];
+  }
+
+  const salary = extractSalary(description);
+
   return [
     {
       sourceId: buildSourceId(null, pageUrl, heading),
@@ -381,7 +400,7 @@ function extractHtmlDetailJob(
       company: companyName,
       location: extractLocation(html) ?? "Unknown",
       description,
-      applyUrl: extractApplyUrl(html, pageUrl) ?? pageUrl,
+      applyUrl,
       postedAt: extractDate(html, [
         /posted[^0-9a-z]{0,12}([a-z]{3,9}\s+\d{1,2},?\s+\d{4})/i,
       ]),
@@ -391,9 +410,9 @@ function extractHtmlDetailJob(
       ]),
       employmentType: inferEmploymentType(`${heading}\n${description}`),
       workMode: inferWorkMode(`${heading}\n${description}`),
-      salaryMin: extractSalary(description).salaryMin,
-      salaryMax: extractSalary(description).salaryMax,
-      salaryCurrency: extractSalary(description).salaryCurrency,
+      salaryMin: salary.salaryMin,
+      salaryMax: salary.salaryMax,
+      salaryCurrency: salary.salaryCurrency,
       metadata: {
         source: "company-site",
         route: "html",
@@ -654,7 +673,23 @@ function looksLikeCareerSurface(html: string, pageUrl: string) {
 }
 
 function buildReadableDescription(html: string) {
-  return decodeHtmlEntities(
+  // Use DOM-aware extractor: tries known job-description container selectors
+  // first (Workday/iCIMS/Lever/Greenhouse/SuccessFactors/Taleo/main/article),
+  // strips noise elements (nav, header, footer, aside, cookie banners,
+  // similar-jobs, breadcrumbs), scores candidates, and falls back to a
+  // noise-stripped whole-body only when no container yields usable text.
+  // This replaces the prior implementation that dumped the entire page,
+  // which leaked site chrome, theme-config JSON, and sidebar copy into the
+  // description for ~34% of stored jobs.
+  const extracted = extractDescriptionFromHtml(html);
+  if (extracted && extracted.length >= 120) {
+    return extracted;
+  }
+  // Last-resort: old behaviour so we don't accidentally regress to zero text
+  // on pages that break every selector. The full-body path is already
+  // noise-stripped by extractDescriptionFromHtml via the body-fallback
+  // candidate, so this should rarely be hit.
+  return decodeHtmlEntitiesFull(
     html
       .replace(/<script[\s\S]*?<\/script>/gi, " ")
       .replace(/<style[\s\S]*?<\/style>/gi, " ")
@@ -772,22 +807,6 @@ function safeParseLooseJson(input: string) {
   }
 }
 
-function decodeHtmlEntities(input: string) {
-  return input
-    .replace(/&#x2013;/gi, "–")
-    .replace(/&#x2014;/gi, "—")
-    .replace(/&#x27;/gi, "'")
-    .replace(/&#39;/gi, "'")
-    .replace(/&quot;/gi, '"')
-    .replace(/&amp;/gi, "&")
-    .replace(/&lt;/gi, "<")
-    .replace(/&gt;/gi, ">")
-    .replace(/&#x2B;/gi, "+")
-    .replace(/&#xE3;/gi, "ã")
-    .replace(/&mdash;/gi, "—")
-    .replace(/&ndash;/gi, "–")
-    .replace(/&nbsp;/gi, " ");
-}
 
 async function inspectSitemapCandidates(
   pageUrl: string,

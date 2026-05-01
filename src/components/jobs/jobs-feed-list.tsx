@@ -7,7 +7,13 @@ import { JobCardActions } from "@/components/jobs/job-card-actions";
 import { JobSummaryCard } from "@/components/jobs/job-summary-card";
 import type { JobCardData } from "@/types";
 
-export function JobsFeedList({ initialJobs }: { initialJobs: JobCardData[] }) {
+export function JobsFeedList({
+  initialJobs,
+  referenceNow,
+}: {
+  initialJobs: JobCardData[];
+  referenceNow: string;
+}) {
   const [jobs, setJobs] = useState(initialJobs);
 
   const handleSavedChange = useCallback((jobId: string, saved: boolean) => {
@@ -45,6 +51,7 @@ export function JobsFeedList({ initialJobs }: { initialJobs: JobCardData[] }) {
               />
             }
             job={job}
+            referenceNow={referenceNow}
           />
         </div>
       ))}

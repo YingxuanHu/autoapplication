@@ -14,6 +14,12 @@ import type {
   SourceConnectorJob,
 } from "@/lib/ingestion/types";
 import { buildCanonicalDedupeFields } from "@/lib/ingestion/dedupe";
+import {
+  sanitizeCompanyName,
+  sanitizeJobDescriptionText,
+  sanitizeJobTitle,
+} from "@/lib/job-cleanup";
+import { classifyNonJobPosting } from "@/lib/job-integrity";
 import { resolveJobSalaryRange } from "@/lib/salary-extraction";
 import { inferExperienceLevel } from "@/lib/career-stage";
 
@@ -613,8 +619,12 @@ export function normalizeSourceJob({
   job,
   fetchedAt,
 }: NormalizeSourceJobOptions): NormalizationResult {
-  const title = compactWhitespace(job.title);
-  const description = sanitizeText(job.description);
+  const title = sanitizeJobTitle(job.title);
+  const normalizedLocation = compactWhitespace(job.location) || "Unknown";
+  const description = sanitizeText(job.description, {
+    title,
+    location: normalizedLocation,
+  });
   const applyUrl =
     compactWhitespace(job.applyUrl) ||
     (job.sourceUrl ? compactWhitespace(job.sourceUrl) : "") ||
@@ -655,8 +665,11 @@ export function normalizeSourceJob({
     };
   }
 
-  const company = compactWhitespace(job.company) || "Unknown";
-  const location = compactWhitespace(job.location) || "Unknown";
+  const company =
+    sanitizeCompanyName(job.company, {
+      urls: [job.applyUrl, job.sourceUrl],
+    }) || "Unknown";
+  const location = normalizedLocation;
 
   const region = inferRegion(location);
 
@@ -943,6 +956,11 @@ function isObviouslyJunkJob(input: {
   description: string;
   applyUrl: string;
 }) {
+  const nonJobClassification = classifyNonJobPosting(input);
+  if (nonJobClassification.detected) {
+    return true;
+  }
+
   if (JUNK_TITLE_PATTERNS.some((pattern) => pattern.test(input.title))) {
     return true;
   }
@@ -1022,29 +1040,11 @@ function sanitizeSummaryLine(line: string) {
  * Output: newlines preserved, spaces within lines compacted, max 2 consecutive
  * blank lines, no leading/trailing whitespace.
  */
-function sanitizeText(value: unknown) {
-  const decoded = decodeHtmlEntities(asText(value));
-  // Convert block-level HTML element boundaries to paragraph breaks
-  const withBreaks = decoded
-    .replace(/<br\s*\/?>/gi, "\n")
-    .replace(/<\/?(p|div|section|article|h[1-6]|li|ul|ol|blockquote)[^>]*>/gi, "\n");
-  // Strip remaining HTML tags (inline elements, etc.)
-  const stripped = withBreaks.replace(/<[^>]+>/g, " ");
-  // Compact horizontal whitespace within each line, but preserve newlines
-  const lines = stripped.split(/\n/);
-  const cleaned = lines.map((line) => line.replace(/[ \t]+/g, " ").trim());
-  // Join back, collapsing 3+ consecutive blank lines to 2
-  return cleaned.join("\n").replace(/\n{3,}/g, "\n\n").trim();
-}
-
-function decodeHtmlEntities(value: string) {
-  return value
-    .replace(/&lt;/g, "<")
-    .replace(/&gt;/g, ">")
-    .replace(/&amp;/g, "&")
-    .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'")
-    .replace(/&nbsp;/g, " ");
+function sanitizeText(
+  value: unknown,
+  context?: { title?: string | null; location?: string | null }
+) {
+  return sanitizeJobDescriptionText(value, context);
 }
 
 function compactWhitespace(value: unknown) {

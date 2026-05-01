@@ -148,6 +148,18 @@ export const ATS_SEARCH_DEFAULT_QUERIES: Array<{
 ];
 
 export const SOURCE_DISCOVERY_PROMOTION_THRESHOLD = 5;
+const GENERIC_JOBVITE_TOKENS = new Set([
+  "about",
+  "career",
+  "careers",
+  "company",
+  "job",
+  "jobs",
+  "join",
+  "join-us",
+  "openings",
+  "search",
+]);
 
 type AtsMatch = {
   connectorName: SupportedConnectorName;
@@ -220,24 +232,34 @@ export function buildDiscoveredSourceName(
   connectorName: SupportedConnectorName,
   token: string
 ) {
-  const prefix =
-    connectorName === "smartrecruiters"
-      ? "SmartRecruiters"
-      : connectorName === "successfactors"
-        ? "SuccessFactors"
-      : connectorName === "icims"
-        ? "iCIMS"
-      : connectorName === "taleo"
-        ? "Taleo"
-      : connectorName === "himalayas"
-        ? "Himalayas"
-      : connectorName === "jobicy"
-        ? "Jobicy"
-      : connectorName === "remotive"
-        ? "Remotive"
-      : connectorName === "themuse"
-        ? "TheMuse"
-      : connectorName.charAt(0).toUpperCase() + connectorName.slice(1);
+  const prefix = (() => {
+    switch (connectorName) {
+      case "smartrecruiters":
+        return "SmartRecruiters";
+      case "successfactors":
+        return "SuccessFactors";
+      case "icims":
+        return "iCIMS";
+      case "taleo":
+        return "Taleo";
+      case "himalayas":
+        return "Himalayas";
+      case "jobicy":
+        return "Jobicy";
+      case "jooble":
+        return "Jooble";
+      case "remotive":
+        return "Remotive";
+      case "themuse":
+        return "TheMuse";
+      case "usajobs":
+        return "USAJobs";
+      case "weworkremotely":
+        return "WeWorkRemotely";
+      default:
+        return connectorName.charAt(0).toUpperCase() + connectorName.slice(1);
+    }
+  })();
   return `${prefix}:${token}`;
 }
 
@@ -288,10 +310,14 @@ export function buildDiscoveredSourceUrl(
       return "https://himalayas.app/jobs";
     case "jobicy":
       return "https://jobicy.com/remote-jobs";
+    case "jooble":
+      return "https://jooble.org/";
     case "remotive":
       return "https://remotive.com/remote-jobs";
     case "themuse":
       return "https://www.themuse.com/jobs";
+    case "weworkremotely":
+      return "https://weworkremotely.com/remote-jobs";
     default:
       throw new Error(`Unsupported discovered source connector: ${connectorName}`);
   }
@@ -1238,9 +1264,13 @@ function matchAtsSource(parsedUrl: URL): AtsMatch | null {
       pathSegments[1] === "jobs" ||
       pathSegments[1] === "job")
   ) {
+    const token = pathSegments[0].toLowerCase();
+    if (GENERIC_JOBVITE_TOKENS.has(token)) {
+      return null;
+    }
     return {
       connectorName: "jobvite",
-      token: pathSegments[0].toLowerCase(),
+      token,
     };
   }
 

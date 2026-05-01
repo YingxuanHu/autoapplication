@@ -56,7 +56,20 @@ type AshbyAppData = {
 
 // ─── Connector factory ────────────────────────────────────────────────────────
 
-const DETAIL_BATCH_SIZE = 5;
+function readPositiveIntegerEnv(
+  envName: string,
+  fallback: number
+) {
+  const raw = process.env[envName]?.trim();
+  if (!raw) return fallback;
+  const parsed = Number.parseInt(raw, 10);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
+}
+
+const DETAIL_BATCH_SIZE = readPositiveIntegerEnv(
+  "ASHBY_DETAIL_BATCH_SIZE",
+  5
+);
 const BASE_URL = "https://jobs.ashbyhq.com";
 const USER_AGENT =
   "Mozilla/5.0 (compatible; JobIndexer/1.0)";

@@ -188,6 +188,77 @@ enum SourceTaskStatus {
   SKIPPED
 }
 
+enum AtsPlatform {
+  ASHBY
+  BAMBOOHR
+  EIGHTFOLD
+  GENERIC
+  GREENHOUSE
+  ICIMS
+  JOBVITE
+  LEVER
+  PARADOX
+  PHENOM
+  RECRUITEE
+  RIPPLING
+  SMARTRECRUITERS
+  SUCCESSFACTORS
+  TALEO
+  TEAMTAILOR
+  WORKABLE
+  WORKDAY
+}
+
+enum SourceCandidateType {
+  AGGREGATOR_LEAD
+  ATS_BOARD
+  CAREER_PAGE
+  COMPANY_ROOT
+  JOB_PAGE
+  SITEMAP
+}
+
+enum SourceCandidateStatus {
+  NEW
+  VALIDATED
+  PROMOTED
+  REJECTED
+  STALE
+}
+
+enum DiscoveryMode {
+  EXPLORATION
+  EXPLOITATION
+}
+
+enum NormalizedJobRecordStatus {
+  STAGED
+  NORMALIZED
+  VALIDATED
+  REJECTED
+  CANONICALIZED
+}
+
+enum PipelineQueueName {
+  SOURCE_DISCOVERY
+  SOURCE_VALIDATION
+  CONNECTOR_POLL
+  RAW_PARSE
+  NORMALIZE
+  JOB_INTEGRITY
+  DEDUPE
+  LIFECYCLE
+  SEARCH_INDEX
+}
+
+enum PipelineTaskStatus {
+  PENDING
+  RUNNING
+  SUCCESS
+  FAILED
+  SKIPPED
+}
+
 enum DocumentType {
   RESUME
   COVER_LETTER
@@ -236,14 +307,14 @@ enum DeadlineReminderType {
 // ─── Models ─────────────────────────────────────────────
 
 model User {
-  id                        String              @id @default(cuid())
-  email                     String              @unique
+  id                        String   @id @default(cuid())
+  email                     String   @unique
   name                      String
-  emailVerified             Boolean             @default(false)
-  emailNotificationsEnabled Boolean             @default(true)
+  emailVerified             Boolean  @default(false)
+  emailNotificationsEnabled Boolean  @default(true)
   image                     String?
-  createdAt                 DateTime            @default(now())
-  updatedAt                 DateTime            @updatedAt
+  createdAt                 DateTime @default(now())
+  updatedAt                 DateTime @updatedAt
 
   accounts            Account[]
   sessions            Session[]
@@ -255,9 +326,9 @@ model User {
 }
 
 model UserProfile {
-  id                String          @id @default(cuid())
-  authUserId        String?         @unique
-  email             String          @unique
+  id                String           @id @default(cuid())
+  authUserId        String?          @unique
+  email             String           @unique
   name              String
   phone             String?
   location          String?
@@ -269,10 +340,10 @@ model UserProfile {
   workAuthorization String?
   salaryMin         Int?
   salaryMax         Int?
-  salaryCurrency    String?         @default("USD")
+  salaryCurrency    String?          @default("USD")
   preferredWorkMode WorkMode?
   experienceLevel   ExperienceLevel?
-  automationMode    AutomationMode  @default(REVIEW_BEFORE_SUBMIT)
+  automationMode    AutomationMode   @default(REVIEW_BEFORE_SUBMIT)
 
   // Structured profile data (rich JSON fields for AI ingestion and display)
   contactJson     Json?
@@ -280,15 +351,15 @@ model UserProfile {
   experienceText  String?
   educationText   String?
   projectsText    String?
-  skillsJson      Json?   // string[] — e.g. ["TypeScript", "React", "PostgreSQL"]
-  experiencesJson Json?   // Array<{ title, company, location, startDate, endDate, description }>
-  educationsJson  Json?   // Array<{ school, degree, field, startDate, endDate, description }>
-  projectsJson    Json?   // Array<{ name, url, description, technologies }>
+  skillsJson      Json? // string[] — e.g. ["TypeScript", "React", "PostgreSQL"]
+  experiencesJson Json? // Array<{ title, company, location, startDate, endDate, description }>
+  educationsJson  Json? // Array<{ school, degree, field, startDate, endDate, description }>
+  projectsJson    Json? // Array<{ name, url, description, technologies }>
 
-  createdAt         DateTime        @default(now())
-  updatedAt         DateTime        @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  authUser                User?                @relation(fields: [authUserId], references: [id], onDelete: Cascade)
+  authUser               User?                   @relation(fields: [authUserId], references: [id], onDelete: Cascade)
   resumeVariants         ResumeVariant[]
   documents              Document[]
   preferences            UserPreference[]
@@ -316,10 +387,12 @@ model Company {
   createdAt            DateTime               @default(now())
   updatedAt            DateTime               @updatedAt
 
-  jobs           JobCanonical[]
-  discoveryPages CompanyDiscoveryPage[]
-  sources        CompanySource[]
-  tasks          SourceTask[]
+  jobs             JobCanonical[]
+  discoveryPages   CompanyDiscoveryPage[]
+  sources          CompanySource[]
+  tasks            SourceTask[]
+  sourceCandidates SourceCandidate[]
+  atsTenants       ATSTenant[]
 
   @@index([discoveryStatus, lastDiscoveryAt(sort: Desc)])
   @@index([crawlStatus, lastSuccessfulPollAt(sort: Desc)])
@@ -327,16 +400,16 @@ model Company {
 }
 
 model ResumeVariant {
-  id              String   @id @default(cuid())
-  userId          String
-  label           String
+  id               String   @id @default(cuid())
+  userId           String
+  label            String
   targetRoleFamily String?
-  fileUrl         String?
-  content         String?
-  isDefault       Boolean  @default(false)
-  documentId      String?  @unique
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  fileUrl          String?
+  content          String?
+  isDefault        Boolean  @default(false)
+  documentId       String?  @unique
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 
   user                UserProfile          @relation(fields: [userId], references: [id], onDelete: Cascade)
   document            Document?            @relation(fields: [documentId], references: [id], onDelete: SetNull)
@@ -346,24 +419,24 @@ model ResumeVariant {
 }
 
 model Document {
-  id            String       @id @default(cuid())
-  userId        String
-  type          DocumentType
-  title         String
+  id               String       @id @default(cuid())
+  userId           String
+  type             DocumentType
+  title            String
   originalFileName String
-  filename      String
-  mimeType      String
-  sizeBytes     Int
-  storageKey    String       @unique
-  isPrimary     Boolean      @default(false)
-  extractedText String?
-  extractedAt   DateTime?
-  createdAt     DateTime     @default(now())
-  updatedAt     DateTime     @updatedAt
+  filename         String
+  mimeType         String
+  sizeBytes        Int
+  storageKey       String       @unique
+  isPrimary        Boolean      @default(false)
+  extractedText    String?
+  extractedAt      DateTime?
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
 
-  user          UserProfile   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  analysis      DocumentAnalysis?
-  resumeVariant ResumeVariant?
+  user                    UserProfile                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  analysis                DocumentAnalysis?
+  resumeVariant           ResumeVariant?
   trackedApplicationLinks TrackedApplicationDocument[]
 
   @@index([userId, type])
@@ -381,7 +454,7 @@ model DocumentAnalysis {
   createdAt             DateTime @default(now())
   updatedAt             DateTime @updatedAt
 
-  document              Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  document Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
 }
 
 model JobRaw {
@@ -393,53 +466,57 @@ model JobRaw {
   fetchedAt  DateTime
   createdAt  DateTime   @default(now())
 
-  sourceMappings JobSourceMapping[]
+  sourceMappings   JobSourceMapping[]
+  normalizedRecord NormalizedJobRecord?
 
   @@unique([sourceName, sourceId])
 }
 
 model JobCanonical {
-  id                 String          @id @default(cuid())
-  companyId          String?
-  title              String
-  company            String
-  companyKey         String          @default("")
-  titleKey           String          @default("")
-  titleCoreKey       String          @default("")
-  descriptionFingerprint String      @default("")
-  location           String
-  locationKey        String          @default("")
-  region             Region?
-  workMode           WorkMode
-  salaryMin          Int?
-  salaryMax          Int?
-  salaryCurrency     String?         @default("USD")
-  employmentType     EmploymentType
-  experienceLevel    ExperienceLevel?
-  description        String
-  searchVector       Unsupported("tsvector")?
-  shortSummary       String
-  industry           Industry?
-  roleFamily         String
-  applyUrl           String
-  applyUrlKey        String?
-  postedAt           DateTime
-  deadline           DateTime?
-  status             JobStatus       @default(LIVE)
-  duplicateClusterId String?
-  firstSeenAt        DateTime        @default(now())
-  lastSeenAt         DateTime        @default(now())
-  lastSourceSeenAt   DateTime?
-  lastApplyCheckAt   DateTime?
-  lastConfirmedAliveAt DateTime?
-  availabilityScore  Float           @default(0)
-  deadSignalAt       DateTime?
-  deadSignalReason   String?
-  staleAt            DateTime?
-  expiredAt          DateTime?
-  removedAt          DateTime?
-  createdAt          DateTime        @default(now())
-  updatedAt          DateTime        @updatedAt
+  id                     String                   @id @default(cuid())
+  companyId              String?
+  title                  String
+  company                String
+  companyKey             String                   @default("")
+  titleKey               String                   @default("")
+  titleCoreKey           String                   @default("")
+  descriptionFingerprint String                   @default("")
+  location               String
+  locationKey            String                   @default("")
+  region                 Region?
+  workMode               WorkMode
+  salaryMin              Int?
+  salaryMax              Int?
+  salaryCurrency         String?                  @default("USD")
+  employmentType         EmploymentType
+  experienceLevel        ExperienceLevel?
+  description            String
+  searchVector           Unsupported("tsvector")?
+  shortSummary           String
+  industry               Industry?
+  roleFamily             String
+  applyUrl               String
+  applyUrlKey            String?
+  postedAt               DateTime
+  deadline               DateTime?
+  status                 JobStatus                @default(LIVE)
+  duplicateClusterId     String?
+  firstSeenAt            DateTime                 @default(now())
+  lastSeenAt             DateTime                 @default(now())
+  lastSourceSeenAt       DateTime?
+  lastApplyCheckAt       DateTime?
+  lastConfirmedAliveAt   DateTime?
+  availabilityScore      Float                    @default(0)
+  qualityScore           Float                    @default(0)
+  trustScore             Float                    @default(0)
+  freshnessScore         Float                    @default(0)
+  deadSignalAt           DateTime?
+  deadSignalReason       String?
+  staleAt                DateTime?
+  expiredAt              DateTime?
+  removedAt              DateTime?
+  createdAt              DateTime                 @default(now())
+  updatedAt              DateTime                 @updatedAt
 
   eligibility            JobEligibility?
   sourceMappings         JobSourceMapping[]
@@ -448,9 +525,11 @@ model JobCanonical {
   applicationPackages    ApplicationPackage[]
   behaviorSignals        UserBehaviorSignal[]
   trackedApplications    TrackedApplication[]
-  companyRecord          Company?             @relation(fields: [companyId], references: [id], onDelete: SetNull)
+  companyRecord          Company?                @relation(fields: [companyId], references: [id], onDelete: SetNull)
   urlHealthChecks        JobUrlHealthCheck[]
   sourceTasks            SourceTask[]
+  normalizedRecords      NormalizedJobRecord[]
+  feedIndex              JobFeedIndex?
 
   // ── Deduplication indexes ──
   @@index([duplicateClusterId])
@@ -459,7 +538,6 @@ model JobCanonical {
   @@index([companyKey, roleFamily, region])
   @@index([companyKey, locationKey, region])
   @@index([companyKey, descriptionFingerprint, region])
-
   // ── Feed query indexes ──
   // Primary feed sort: status + postedAt covers the default newest-first ordering
   @@index([status, postedAt(sort: Desc)])
@@ -478,13 +556,15 @@ model JobCanonical {
   // Lifecycle reconciliation: status + lastSeenAt
   @@index([status, lastSeenAt])
   @@index([status, availabilityScore(sort: Desc)])
+  @@index([status, qualityScore(sort: Desc)])
+  @@index([status, freshnessScore(sort: Desc)])
   @@index([lastSourceSeenAt])
   @@index([lastConfirmedAliveAt])
   @@index([companyId])
 }
 
 model JobSourceMapping {
-  id                String   @id @default(cuid())
+  id                String    @id @default(cuid())
   canonicalJobId    String
   rawJobId          String
   sourceName        String
@@ -493,19 +573,19 @@ model JobSourceMapping {
   sourceUrlKey      String?
   postingIdKey      String?
   sourceQualityKind String?
-  sourceQualityRank Int      @default(0)
+  sourceQualityRank Int       @default(0)
   sourceType        String?
-  sourceReliability Float    @default(0.5)
-  isFullSnapshot    Boolean  @default(false)
+  sourceReliability Float     @default(0.5)
+  isFullSnapshot    Boolean   @default(false)
   pollPattern       String?
   dedupeMatchedBy   String?
   dedupeScore       Int?
   dedupeEvidence    Json?
-  isPrimary         Boolean  @default(false)
-  lastSeenAt        DateTime @default(now())
+  isPrimary         Boolean   @default(false)
+  lastSeenAt        DateTime  @default(now())
   removedAt         DateTime?
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
 
   canonicalJob JobCanonical @relation(fields: [canonicalJobId], references: [id], onDelete: Cascade)
   rawJob       JobRaw       @relation(fields: [rawJobId], references: [id], onDelete: Cascade)
@@ -519,14 +599,14 @@ model JobSourceMapping {
 }
 
 model JobUrlHealthCheck {
-  id              String             @id @default(cuid())
+  id              String              @id @default(cuid())
   canonicalJobId  String
   url             String
   urlType         JobUrlHealthUrlType
   result          JobUrlHealthResult
   statusCode      Int?
   finalUrl        String?
-  checkedAt       DateTime           @default(now())
+  checkedAt       DateTime            @default(now())
   responseTimeMs  Int?
   closureReason   String?
   responseSnippet String?
@@ -540,19 +620,19 @@ model JobUrlHealthCheck {
 }
 
 model JobEligibility {
-  id                           String             @id @default(cuid())
-  canonicalJobId               String             @unique
-  submissionCategory           SubmissionCategory
-  reasonCode                   String
-  reasonDescription            String
-  jobValidityConfidence        Float
-  formAutomationConfidence     Float
-  packageFitConfidence         Float
-  submissionQualityConfidence  Float
-  customizationLevel           Int
-  evaluatedAt                  DateTime
-  createdAt                    DateTime           @default(now())
-  updatedAt                    DateTime           @updatedAt
+  id                          String             @id @default(cuid())
+  canonicalJobId              String             @unique
+  submissionCategory          SubmissionCategory
+  reasonCode                  String
+  reasonDescription           String
+  jobValidityConfidence       Float
+  formAutomationConfidence    Float
+  packageFitConfidence        Float
+  submissionQualityConfidence Float
+  customizationLevel          Int
+  evaluatedAt                 DateTime
+  createdAt                   DateTime           @default(now())
+  updatedAt                   DateTime           @updatedAt
 
   canonicalJob JobCanonical @relation(fields: [canonicalJobId], references: [id], onDelete: Cascade)
 
@@ -561,21 +641,21 @@ model JobEligibility {
 }
 
 model ApplicationPackage {
-  id                String   @id @default(cuid())
-  userId            String
-  canonicalJobId    String
-  resumeVariantId   String
+  id                 String   @id @default(cuid())
+  userId             String
+  canonicalJobId     String
+  resumeVariantId    String
   coverLetterContent String?
-  savedAnswers      Json?
-  attachedLinks     Json?
-  whyItMatches      String?
-  userNotes         String?
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  savedAnswers       Json?
+  attachedLinks      Json?
+  whyItMatches       String?
+  userNotes          String?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
 
-  user          UserProfile   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  canonicalJob  JobCanonical  @relation(fields: [canonicalJobId], references: [id], onDelete: Cascade)
-  resumeVariant ResumeVariant @relation(fields: [resumeVariantId], references: [id], onDelete: Cascade)
+  user          UserProfile             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  canonicalJob  JobCanonical            @relation(fields: [canonicalJobId], references: [id], onDelete: Cascade)
+  resumeVariant ResumeVariant           @relation(fields: [resumeVariantId], references: [id], onDelete: Cascade)
   submissions   ApplicationSubmission[]
 
   @@index([userId, canonicalJobId])
@@ -601,13 +681,13 @@ model ApplicationSubmission {
 }
 
 model SavedJob {
-  id             String        @id @default(cuid())
+  id             String         @id @default(cuid())
   userId         String
   canonicalJobId String
   status         SavedJobStatus @default(ACTIVE)
   notes          String?
-  createdAt      DateTime      @default(now())
-  updatedAt      DateTime      @updatedAt
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
 
   user         UserProfile  @relation(fields: [userId], references: [id], onDelete: Cascade)
   canonicalJob JobCanonical @relation(fields: [canonicalJobId], references: [id], onDelete: Cascade)
@@ -647,34 +727,34 @@ model UserBehaviorSignal {
 }
 
 model IngestionRun {
-  id                        String             @id @default(cuid())
-  connectorKey              String
-  sourceName                String
-  sourceTier                SourceTier
-  runMode                   IngestionRunMode   @default(MANUAL)
-  status                    IngestionRunStatus
-  startedAt                 DateTime           @default(now())
-  endedAt                   DateTime?
-  fetchedCount              Int                @default(0)
-  acceptedCount             Int                @default(0)
-  rejectedCount             Int                @default(0)
-  rawCreatedCount           Int                @default(0)
-  rawUpdatedCount           Int                @default(0)
-  canonicalCreatedCount     Int                @default(0)
-  canonicalUpdatedCount     Int                @default(0)
-  dedupedCount              Int                @default(0)
-  sourceMappingCreatedCount Int                @default(0)
-  sourceMappingUpdatedCount Int                @default(0)
-  sourceMappingsRemovedCount Int               @default(0)
-  liveCount                 Int                @default(0)
-  staleCount                Int                @default(0)
-  expiredCount              Int                @default(0)
-  removedCount              Int                @default(0)
-  skippedReasons            Json?
-  runOptions                Json?
-  errorSummary              String?
-  createdAt                 DateTime           @default(now())
-  updatedAt                 DateTime           @updatedAt
+  id                         String             @id @default(cuid())
+  connectorKey               String
+  sourceName                 String
+  sourceTier                 SourceTier
+  runMode                    IngestionRunMode   @default(MANUAL)
+  status                     IngestionRunStatus
+  startedAt                  DateTime           @default(now())
+  endedAt                    DateTime?
+  fetchedCount               Int                @default(0)
+  acceptedCount              Int                @default(0)
+  rejectedCount              Int                @default(0)
+  rawCreatedCount            Int                @default(0)
+  rawUpdatedCount            Int                @default(0)
+  canonicalCreatedCount      Int                @default(0)
+  canonicalUpdatedCount      Int                @default(0)
+  dedupedCount               Int                @default(0)
+  sourceMappingCreatedCount  Int                @default(0)
+  sourceMappingUpdatedCount  Int                @default(0)
+  sourceMappingsRemovedCount Int                @default(0)
+  liveCount                  Int                @default(0)
+  staleCount                 Int                @default(0)
+  expiredCount               Int                @default(0)
+  removedCount               Int                @default(0)
+  skippedReasons             Json?
+  runOptions                 Json?
+  errorSummary               String?
+  createdAt                  DateTime           @default(now())
+  updatedAt                  DateTime           @updatedAt
 
   @@index([startedAt(sort: Desc)])
   @@index([sourceName, startedAt(sort: Desc)])
@@ -705,53 +785,55 @@ model CompanyDiscoveryPage {
 }
 
 model CompanySource {
-  id                   String              @id @default(cuid())
-  companyId            String
-  sourceName           String              @unique
-  connectorName        String
-  token                String
-  boardUrl             String
-  status               CompanySourceStatus @default(DISCOVERED)
-  validationState      CompanySourceValidationState @default(UNVALIDATED)
-  pollState            CompanySourcePollState @default(READY)
-  sourceType           String?
-  extractionRoute      ExtractionRouteKind @default(UNKNOWN)
-  parserVersion        String?
-  pollingCadenceMinutes Int?
-  priorityScore        Float               @default(0)
-  sourceQualityScore   Float               @default(0)
-  yieldScore           Float               @default(0)
-  cooldownUntil        DateTime?
-  firstSeenAt          DateTime            @default(now())
-  lastProvisionedAt    DateTime?
-  lastDiscoveryAt      DateTime?
-  lastValidatedAt      DateTime?
-  lastSuccessfulPollAt DateTime?
-  lastFailureAt        DateTime?
-  lastHttpStatus       Int?
-  validationAttemptCount Int              @default(0)
-  validationSuccessCount Int              @default(0)
-  pollAttemptCount     Int                 @default(0)
-  pollSuccessCount     Int                 @default(0)
-  jobsFetchedCount     Int                 @default(0)
-  jobsAcceptedCount    Int                 @default(0)
-  jobsDedupedCount     Int                 @default(0)
-  jobsCreatedCount     Int                 @default(0)
-  retainedLiveJobCount Int                 @default(0)
-  lastJobsFetchedCount Int                 @default(0)
-  lastJobsAcceptedCount Int                @default(0)
-  lastJobsDedupedCount Int                 @default(0)
-  lastJobsCreatedCount Int                 @default(0)
-  consecutiveFailures  Int                 @default(0)
-  failureStreak        Int                 @default(0)
-  overlapRatio         Float?
-  validationMessage    String?
-  metadataJson         Json?
-  createdAt            DateTime            @default(now())
-  updatedAt            DateTime            @updatedAt
+  id                     String                       @id @default(cuid())
+  companyId              String
+  atsTenantId            String?                      @unique
+  sourceName             String                       @unique
+  connectorName          String
+  token                  String
+  boardUrl               String
+  status                 CompanySourceStatus          @default(DISCOVERED)
+  validationState        CompanySourceValidationState @default(UNVALIDATED)
+  pollState              CompanySourcePollState       @default(READY)
+  sourceType             String?
+  extractionRoute        ExtractionRouteKind          @default(UNKNOWN)
+  parserVersion          String?
+  pollingCadenceMinutes  Int?
+  priorityScore          Float                        @default(0)
+  sourceQualityScore     Float                        @default(0)
+  yieldScore             Float                        @default(0)
+  cooldownUntil          DateTime?
+  firstSeenAt            DateTime                     @default(now())
+  lastProvisionedAt      DateTime?
+  lastDiscoveryAt        DateTime?
+  lastValidatedAt        DateTime?
+  lastSuccessfulPollAt   DateTime?
+  lastFailureAt          DateTime?
+  lastHttpStatus         Int?
+  validationAttemptCount Int                          @default(0)
+  validationSuccessCount Int                          @default(0)
+  pollAttemptCount       Int                          @default(0)
+  pollSuccessCount       Int                          @default(0)
+  jobsFetchedCount       Int                          @default(0)
+  jobsAcceptedCount      Int                          @default(0)
+  jobsDedupedCount       Int                          @default(0)
+  jobsCreatedCount       Int                          @default(0)
+  retainedLiveJobCount   Int                          @default(0)
+  lastJobsFetchedCount   Int                          @default(0)
+  lastJobsAcceptedCount  Int                          @default(0)
+  lastJobsDedupedCount   Int                          @default(0)
+  lastJobsCreatedCount   Int                          @default(0)
+  consecutiveFailures    Int                          @default(0)
+  failureStreak          Int                          @default(0)
+  overlapRatio           Float?
+  validationMessage      String?
+  metadataJson           Json?
+  createdAt              DateTime                     @default(now())
+  updatedAt              DateTime                     @updatedAt
 
-  company Company      @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  tasks   SourceTask[]
+  company   Company      @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  atsTenant ATSTenant?   @relation(fields: [atsTenantId], references: [id], onDelete: SetNull)
+  tasks     SourceTask[]
 
   @@unique([companyId, connectorName, token])
   @@index([status, priorityScore(sort: Desc)])
@@ -759,6 +841,73 @@ model CompanySource {
   @@index([validationState, pollState, priorityScore(sort: Desc)])
   @@index([companyId, validationState, pollState])
   @@index([connectorName, yieldScore(sort: Desc)])
+}
+
+model ATSTenant {
+  id                 String                @id @default(cuid())
+  companyId          String?
+  platform           AtsPlatform
+  tenantKey          String
+  normalizedBoardUrl String
+  rootHost           String
+  status             SourceCandidateStatus @default(NEW)
+  confidence         Float                 @default(0)
+  discoveryMethod    String?
+  metadataJson       Json?
+  firstSeenAt        DateTime              @default(now())
+  lastSeenAt         DateTime              @default(now())
+  lastValidatedAt    DateTime?
+  lastPromotedAt     DateTime?
+  createdAt          DateTime              @default(now())
+  updatedAt          DateTime              @updatedAt
+
+  company          Company?          @relation(fields: [companyId], references: [id], onDelete: SetNull)
+  sourceCandidates SourceCandidate[]
+  companySource    CompanySource?
+
+  @@unique([platform, tenantKey])
+  @@unique([platform, normalizedBoardUrl])
+  @@index([status, confidence(sort: Desc), lastSeenAt(sort: Desc)])
+  @@index([companyId, status])
+}
+
+model SourceCandidate {
+  id                  String                @id @default(cuid())
+  companyId           String?
+  atsTenantId         String?
+  candidateType       SourceCandidateType
+  status              SourceCandidateStatus @default(NEW)
+  discoveryMode       DiscoveryMode         @default(EXPLORATION)
+  candidateUrl        String
+  normalizedUrlKey    String
+  rootHost            String?
+  rootDomain          String?
+  companyNameHint     String?
+  titleHint           String?
+  atsPlatform         AtsPlatform?
+  atsTenantKey        String?
+  confidence          Float                 @default(0)
+  noveltyScore        Float                 @default(0)
+  coverageGapScore    Float                 @default(0)
+  potentialYieldScore Float                 @default(0)
+  sourceQualityScore  Float                 @default(0)
+  failureCount        Int                   @default(0)
+  lastError           String?
+  metadataJson        Json?
+  firstSeenAt         DateTime              @default(now())
+  lastSeenAt          DateTime              @default(now())
+  lastValidatedAt     DateTime?
+  promotedAt          DateTime?
+  createdAt           DateTime              @default(now())
+  updatedAt           DateTime              @updatedAt
+
+  company   Company?   @relation(fields: [companyId], references: [id], onDelete: SetNull)
+  atsTenant ATSTenant? @relation(fields: [atsTenantId], references: [id], onDelete: SetNull)
+
+  @@unique([candidateType, normalizedUrlKey])
+  @@index([status, discoveryMode, coverageGapScore(sort: Desc), noveltyScore(sort: Desc)])
+  @@index([atsPlatform, status, potentialYieldScore(sort: Desc)])
+  @@index([companyId, status])
 }
 
 model SourceTask {
@@ -788,6 +937,115 @@ model SourceTask {
   @@index([canonicalJobId, kind, status])
 }
 
+model NormalizedJobRecord {
+  id                     String                    @id @default(cuid())
+  rawJobId               String                    @unique
+  canonicalJobId         String?
+  status                 NormalizedJobRecordStatus @default(STAGED)
+  normalizationVersion   String
+  rejectionReason        String?
+  integrityReason        String?
+  qualityScore           Float                     @default(0)
+  trustScore             Float                     @default(0)
+  freshnessScore         Float                     @default(0)
+  title                  String
+  company                String
+  companyKey             String                    @default("")
+  titleKey               String                    @default("")
+  titleCoreKey           String                    @default("")
+  descriptionFingerprint String                    @default("")
+  location               String
+  locationKey            String                    @default("")
+  region                 Region?
+  workMode               WorkMode
+  salaryMin              Int?
+  salaryMax              Int?
+  salaryCurrency         String?                   @default("USD")
+  employmentType         EmploymentType
+  experienceLevel        ExperienceLevel?
+  description            String
+  shortSummary           String
+  industry               Industry?
+  roleFamily             String
+  applyUrl               String
+  applyUrlKey            String?
+  postedAt               DateTime
+  deadline               DateTime?
+  duplicateClusterId     String
+  metadataJson           Json?
+  warningsJson           Json?
+  createdAt              DateTime                  @default(now())
+  updatedAt              DateTime                  @updatedAt
+
+  rawJob       JobRaw        @relation(fields: [rawJobId], references: [id], onDelete: Cascade)
+  canonicalJob JobCanonical? @relation(fields: [canonicalJobId], references: [id], onDelete: SetNull)
+
+  @@index([status, qualityScore(sort: Desc), trustScore(sort: Desc)])
+  @@index([companyKey, titleCoreKey, region])
+  @@index([duplicateClusterId])
+  @@index([canonicalJobId])
+}
+
+model PipelineTask {
+  id             String             @id @default(cuid())
+  queueName      PipelineQueueName
+  status         PipelineTaskStatus @default(PENDING)
+  mode           DiscoveryMode?
+  priorityScore  Float              @default(0)
+  idempotencyKey String?
+  notBeforeAt    DateTime           @default(now())
+  leaseExpiresAt DateTime?
+  attemptCount   Int                @default(0)
+  maxAttempts    Int                @default(8)
+  startedAt      DateTime?
+  finishedAt     DateTime?
+  lastError      String?
+  payloadJson    Json?
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+
+  @@unique([queueName, idempotencyKey])
+  @@index([queueName, status, notBeforeAt, priorityScore(sort: Desc)])
+  @@index([status, leaseExpiresAt(sort: Asc)])
+}
+
+model JobFeedIndex {
+  canonicalJobId     String              @id
+  status             JobStatus
+  submissionCategory SubmissionCategory?
+  title              String
+  company            String
+  location           String
+  region             Region?
+  workMode           WorkMode
+  employmentType     EmploymentType
+  experienceLevel    ExperienceLevel?
+  industry           Industry?
+  roleFamily         String
+  salaryMin          Int?
+  salaryMax          Int?
+  salaryCurrency     String?
+  postedAt           DateTime
+  deadline           DateTime?
+  qualityScore       Float               @default(0)
+  trustScore         Float               @default(0)
+  freshnessScore     Float               @default(0)
+  rankingScore       Float               @default(0)
+  sourceCount        Int                 @default(0)
+  applyUrl           String
+  searchText         String
+  metadataJson       Json?
+  indexedAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+
+  canonicalJob JobCanonical @relation(fields: [canonicalJobId], references: [id], onDelete: Cascade)
+
+  @@index([status, rankingScore(sort: Desc), postedAt(sort: Desc)])
+  @@index([region, rankingScore(sort: Desc), postedAt(sort: Desc)])
+  @@index([roleFamily, rankingScore(sort: Desc), postedAt(sort: Desc)])
+  @@index([submissionCategory, rankingScore(sort: Desc), postedAt(sort: Desc)])
+}
+
 model TrackedApplication {
   id             String                   @id @default(cuid())
   userId         String
@@ -803,8 +1061,8 @@ model TrackedApplication {
   createdAt      DateTime                 @default(now())
   updatedAt      DateTime                 @updatedAt
 
-  user          User                        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  canonicalJob  JobCanonical?               @relation(fields: [canonicalJobId], references: [id], onDelete: SetNull)
+  user          User                         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  canonicalJob  JobCanonical?                @relation(fields: [canonicalJobId], references: [id], onDelete: SetNull)
   events        TrackedApplicationEvent[]
   tags          TrackedApplicationTag[]
   documentLinks TrackedApplicationDocument[]
@@ -819,13 +1077,13 @@ model TrackedApplication {
 }
 
 model TrackedApplicationEvent {
-  id                 String                       @id @default(cuid())
+  id                   String                      @id @default(cuid())
   trackedApplicationId String
-  type               TrackedApplicationEventType
-  timestamp          DateTime                     @default(now())
-  note               String?
-  reminderAt         DateTime?
-  reminderNotifiedAt DateTime?
+  type                 TrackedApplicationEventType
+  timestamp            DateTime                    @default(now())
+  note                 String?
+  reminderAt           DateTime?
+  reminderNotifiedAt   DateTime?
 
   trackedApplication TrackedApplication @relation(fields: [trackedApplicationId], references: [id], onDelete: Cascade)
 
@@ -835,11 +1093,11 @@ model TrackedApplicationEvent {
 }
 
 model Tag {
-  id           String                 @id @default(cuid())
-  userId       String
-  name         String
+  id     String @id @default(cuid())
+  userId String
+  name   String
 
-  user         User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user         User                    @relation(fields: [userId], references: [id], onDelete: Cascade)
   applications TrackedApplicationTag[]
 
   @@unique([userId, name])
@@ -858,10 +1116,10 @@ model TrackedApplicationTag {
 }
 
 model TrackedApplicationDocument {
-  id                  String                         @id @default(cuid())
+  id                   String                         @id @default(cuid())
   trackedApplicationId String
-  documentId          String
-  slot                TrackedApplicationDocumentSlot
+  documentId           String
+  slot                 TrackedApplicationDocumentSlot
 
   trackedApplication TrackedApplication @relation(fields: [trackedApplicationId], references: [id], onDelete: Cascade)
   document           Document           @relation(fields: [documentId], references: [id], onDelete: Cascade)
@@ -871,14 +1129,14 @@ model TrackedApplicationDocument {
 }
 
 model Notification {
-  id                  String           @id @default(cuid())
-  userId              String
+  id                   String           @id @default(cuid())
+  userId               String
   trackedApplicationId String?
-  type                NotificationType
-  title               String
-  message             String
-  readAt              DateTime?
-  createdAt           DateTime         @default(now())
+  type                 NotificationType
+  title                String
+  message              String
+  readAt               DateTime?
+  createdAt            DateTime         @default(now())
 
   user               User                @relation(fields: [userId], references: [id], onDelete: Cascade)
   trackedApplication TrackedApplication? @relation(fields: [trackedApplicationId], references: [id], onDelete: SetNull)
@@ -889,19 +1147,19 @@ model Notification {
 }
 
 model ReminderLog {
-  id                  String               @id @default(cuid())
-  userId              String
+  id                   String               @id @default(cuid())
+  userId               String
   trackedApplicationId String
-  reminderType        DeadlineReminderType
-  deadlineDate        DateTime
-  createdAt           DateTime             @default(now())
+  reminderType         DeadlineReminderType
+  deadlineDate         DateTime
+  createdAt            DateTime             @default(now())
 
   user               User               @relation(fields: [userId], references: [id], onDelete: Cascade)
   trackedApplication TrackedApplication @relation(fields: [trackedApplicationId], references: [id], onDelete: Cascade)
 
+  @@unique([userId, trackedApplicationId, reminderType, deadlineDate])
   @@index([userId, createdAt])
   @@index([trackedApplicationId])
-  @@unique([userId, trackedApplicationId, reminderType, deadlineDate])
 }
 
 model Session {

@@ -2,6 +2,10 @@ import type {
   EmploymentType,
   WorkMode,
 } from "@/generated/prisma/client";
+import {
+  STRIP_TAGS_RE,
+  decodeHtmlEntitiesFull as decodeHtmlEntities,
+} from "@/lib/ingestion/html-description";
 import { throwIfAborted } from "@/lib/ingestion/runtime-control";
 import type {
   SourceConnector,
@@ -15,7 +19,6 @@ const TEAMTAILOR_HEADERS = {
   Accept: "text/html,application/xhtml+xml",
   "User-Agent": "Mozilla/5.0 (compatible; autoapplication-teamtailor/1.0)",
 } satisfies Record<string, string>;
-const STRIP_TAGS_RE = /<[^>]+>/g;
 
 type TeamtailorConnectorOptions = {
   companyToken: string;
@@ -568,18 +571,3 @@ function buildCompanyName(companyToken: string) {
     .join(" ");
 }
 
-function decodeHtmlEntities(input: string) {
-  return input
-    .replace(/&#x2013;/gi, "–")
-    .replace(/&#x2014;/gi, "—")
-    .replace(/&#x27;/gi, "'")
-    .replace(/&#39;/gi, "'")
-    .replace(/&quot;/gi, '"')
-    .replace(/&amp;/gi, "&")
-    .replace(/&lt;/gi, "<")
-    .replace(/&gt;/gi, ">")
-    .replace(/&mdash;/gi, "—")
-    .replace(/&ndash;/gi, "–")
-    .replace(/&middot;/gi, "·")
-    .replace(/&nbsp;/gi, " ");
-}

@@ -1,4 +1,4 @@
-import { formatDistanceToNowStrict } from "date-fns";
+import { formatDistanceStrict, formatDistanceToNowStrict } from "date-fns";
 import type { ApplicationReviewState, JobCardData } from "@/types";
 
 export const SUBMISSION_CATEGORY_META = {
@@ -68,12 +68,30 @@ export function formatDisplayLabel(value: string) {
     .join(" ");
 }
 
-export function formatPostedAge(value: string | Date) {
-  return formatDistanceToNowStrict(toDateValue(value), { addSuffix: true });
+export function formatPostedAge(
+  value: string | Date,
+  referenceNow?: string | Date
+) {
+  if (!referenceNow) {
+    return formatDistanceToNowStrict(toDateValue(value), { addSuffix: true });
+  }
+
+  return formatDistanceStrict(toDateValue(value), toDateValue(referenceNow), {
+    addSuffix: true,
+  });
 }
 
-export function formatRelativeAge(value: string | Date) {
-  return formatDistanceToNowStrict(toDateValue(value), { addSuffix: true });
+export function formatRelativeAge(
+  value: string | Date,
+  referenceNow?: string | Date
+) {
+  if (!referenceNow) {
+    return formatDistanceToNowStrict(toDateValue(value), { addSuffix: true });
+  }
+
+  return formatDistanceStrict(toDateValue(value), toDateValue(referenceNow), {
+    addSuffix: true,
+  });
 }
 
 export function formatSalary(
@@ -135,12 +153,54 @@ export function getDeadlineUrgency(deadline: string | Date | null): DeadlineUrge
   return null;
 }
 
+export function getDeadlineUrgencyAt(
+  deadline: string | Date | null,
+  referenceNow?: string | Date
+): DeadlineUrgency | null {
+  if (!deadline) return null;
+  const now = referenceNow ? toDateValue(referenceNow) : new Date();
+  const target = typeof deadline === "string" ? new Date(deadline) : deadline;
+  const msUntil = target.getTime() - now.getTime();
+  const daysUntil = Math.ceil(msUntil / (1000 * 60 * 60 * 24));
+
+  if (daysUntil < 0) return { label: "Deadline passed", color: "text-destructive" };
+  if (daysUntil === 0) return { label: "Closes today", color: "text-destructive" };
+  if (daysUntil === 1) return { label: "Closes tomorrow", color: "text-amber-600" };
+  if (daysUntil <= 3) return { label: `Closes in ${daysUntil} days`, color: "text-amber-600" };
+  if (daysUntil <= 7) return { label: `Closes in ${daysUntil} days`, color: "text-muted-foreground" };
+  return null;
+}
+
 export function getExpiringSoonMeta(
   deadline: string | Date | null
 ): ExpiringSoonMeta | null {
   if (!deadline) return null;
 
   const now = new Date();
+  const target = typeof deadline === "string" ? new Date(deadline) : deadline;
+  if (Number.isNaN(target.getTime())) return null;
+
+  const msUntil = target.getTime() - now.getTime();
+  const daysUntil = Math.ceil(msUntil / (1000 * 60 * 60 * 24));
+
+  if (daysUntil < 0 || daysUntil > 5) return null;
+  if (daysUntil === 0) {
+    return { label: "Expiring today", severity: "critical" };
+  }
+
+  return {
+    label: `Expiring in ${daysUntil} day${daysUntil === 1 ? "" : "s"}`,
+    severity: daysUntil === 1 ? "critical" : "warning",
+  };
+}
+
+export function getExpiringSoonMetaAt(
+  deadline: string | Date | null,
+  referenceNow?: string | Date
+): ExpiringSoonMeta | null {
+  if (!deadline) return null;
+
+  const now = referenceNow ? toDateValue(referenceNow) : new Date();
   const target = typeof deadline === "string" ? new Date(deadline) : deadline;
   if (Number.isNaN(target.getTime())) return null;
 
@@ -165,6 +225,20 @@ export function getExpiringSoonMeta(
 export function formatDeadlineValue(deadline: string | Date | null): string | null {
   if (!deadline) return null;
   return formatDistanceToNowStrict(toDateValue(deadline), { addSuffix: true });
+}
+
+export function formatDeadlineValueAt(
+  deadline: string | Date | null,
+  referenceNow?: string | Date
+): string | null {
+  if (!deadline) return null;
+  if (!referenceNow) {
+    return formatDistanceToNowStrict(toDateValue(deadline), { addSuffix: true });
+  }
+
+  return formatDistanceStrict(toDateValue(deadline), toDateValue(referenceNow), {
+    addSuffix: true,
+  });
 }
 
 // ─── Shared color helpers ────────────────────────────────────────────────────

@@ -21,6 +21,12 @@ import {
   runOperationalQueues,
   scheduleOperationalQueues,
 } from "../src/lib/ingestion/network-orchestrator";
+import {
+  resolveScaledInteger,
+  getIngestCapacityScale,
+  readBooleanEnv,
+  readNonNegativeIntegerEnv,
+} from "../src/lib/ingestion/capacity";
 import { syncProductiveAtsTenantsToDiscoveryStore } from "../src/lib/ingestion/ats-tenant-store";
 import { runScheduledIngestion } from "../src/lib/ingestion/scheduler";
 import { prisma } from "../src/lib/db";
@@ -29,16 +35,56 @@ import type { SourceTaskKind } from "../src/generated/prisma/client";
 const DEFAULT_INTERVAL_MINUTES = 10;
 const MIN_INTERVAL_MINUTES = 5;
 const MAX_INTERVAL_MINUTES = 360;
-const STEADY_DISCOVERY_LIMIT = 300;        // up from 200 — faster company pipeline
-const STEADY_VALIDATION_LIMIT = 700;       // up from 500
-const STEADY_SOURCE_POLL_LIMIT = 700;      // up from 500
-const STEADY_REDISCOVERY_LIMIT = 120;      // up from 80
-const STEADY_URL_HEALTH_LIMIT = 3_000;     // up from 2,000 — matches new concurrency
-const BURST_DISCOVERY_LIMIT = 500;         // up from 300
-const BURST_VALIDATION_LIMIT = 1_000;      // up from 700
-const BURST_SOURCE_POLL_LIMIT = 1_000;     // up from 700
-const BURST_REDISCOVERY_LIMIT = 200;       // up from 120
-const BURST_URL_HEALTH_LIMIT = 5_000;      // up from 3,000 — clear the backlog faster
+const STEADY_DISCOVERY_LIMIT = resolveScaledInteger({
+  base: 300,
+  absoluteMax: 900,
+  explicitEnvName: "INGEST_STEADY_DISCOVERY_LIMIT",
+});
+const STEADY_VALIDATION_LIMIT = resolveScaledInteger({
+  base: 700,
+  absoluteMax: 2_000,
+  explicitEnvName: "INGEST_STEADY_VALIDATION_LIMIT",
+});
+const STEADY_SOURCE_POLL_LIMIT = resolveScaledInteger({
+  base: 700,
+  absoluteMax: 2_000,
+  explicitEnvName: "INGEST_STEADY_SOURCE_POLL_LIMIT",
+});
+const STEADY_REDISCOVERY_LIMIT = resolveScaledInteger({
+  base: 120,
+  absoluteMax: 360,
+  explicitEnvName: "INGEST_STEADY_REDISCOVERY_LIMIT",
+});
+const STEADY_URL_HEALTH_LIMIT = resolveScaledInteger({
+  base: 3_000,
+  absoluteMax: 9_000,
+  explicitEnvName: "INGEST_STEADY_URL_HEALTH_LIMIT",
+});
+const BURST_DISCOVERY_LIMIT = resolveScaledInteger({
+  base: 500,
+  absoluteMax: 1_500,
+  explicitEnvName: "INGEST_BURST_DISCOVERY_LIMIT",
+});
+const BURST_VALIDATION_LIMIT = resolveScaledInteger({
+  base: 1_000,
+  absoluteMax: 3_000,
+  explicitEnvName: "INGEST_BURST_VALIDATION_LIMIT",
+});
+const BURST_SOURCE_POLL_LIMIT = resolveScaledInteger({
+  base: 1_000,
+  absoluteMax: 3_000,
+  explicitEnvName: "INGEST_BURST_SOURCE_POLL_LIMIT",
+});
+const BURST_REDISCOVERY_LIMIT = resolveScaledInteger({
+  base: 200,
+  absoluteMax: 600,
+  explicitEnvName: "INGEST_BURST_REDISCOVERY_LIMIT",
+});
+const BURST_URL_HEALTH_LIMIT = resolveScaledInteger({
+  base: 5_000,
+  absoluteMax: 15_000,
+  explicitEnvName: "INGEST_BURST_URL_HEALTH_LIMIT",
+});
 const STEADY_LEGACY_SCHEDULED_CONNECTOR_CYCLE_BUDGET_MS = 3 * 60 * 1000;
 const STEADY_LEGACY_SCHEDULED_CONNECTOR_MAX_RUNS = 36;
 const BURST_LEGACY_SCHEDULED_CONNECTOR_CYCLE_BUDGET_MS = 6 * 60 * 1000;
@@ -51,6 +97,14 @@ const DUE_BACKLOG_DISCOVERY_THRESHOLD = 100;
 const DUE_BACKLOG_REDISCOVERY_THRESHOLD = 50;
 const DAEMON_RUNTIME_DIR = path.join(process.cwd(), ".runtime");
 const DAEMON_LOCK_PATH = path.join(DAEMON_RUNTIME_DIR, "ingest-daemon.lock.json");
+const RECOVERY_MODE_ENABLED = readBooleanEnv("INGEST_RECOVERY_MODE") === true;
+const GROWTH_MODE_ENABLED = readBooleanEnv("INGEST_GROWTH_MODE") === true;
+const RECOVERY_LIFECYCLE_EVERY_CYCLES = Math.max(
+  1,
+  readNonNegativeIntegerEnv("INGEST_RECOVERY_LIFECYCLE_EVERY_CYCLES") ?? 6
+);
+const RECOVERY_URL_HEALTH_LIMIT =
+  readNonNegativeIntegerEnv("INGEST_RECOVERY_URL_HEALTH_LIMIT") ?? 0;
 
 type DaemonLock = {
   pid: number;
@@ -78,28 +132,51 @@ type DueOperationalBacklog = {
 };
 
 function getCycleQueueProfile(isFirstCycle: boolean): CycleQueueProfile {
-  if (isFirstCycle) {
-    return {
+  const baseProfile: CycleQueueProfile = isFirstCycle
+    ? {
       discoveryLimit: BURST_DISCOVERY_LIMIT,
       validationLimit: BURST_VALIDATION_LIMIT,
       sourcePollLimit: BURST_SOURCE_POLL_LIMIT,
       rediscoveryLimit: BURST_REDISCOVERY_LIMIT,
-      urlHealthLimit: BURST_URL_HEALTH_LIMIT,
+      urlHealthLimit: RECOVERY_MODE_ENABLED
+        ? RECOVERY_URL_HEALTH_LIMIT
+        : BURST_URL_HEALTH_LIMIT,
       legacyBudgetMs: BURST_LEGACY_SCHEDULED_CONNECTOR_CYCLE_BUDGET_MS,
       legacyMaxRuns: BURST_LEGACY_SCHEDULED_CONNECTOR_MAX_RUNS,
       label: "burst",
-    };
+    }
+    : {
+        discoveryLimit: STEADY_DISCOVERY_LIMIT,
+        validationLimit: STEADY_VALIDATION_LIMIT,
+        sourcePollLimit: STEADY_SOURCE_POLL_LIMIT,
+        rediscoveryLimit: STEADY_REDISCOVERY_LIMIT,
+        urlHealthLimit: RECOVERY_MODE_ENABLED
+          ? RECOVERY_URL_HEALTH_LIMIT
+          : STEADY_URL_HEALTH_LIMIT,
+        legacyBudgetMs: STEADY_LEGACY_SCHEDULED_CONNECTOR_CYCLE_BUDGET_MS,
+        legacyMaxRuns: STEADY_LEGACY_SCHEDULED_CONNECTOR_MAX_RUNS,
+        label: "steady",
+      };
+
+  if (!GROWTH_MODE_ENABLED) {
+    return baseProfile;
   }
 
   return {
-    discoveryLimit: STEADY_DISCOVERY_LIMIT,
-    validationLimit: STEADY_VALIDATION_LIMIT,
-    sourcePollLimit: STEADY_SOURCE_POLL_LIMIT,
-    rediscoveryLimit: STEADY_REDISCOVERY_LIMIT,
-    urlHealthLimit: STEADY_URL_HEALTH_LIMIT,
-    legacyBudgetMs: STEADY_LEGACY_SCHEDULED_CONNECTOR_CYCLE_BUDGET_MS,
-    legacyMaxRuns: STEADY_LEGACY_SCHEDULED_CONNECTOR_MAX_RUNS,
-    label: "steady",
+    ...baseProfile,
+    discoveryLimit: Math.max(50, Math.floor(baseProfile.discoveryLimit * 0.45)),
+    validationLimit: Math.max(
+      baseProfile.validationLimit,
+      Math.round(baseProfile.validationLimit * 1.35)
+    ),
+    sourcePollLimit: Math.max(
+      baseProfile.sourcePollLimit,
+      Math.round(baseProfile.sourcePollLimit * 1.75)
+    ),
+    rediscoveryLimit: Math.max(20, Math.floor(baseProfile.rediscoveryLimit * 0.3)),
+    urlHealthLimit: Math.max(0, Math.floor(baseProfile.urlHealthLimit * 0.15)),
+    legacyBudgetMs: Math.max(baseProfile.legacyBudgetMs, 8 * 60 * 1000),
+    legacyMaxRuns: Math.max(baseProfile.legacyMaxRuns, 96),
   };
 }
 
@@ -215,6 +292,8 @@ async function main() {
   console.log(`│  Ingestion Daemon                            │`);
   console.log(`│  Cycle interval: ${String(intervalMinutes).padStart(3)}min                       │`);
   console.log(`│  Force first cycle: ${args.force ? "yes" : "no "}                      │`);
+  console.log(`│  Recovery mode: ${RECOVERY_MODE_ENABLED ? "on " : "off"}                      │`);
+  console.log(`│  Capacity scale: ${getIngestCapacityScale().toFixed(2).padStart(4)}x                     │`);
   console.log(`│  Press Ctrl+C to stop                        │`);
   console.log(`└──────────────────────────────────────────────┘\n`);
 
@@ -280,6 +359,9 @@ async function main() {
     );
 
     try {
+      const shouldRunLifecycle =
+        !RECOVERY_MODE_ENABLED ||
+        cycleCount % RECOVERY_LIFECYCLE_EVERY_CYCLES === 0;
       const scheduledQueues = await scheduleOperationalQueues({
         now: cycleStart,
         discoveryLimit: profile.discoveryLimit,
@@ -305,6 +387,8 @@ async function main() {
         triggerLabel: "script.ingest.daemon",
         maxCycleDurationMs: profile.legacyBudgetMs,
         maxConnectorRuns: profile.legacyMaxRuns,
+        skipLifecycle: !shouldRunLifecycle,
+        lifecyclePerJobLimit: shouldRunLifecycle ? 3_000 : 0,
       });
 
       const executedCount = result.executedRuns.length;
@@ -358,9 +442,15 @@ async function main() {
 
       // Lifecycle summary
       const lc = result.lifecycle;
-      console.log(
-        `[daemon] Lifecycle: ${lc.liveCount} live, ${lc.staleCount} stale, ${lc.expiredCount} expired, ${lc.removedCount} removed`
-      );
+      if (lc.deferred) {
+        console.log(
+          `[daemon] Lifecycle: deferred by recovery mode (${lc.liveCount} live snapshot, ${lc.expiredCount} expired currently stored)`
+        );
+      } else {
+        console.log(
+          `[daemon] Lifecycle: ${lc.liveCount} live, ${lc.staleCount} stale, ${lc.expiredCount} expired, ${lc.removedCount} removed`
+        );
+      }
 
       // Aggregate stats
       const totalNewThisCycle = result.executedRuns.reduce(

@@ -1,9 +1,9 @@
 import { prisma } from "@/lib/db";
 import { detectDeadSignal } from "@/lib/ingestion/normalize";
 import { reconcileCanonicalLifecycleByIds } from "@/lib/ingestion/pipeline";
+import { resolveScaledInteger } from "@/lib/ingestion/capacity";
 import {
   claimSourceTasks,
-  enqueueUniqueSourceTask,
   finishSourceTask,
 } from "@/lib/ingestion/task-queue";
 import type {
@@ -13,9 +13,21 @@ import type {
 } from "@/generated/prisma/client";
 
 const URL_HEALTH_TIMEOUT_MS = 10_000;
-const URL_HEALTH_QUEUE_CONCURRENCY = 32;   // up from 24 — more concurrent fetches
-const URL_HEALTH_QUEUE_DEFAULT_LIMIT = 3_000;  // up from 2,000 — more per cycle
-const URL_HEALTH_ENQUEUE_DEFAULT_LIMIT = 6_000; // up from 4,000 — larger candidate pool
+const URL_HEALTH_QUEUE_CONCURRENCY = resolveScaledInteger({
+  base: 32,
+  absoluteMax: 96,
+  explicitEnvName: "INGEST_URL_HEALTH_QUEUE_CONCURRENCY",
+});
+const URL_HEALTH_QUEUE_DEFAULT_LIMIT = resolveScaledInteger({
+  base: 3_000,
+  absoluteMax: 9_000,
+  explicitEnvName: "INGEST_URL_HEALTH_QUEUE_LIMIT",
+});
+const URL_HEALTH_ENQUEUE_DEFAULT_LIMIT = resolveScaledInteger({
+  base: 6_000,
+  absoluteMax: 18_000,
+  explicitEnvName: "INGEST_URL_HEALTH_ENQUEUE_LIMIT",
+});
 const MAX_RESPONSE_SNIPPET_LENGTH = 1_200;
 
 type UrlHealthOutcome = {
@@ -47,6 +59,9 @@ export async function enqueuePriorityUrlHealthTasks(options: {
   now?: Date;
 }) {
   const now = options.now ?? new Date();
+  if (typeof options.limit === "number" && options.limit <= 0) {
+    return { enqueuedCount: 0, candidateIds: [] as string[] };
+  }
   const limit = options.limit ?? URL_HEALTH_ENQUEUE_DEFAULT_LIMIT;
   const candidates = await selectHealthCandidates(limit, now);
 
@@ -96,6 +111,12 @@ export async function runUrlHealthTaskQueue(options: {
   now?: Date;
 } = {}) {
   const now = options.now ?? new Date();
+  if (typeof options.limit === "number" && options.limit <= 0) {
+    return {
+      processedCount: 0,
+      checkedJobCount: 0,
+    };
+  }
   const maxTasks = options.limit ?? URL_HEALTH_QUEUE_DEFAULT_LIMIT;
   let processedCount = 0;
   const checkedJobIds = new Set<string>();
@@ -535,4 +556,3 @@ function sanitizeSnippet(text: string) {
     .trim();
   return normalized ? normalized.slice(0, MAX_RESPONSE_SNIPPET_LENGTH) : null;
 }
-

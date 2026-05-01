@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/db";
+import { prisma, withPrismaConnectionRetry } from "@/lib/db";
 import { getScheduledConnectorSnapshot } from "@/lib/ingestion/registry";
 import type {
   IngestionOverview,
@@ -38,43 +38,56 @@ export async function getIngestionStatus(): Promise<IngestionStatus> {
     return ingestionStatusCache.value;
   }
 
-  const [lastSuccessRun, liveJobCount, activeManagedSources] = await Promise.all([
-    prisma.ingestionRun.findFirst({
-      where: { status: "SUCCESS" },
-      orderBy: { startedAt: "desc" },
-      select: { endedAt: true, startedAt: true },
-    }),
-    prisma.jobCanonical.count({
-      where: { status: { in: [...VISIBLE_JOB_STATUSES] } },
-    }),
-    prisma.companySource.findMany({
-      where: {
-        validationState: "VALIDATED",
-        pollState: { in: [...ACTIVE_COMPANY_SOURCE_POLL_STATES] },
-      },
-      select: { sourceName: true },
-    }),
-  ]);
+  try {
+    const [lastSuccessRun, liveJobCount, activeManagedSourceCount] =
+      await withPrismaConnectionRetry(() =>
+        Promise.all([
+          prisma.ingestionRun.findFirst({
+            where: { status: "SUCCESS" },
+            orderBy: { startedAt: "desc" },
+            select: { endedAt: true, startedAt: true },
+          }),
+          prisma.jobCanonical.count({
+            where: { status: { in: [...VISIBLE_JOB_STATUSES] } },
+          }),
+          prisma.companySource.count({
+            where: {
+              sourceName: { notIn: [...scheduledConnectorNames] },
+              validationState: "VALIDATED",
+              pollState: { in: [...ACTIVE_COMPANY_SOURCE_POLL_STATES] },
+            },
+          }),
+        ])
+      );
 
-  const activeSourceNames = new Set(scheduledConnectorNames);
-  for (const source of activeManagedSources) {
-    activeSourceNames.add(source.sourceName);
+    const activeSourceNames = new Set(scheduledConnectorNames);
+
+    const value = {
+      lastUpdatedAt: lastSuccessRun
+        ? (lastSuccessRun.endedAt ?? lastSuccessRun.startedAt).toISOString()
+        : null,
+      liveJobCount,
+      activeSourceCount: activeSourceNames.size + activeManagedSourceCount,
+    } satisfies IngestionStatus;
+
+    ingestionStatusCache = {
+      expiresAt: now + INGESTION_STATUS_TTL_MS,
+      value,
+    };
+
+    return value;
+  } catch (error) {
+    console.error("getIngestionStatus fallback:", error);
+    if (ingestionStatusCache) {
+      return ingestionStatusCache.value;
+    }
+
+    return {
+      lastUpdatedAt: null,
+      liveJobCount: 0,
+      activeSourceCount: scheduledConnectorNames.size,
+    };
   }
-
-  const value = {
-    lastUpdatedAt: lastSuccessRun
-      ? (lastSuccessRun.endedAt ?? lastSuccessRun.startedAt).toISOString()
-      : null,
-    liveJobCount,
-    activeSourceCount: activeSourceNames.size,
-  } satisfies IngestionStatus;
-
-  ingestionStatusCache = {
-    expiresAt: now + INGESTION_STATUS_TTL_MS,
-    value,
-  };
-
-  return value;
 }
 
 export async function getIngestionHeartbeat(): Promise<IngestionHeartbeat> {
@@ -83,20 +96,33 @@ export async function getIngestionHeartbeat(): Promise<IngestionHeartbeat> {
     return ingestionHeartbeatCache.value;
   }
 
-  const lastSuccessRun = await prisma.ingestionRun.findFirst({
-    where: { status: "SUCCESS" },
-    orderBy: { startedAt: "desc" },
-    select: { endedAt: true, startedAt: true },
-  });
+  try {
+    const lastSuccessRun = await withPrismaConnectionRetry(() =>
+      prisma.ingestionRun.findFirst({
+        where: { status: "SUCCESS" },
+        orderBy: { startedAt: "desc" },
+        select: { endedAt: true, startedAt: true },
+      })
+    );
 
-  const value = {
-    lastUpdatedAt: lastSuccessRun
-      ? (lastSuccessRun.endedAt ?? lastSuccessRun.startedAt).toISOString()
-      : null,
-  };
+    const value = {
+      lastUpdatedAt: lastSuccessRun
+        ? (lastSuccessRun.endedAt ?? lastSuccessRun.startedAt).toISOString()
+        : null,
+    };
 
-  ingestionHeartbeatCache = { expiresAt: now + INGESTION_HEARTBEAT_TTL_MS, value };
-  return value;
+    ingestionHeartbeatCache = { expiresAt: now + INGESTION_HEARTBEAT_TTL_MS, value };
+    return value;
+  } catch (error) {
+    console.error("getIngestionHeartbeat fallback:", error);
+    if (ingestionHeartbeatCache) {
+      return ingestionHeartbeatCache.value;
+    }
+
+    return {
+      lastUpdatedAt: null,
+    };
+  }
 }
 
 export async function getIngestionOverview(): Promise<IngestionOverview> {

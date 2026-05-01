@@ -26,15 +26,17 @@ export type ScheduledIngestionResult = {
   }>;
   lifecycle: {
     liveCount: number;
+    agingCount?: number;
     staleCount: number;
     expiredCount: number;
     removedCount: number;
     updatedCount: number;
+    deferred?: boolean;
   };
 };
 
 const DEFAULT_LEGACY_CONNECTOR_RUNTIME_BUDGET_MS = 60_000;
-const ADZUNA_RUNTIME_BUDGET_MS = 45_000;
+const DEFAULT_ADZUNA_RUNTIME_BUDGET_MS = 45_000;
 // Hard wall-clock cap per connector: even if the internal AbortController is
 // ignored (e.g. Playwright IPC hangs), this Promise.race fires and lets the
 // scheduler move on. Set to 2× the soft budget plus a generous buffer.
@@ -42,12 +44,40 @@ const LEGACY_CONNECTOR_HARD_TIMEOUT_MS = 5 * 60 * 1000; // 5 minutes absolute ma
 
 function getLegacyConnectorRuntimeBudgetMs(sourceName: string) {
   const connectorFamily = sourceName.split(":")[0]?.toLowerCase();
+  const adzunaBudgetOverride = Number.parseInt(
+    process.env.ADZUNA_RUNTIME_BUDGET_MS ?? "",
+    10
+  );
+  const adzunaRuntimeBudgetMs =
+    Number.isFinite(adzunaBudgetOverride) && adzunaBudgetOverride > 0
+      ? adzunaBudgetOverride
+      : DEFAULT_ADZUNA_RUNTIME_BUDGET_MS;
 
   if (connectorFamily === "adzuna") {
-    return ADZUNA_RUNTIME_BUDGET_MS;
+    return adzunaRuntimeBudgetMs;
   }
 
   return DEFAULT_LEGACY_CONNECTOR_RUNTIME_BUDGET_MS;
+}
+
+async function countCanonicalStatusSnapshot() {
+  const [liveCount, agingCount, staleCount, expiredCount, removedCount] = await Promise.all([
+    prisma.jobCanonical.count({ where: { status: "LIVE" } }),
+    prisma.jobCanonical.count({ where: { status: "AGING" } }),
+    prisma.jobCanonical.count({ where: { status: "STALE" } }),
+    prisma.jobCanonical.count({ where: { status: "EXPIRED" } }),
+    prisma.jobCanonical.count({ where: { status: "REMOVED" } }),
+  ]);
+
+  return {
+    liveCount,
+    agingCount,
+    staleCount,
+    expiredCount,
+    removedCount,
+    updatedCount: 0,
+    deferred: true,
+  };
 }
 
 /**
@@ -88,6 +118,8 @@ export async function runScheduledIngestion(options: {
   triggerLabel?: string;
   maxCycleDurationMs?: number;
   maxConnectorRuns?: number;
+  skipLifecycle?: boolean;
+  lifecyclePerJobLimit?: number;
 } = {}): Promise<ScheduledIngestionResult> {
   const now = options.now ?? new Date();
   const staleRunRecovery = await recoverStaleRunningIngestionRuns({
@@ -239,7 +271,12 @@ export async function runScheduledIngestion(options: {
   // The full reconcile processes all 300k+ jobs with N+1 queries — far too slow
   // for a daemon cycle.  bulkSyncCanonicalStatuses does a single SQL UPDATE for
   // status and then runs the full per-job logic for only the at-risk cohort.
-  const lifecycle = await bulkSyncCanonicalStatuses({ now, perJobLimit: 3_000 });
+  const lifecycle = options.skipLifecycle
+    ? await countCanonicalStatusSnapshot()
+    : await bulkSyncCanonicalStatuses({
+        now,
+        perJobLimit: options.lifecyclePerJobLimit ?? 3_000,
+      });
 
   return {
     startedAt: now.toISOString(),

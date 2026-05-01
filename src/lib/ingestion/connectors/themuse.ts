@@ -18,6 +18,7 @@ import type {
   SourceConnectorJob,
 } from "@/lib/ingestion/types";
 import { sleepWithAbort, throwIfAborted } from "@/lib/ingestion/runtime-control";
+import { readCsvEnv } from "@/lib/ingestion/source-family-config";
 
 const MUSE_API_BASE = "https://www.themuse.com/api/public/jobs";
 const MUSE_PAGE_SIZE = 20; // API returns 20 per page
@@ -27,7 +28,7 @@ const MUSE_MAX_PAGES = 150; // 150 * 20 = 3,000 jobs max per category
 const MUSE_RATE_DELAY_MS = 800; // Stay under 500/hr limit
 
 // Tech/finance-relevant categories on The Muse
-const MUSE_CATEGORIES = [
+const DEFAULT_MUSE_CATEGORIES = [
   "Computer and IT",
   "Data and Analytics",
   "Data Science",
@@ -41,7 +42,7 @@ const MUSE_CATEGORIES = [
 ];
 
 // NA locations
-const MUSE_LOCATIONS = [
+const DEFAULT_MUSE_LOCATIONS = [
   "Flexible / Remote",
   "New York, NY",
   "San Francisco, CA",
@@ -112,6 +113,8 @@ export function createMuseConnector(): SourceConnector {
         now: options.now,
         limit: options.limit,
         signal: options.signal,
+        categories: resolveMuseCategories(),
+        locations: resolveMuseLocations(),
         checkpoint: parseMuseCheckpoint(options.checkpoint),
         onCheckpoint: options.onCheckpoint,
       });
@@ -126,12 +129,16 @@ async function fetchMuseJobs(
     now,
     limit,
     signal,
+    categories,
+    locations,
     checkpoint,
     onCheckpoint,
   }: {
     now: Date;
     limit?: number;
     signal?: AbortSignal;
+    categories: string[];
+    locations: string[];
     checkpoint?: MuseCheckpoint | null;
     onCheckpoint?: (checkpoint: Prisma.InputJsonValue | null) => Promise<void> | void;
   }
@@ -146,12 +153,12 @@ async function fetchMuseJobs(
 
   for (
     let categoryIndex = checkpoint?.categoryIndex ?? 0;
-    categoryIndex < MUSE_CATEGORIES.length;
+    categoryIndex < categories.length;
     categoryIndex++
   ) {
     throwIfAborted(signal);
     if (typeof limit === "number" && allJobs.length >= limit) break;
-    const category = MUSE_CATEGORIES[categoryIndex];
+    const category = categories[categoryIndex];
 
     for (
       let page = categoryIndex === (checkpoint?.categoryIndex ?? 0)
@@ -165,11 +172,14 @@ async function fetchMuseJobs(
       try {
         const params = new URLSearchParams({
           page: String(page),
-          category,
         });
 
+        if (category) {
+          params.set("category", category);
+        }
+
         // Add location filters
-        for (const loc of MUSE_LOCATIONS) {
+        for (const loc of locations) {
           params.append("location", loc);
         }
 
@@ -262,7 +272,7 @@ async function fetchMuseJobs(
   const finalJobs =
     typeof limit === "number" ? allJobs.slice(0, limit) : allJobs;
   const exhausted =
-    nextCheckpoint == null || nextCheckpoint.categoryIndex >= MUSE_CATEGORIES.length;
+    nextCheckpoint == null || nextCheckpoint.categoryIndex >= categories.length;
 
   return {
     jobs: finalJobs,
@@ -270,13 +280,24 @@ async function fetchMuseJobs(
     exhausted,
     metadata: {
       apiUrl: MUSE_API_BASE,
-      categories: MUSE_CATEGORIES,
+      categories,
+      locations,
       fetchedAt: now.toISOString(),
       totalApiCalls,
       totalFetched: finalJobs.length,
       resumedFromCheckpoint: checkpoint ?? null,
     } as Prisma.InputJsonValue,
   };
+}
+
+function resolveMuseCategories() {
+  const configured = readCsvEnv("THEMUSE_CATEGORIES", DEFAULT_MUSE_CATEGORIES);
+  return configured.length === 1 && configured[0] === "ALL" ? [""] : configured;
+}
+
+function resolveMuseLocations() {
+  const configured = readCsvEnv("THEMUSE_LOCATIONS", DEFAULT_MUSE_LOCATIONS);
+  return configured.length === 1 && configured[0] === "ALL" ? [] : configured;
 }
 
 function parseMuseCheckpoint(value: Prisma.InputJsonValue | null | undefined) {

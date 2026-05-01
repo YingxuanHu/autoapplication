@@ -20,6 +20,7 @@ import type {
   SourceConnectorFetchResult,
   SourceConnectorJob,
 } from "@/lib/ingestion/types";
+import { readCsvEnv } from "@/lib/ingestion/source-family-config";
 
 const JOBICY_API_BASE = "https://jobicy.com/api/v2/remote-jobs";
 
@@ -50,7 +51,7 @@ type JobicyResponse = {
 };
 
 // Tech/finance relevant tags
-const JOBICY_TAGS = [
+const DEFAULT_JOBICY_TAGS = [
   "software-development",
   "devops-sysadmin",
   "data",
@@ -89,13 +90,17 @@ async function fetchJobicyJobs(
 ): Promise<SourceConnectorFetchResult> {
   const allJobs: SourceConnectorJob[] = [];
   const seenIds = new Set<string>();
+  const tags = resolveJobicyTags();
 
-  for (const tag of JOBICY_TAGS) {
+  for (const tag of tags) {
     throwIfAborted(signal);
     if (typeof limit === "number" && allJobs.length >= limit) break;
 
     try {
-      const url = `${JOBICY_API_BASE}?count=50&tag=${tag}`;
+      const url =
+        tag === "ALL"
+          ? `${JOBICY_API_BASE}?count=50`
+          : `${JOBICY_API_BASE}?count=50&tag=${encodeURIComponent(tag)}`;
       const response = await fetch(url, {
         signal,
         headers: {
@@ -129,11 +134,16 @@ async function fetchJobicyJobs(
     jobs: finalJobs,
     metadata: {
       apiUrl: JOBICY_API_BASE,
-      tags: JOBICY_TAGS,
+      tags,
       fetchedAt: now.toISOString(),
       totalFetched: finalJobs.length,
     } as Prisma.InputJsonValue,
   };
+}
+
+function resolveJobicyTags() {
+  const configured = readCsvEnv("JOBICY_TAGS", DEFAULT_JOBICY_TAGS);
+  return configured.length === 1 && configured[0] === "ALL" ? ["ALL"] : configured;
 }
 
 function mapJobicyJob(entry: JobicyJob, now: Date): SourceConnectorJob {

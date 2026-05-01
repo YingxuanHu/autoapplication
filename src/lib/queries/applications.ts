@@ -1,4 +1,6 @@
 import { prisma } from "@/lib/db";
+import { sanitizeCompanyName, sanitizeJobTitle } from "@/lib/job-cleanup";
+import { isClearlyNonJobPosting } from "@/lib/job-integrity";
 import {
   getOptionalCurrentProfileId,
   requireCurrentProfileId,
@@ -119,6 +121,15 @@ export async function getApplicationReviewData(
   ]);
 
   if (!job || !profile) return null;
+  if (
+    isClearlyNonJobPosting({
+      title: job.title,
+      description: job.description,
+      applyUrl: job.applyUrl,
+    })
+  ) {
+    return null;
+  }
 
   const latestPackage = job.applicationPackages[0] ?? null;
   const recommendedResume =
@@ -410,6 +421,15 @@ async function getMutableApplicationContext(jobId: string) {
   ]);
 
   if (!job || !profile) return null;
+  if (
+    isClearlyNonJobPosting({
+      title: job.title,
+      description: job.description,
+      applyUrl: job.applyUrl,
+    })
+  ) {
+    return null;
+  }
 
   return {
     job,
@@ -700,8 +720,10 @@ function serializeApplicationHistoryItem(job: {
   return {
     job: {
       id: job.id,
-      title: job.title,
-      company: job.company,
+      title: sanitizeJobTitle(job.title),
+      company: sanitizeCompanyName(job.company, {
+        urls: [job.applyUrl],
+      }),
       location: job.location,
       workMode: job.workMode,
       industry: job.industry,

@@ -7,6 +7,7 @@ import {
   createHimalayasConnector,
   createIcimsConnector,
   createJobicyConnector,
+  createJoobleConnector,
   createJobviteConnector,
   createTeamtailorConnector,
   createLeverConnector,
@@ -37,6 +38,11 @@ import {
   TEAMTAILOR_DEFAULT_COMPANY_TOKENS,
   WORKABLE_DEFAULT_ACCOUNT_TOKENS,
 } from "@/lib/ingestion/coverage";
+import {
+  assertSourceFamilyEnabled,
+  isSourceFamilyEnabled,
+  readCsvEnv,
+} from "@/lib/ingestion/source-family-config";
 import type { SourceConnector } from "@/lib/ingestion/types";
 
 export type SupportedConnectorName =
@@ -46,6 +52,7 @@ export type SupportedConnectorName =
   | "himalayas"
   | "icims"
   | "jobicy"
+  | "jooble"
   | "jobvite"
   | "teamtailor"
   | "lever"
@@ -123,6 +130,8 @@ export function resolveConnectors(
   connectorName: SupportedConnectorName,
   args: ConnectorResolutionArgs
 ): SourceConnector[] {
+  assertSourceFamilyEnabled(connectorName);
+
   if (connectorName === "adzuna") {
     const countries = resolveTokens(
       args.sources ?? args.source ?? process.env.ADZUNA_COUNTRIES ?? "ca,us"
@@ -142,6 +151,10 @@ export function resolveConnectors(
 
   if (connectorName === "jobicy") {
     return [createJobicyConnector()];
+  }
+
+  if (connectorName === "jooble") {
+    return [createJoobleConnector()];
   }
 
   if (connectorName === "jobvite") {
@@ -417,66 +430,76 @@ export function getScheduledConnectors(): ScheduledConnectorDefinition[] {
   const promotedDiscoveryTargets = loadPromotedDiscoveryTargets();
 
   return [
-    ...resolveConnectors("ashby", {
-      orgs: mergeTokenValues(
-        process.env.ASHBY_ORG_TOKENS ?? DEFAULT_ASHBY_ORGS,
-        promotedDiscoveryTargets.ashby
-      ),
-    }).map((connector) => ({
-      connector,
-      cadenceMinutes: resolveCadenceMinutes(
-        process.env.ASHBY_SCHEDULE_MINUTES,
-        120
-      ),
-    })),
-    ...resolveConnectors("greenhouse", {
-      boards: mergeTokenValues(
-        process.env.GREENHOUSE_BOARD_TOKENS ?? DEFAULT_GREENHOUSE_BOARDS,
-        promotedDiscoveryTargets.greenhouse
-      ),
-    }).map((connector) => ({
-      connector,
-      cadenceMinutes: resolveCadenceMinutes(
-        process.env.GREENHOUSE_SCHEDULE_MINUTES,
-        180
-      ),
-    })),
-    ...resolveConnectors("lever", {
-      sites: mergeTokenValues(
-        process.env.LEVER_SITE_TOKENS ?? DEFAULT_LEVER_SITES,
-        promotedDiscoveryTargets.lever
-      ),
-    }).map((connector) => ({
-      connector,
-      cadenceMinutes: resolveCadenceMinutes(
-        process.env.LEVER_SCHEDULE_MINUTES,
-        120
-      ),
-    })),
-    ...resolveConnectors("recruitee", {
-      companies: mergeTokenValues(
-        process.env.RECRUITEE_COMPANY_TOKENS ?? DEFAULT_RECRUITEE_COMPANIES,
-        promotedDiscoveryTargets.recruitee
-      ),
-    }).map((connector) => ({
-      connector,
-      cadenceMinutes: resolveCadenceMinutes(
-        process.env.RECRUITEE_SCHEDULE_MINUTES,
-        180
-      ),
-    })),
-    ...resolveConnectors("rippling", {
-      boards: mergeTokenValues(
-        process.env.RIPPLING_BOARD_TOKENS ?? DEFAULT_RIPPLING_BOARDS,
-        promotedDiscoveryTargets.rippling
-      ),
-    }).map((connector) => ({
-      connector,
-      cadenceMinutes: resolveCadenceMinutes(
-        process.env.RIPPLING_SCHEDULE_MINUTES,
-        180
-      ),
-    })),
+    ...resolveScheduledFamily("ashby", () =>
+      resolveConnectors("ashby", {
+        orgs: mergeTokenValues(
+          process.env.ASHBY_ORG_TOKENS ?? DEFAULT_ASHBY_ORGS,
+          promotedDiscoveryTargets.ashby
+        ),
+      }).map((connector) => ({
+        connector,
+        cadenceMinutes: resolveCadenceMinutes(
+          process.env.ASHBY_SCHEDULE_MINUTES,
+          120
+        ),
+      }))
+    ),
+    ...resolveScheduledFamily("greenhouse", () =>
+      resolveConnectors("greenhouse", {
+        boards: mergeTokenValues(
+          process.env.GREENHOUSE_BOARD_TOKENS ?? DEFAULT_GREENHOUSE_BOARDS,
+          promotedDiscoveryTargets.greenhouse
+        ),
+      }).map((connector) => ({
+        connector,
+        cadenceMinutes: resolveCadenceMinutes(
+          process.env.GREENHOUSE_SCHEDULE_MINUTES,
+          180
+        ),
+      }))
+    ),
+    ...resolveScheduledFamily("lever", () =>
+      resolveConnectors("lever", {
+        sites: mergeTokenValues(
+          process.env.LEVER_SITE_TOKENS ?? DEFAULT_LEVER_SITES,
+          promotedDiscoveryTargets.lever
+        ),
+      }).map((connector) => ({
+        connector,
+        cadenceMinutes: resolveCadenceMinutes(
+          process.env.LEVER_SCHEDULE_MINUTES,
+          120
+        ),
+      }))
+    ),
+    ...resolveScheduledFamily("recruitee", () =>
+      resolveConnectors("recruitee", {
+        companies: mergeTokenValues(
+          process.env.RECRUITEE_COMPANY_TOKENS ?? DEFAULT_RECRUITEE_COMPANIES,
+          promotedDiscoveryTargets.recruitee
+        ),
+      }).map((connector) => ({
+        connector,
+        cadenceMinutes: resolveCadenceMinutes(
+          process.env.RECRUITEE_SCHEDULE_MINUTES,
+          180
+        ),
+      }))
+    ),
+    ...resolveScheduledFamily("rippling", () =>
+      resolveConnectors("rippling", {
+        boards: mergeTokenValues(
+          process.env.RIPPLING_BOARD_TOKENS ?? DEFAULT_RIPPLING_BOARDS,
+          promotedDiscoveryTargets.rippling
+        ),
+      }).map((connector) => ({
+        connector,
+        cadenceMinutes: resolveCadenceMinutes(
+          process.env.RIPPLING_SCHEDULE_MINUTES,
+          180
+        ),
+      }))
+    ),
     ...resolveOptionalSuccessFactorsScheduledConnectors(
       promotedDiscoveryTargets.successfactors
     ),
@@ -494,6 +517,7 @@ export function getScheduledConnectors(): ScheduledConnectorDefinition[] {
     ...resolveOptionalAdzunaScheduledConnectors(),
     ...resolveOptionalHimalayasScheduledConnectors(),
     ...resolveOptionalJobicyScheduledConnectors(),
+    ...resolveOptionalJoobleScheduledConnectors(),
     ...resolveOptionalRemotiveScheduledConnectors(),
     ...resolveOptionalMuseScheduledConnectors(),
     ...resolveOptionalRemoteOkScheduledConnectors(),
@@ -516,6 +540,7 @@ export function getScheduledConnectorSnapshot() {
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
 function resolveOptionalSuccessFactorsScheduledConnectors(promotedTokens: string[]) {
+  if (!isSourceFamilyEnabled("successfactors")) return [];
   const tokens = resolveTokens(
     mergeTokenValues(process.env.SUCCESSFACTORS_DOMAIN_TOKENS ?? "", promotedTokens)
   );
@@ -533,6 +558,7 @@ function resolveOptionalSuccessFactorsScheduledConnectors(promotedTokens: string
 function resolveOptionalSmartRecruitersScheduledConnectors(
   promotedTokens: string[]
 ) {
+  if (!isSourceFamilyEnabled("smartrecruiters")) return [];
   const defaults = SMARTRECRUITERS_DEFAULT_COMPANY_TOKENS.join(",");
   const tokens = resolveTokens(
     mergeTokenValues(process.env.SMARTRECRUITERS_COMPANY_TOKENS ?? defaults, promotedTokens)
@@ -549,6 +575,7 @@ function resolveOptionalSmartRecruitersScheduledConnectors(
 }
 
 function resolveOptionalWorkableScheduledConnectors(promotedTokens: string[]) {
+  if (!isSourceFamilyEnabled("workable")) return [];
   const defaults = WORKABLE_DEFAULT_ACCOUNT_TOKENS.join(",");
   const tokens = resolveTokens(
     mergeTokenValues(process.env.WORKABLE_ACCOUNT_TOKENS ?? defaults, promotedTokens)
@@ -565,6 +592,7 @@ function resolveOptionalWorkableScheduledConnectors(promotedTokens: string[]) {
 }
 
 function resolveOptionalJobviteScheduledConnectors(promotedTokens: string[]) {
+  if (!isSourceFamilyEnabled("jobvite")) return [];
   const tokens = resolveTokens(
     mergeTokenValues(
       process.env.JOBVITE_COMPANY_TOKENS ?? DEFAULT_JOBVITE_COMPANIES,
@@ -583,6 +611,7 @@ function resolveOptionalJobviteScheduledConnectors(promotedTokens: string[]) {
 }
 
 function resolveOptionalTeamtailorScheduledConnectors(promotedTokens: string[]) {
+  if (!isSourceFamilyEnabled("teamtailor")) return [];
   const tokens = resolveTokens(
     mergeTokenValues(
       process.env.TEAMTAILOR_COMPANY_TOKENS ?? DEFAULT_TEAMTAILOR_COMPANIES,
@@ -601,6 +630,7 @@ function resolveOptionalTeamtailorScheduledConnectors(promotedTokens: string[]) 
 }
 
 function resolveOptionalIcimsScheduledConnectors(promotedTokens: string[]) {
+  if (!isSourceFamilyEnabled("icims")) return [];
   const defaults = ICIMS_DEFAULT_PORTAL_TOKENS.join(",");
   const tokens = resolveTokens(
     mergeTokenValues(process.env.ICIMS_PORTAL_TOKENS ?? defaults, promotedTokens)
@@ -617,6 +647,7 @@ function resolveOptionalIcimsScheduledConnectors(promotedTokens: string[]) {
 }
 
 function resolveOptionalHimalayasScheduledConnectors() {
+  if (!isSourceFamilyEnabled("himalayas")) return [];
   const profiles = resolveTokens(process.env.HIMALAYAS_SOURCES ?? "global");
   return profiles.map((profile) => ({
     connector: createHimalayasConnector({ profile }),
@@ -628,6 +659,7 @@ function resolveOptionalHimalayasScheduledConnectors() {
 }
 
 function resolveOptionalJobicyScheduledConnectors() {
+  if (!isSourceFamilyEnabled("jobicy")) return [];
   return [
     {
       connector: createJobicyConnector(),
@@ -639,7 +671,23 @@ function resolveOptionalJobicyScheduledConnectors() {
   ];
 }
 
+function resolveOptionalJoobleScheduledConnectors() {
+  if (!isSourceFamilyEnabled("jooble")) return [];
+  if (!(process.env.JOOBLE_API_KEY ?? "").trim()) return [];
+
+  return [
+    {
+      connector: createJoobleConnector(),
+      cadenceMinutes: resolveCadenceMinutes(
+        process.env.JOOBLE_SCHEDULE_MINUTES,
+        360
+      ),
+    },
+  ];
+}
+
 function resolveOptionalRemotiveScheduledConnectors() {
+  if (!isSourceFamilyEnabled("remotive")) return [];
   return [
     {
       connector: createRemotiveConnector(),
@@ -652,6 +700,7 @@ function resolveOptionalRemotiveScheduledConnectors() {
 }
 
 function resolveOptionalMuseScheduledConnectors() {
+  if (!isSourceFamilyEnabled("themuse")) return [];
   return [
     {
       connector: createMuseConnector(),
@@ -664,6 +713,7 @@ function resolveOptionalMuseScheduledConnectors() {
 }
 
 function resolveOptionalAdzunaScheduledConnectors() {
+  if (!isSourceFamilyEnabled("adzuna")) return [];
   const appId = process.env.ADZUNA_APP_ID ?? "";
   const appKey = process.env.ADZUNA_APP_KEY ?? "";
   if (!appId || !appKey) return [];
@@ -675,6 +725,10 @@ function resolveOptionalAdzunaScheduledConnectors() {
     process.env.ADZUNA_COUNTRIES ?? "us,ca"
   );
   const cadence = resolveCadenceMinutes(process.env.ADZUNA_SCHEDULE_MINUTES, 360);
+  const additionalProfiles = readCsvEnv(
+    "ADZUNA_SCHEDULE_PROFILES",
+    ["techcore", "specialist", "discovery"]
+  ).filter((profile) => profile !== "ALL");
 
   // Primary broad connectors per country
   const primary = countries.map((country) => ({
@@ -683,7 +737,6 @@ function resolveOptionalAdzunaScheduledConnectors() {
   }));
 
   // Additional profile connectors for deeper per-category coverage
-  const additionalProfiles = ["techcore", "specialist", "discovery"] as const;
   const additional = countries.flatMap((country) =>
     additionalProfiles.map((profile) => ({
       connector: createAdzunaConnector({ country, appId, appKey, profile }),
@@ -695,6 +748,7 @@ function resolveOptionalAdzunaScheduledConnectors() {
 }
 
 function resolveOptionalRemoteOkScheduledConnectors() {
+  if (!isSourceFamilyEnabled("remoteok")) return [];
   return [
     {
       connector: createRemoteOkConnector(),
@@ -707,6 +761,7 @@ function resolveOptionalRemoteOkScheduledConnectors() {
 }
 
 function resolveOptionalWeWorkRemotelyScheduledConnectors() {
+  if (!isSourceFamilyEnabled("weworkremotely")) return [];
   // WWR listings turn over quickly (30-day expiry, fresh posts every few hours).
   // 6h cadence is aggressive enough to keep freshness high without hammering
   // their Cloudflare-fronted RSS endpoints.
@@ -722,6 +777,7 @@ function resolveOptionalWeWorkRemotelyScheduledConnectors() {
 }
 
 function resolveOptionalUsaJobsScheduledConnectors() {
+  if (!isSourceFamilyEnabled("usajobs")) return [];
   const apiKey = process.env.USAJOBS_API_KEY ?? "";
   const email = process.env.USAJOBS_EMAIL ?? "";
   if (!apiKey || !email) return [];
@@ -738,6 +794,7 @@ function resolveOptionalUsaJobsScheduledConnectors() {
 }
 
 function resolveOptionalJobBankScheduledConnectors() {
+  if (!isSourceFamilyEnabled("jobbank")) return [];
   // Job Bank CSV is updated monthly — run once per day (1440 min)
   return [
     {
@@ -751,6 +808,7 @@ function resolveOptionalJobBankScheduledConnectors() {
 }
 
 function resolveOptionalTaleoScheduledConnectors(promotedTokens: string[]) {
+  if (!isSourceFamilyEnabled("taleo")) return [];
   const tokens = resolveTokens(
     mergeTokenValues(process.env.TALEO_SOURCE_TOKENS ?? DEFAULT_TALEO_SOURCES, promotedTokens)
   );
@@ -766,6 +824,7 @@ function resolveOptionalTaleoScheduledConnectors(promotedTokens: string[]) {
 }
 
 function resolveOptionalWorkdayScheduledConnectors(promotedTokens: string[]) {
+  if (!isSourceFamilyEnabled("workday")) return [];
   const tokens = resolveTokens(
     mergeTokenValues(process.env.WORKDAY_SOURCE_TOKENS ?? "", promotedTokens)
   );
@@ -802,6 +861,17 @@ function mergeTokenValues(baseValue: string, promotedTokens: string[]) {
   return mergedTokens.join(",");
 }
 
+function resolveScheduledFamily<T>(
+  sourceFamily: SupportedConnectorName,
+  factory: () => T[]
+) {
+  if (!isSourceFamilyEnabled(sourceFamily)) {
+    return [];
+  }
+
+  return factory();
+}
+
 function loadPromotedDiscoveryTargets() {
   const emptyTargets: Record<SupportedConnectorName, string[]> = {
     adzuna: [],
@@ -810,6 +880,7 @@ function loadPromotedDiscoveryTargets() {
     himalayas: [],
     icims: [],
     jobicy: [],
+    jooble: [],
     jobvite: [],
     teamtailor: [],
     lever: [],

@@ -13,11 +13,13 @@ import {
   enqueuePriorityUrlHealthTasks,
   runUrlHealthTaskQueue,
 } from "@/lib/ingestion/health-checker";
+import { readBooleanEnv } from "@/lib/ingestion/capacity";
 
 const POLL_BACKLOG_THROTTLE_THRESHOLD = 1_000;
 const VALIDATION_BACKLOG_THROTTLE_THRESHOLD = 400;
 const DISCOVERY_THROTTLE_RATIO = 0.25;
 const REDISCOVERY_THROTTLE_RATIO = 0.5;
+const RECOVERY_MODE_ENABLED = readBooleanEnv("INGEST_RECOVERY_MODE") === true;
 
 async function getExecutionLimits(options: {
   discoveryLimit?: number;
@@ -44,8 +46,9 @@ async function getExecutionLimits(options: {
   ]);
 
   const shouldThrottleDiscovery =
-    pendingPollCount >= POLL_BACKLOG_THROTTLE_THRESHOLD ||
-    pendingValidationCount >= VALIDATION_BACKLOG_THROTTLE_THRESHOLD;
+    !RECOVERY_MODE_ENABLED &&
+    (pendingPollCount >= POLL_BACKLOG_THROTTLE_THRESHOLD ||
+      pendingValidationCount >= VALIDATION_BACKLOG_THROTTLE_THRESHOLD);
 
   const discoveryLimit = options.discoveryLimit
     ? shouldThrottleDiscovery

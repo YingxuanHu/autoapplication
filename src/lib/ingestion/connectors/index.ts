@@ -38,6 +38,7 @@ export {
 } from "./workday";
 export { createHimalayasConnector } from "./himalayas";
 export { createJobicyConnector } from "./jobicy";
+export { createJoobleConnector } from "./jooble";
 export {
   buildJobviteBoardUrl,
   buildJobviteSourceToken,

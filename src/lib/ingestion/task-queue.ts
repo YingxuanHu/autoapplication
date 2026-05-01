@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/db";
 import {
   Prisma,
+  SourceTask,
   SourceTaskKind,
   SourceTaskStatus,
 } from "@/generated/prisma/client";
@@ -254,22 +255,60 @@ export async function enqueueUniqueSourceTask(input: {
 export async function claimSourceTasks(
   kind: SourceTaskKind,
   limit: number,
-  now: Date = new Date()
+  now: Date = new Date(),
+  filters: {
+    companySourceIds?: string[];
+  } = {}
 ) {
+  const companySourceIds =
+    filters.companySourceIds?.filter((value) => value.trim().length > 0) ?? [];
+  if (companySourceIds.length === 0 && filters.companySourceIds) {
+    return [];
+  }
+
   await recoverStaleRunningSourceTasks(kind, now);
   await collapseDuplicatePendingSourceTasks(kind, now);
 
+  const companySourceFilter =
+    companySourceIds.length > 0
+      ? Prisma.sql`AND st."companySourceId" IN (${Prisma.join(companySourceIds)})`
+      : Prisma.empty;
+
+  const claimCandidates = await prisma.$queryRaw<Array<{ id: string }>>(Prisma.sql`
+    WITH next_tasks AS (
+      SELECT st."id"
+      FROM "SourceTask" st
+      WHERE
+        st."kind" = ${kind}::"SourceTaskKind"
+        AND st."status" = 'PENDING'::"SourceTaskStatus"
+        AND st."notBeforeAt" <= ${now}
+        ${companySourceFilter}
+      ORDER BY st."priorityScore" DESC, st."createdAt" ASC
+      LIMIT ${limit}
+      FOR UPDATE SKIP LOCKED
+    )
+    UPDATE "SourceTask" st
+    SET
+      "status" = 'RUNNING'::"SourceTaskStatus",
+      "startedAt" = ${now},
+      "attemptCount" = st."attemptCount" + 1
+    FROM next_tasks
+    WHERE st."id" = next_tasks."id"
+    RETURNING st."id"
+  `);
+
+  if (claimCandidates.length === 0) {
+    return [];
+  }
+
   const tasks = await prisma.sourceTask.findMany({
     where: {
-      kind,
-      status: "PENDING",
-      notBeforeAt: { lte: now },
+      id: { in: claimCandidates.map((task) => task.id) },
     },
     orderBy: [{ priorityScore: "desc" }, { createdAt: "asc" }],
-    take: limit,
   });
 
-  const claimed = [];
+  const claimed: SourceTask[] = [];
   const claimedKeys = new Set<string>();
   for (const task of tasks) {
     const taskKey = buildSourceTaskUniquenessKey(task);
@@ -292,6 +331,7 @@ export async function claimSourceTasks(
     const runningDuplicate = await prisma.sourceTask.findFirst({
       where: {
         ...buildSourceTaskUniquenessWhere(task),
+        id: { not: task.id },
         status: "RUNNING",
       },
       select: { id: true },
@@ -316,12 +356,11 @@ export async function claimSourceTasks(
     const updated = await prisma.sourceTask.updateMany({
       where: {
         id: task.id,
-        status: "PENDING",
+        status: "RUNNING",
+        startedAt: now,
       },
       data: {
         status: "RUNNING",
-        startedAt: now,
-        attemptCount: task.attemptCount + 1,
       },
     });
 
@@ -331,12 +370,7 @@ export async function claimSourceTasks(
     }
   }
 
-  return prisma.sourceTask.findMany({
-    where: {
-      id: { in: claimed.map((task) => task.id) },
-    },
-    orderBy: [{ priorityScore: "desc" }, { createdAt: "asc" }],
-  });
+  return claimed;
 }
 
 export async function finishSourceTask(

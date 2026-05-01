@@ -1,0 +1,775 @@
+{
+  "updatedAt": "2026-04-19T20:18:19.747Z",
+  "windowDays": 1,
+  "cutoff": "2026-04-18T20:18:19.747Z",
+  "summary": {
+    "currentVisibleCanonicalCount": 102217,
+    "sourceFamiliesInWindow": 24,
+    "topSourceCount": 20,
+    "canonicalsCreatedInWindow": 3609,
+    "firstSeenCanonicalsInWindow": 3609,
+    "acceptedJobsInWindow": 49636
+  },
+  "sourceFamilies": [
+    {
+      "sourceFamily": "jobbank",
+      "runCount": 1,
+      "jobsIngested": 4997,
+      "jobsAccepted": 4997,
+      "canonicalsCreated": 1904,
+      "firstSeenCanonicals": 1904,
+      "duplicatesMerged": 2551,
+      "duplicateRate": 0.5105,
+      "mergeRate": 0.5726,
+      "noveltyRatio": 0.381
+    },
+    {
+      "sourceFamily": "companyjson",
+      "runCount": 5616,
+      "jobsIngested": 4832,
+      "jobsAccepted": 3938,
+      "canonicalsCreated": 750,
+      "firstSeenCanonicals": 750,
+      "duplicatesMerged": 614,
+      "duplicateRate": 0.1559,
+      "mergeRate": 0.4501,
+      "noveltyRatio": 0.1905
+    },
+    {
+      "sourceFamily": "workday",
+      "runCount": 5354,
+      "jobsIngested": 8899,
+      "jobsAccepted": 8739,
+      "canonicalsCreated": 444,
+      "firstSeenCanonicals": 444,
+      "duplicatesMerged": 496,
+      "duplicateRate": 0.0568,
+      "mergeRate": 0.5277,
+      "noveltyRatio": 0.0508
+    },
+    {
+      "sourceFamily": "companyhtml",
+      "runCount": 4147,
+      "jobsIngested": 1212,
+      "jobsAccepted": 1126,
+      "canonicalsCreated": 395,
+      "firstSeenCanonicals": 395,
+      "duplicatesMerged": 372,
+      "duplicateRate": 0.3304,
+      "mergeRate": 0.485,
+      "noveltyRatio": 0.3508
+    },
+    {
+      "sourceFamily": "weworkremotely",
+      "runCount": 52,
+      "jobsIngested": 10894,
+      "jobsAccepted": 10832,
+      "canonicalsCreated": 47,
+      "firstSeenCanonicals": 47,
+      "duplicatesMerged": 11,
+      "duplicateRate": 0.001,
+      "mergeRate": 0.1897,
+      "noveltyRatio": 0.0043
+    },
+    {
+      "sourceFamily": "jooble",
+      "runCount": 7,
+      "jobsIngested": 28,
+      "jobsAccepted": 28,
+      "canonicalsCreated": 27,
+      "firstSeenCanonicals": 27,
+      "duplicatesMerged": 1,
+      "duplicateRate": 0.0357,
+      "mergeRate": 0.0357,
+      "noveltyRatio": 0.9643
+    },
+    {
+      "sourceFamily": "successfactors",
+      "runCount": 633,
+      "jobsIngested": 850,
+      "jobsAccepted": 850,
+      "canonicalsCreated": 20,
+      "firstSeenCanonicals": 20,
+      "duplicatesMerged": 33,
+      "duplicateRate": 0.0388,
+      "mergeRate": 0.6226,
+      "noveltyRatio": 0.0235
+    },
+    {
+      "sourceFamily": "greenhouse",
+      "runCount": 9245,
+      "jobsIngested": 8301,
+      "jobsAccepted": 8299,
+      "canonicalsCreated": 10,
+      "firstSeenCanonicals": 10,
+      "duplicatesMerged": 124,
+      "duplicateRate": 0.0149,
+      "mergeRate": 0.9254,
+      "noveltyRatio": 0.0012
+    },
+    {
+      "sourceFamily": "adzuna",
+      "runCount": 350,
+      "jobsIngested": 105,
+      "jobsAccepted": 105,
+      "canonicalsCreated": 10,
+      "firstSeenCanonicals": 10,
+      "duplicatesMerged": 95,
+      "duplicateRate": 0.9048,
+      "mergeRate": 0.9048,
+      "noveltyRatio": 0.0952
+    },
+    {
+      "sourceFamily": "ashby",
+      "runCount": 8002,
+      "jobsIngested": 2960,
+      "jobsAccepted": 2955,
+      "canonicalsCreated": 1,
+      "firstSeenCanonicals": 1,
+      "duplicatesMerged": 60,
+      "duplicateRate": 0.0203,
+      "mergeRate": 0.9836,
+      "noveltyRatio": 0.0003
+    },
+    {
+      "sourceFamily": "themuse",
+      "runCount": 1,
+      "jobsIngested": 1,
+      "jobsAccepted": 1,
+      "canonicalsCreated": 1,
+      "firstSeenCanonicals": 1,
+      "duplicatesMerged": 0,
+      "duplicateRate": 0,
+      "mergeRate": 0,
+      "noveltyRatio": 1
+    },
+    {
+      "sourceFamily": "lever",
+      "runCount": 6994,
+      "jobsIngested": 4310,
+      "jobsAccepted": 4297,
+      "canonicalsCreated": 0,
+      "firstSeenCanonicals": 0,
+      "duplicatesMerged": 65,
+      "duplicateRate": 0.0151,
+      "mergeRate": 1,
+      "noveltyRatio": 0
+    },
+    {
+      "sourceFamily": "remoteok",
+      "runCount": 15,
+      "jobsIngested": 1425,
+      "jobsAccepted": 1410,
+      "canonicalsCreated": 0,
+      "firstSeenCanonicals": 0,
+      "duplicatesMerged": 0,
+      "duplicateRate": 0,
+      "mergeRate": 0,
+      "noveltyRatio": 0
+    },
+    {
+      "sourceFamily": "icims",
+      "runCount": 2111,
+      "jobsIngested": 845,
+      "jobsAccepted": 845,
+      "canonicalsCreated": 0,
+      "firstSeenCanonicals": 0,
+      "duplicatesMerged": 9,
+      "duplicateRate": 0.0107,
+      "mergeRate": 1,
+      "noveltyRatio": 0
+    },
+    {
+      "sourceFamily": "workable",
+      "runCount": 2090,
+      "jobsIngested": 499,
+      "jobsAccepted": 499,
+      "canonicalsCreated": 0,
+      "firstSeenCanonicals": 0,
+      "duplicatesMerged": 7,
+      "duplicateRate": 0.014,
+      "mergeRate": 1,
+      "noveltyRatio": 0
+    },
+    {
+      "sourceFamily": "remotive",
+      "runCount": 15,
+      "jobsIngested": 315,
+      "jobsAccepted": 315,
+      "canonicalsCreated": 0,
+      "firstSeenCanonicals": 0,
+      "duplicatesMerged": 0,
+      "duplicateRate": 0,
+      "mergeRate": 0,
+      "noveltyRatio": 0
+    },
+    {
+      "sourceFamily": "smartrecruiters",
+      "runCount": 1445,
+      "jobsIngested": 2621,
+      "jobsAccepted": 254,
+      "canonicalsCreated": 0,
+      "firstSeenCanonicals": 0,
+      "duplicatesMerged": 3,
+      "duplicateRate": 0.0118,
+      "mergeRate": 1,
+      "noveltyRatio": 0
+    },
+    {
+      "sourceFamily": "jobvite",
+      "runCount": 896,
+      "jobsIngested": 88,
+      "jobsAccepted": 88,
+      "canonicalsCreated": 0,
+      "firstSeenCanonicals": 0,
+      "duplicatesMerged": 0,
+      "duplicateRate": 0,
+      "mergeRate": 0,
+      "noveltyRatio": 0
+    },
+    {
+      "sourceFamily": "rippling",
+      "runCount": 378,
+      "jobsIngested": 40,
+      "jobsAccepted": 40,
+      "canonicalsCreated": 0,
+      "firstSeenCanonicals": 0,
+      "duplicatesMerged": 0,
+      "duplicateRate": 0,
+      "mergeRate": 0,
+      "noveltyRatio": 0
+    },
+    {
+      "sourceFamily": "jobicy",
+      "runCount": 2,
+      "jobsIngested": 13,
+      "jobsAccepted": 13,
+      "canonicalsCreated": 0,
+      "firstSeenCanonicals": 0,
+      "duplicatesMerged": 11,
+      "duplicateRate": 0.8462,
+      "mergeRate": 1,
+      "noveltyRatio": 0
+    },
+    {
+      "sourceFamily": "recruitee",
+      "runCount": 98,
+      "jobsIngested": 5,
+      "jobsAccepted": 5,
+      "canonicalsCreated": 0,
+      "firstSeenCanonicals": 0,
+      "duplicatesMerged": 0,
+      "duplicateRate": 0,
+      "mergeRate": 0,
+      "noveltyRatio": 0
+    },
+    {
+      "sourceFamily": "teamtailor",
+      "runCount": 93,
+      "jobsIngested": 0,
+      "jobsAccepted": 0,
+      "canonicalsCreated": 0,
+      "firstSeenCanonicals": 0,
+      "duplicatesMerged": 0,
+      "duplicateRate": 0,
+      "mergeRate": 0,
+      "noveltyRatio": 0
+    },
+    {
+      "sourceFamily": "taleo",
+      "runCount": 3,
+      "jobsIngested": 0,
+      "jobsAccepted": 0,
+      "canonicalsCreated": 0,
+      "firstSeenCanonicals": 0,
+      "duplicatesMerged": 0,
+      "duplicateRate": 0,
+      "mergeRate": 0,
+      "noveltyRatio": 0
+    },
+    {
+      "sourceFamily": "himalayas",
+      "runCount": 7,
+      "jobsIngested": 0,
+      "jobsAccepted": 0,
+      "canonicalsCreated": 0,
+      "firstSeenCanonicals": 0,
+      "duplicatesMerged": 0,
+      "duplicateRate": 0,
+      "mergeRate": 0,
+      "noveltyRatio": 0
+    }
+  ],
+  "topSources": [
+    {
+      "sourceName": "JobBank:feb2026",
+      "sourceFamily": "jobbank",
+      "runCount": 1,
+      "jobsIngested": 4997,
+      "jobsAccepted": 4997,
+      "canonicalsCreated": 1904,
+      "firstSeenCanonicals": 1904,
+      "duplicatesMerged": 2551,
+      "noveltyRatio": 0.381,
+      "duplicateRate": 0.5105
+    },
+    {
+      "sourceName": "WeWorkRemotely:feed",
+      "sourceFamily": "weworkremotely",
+      "runCount": 52,
+      "jobsIngested": 10894,
+      "jobsAccepted": 10832,
+      "canonicalsCreated": 47,
+      "firstSeenCanonicals": 47,
+      "duplicatesMerged": 11,
+      "noveltyRatio": 0.0043,
+      "duplicateRate": 0.001
+    },
+    {
+      "sourceName": "Workday:ag.wd3.myworkdayjobs.com|ag|airbus",
+      "sourceFamily": "workday",
+      "runCount": 21,
+      "jobsIngested": 38,
+      "jobsAccepted": 38,
+      "canonicalsCreated": 31,
+      "firstSeenCanonicals": 31,
+      "duplicatesMerged": 7,
+      "noveltyRatio": 0.8158,
+      "duplicateRate": 0.1842
+    },
+    {
+      "sourceName": "Jooble:feed",
+      "sourceFamily": "jooble",
+      "runCount": 7,
+      "jobsIngested": 28,
+      "jobsAccepted": 28,
+      "canonicalsCreated": 27,
+      "firstSeenCanonicals": 27,
+      "duplicatesMerged": 1,
+      "noveltyRatio": 0.9643,
+      "duplicateRate": 0.0357
+    },
+    {
+      "sourceName": "CompanyJson:abhibus",
+      "sourceFamily": "companyjson",
+      "runCount": 12,
+      "jobsIngested": 46,
+      "jobsAccepted": 46,
+      "canonicalsCreated": 25,
+      "firstSeenCanonicals": 25,
+      "duplicatesMerged": 0,
+      "noveltyRatio": 0.5435,
+      "duplicateRate": 0
+    },
+    {
+      "sourceName": "Workday:lseg.wd3.myworkdayjobs.com|lseg|careers",
+      "sourceFamily": "workday",
+      "runCount": 8,
+      "jobsIngested": 26,
+      "jobsAccepted": 26,
+      "canonicalsCreated": 25,
+      "firstSeenCanonicals": 25,
+      "duplicatesMerged": 1,
+      "noveltyRatio": 0.9615,
+      "duplicateRate": 0.0385
+    },
+    {
+      "sourceName": "CompanyJson:iquanti",
+      "sourceFamily": "companyjson",
+      "runCount": 9,
+      "jobsIngested": 27,
+      "jobsAccepted": 27,
+      "canonicalsCreated": 24,
+      "firstSeenCanonicals": 24,
+      "duplicatesMerged": 3,
+      "noveltyRatio": 0.8889,
+      "duplicateRate": 0.1111
+    },
+    {
+      "sourceName": "Workday:autodesk.wd1.myworkdayjobs.com|autodesk|ext",
+      "sourceFamily": "workday",
+      "runCount": 10,
+      "jobsIngested": 27,
+      "jobsAccepted": 27,
+      "canonicalsCreated": 22,
+      "firstSeenCanonicals": 22,
+      "duplicatesMerged": 5,
+      "noveltyRatio": 0.8148,
+      "duplicateRate": 0.1852
+    },
+    {
+      "sourceName": "Workday:granite.wd1.myworkdayjobs.com|granite|careers",
+      "sourceFamily": "workday",
+      "runCount": 15,
+      "jobsIngested": 48,
+      "jobsAccepted": 48,
+      "canonicalsCreated": 21,
+      "firstSeenCanonicals": 21,
+      "duplicatesMerged": 12,
+      "noveltyRatio": 0.4375,
+      "duplicateRate": 0.25
+    },
+    {
+      "sourceName": "CompanyJson:irobot",
+      "sourceFamily": "companyjson",
+      "runCount": 6,
+      "jobsIngested": 40,
+      "jobsAccepted": 40,
+      "canonicalsCreated": 21,
+      "firstSeenCanonicals": 21,
+      "duplicatesMerged": 1,
+      "noveltyRatio": 0.525,
+      "duplicateRate": 0.025
+    },
+    {
+      "sourceName": "CompanyJson:iteris",
+      "sourceFamily": "companyjson",
+      "runCount": 4,
+      "jobsIngested": 39,
+      "jobsAccepted": 39,
+      "canonicalsCreated": 21,
+      "firstSeenCanonicals": 21,
+      "duplicatesMerged": 7,
+      "noveltyRatio": 0.5385,
+      "duplicateRate": 0.1795
+    },
+    {
+      "sourceName": "Workday:vishay.wd3.myworkdayjobs.com|vishay|vishaycareers",
+      "sourceFamily": "workday",
+      "runCount": 7,
+      "jobsIngested": 29,
+      "jobsAccepted": 29,
+      "canonicalsCreated": 20,
+      "firstSeenCanonicals": 20,
+      "duplicatesMerged": 9,
+      "noveltyRatio": 0.6897,
+      "duplicateRate": 0.3103
+    },
+    {
+      "sourceName": "Workday:safeguardglobal.wd3.myworkdayjobs.com|safeguardglobal|external_careers",
+      "sourceFamily": "workday",
+      "runCount": 5,
+      "jobsIngested": 39,
+      "jobsAccepted": 39,
+      "canonicalsCreated": 18,
+      "firstSeenCanonicals": 18,
+      "duplicatesMerged": 1,
+      "noveltyRatio": 0.4615,
+      "duplicateRate": 0.0256
+    },
+    {
+      "sourceName": "Workday:ptc.wd1.myworkdayjobs.com|ptc|ptc",
+      "sourceFamily": "workday",
+      "runCount": 8,
+      "jobsIngested": 35,
+      "jobsAccepted": 35,
+      "canonicalsCreated": 18,
+      "firstSeenCanonicals": 18,
+      "duplicatesMerged": 11,
+      "noveltyRatio": 0.5143,
+      "duplicateRate": 0.3143
+    },
+    {
+      "sourceName": "CompanyJson:harvest",
+      "sourceFamily": "companyjson",
+      "runCount": 9,
+      "jobsIngested": 29,
+      "jobsAccepted": 29,
+      "canonicalsCreated": 18,
+      "firstSeenCanonicals": 18,
+      "duplicatesMerged": 4,
+      "noveltyRatio": 0.6207,
+      "duplicateRate": 0.1379
+    },
+    {
+      "sourceName": "CompanyJson:telerik",
+      "sourceFamily": "companyjson",
+      "runCount": 6,
+      "jobsIngested": 42,
+      "jobsAccepted": 42,
+      "canonicalsCreated": 17,
+      "firstSeenCanonicals": 17,
+      "duplicatesMerged": 9,
+      "noveltyRatio": 0.4048,
+      "duplicateRate": 0.2143
+    },
+    {
+      "sourceName": "Workday:baxter.wd1.myworkdayjobs.com|baxter|baxter",
+      "sourceFamily": "workday",
+      "runCount": 9,
+      "jobsIngested": 21,
+      "jobsAccepted": 21,
+      "canonicalsCreated": 16,
+      "firstSeenCanonicals": 16,
+      "duplicatesMerged": 5,
+      "noveltyRatio": 0.7619,
+      "duplicateRate": 0.2381
+    },
+    {
+      "sourceName": "CompanyJson:timescale",
+      "sourceFamily": "companyjson",
+      "runCount": 9,
+      "jobsIngested": 39,
+      "jobsAccepted": 39,
+      "canonicalsCreated": 15,
+      "firstSeenCanonicals": 15,
+      "duplicatesMerged": 6,
+      "noveltyRatio": 0.3846,
+      "duplicateRate": 0.1538
+    },
+    {
+      "sourceName": "CompanyJson:stryker",
+      "sourceFamily": "companyjson",
+      "runCount": 9,
+      "jobsIngested": 27,
+      "jobsAccepted": 27,
+      "canonicalsCreated": 15,
+      "firstSeenCanonicals": 15,
+      "duplicatesMerged": 8,
+      "noveltyRatio": 0.5556,
+      "duplicateRate": 0.2963
+    },
+    {
+      "sourceName": "Workday:wustl.wd1.myworkdayjobs.com|wustl|external",
+      "sourceFamily": "workday",
+      "runCount": 3,
+      "jobsIngested": 25,
+      "jobsAccepted": 25,
+      "canonicalsCreated": 15,
+      "firstSeenCanonicals": 15,
+      "duplicatesMerged": 10,
+      "noveltyRatio": 0.6,
+      "duplicateRate": 0.4
+    }
+  ],
+  "visibleJobDeltaOverTime": [
+    {
+      "day": "2026-04-18",
+      "canonicalsFirstSeen": 2361,
+      "currentlyVisibleFirstSeen": 2355,
+      "visibleJobCountDelta": 2355,
+      "cumulativeVisibleDelta": 2355
+    },
+    {
+      "day": "2026-04-19",
+      "canonicalsFirstSeen": 1289,
+      "currentlyVisibleFirstSeen": 1276,
+      "visibleJobCountDelta": 1276,
+      "cumulativeVisibleDelta": 3631
+    }
+  ],
+  "geographyCoverage": [
+    {
+      "region": "CA",
+      "canonicalCount": 1984,
+      "visibleCanonicalCount": 1984
+    },
+    {
+      "region": "UNKNOWN",
+      "canonicalCount": 1356,
+      "visibleCanonicalCount": 1337
+    },
+    {
+      "region": "US",
+      "canonicalCount": 310,
+      "visibleCanonicalCount": 310
+    }
+  ],
+  "roleCoverage": [
+    {
+      "roleFamily": "Unknown",
+      "canonicalCount": 1990,
+      "visibleCanonicalCount": 1975
+    },
+    {
+      "roleFamily": "General Professional",
+      "canonicalCount": 872,
+      "visibleCanonicalCount": 871
+    },
+    {
+      "roleFamily": "SWE",
+      "canonicalCount": 199,
+      "visibleCanonicalCount": 199
+    },
+    {
+      "roleFamily": "Sales",
+      "canonicalCount": 57,
+      "visibleCanonicalCount": 57
+    },
+    {
+      "roleFamily": "Marketing",
+      "canonicalCount": 54,
+      "visibleCanonicalCount": 54
+    },
+    {
+      "roleFamily": "Accounting",
+      "canonicalCount": 53,
+      "visibleCanonicalCount": 53
+    },
+    {
+      "roleFamily": "Consulting",
+      "canonicalCount": 34,
+      "visibleCanonicalCount": 34
+    },
+    {
+      "roleFamily": "Security",
+      "canonicalCount": 34,
+      "visibleCanonicalCount": 33
+    },
+    {
+      "roleFamily": "Technical",
+      "canonicalCount": 31,
+      "visibleCanonicalCount": 31
+    },
+    {
+      "roleFamily": "Administrative",
+      "canonicalCount": 30,
+      "visibleCanonicalCount": 30
+    },
+    {
+      "roleFamily": "Project Management",
+      "canonicalCount": 27,
+      "visibleCanonicalCount": 27
+    },
+    {
+      "roleFamily": "Operations",
+      "canonicalCount": 23,
+      "visibleCanonicalCount": 23
+    },
+    {
+      "roleFamily": "QA",
+      "canonicalCount": 20,
+      "visibleCanonicalCount": 20
+    },
+    {
+      "roleFamily": "Financial Analyst",
+      "canonicalCount": 19,
+      "visibleCanonicalCount": 19
+    },
+    {
+      "roleFamily": "Banking",
+      "canonicalCount": 18,
+      "visibleCanonicalCount": 18
+    },
+    {
+      "roleFamily": "Supply Chain",
+      "canonicalCount": 18,
+      "visibleCanonicalCount": 18
+    },
+    {
+      "roleFamily": "Customer Success",
+      "canonicalCount": 17,
+      "visibleCanonicalCount": 17
+    },
+    {
+      "roleFamily": "Product Management",
+      "canonicalCount": 17,
+      "visibleCanonicalCount": 17
+    },
+    {
+      "roleFamily": "Design",
+      "canonicalCount": 15,
+      "visibleCanonicalCount": 14
+    },
+    {
+      "roleFamily": "Legal",
+      "canonicalCount": 14,
+      "visibleCanonicalCount": 14
+    },
+    {
+      "roleFamily": "Compliance",
+      "canonicalCount": 13,
+      "visibleCanonicalCount": 13
+    },
+    {
+      "roleFamily": "Data Engineering",
+      "canonicalCount": 12,
+      "visibleCanonicalCount": 12
+    },
+    {
+      "roleFamily": "Internship",
+      "canonicalCount": 11,
+      "visibleCanonicalCount": 11
+    },
+    {
+      "roleFamily": "Business Development",
+      "canonicalCount": 10,
+      "visibleCanonicalCount": 10
+    },
+    {
+      "roleFamily": "IT Operations",
+      "canonicalCount": 9,
+      "visibleCanonicalCount": 9
+    },
+    {
+      "roleFamily": "Business Analyst",
+      "canonicalCount": 7,
+      "visibleCanonicalCount": 7
+    },
+    {
+      "roleFamily": "Solutions Engineering",
+      "canonicalCount": 7,
+      "visibleCanonicalCount": 7
+    },
+    {
+      "roleFamily": "Credit",
+      "canonicalCount": 6,
+      "visibleCanonicalCount": 6
+    },
+    {
+      "roleFamily": "Actuarial",
+      "canonicalCount": 5,
+      "visibleCanonicalCount": 5
+    },
+    {
+      "roleFamily": "Data Analyst",
+      "canonicalCount": 5,
+      "visibleCanonicalCount": 5
+    },
+    {
+      "roleFamily": "Data Science",
+      "canonicalCount": 5,
+      "visibleCanonicalCount": 5
+    },
+    {
+      "roleFamily": "Communications",
+      "canonicalCount": 4,
+      "visibleCanonicalCount": 4
+    },
+    {
+      "roleFamily": "FP&A",
+      "canonicalCount": 3,
+      "visibleCanonicalCount": 3
+    },
+    {
+      "roleFamily": "Risk",
+      "canonicalCount": 3,
+      "visibleCanonicalCount": 3
+    },
+    {
+      "roleFamily": "Quantitative Finance",
+      "canonicalCount": 2,
+      "visibleCanonicalCount": 1
+    },
+    {
+      "roleFamily": "Solutions Architecture",
+      "canonicalCount": 2,
+      "visibleCanonicalCount": 2
+    },
+    {
+      "roleFamily": "Wealth Management",
+      "canonicalCount": 2,
+      "visibleCanonicalCount": 2
+    },
+    {
+      "roleFamily": "Product Analyst",
+      "canonicalCount": 1,
+      "visibleCanonicalCount": 1
+    },
+    {
+      "roleFamily": "Research",
+      "canonicalCount": 1,
+      "visibleCanonicalCount": 1
+    }
+  ]
+}

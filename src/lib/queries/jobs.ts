@@ -1,7 +1,13 @@
 import { prisma } from "@/lib/db";
 import { PAGE_SIZE } from "@/lib/constants";
-import type { Prisma } from "@/generated/prisma/client";
+import { Prisma, type Prisma as PrismaTypes } from "@/generated/prisma/client";
 import { DEMO_SOURCE_NAMES } from "@/lib/job-links";
+import {
+  sanitizeCompanyName,
+  sanitizeJobDescriptionText,
+  sanitizeJobTitle,
+} from "@/lib/job-cleanup";
+import { isClearlyNonJobPosting } from "@/lib/job-integrity";
 import { getOptionalCurrentProfileId } from "@/lib/current-user";
 import { getIngestionHeartbeat } from "@/lib/queries/ingestion";
 import { inferGeoScope } from "@/lib/geo-scope";
@@ -49,9 +55,56 @@ const JOB_CARD_INCLUDE = (viewerProfileId: string | null) =>
       },
       select: { id: true },
     },
-  }) satisfies Prisma.JobCanonicalInclude;
+  }) satisfies PrismaTypes.JobCanonicalInclude;
 
-function buildAvailabilityVisibilityWhere(minScore: number): Prisma.JobCanonicalWhereInput {
+function isClearlyVisibleJobPosting(input: {
+  title: string;
+  description?: string | null;
+  shortSummary?: string | null;
+  applyUrl?: string | null;
+}) {
+  return !isClearlyNonJobPosting({
+    title: input.title,
+    description: input.description ?? input.shortSummary ?? null,
+    applyUrl: input.applyUrl ?? null,
+  });
+}
+
+function withSanitizedJobPresentation<
+  T extends {
+    title: string;
+    company: string;
+    description: string;
+    location: string;
+    applyUrl: string | null;
+    shortSummary?: string | null;
+  },
+>(job: T): T {
+  const title = sanitizeJobTitle(job.title);
+  const company = sanitizeCompanyName(job.company, {
+    urls: [job.applyUrl],
+  });
+  const description = sanitizeJobDescriptionText(job.description, {
+    title,
+    location: job.location,
+  });
+  const shortSummary = job.shortSummary
+    ? sanitizeJobDescriptionText(job.shortSummary, {
+        title,
+        location: job.location,
+      })
+    : job.shortSummary;
+
+  return {
+    ...job,
+    title,
+    company,
+    description,
+    shortSummary,
+  };
+}
+
+function buildAvailabilityVisibilityWhere(minScore: number): PrismaTypes.JobCanonicalWhereInput {
   return {
     OR: [
       { availabilityScore: { gte: minScore } },
@@ -79,130 +132,356 @@ function toTsQuery(raw: string): string {
   return tokens.map((t) => `${t}:*`).join(" & ");
 }
 
-function escapeLikePattern(value: string) {
-  return value.replace(/[\\%_]/g, "\\$&");
-}
-
 function splitFilterValues(value?: string) {
   return value ? value.split(",").map((entry) => entry.trim()).filter(Boolean) : [];
 }
 
-function addLikeClauses(
+function buildKeywordContainsClauses(
   field: "title" | "description" | "roleFamily",
-  keywords: string[],
-  params: string[]
-) {
-  const clauses: string[] = [];
-
-  for (const keyword of keywords) {
-    params.push(`%${escapeLikePattern(keyword)}%`);
-    clauses.push(`"${field}" ILIKE $${params.length} ESCAPE '\\'`);
-  }
-
-  return clauses.length > 0 ? `(${clauses.join(" OR ")})` : null;
+  keywords: string[]
+): PrismaTypes.JobCanonicalWhereInput[] {
+  return keywords.map((keyword) => ({
+    [field]: {
+      contains: keyword,
+      mode: "insensitive",
+    },
+  })) as PrismaTypes.JobCanonicalWhereInput[];
 }
 
-function addEqualityClauses(
-  field: "employmentType",
-  values: string[],
-  params: string[]
-) {
-  const clauses: string[] = [];
-
-  for (const value of values) {
-    params.push(value);
-    clauses.push(`"${field}" = $${params.length}`);
-  }
-
-  return clauses.length > 0 ? `(${clauses.join(" OR ")})` : null;
-}
-
-function buildPositiveCareerStageSql(
-  stage: CareerStageFilter,
-  params: string[]
-) {
+function buildPositiveCareerStageWhere(
+  stage: CareerStageFilter
+): PrismaTypes.JobCanonicalWhereInput | null {
   const definition = CAREER_STAGE_DEFINITIONS[stage];
-  const clauses = [
-    definition.employmentTypes
-      ? addEqualityClauses("employmentType", definition.employmentTypes, params)
-      : null,
-    definition.roleFamilyKeywords
-      ? addLikeClauses("roleFamily", definition.roleFamilyKeywords, params)
-      : null,
-    addLikeClauses("title", definition.titleKeywords, params),
-    addLikeClauses("description", definition.descriptionKeywords, params),
-  ].filter(Boolean);
+  const clauses: PrismaTypes.JobCanonicalWhereInput[] = [];
 
-  return clauses.length > 0 ? `(${clauses.join(" OR ")})` : null;
+  if (definition.employmentTypes?.length) {
+    clauses.push({
+      employmentType: {
+        in: definition.employmentTypes,
+      },
+    });
+  }
+
+  if (definition.roleFamilyKeywords?.length) {
+    clauses.push(...buildKeywordContainsClauses("roleFamily", definition.roleFamilyKeywords));
+  }
+
+  if (definition.titleKeywords.length) {
+    clauses.push(...buildKeywordContainsClauses("title", definition.titleKeywords));
+  }
+
+  if (definition.descriptionKeywords.length) {
+    clauses.push(...buildKeywordContainsClauses("description", definition.descriptionKeywords));
+  }
+
+  return clauses.length > 0 ? { OR: clauses } : null;
 }
 
-function buildCareerStageSql(stage: CareerStageFilter, params: string[]) {
-  const internshipSql = buildPositiveCareerStageSql("INTERNSHIP", params);
-  const administrativeSql = buildPositiveCareerStageSql(
-    "ADMINISTRATIVE_SUPPORT",
-    params
-  );
-  const seniorSql = buildPositiveCareerStageSql("SENIOR_LEVEL", params);
-  const associateSql = buildPositiveCareerStageSql("ASSOCIATE", params);
-  const entrySql = buildPositiveCareerStageSql("ENTRY_LEVEL", params);
+function buildCareerStageWhere(
+  stage: CareerStageFilter
+): PrismaTypes.JobCanonicalWhereInput | null {
+  const internshipWhere = buildPositiveCareerStageWhere("INTERNSHIP");
+  const administrativeWhere = buildPositiveCareerStageWhere("ADMINISTRATIVE_SUPPORT");
+  const seniorWhere = buildPositiveCareerStageWhere("SENIOR_LEVEL");
+  const associateWhere = buildPositiveCareerStageWhere("ASSOCIATE");
+  const entryWhere = buildPositiveCareerStageWhere("ENTRY_LEVEL");
 
   switch (stage) {
     case "INTERNSHIP":
-      return internshipSql;
+      return internshipWhere;
     case "ADMINISTRATIVE_SUPPORT":
-      return administrativeSql;
+      return administrativeWhere;
     case "SENIOR_LEVEL":
-      return seniorSql && internshipSql && administrativeSql
-        ? `(${seniorSql} AND NOT ${internshipSql} AND NOT ${administrativeSql})`
-        : seniorSql;
+      return seniorWhere && internshipWhere && administrativeWhere
+        ? {
+            AND: [
+              seniorWhere,
+              { NOT: internshipWhere },
+              { NOT: administrativeWhere },
+            ],
+          }
+        : seniorWhere;
     case "ASSOCIATE":
-      return associateSql && internshipSql && administrativeSql && seniorSql
-        ? `(${associateSql} AND NOT ${internshipSql} AND NOT ${administrativeSql} AND NOT ${seniorSql})`
-        : associateSql;
+      return associateWhere && internshipWhere && administrativeWhere && seniorWhere
+        ? {
+            AND: [
+              associateWhere,
+              { NOT: internshipWhere },
+              { NOT: administrativeWhere },
+              { NOT: seniorWhere },
+            ],
+          }
+        : associateWhere;
     case "ENTRY_LEVEL":
-      return entrySql && internshipSql && administrativeSql && seniorSql && associateSql
-        ? `(${entrySql} AND NOT ${internshipSql} AND NOT ${administrativeSql} AND NOT ${seniorSql} AND NOT ${associateSql})`
-        : entrySql;
+      return entryWhere &&
+        internshipWhere &&
+        administrativeWhere &&
+        seniorWhere &&
+        associateWhere
+        ? {
+            AND: [
+              entryWhere,
+              { NOT: internshipWhere },
+              { NOT: administrativeWhere },
+              { NOT: seniorWhere },
+              { NOT: associateWhere },
+            ],
+          }
+        : entryWhere;
   }
 }
 
-async function searchCareerStageJobIds(stages: CareerStageFilter[]) {
+function buildCareerStageFiltersWhere(
+  stages: CareerStageFilter[]
+): PrismaTypes.JobCanonicalWhereInput | null {
   if (stages.length === 0) return null;
 
-  const params: string[] = [];
   const stageClauses = stages
-    .map((stage) => buildCareerStageSql(stage, params))
-    .filter(Boolean) as string[];
+    .map((stage) => buildCareerStageWhere(stage))
+    .filter(Boolean) as PrismaTypes.JobCanonicalWhereInput[];
 
   if (stageClauses.length === 0) {
     return null;
   }
 
-  const rows = await prisma.$queryRawUnsafe<{ id: string }[]>(
-    `SELECT id FROM "JobCanonical" WHERE ${stageClauses.join(" OR ")}`,
-    ...params
-  );
-
-  return rows.map((row) => row.id);
+  return stageClauses.length === 1 ? stageClauses[0] : { OR: stageClauses };
 }
 
-function mergeMatchingIds(
-  current: Prisma.JobCanonicalWhereInput["id"],
-  nextIds: string[]
+function appendAndCondition(
+  where: Prisma.JobCanonicalWhereInput,
+  condition: Prisma.JobCanonicalWhereInput
 ) {
-  if (
-    !current ||
-    typeof current !== "object" ||
-    !("in" in current) ||
-    !Array.isArray(current.in)
-  ) {
-    return { in: nextIds };
+  const existingAnd = where.AND
+    ? Array.isArray(where.AND)
+      ? where.AND
+      : [where.AND]
+    : [];
+  where.AND = [...existingAnd, condition];
+}
+
+function shouldUseJobFeedIndex(filters: JobFilterParams) {
+  return process.env.USE_JOB_FEED_INDEX === "1" && !filters.search;
+}
+
+async function getJobsFromFeedIndex(input: {
+  filters: JobFilterParams;
+  viewerProfileId: string | null;
+  summaryPromise: Promise<JobFeedSummary>;
+  includeExactTotal: boolean;
+  useSqlDemoVisibilityFilter: boolean;
+}) {
+  const { filters, viewerProfileId, summaryPromise, includeExactTotal, useSqlDemoVisibilityFilter } =
+    input;
+  const page = filters.page ?? 1;
+  const skip = (page - 1) * PAGE_SIZE;
+  const where: Prisma.JobFeedIndexWhereInput = {};
+  const canonicalRelationWhere: Prisma.JobCanonicalWhereInput = {};
+
+  if (useSqlDemoVisibilityFilter) {
+    canonicalRelationWhere.sourceMappings = {
+      some: {
+        sourceName: {
+          notIn: [...DEMO_SOURCE_NAMES],
+        },
+      },
+    };
   }
 
-  const allowedIds = new Set(nextIds);
+  if (viewerProfileId) {
+    canonicalRelationWhere.behaviorSignals = {
+      none: {
+        userId: viewerProfileId,
+        action: "PASS",
+      },
+    };
+  }
+
+  if (filters.region) {
+    where.region = { in: filters.region.split(",") as ("US" | "CA")[] };
+  }
+
+  if (filters.workMode) {
+    where.workMode = {
+      in: filters.workMode.split(",") as ("REMOTE" | "HYBRID" | "ONSITE" | "FLEXIBLE")[],
+    };
+  }
+
+  if (filters.industry) {
+    where.industry = { in: filters.industry.split(",") as ("TECH" | "FINANCE")[] };
+  }
+
+  if (filters.roleFamily) {
+    const families = filters.roleFamily.split(",").map((f) => f.trim()).filter(Boolean);
+    if (families.length === 1) {
+      where.roleFamily = { contains: families[0], mode: "insensitive" };
+    } else if (families.length > 1) {
+      where.roleFamily = { in: families };
+    }
+  }
+
+  if (filters.salaryMin) {
+    where.salaryMax = { gte: filters.salaryMin };
+  }
+
+  if (filters.expiry === "soon") {
+    const now = new Date();
+    const soonDeadline = new Date(now.getTime() + 5 * 86_400_000);
+    where.deadline = {
+      gte: now,
+      lte: soonDeadline,
+    };
+  }
+
+  if (filters.experienceLevel) {
+    const stages = splitFilterValues(normalizeCareerStageFilterValue(filters.experienceLevel));
+    const careerStageWhere = buildCareerStageFiltersWhere(stages as CareerStageFilter[]);
+
+    if (careerStageWhere) {
+      canonicalRelationWhere.AND = [
+        ...(Array.isArray(canonicalRelationWhere.AND)
+          ? canonicalRelationWhere.AND
+          : canonicalRelationWhere.AND
+            ? [canonicalRelationWhere.AND]
+            : []),
+        careerStageWhere,
+      ];
+    }
+  }
+
+  if (filters.submissionCategory) {
+    const selectedCategories = filters.submissionCategory
+      .split(",")
+      .map((entry) => entry.trim())
+      .filter(Boolean);
+    const expandedCategories = new Set<"AUTO_SUBMIT_READY" | "AUTO_FILL_REVIEW" | "MANUAL_ONLY">();
+
+    for (const category of selectedCategories) {
+      if (category === "AUTO_SUBMIT_READY") {
+        expandedCategories.add("AUTO_SUBMIT_READY");
+      } else if (category === "MANUAL_ONLY" || category === "AUTO_FILL_REVIEW") {
+        expandedCategories.add("MANUAL_ONLY");
+        expandedCategories.add("AUTO_FILL_REVIEW");
+      }
+    }
+
+    const categoryList = [...expandedCategories];
+
+    if (categoryList.length === 1) {
+      where.submissionCategory = categoryList[0];
+    } else if (categoryList.length > 1) {
+      where.submissionCategory = {
+        in: categoryList,
+      };
+    }
+  }
+
+  if (filters.status) {
+    where.status = filters.status as
+      | "AGING"
+      | "LIVE"
+      | "EXPIRED"
+      | "REMOVED"
+      | "STALE";
+  } else {
+    where.status = {
+      in: [...DEFAULT_VISIBLE_JOB_STATUSES],
+    };
+    appendAndCondition(
+      canonicalRelationWhere,
+      buildAvailabilityVisibilityWhere(DEFAULT_MIN_AVAILABILITY_SCORE)
+    );
+    appendAndCondition(canonicalRelationWhere, buildVisibleDeadlineWhere());
+  }
+
+  if (Object.keys(canonicalRelationWhere).length > 0) {
+    where.canonicalJob = {
+      is: canonicalRelationWhere,
+    };
+  }
+
+  let orderBy:
+    | Prisma.JobFeedIndexOrderByWithRelationInput
+    | Prisma.JobFeedIndexOrderByWithRelationInput[] = [
+    { rankingScore: "desc" },
+    { postedAt: "desc" },
+  ];
+
+  if (filters.sortBy === "salary") {
+    orderBy = { salaryMax: "desc" };
+  } else if (filters.sortBy === "deadline") {
+    orderBy = [
+      { deadline: { sort: "asc", nulls: "last" } },
+      { rankingScore: "desc" },
+      { postedAt: "desc" },
+    ];
+  } else if (filters.sortBy === "recent") {
+    orderBy = { postedAt: "desc" };
+  }
+
+  const indexedRows = await prisma.jobFeedIndex.findMany({
+    where,
+    select: { canonicalJobId: true },
+    orderBy,
+    skip,
+    take: PAGE_SIZE * 3,
+  });
+
+  const canonicalJobIds = indexedRows.map((row) => row.canonicalJobId);
+
+  if (canonicalJobIds.length === 0) {
+    return {
+      data: [],
+      total: includeExactTotal ? 0 : null,
+      hasNextPage: false,
+      page,
+      pageSize: PAGE_SIZE,
+      summary: await summaryPromise,
+    } satisfies JobsResult;
+  }
+
+  const jobs = await prisma.jobCanonical.findMany({
+    where: { id: { in: canonicalJobIds } },
+    include: JOB_CARD_INCLUDE(viewerProfileId),
+  });
+  const order = new Map(canonicalJobIds.map((id, index) => [id, index]));
+  const visibleJobs = jobs
+    .filter((job) =>
+      isClearlyVisibleJobPosting({
+        title: job.title,
+        description: job.description,
+        applyUrl: job.applyUrl,
+      })
+    )
+    .sort((left, right) => (order.get(left.id) ?? Number.MAX_SAFE_INTEGER) - (order.get(right.id) ?? Number.MAX_SAFE_INTEGER));
+  const data = visibleJobs.slice(0, PAGE_SIZE).map((job) => {
+    const { savedJobs, ...rest } = job;
+    return withSanitizedJobPresentation({
+      ...rest,
+      isSaved: savedJobs.length > 0,
+    });
+  });
+
+  if (!includeExactTotal) {
+    return {
+      data,
+      total: null,
+      hasNextPage: indexedRows.length > PAGE_SIZE,
+      page,
+      pageSize: PAGE_SIZE,
+      summary: await summaryPromise,
+    } satisfies JobsResult;
+  }
+
+  const total = await prisma.jobFeedIndex.count({ where });
+
   return {
-    in: current.in.filter((id): id is string => typeof id === "string" && allowedIds.has(id)),
-  };
+    data,
+    total,
+    hasNextPage: skip + PAGE_SIZE < total,
+    page,
+    pageSize: PAGE_SIZE,
+    summary: await summaryPromise,
+  } satisfies JobsResult;
 }
 
 /**
@@ -1129,7 +1408,7 @@ function isExplicitlyOutOfScopeGeoScope(
   );
 }
 
-function buildVisibleDeadlineWhere(now: Date = new Date()): Prisma.JobCanonicalWhereInput {
+function buildVisibleDeadlineWhere(now: Date = new Date()): PrismaTypes.JobCanonicalWhereInput {
   return {
     OR: [
       { deadline: null },
@@ -1138,37 +1417,72 @@ function buildVisibleDeadlineWhere(now: Date = new Date()): Prisma.JobCanonicalW
   };
 }
 
-async function getHiddenDemoOnlySummaryCounts(startOfToday: Date): Promise<JobFeedSummary> {
+async function getHiddenDemoOnlySummaryCounts(
+  startOfToday: Date,
+  now: Date
+): Promise<JobFeedSummary> {
+  if (!DEMO_SOURCE_NAMES[0]) {
+    return {
+      liveJobCount: 0,
+      addedTodayCount: 0,
+      expiredTodayCount: 0,
+      removedTodayCount: 0,
+    };
+  }
+
   // A job is "demo-only" if every source mapping belongs to a demo source.
   // Expressed as: has at least one demo mapping AND has no non-demo mappings.
-  const demoOnlyWhere: Prisma.JobCanonicalWhereInput = {
-    sourceMappings: {
-      some: { sourceName: { in: [...DEMO_SOURCE_NAMES] } },
-      none: { sourceName: { notIn: [...DEMO_SOURCE_NAMES] } },
-    },
+  const demoSourceList = Prisma.join(
+    DEMO_SOURCE_NAMES.map((sourceName) => Prisma.sql`${sourceName}`)
+  );
+
+  const [row] = await prisma.$queryRaw<
+    Array<{
+      liveJobCount: number;
+      addedTodayCount: number;
+      expiredTodayCount: number;
+      removedTodayCount: number;
+    }>
+  >(Prisma.sql`
+    SELECT
+      COUNT(*) FILTER (
+        WHERE jc.status IN ('LIVE', 'AGING')
+          AND (jc."deadline" IS NULL OR jc."deadline" >= ${now})
+      )::integer AS "liveJobCount",
+      COUNT(*) FILTER (
+        WHERE jc.status IN ('LIVE', 'AGING')
+          AND jc."firstSeenAt" >= ${startOfToday}
+          AND (jc."deadline" IS NULL OR jc."deadline" >= ${now})
+      )::integer AS "addedTodayCount",
+      COUNT(*) FILTER (
+        WHERE jc.status = 'EXPIRED'
+          AND jc."expiredAt" >= ${startOfToday}
+      )::integer AS "expiredTodayCount",
+      COUNT(*) FILTER (
+        WHERE jc.status = 'REMOVED'
+          AND jc."removedAt" >= ${startOfToday}
+      )::integer AS "removedTodayCount"
+    FROM "JobCanonical" jc
+    WHERE EXISTS (
+      SELECT 1
+      FROM "JobSourceMapping" demo_map
+      WHERE demo_map."canonicalJobId" = jc.id
+        AND demo_map."sourceName" IN (${demoSourceList})
+    )
+      AND NOT EXISTS (
+        SELECT 1
+        FROM "JobSourceMapping" real_map
+        WHERE real_map."canonicalJobId" = jc.id
+          AND real_map."sourceName" NOT IN (${demoSourceList})
+      )
+  `);
+
+  return {
+    liveJobCount: row?.liveJobCount ?? 0,
+    addedTodayCount: row?.addedTodayCount ?? 0,
+    expiredTodayCount: row?.expiredTodayCount ?? 0,
+    removedTodayCount: row?.removedTodayCount ?? 0,
   };
-
-  const [liveJobCount, addedTodayCount, expiredTodayCount, removedTodayCount] =
-    await Promise.all([
-      prisma.jobCanonical.count({
-        where: { ...demoOnlyWhere, status: { in: [...DEFAULT_VISIBLE_JOB_STATUSES] } },
-      }),
-      prisma.jobCanonical.count({
-        where: {
-          ...demoOnlyWhere,
-          status: { in: [...DEFAULT_VISIBLE_JOB_STATUSES] },
-          firstSeenAt: { gte: startOfToday },
-        },
-      }),
-      prisma.jobCanonical.count({
-        where: { ...demoOnlyWhere, status: "EXPIRED", expiredAt: { gte: startOfToday } },
-      }),
-      prisma.jobCanonical.count({
-        where: { ...demoOnlyWhere, status: "REMOVED", removedAt: { gte: startOfToday } },
-      }),
-    ]);
-
-  return { liveJobCount, addedTodayCount, expiredTodayCount, removedTodayCount };
 }
 
 
@@ -1249,37 +1563,39 @@ async function getJobFeedSummary() {
   const now = new Date();
   const startOfToday = new Date(now);
   startOfToday.setHours(0, 0, 0, 0);
-  const visibleDeadlineWhere = buildVisibleDeadlineWhere(now);
-
-  const [liveJobCount, addedTodayCount, expiredTodayCount, removedTodayCount, hiddenDemoCounts] =
-    await Promise.all([
-    prisma.jobCanonical.count({
-      where: {
-        status: { in: [...DEFAULT_VISIBLE_JOB_STATUSES] },
-        AND: [visibleDeadlineWhere],
-      },
-    }),
-    prisma.jobCanonical.count({
-      where: {
-        status: { in: [...DEFAULT_VISIBLE_JOB_STATUSES] },
-        firstSeenAt: { gte: startOfToday },
-        AND: [visibleDeadlineWhere],
-      },
-    }),
-    prisma.jobCanonical.count({
-      where: {
-        status: "EXPIRED",
-        expiredAt: { gte: startOfToday },
-      },
-    }),
-    prisma.jobCanonical.count({
-      where: {
-        status: "REMOVED",
-        removedAt: { gte: startOfToday },
-      },
-    }),
-    getHiddenDemoOnlySummaryCounts(startOfToday),
-  ]);
+  const [summaryRow] = await prisma.$queryRaw<
+    Array<{
+      liveJobCount: number;
+      addedTodayCount: number;
+      expiredTodayCount: number;
+      removedTodayCount: number;
+    }>
+  >(Prisma.sql`
+    SELECT
+      COUNT(*) FILTER (
+        WHERE status IN ('LIVE', 'AGING')
+          AND ("deadline" IS NULL OR "deadline" >= ${now})
+      )::integer AS "liveJobCount",
+      COUNT(*) FILTER (
+        WHERE status IN ('LIVE', 'AGING')
+          AND "firstSeenAt" >= ${startOfToday}
+          AND ("deadline" IS NULL OR "deadline" >= ${now})
+      )::integer AS "addedTodayCount",
+      COUNT(*) FILTER (
+        WHERE status = 'EXPIRED'
+          AND "expiredAt" >= ${startOfToday}
+      )::integer AS "expiredTodayCount",
+      COUNT(*) FILTER (
+        WHERE status = 'REMOVED'
+          AND "removedAt" >= ${startOfToday}
+      )::integer AS "removedTodayCount"
+    FROM "JobCanonical"
+  `);
+  const hiddenDemoCounts = await getHiddenDemoOnlySummaryCounts(startOfToday, now);
+  const liveJobCount = summaryRow?.liveJobCount ?? 0;
+  const addedTodayCount = summaryRow?.addedTodayCount ?? 0;
+  const expiredTodayCount = summaryRow?.expiredTodayCount ?? 0;
+  const removedTodayCount = summaryRow?.removedTodayCount ?? 0;
 
   return writeTimedCache("jobs:summary", {
     liveJobCount: Math.max(0, liveJobCount - hiddenDemoCounts.liveJobCount),
@@ -1308,19 +1624,29 @@ async function getJobsByRelevance(
       include: JOB_CARD_INCLUDE(viewerProfileId),
       orderBy: { postedAt: "desc" },
       skip,
-      take: PAGE_SIZE + 1,
+      take: PAGE_SIZE * 3,
     });
-    const slicedJobs = jobs.slice(0, PAGE_SIZE);
+    const visibleJobs = jobs.filter((job) =>
+      isClearlyVisibleJobPosting({
+        title: job.title,
+        description: job.description,
+        applyUrl: job.applyUrl,
+      })
+    );
+    const slicedJobs = visibleJobs.slice(0, PAGE_SIZE);
     const data = slicedJobs.map((job) => {
       const { savedJobs, ...rest } = job;
-      return { ...rest, isSaved: savedJobs.length > 0 };
+      return withSanitizedJobPresentation({
+        ...rest,
+        isSaved: savedJobs.length > 0,
+      });
     });
 
     if (!includeExactTotal) {
       return {
         data,
         total: null,
-        hasNextPage: jobs.length > PAGE_SIZE,
+        hasNextPage: visibleJobs.length > PAGE_SIZE,
         page,
         pageSize: PAGE_SIZE,
       };
@@ -1350,6 +1676,7 @@ async function getJobsByRelevance(
       roleFamily: true,
       experienceLevel: true,
       shortSummary: true,
+      applyUrl: true,
       company: true,
       eligibility: { select: { submissionCategory: true } },
       sourceMappings: {
@@ -1382,14 +1709,21 @@ async function getJobsByRelevance(
           !isDemoOnlySourceMappings(job.sourceMappings) &&
           !isExplicitlyOutOfScopeGeoScope(inferGeoScope(job.location, job.region))
       );
+  const visibleRealJobs = visibleScoringJobs.filter((job) =>
+    isClearlyVisibleJobPosting({
+      title: job.title,
+      shortSummary: job.shortSummary,
+      applyUrl: job.applyUrl,
+    })
+  );
   const diversifiedSelectionLimit = Math.min(
-    visibleScoringJobs.length,
+    visibleRealJobs.length,
     skip + PAGE_SIZE + DIVERSIFICATION_OVERSCAN
   );
 
   // Score → diversify → paginate in memory.
   const sorted = diversifyRankedJobs(
-    visibleScoringJobs
+    visibleRealJobs
       .map((job) => ({
         id: job.id,
         title: job.title,
@@ -1445,8 +1779,22 @@ async function getJobsByRelevance(
   const data = pageIds.flatMap((id) => {
     const job = jobMap.get(id);
     if (!job) return [];
+    if (
+      !isClearlyVisibleJobPosting({
+        title: job.title,
+        description: job.description,
+        applyUrl: job.applyUrl,
+      })
+    ) {
+      return [];
+    }
     const { savedJobs, ...rest } = job;
-    return [{ ...rest, isSaved: savedJobs.length > 0 }];
+    return [
+      withSanitizedJobPresentation({
+        ...rest,
+        isSaved: savedJobs.length > 0,
+      }),
+    ];
   });
 
   return { data, total, hasNextPage, page, pageSize: PAGE_SIZE };
@@ -1594,32 +1942,10 @@ export async function getJobs(
 
     if (filters.experienceLevel) {
       const stages = splitFilterValues(normalizeCareerStageFilterValue(filters.experienceLevel));
-      const matchingIds = await searchCareerStageJobIds(stages as CareerStageFilter[]);
+      const careerStageWhere = buildCareerStageFiltersWhere(stages as CareerStageFilter[]);
 
-      if (matchingIds !== null) {
-        if (matchingIds.length === 0) {
-          return cacheResult({
-            data: [],
-            total: 0,
-            hasNextPage: false,
-            page: filters.page ?? 1,
-            pageSize: PAGE_SIZE,
-            summary: await summaryPromise,
-          });
-        }
-
-        where.id = mergeMatchingIds(where.id, matchingIds);
-
-        if ("in" in where.id && Array.isArray(where.id.in) && where.id.in.length === 0) {
-          return cacheResult({
-            data: [],
-            total: 0,
-            hasNextPage: false,
-            page: filters.page ?? 1,
-            pageSize: PAGE_SIZE,
-            summary: await summaryPromise,
-          });
-        }
+      if (careerStageWhere) {
+        appendAndCondition(where, careerStageWhere);
       }
     }
 
@@ -1667,17 +1993,29 @@ export async function getJobs(
           ? [...DEFAULT_SEARCH_VISIBLE_JOB_STATUSES]
           : [...DEFAULT_VISIBLE_JOB_STATUSES],
       };
-      where.AND = [
+      appendAndCondition(
+        where,
         buildAvailabilityVisibilityWhere(
           filters.search
             ? DEFAULT_SEARCH_MIN_AVAILABILITY_SCORE
             : DEFAULT_MIN_AVAILABILITY_SCORE
-        ),
-        buildVisibleDeadlineWhere(),
-      ];
+        )
+      );
+      appendAndCondition(where, buildVisibleDeadlineWhere());
     }
 
     if (!filters.sortBy || filters.sortBy === "relevance") {
+      if (shouldUseJobFeedIndex(filters)) {
+        return cacheResult(
+          await getJobsFromFeedIndex({
+            filters,
+            viewerProfileId,
+            summaryPromise,
+            includeExactTotal,
+            useSqlDemoVisibilityFilter,
+          })
+        );
+      }
       const [result, summary] = await Promise.all([
         getJobsByRelevance(
           filters,
@@ -1689,6 +2027,18 @@ export async function getJobs(
         summaryPromise,
       ]);
       return cacheResult({ ...result, summary });
+    }
+
+    if (shouldUseJobFeedIndex(filters)) {
+      return cacheResult(
+        await getJobsFromFeedIndex({
+          filters,
+          viewerProfileId,
+          summaryPromise,
+          includeExactTotal,
+          useSqlDemoVisibilityFilter,
+        })
+      );
     }
 
     let orderBy:
@@ -1710,22 +2060,29 @@ export async function getJobs(
       include: JOB_CARD_INCLUDE(viewerProfileId),
       orderBy,
       skip,
-      take: PAGE_SIZE + 1,
+      take: PAGE_SIZE * 3,
     });
 
-    const data = jobs.slice(0, PAGE_SIZE).map((job) => {
+    const visibleJobs = jobs.filter((job) =>
+      isClearlyVisibleJobPosting({
+        title: job.title,
+        description: job.description,
+        applyUrl: job.applyUrl,
+      })
+    );
+    const data = visibleJobs.slice(0, PAGE_SIZE).map((job) => {
       const { savedJobs, ...rest } = job;
-      return {
+      return withSanitizedJobPresentation({
         ...rest,
         isSaved: savedJobs.length > 0,
-      };
+      });
     });
 
     if (!includeExactTotal) {
       return cacheResult({
         data,
         total: null,
-        hasNextPage: jobs.length > PAGE_SIZE,
+        hasNextPage: visibleJobs.length > PAGE_SIZE,
         page,
         pageSize: PAGE_SIZE,
         summary: await summaryPromise,
@@ -1763,10 +2120,19 @@ export async function getJobById(id: string) {
   });
 
   if (!job) return null;
+  if (
+    !isClearlyVisibleJobPosting({
+      title: job.title,
+      description: job.description,
+      applyUrl: job.applyUrl,
+    })
+  ) {
+    return null;
+  }
 
   const { savedJobs, ...rest } = job;
-  return {
+  return withSanitizedJobPresentation({
     ...rest,
     isSaved: savedJobs.length > 0,
-  };
+  });
 }

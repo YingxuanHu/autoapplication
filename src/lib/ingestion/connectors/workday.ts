@@ -10,6 +10,7 @@ import type {
   SourceConnectorJob,
 } from "@/lib/ingestion/types";
 import { sleepWithAbort, throwIfAborted } from "@/lib/ingestion/runtime-control";
+import { extractDescriptionFromHtml } from "@/lib/ingestion/html-description";
 
 const WORKDAY_PAGE_SIZE = 20;
 const WORKDAY_DETAIL_CONCURRENCY = 6;
@@ -117,6 +118,7 @@ type WorkdayJobDetail = {
   detailUrl: string;
   jsonLd: WorkdayJobPostingLd | null;
   runtimeConfig: WorkdayRuntimeConfig | null;
+  html: string | null;
 };
 
 type WorkdayCheckpoint = {
@@ -424,6 +426,7 @@ async function buildSourceJob({
       detailUrl: buildDetailPageUrl(target, job.externalPath),
       jsonLd: null,
       runtimeConfig: null,
+      html: null,
     };
   }
   const jsonLd = detail.jsonLd;
@@ -450,6 +453,7 @@ async function buildSourceJob({
     }),
     description:
       readText(jsonLd?.description) ||
+      extractDescriptionFromDetailHtml(detail.html) ||
       buildFallbackDescription(job, detail.runtimeConfig),
     applyUrl: pageUrl,
     postedAt:
@@ -522,6 +526,7 @@ async function fetchJobDetail(
         detailUrl,
         jsonLd,
         runtimeConfig,
+        html,
       };
     }
   }
@@ -531,6 +536,7 @@ async function fetchJobDetail(
     detailUrl,
     jsonLd: null,
     runtimeConfig: null,
+    html: null,
   };
 }
 
@@ -940,6 +946,15 @@ function extractSalary(baseSalary: WorkdayMonetaryAmount | null) {
     max: parseNumberValue(value?.maxValue ?? value?.value ?? null),
     currency: readText(baseSalary.currency),
   };
+}
+
+function extractDescriptionFromDetailHtml(html: string | null): string | null {
+  if (!html) return null;
+  const extracted = extractDescriptionFromHtml(html);
+  if (extracted && extracted.length >= 120) {
+    return extracted;
+  }
+  return null;
 }
 
 function buildFallbackDescription(

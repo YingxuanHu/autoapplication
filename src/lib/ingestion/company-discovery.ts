@@ -36,6 +36,11 @@ import {
   enqueueUniqueSourceTask,
   finishSourceTask,
 } from "@/lib/ingestion/task-queue";
+import {
+  readBooleanEnv,
+  readNonNegativeIntegerEnv,
+  resolveScaledInteger,
+} from "@/lib/ingestion/capacity";
 import type {
   CompanyDiscoveryStatus,
   CompanySourcePollState,
@@ -58,23 +63,142 @@ const DEFAULT_COMPANY_CATALOG_SEED_LIMIT = 1_000;
 const DEFAULT_COMPANY_CORPUS_SEED_LIMIT = 5_000;
 const DEFAULT_COMPANY_INVENTORY_SEED_LIMIT = 8_000;
 const DEFAULT_EXISTING_ATS_SEED_LIMIT = 2_000;
-const DISCOVERY_QUEUE_CONCURRENCY = 24;
-const SOURCE_VALIDATION_QUEUE_CONCURRENCY = 32;
-const COMPANY_SOURCE_POLL_CONCURRENCY = 32;
-const COMPANY_SOURCE_POLL_LOW_TIME_CONCURRENCY = 4;
-const COMPANY_SOURCE_POLL_CRITICAL_TIME_CONCURRENCY = 1;
+const IN_RECOVERY_MODE = process.env.INGEST_RECOVERY_MODE === "1";
+const GROWTH_MODE_ENABLED = readBooleanEnv("INGEST_GROWTH_MODE") === true;
+const DEFAULT_FRONTIER_ONLY_POLLING = readBooleanEnv("INGEST_FRONTIER_POLL_ONLY") === true;
+const DISCOVERY_QUEUE_CONCURRENCY = resolveScaledInteger({
+  base: 24,
+  absoluteMax: 72,
+  explicitEnvName: "INGEST_DISCOVERY_QUEUE_CONCURRENCY",
+});
+const SOURCE_VALIDATION_QUEUE_CONCURRENCY = resolveScaledInteger({
+  base: 32,
+  absoluteMax: 96,
+  explicitEnvName: "INGEST_SOURCE_VALIDATION_QUEUE_CONCURRENCY",
+});
+const COMPANY_SOURCE_POLL_CONCURRENCY = resolveScaledInteger({
+  base: 32,
+  absoluteMax: 96,
+  explicitEnvName: "INGEST_SOURCE_POLL_CONCURRENCY",
+});
+const COMPANY_SOURCE_POLL_RECOVERY_CONCURRENCY = resolveScaledInteger({
+  base: 10,
+  absoluteMax: 24,
+  explicitEnvName: "INGEST_SOURCE_POLL_RECOVERY_CONCURRENCY",
+});
+const EFFECTIVE_COMPANY_SOURCE_POLL_CONCURRENCY = IN_RECOVERY_MODE
+  ? Math.min(
+      COMPANY_SOURCE_POLL_CONCURRENCY,
+      COMPANY_SOURCE_POLL_RECOVERY_CONCURRENCY
+    )
+  : COMPANY_SOURCE_POLL_CONCURRENCY;
+const COMPANY_SOURCE_POLL_LOW_TIME_CONCURRENCY = Math.max(
+  2,
+  Math.min(
+    8,
+    Math.floor(EFFECTIVE_COMPANY_SOURCE_POLL_CONCURRENCY / 2)
+  )
+);
+const COMPANY_SOURCE_POLL_CRITICAL_TIME_CONCURRENCY = Math.max(
+  1,
+  Math.min(
+    3,
+    Math.floor(EFFECTIVE_COMPANY_SOURCE_POLL_CONCURRENCY / 4)
+  )
+);
 const HARD_FAILURE_REDISCOVERY_THRESHOLD = 2;
 const WORKDAY_BLOCKED_REDISCOVERY_THRESHOLD = 2;
 const WORKDAY_TIER_A_VALUE_SCORE = 60;
 const WORKDAY_TIER_B_VALUE_SCORE = 20;
+const EXTERNAL_FRONTIER_SEED_SOURCES = new Set([
+  "companies-house",
+  "opencorporates",
+  "github-org",
+  "sec-edgar",
+]);
+const INTERNAL_FRONTIER_SEED_SOURCES = new Set([
+  "internal-corpus",
+  "existing-corpus",
+]);
 // Per-cycle cap on how many sources of a given connector can be polled.
 // Workday's myworkdayjobs.com infrastructure rate-limits aggressively — hitting
 // many tenants simultaneously triggers Cloudflare bot detection for all of them.
 // Taleo is also intentionally capped because its headless+sitemap fallback path
 // is much slower than the ATS APIs and can monopolize the cycle.
+function readConnectorPollCycleCapEnv(
+  envName: string,
+  fallback: number
+) {
+  const raw = process.env[envName]?.trim();
+  if (!raw) return fallback;
+  const parsed = Number.parseInt(raw, 10);
+  return Number.isFinite(parsed) && parsed >= 0 ? parsed : fallback;
+}
+
+function getConnectorPollCycleCapEnvName(connectorName: string) {
+  return `${connectorName.replace(/[^a-z0-9]+/gi, "_").toUpperCase()}_CONNECTOR_POLL_CYCLE_CAP`;
+}
+
+const RECOVERY_CONNECTOR_POLL_CYCLE_CAPS: Record<string, number> = {
+  ashby: 1,
+  greenhouse: 1,
+  icims: 1,
+  jobvite: 1,
+  lever: 1,
+  smartrecruiters: 1,
+  successfactors: 1,
+  taleo: 1,
+  workable: 1,
+  workday: 1,
+};
+
 const CONNECTOR_POLL_CYCLE_CAPS: Record<string, number> = {
-  workday: 4,
-  taleo: 2,
+  workday: readConnectorPollCycleCapEnv(
+    "WORKDAY_CONNECTOR_POLL_CYCLE_CAP",
+    IN_RECOVERY_MODE ? RECOVERY_CONNECTOR_POLL_CYCLE_CAPS.workday : 4
+  ),
+  taleo: readConnectorPollCycleCapEnv(
+    "TALEO_CONNECTOR_POLL_CYCLE_CAP",
+    IN_RECOVERY_MODE ? RECOVERY_CONNECTOR_POLL_CYCLE_CAPS.taleo : 2
+  ),
+  ashby: readConnectorPollCycleCapEnv(
+    getConnectorPollCycleCapEnvName("ashby"),
+    IN_RECOVERY_MODE ? RECOVERY_CONNECTOR_POLL_CYCLE_CAPS.ashby : Number.MAX_SAFE_INTEGER
+  ),
+  greenhouse: readConnectorPollCycleCapEnv(
+    getConnectorPollCycleCapEnvName("greenhouse"),
+    IN_RECOVERY_MODE
+      ? RECOVERY_CONNECTOR_POLL_CYCLE_CAPS.greenhouse
+      : Number.MAX_SAFE_INTEGER
+  ),
+  icims: readConnectorPollCycleCapEnv(
+    getConnectorPollCycleCapEnvName("icims"),
+    IN_RECOVERY_MODE ? RECOVERY_CONNECTOR_POLL_CYCLE_CAPS.icims : Number.MAX_SAFE_INTEGER
+  ),
+  jobvite: readConnectorPollCycleCapEnv(
+    getConnectorPollCycleCapEnvName("jobvite"),
+    IN_RECOVERY_MODE ? RECOVERY_CONNECTOR_POLL_CYCLE_CAPS.jobvite : Number.MAX_SAFE_INTEGER
+  ),
+  lever: readConnectorPollCycleCapEnv(
+    getConnectorPollCycleCapEnvName("lever"),
+    IN_RECOVERY_MODE ? RECOVERY_CONNECTOR_POLL_CYCLE_CAPS.lever : Number.MAX_SAFE_INTEGER
+  ),
+  smartrecruiters: readConnectorPollCycleCapEnv(
+    getConnectorPollCycleCapEnvName("smartrecruiters"),
+    IN_RECOVERY_MODE
+      ? RECOVERY_CONNECTOR_POLL_CYCLE_CAPS.smartrecruiters
+      : Number.MAX_SAFE_INTEGER
+  ),
+  successfactors: readConnectorPollCycleCapEnv(
+    getConnectorPollCycleCapEnvName("successfactors"),
+    IN_RECOVERY_MODE
+      ? RECOVERY_CONNECTOR_POLL_CYCLE_CAPS.successfactors
+      : Number.MAX_SAFE_INTEGER
+  ),
+  workable: readConnectorPollCycleCapEnv(
+    getConnectorPollCycleCapEnvName("workable"),
+    IN_RECOVERY_MODE ? RECOVERY_CONNECTOR_POLL_CYCLE_CAPS.workable : Number.MAX_SAFE_INTEGER
+  ),
 };
 // Per-source connector runtime cap (passed to ingestConnector).
 // Kept below the stale-run recovery windows so a slow source fails within the
@@ -85,7 +209,13 @@ const COMPANY_SOURCE_POLL_MAX_RUNTIME_MS = 5 * 60 * 1000;
 // standalone script, letting source polling consume 25+ minutes starves the
 // rest of the cycle. Keep this tighter and adapt batch runtime as the queue
 // approaches the deadline.
-const COMPANY_SOURCE_POLL_QUEUE_WALL_CLOCK_MS = 12 * 60 * 1000;
+// 2026-04-18: Bumped 12min -> 30min during rebuild. Source-poll is the
+// throughput bottleneck (only 118 CONNECTOR_POLL/hr across 4 workers) and the
+// 12min cap was causing cycles to exit after only 4-7/38 successes. The
+// surrounding cycle work (discovery/validation/rediscovery) is tiny relative
+// to the 2k+ pending poll backlog, so giving source-poll the lion's share of
+// cycle time is the right trade-off until the backlog burns down.
+const COMPANY_SOURCE_POLL_QUEUE_WALL_CLOCK_MS = 30 * 60 * 1000;
 const COMPANY_SOURCE_POLL_MIN_REMAINING_BUDGET_MS = 90 * 1000;
 const COMPANY_SOURCE_POLL_BATCH_GRACE_MS = 90 * 1000;
 const COMPANY_SOURCE_POLL_LATE_STAGE_WINDOW_MS = 5 * 60 * 1000;
@@ -96,6 +226,51 @@ const COMPANY_SOURCE_POLL_SOFT_STOP_RATIO = 0.88;
 const COMPANY_SOURCE_POLL_TIER_1_BUDGET_RATIO = 0.65;
 const COMPANY_SOURCE_POLL_TIER_2_BUDGET_RATIO = 0.25;
 const COMPANY_SOURCE_POLL_TIER_3_BUDGET_RATIO = 0.1;
+const COMPANY_SOURCE_RECENT_YIELD_LOOKBACK_DAYS = 7;
+const COMPANY_SOURCE_RECOVERY_ZERO_YIELD_SUCCESS_THRESHOLD = 3;
+const COMPANY_SOURCE_RECOVERY_LOW_NOVELTY_RATIO = 0.08;
+const COMPANY_SOURCE_RECOVERY_LOW_NOVELTY_ACCEPTED_THRESHOLD = 25;
+const COMPANY_SOURCE_RECOVERY_SUPPRESSED_ATS_DEFER_MINUTES = 180;
+const GROWTH_FRONTIER_WINDOW_HOURS = Math.max(
+  24,
+  readNonNegativeIntegerEnv("INGEST_GROWTH_FRONTIER_WINDOW_HOURS") ?? 120
+);
+const GROWTH_LOW_NOVELTY_RATIO =
+  Math.max(
+    1,
+    Math.min(
+      25,
+      readNonNegativeIntegerEnv("INGEST_GROWTH_LOW_NOVELTY_RATIO_PERCENT") ?? 4
+    )
+  ) / 100;
+const GROWTH_LOW_NOVELTY_ACCEPTED_THRESHOLD = Math.max(
+  25,
+  readNonNegativeIntegerEnv("INGEST_GROWTH_LOW_NOVELTY_ACCEPTED_THRESHOLD") ?? 50
+);
+const GROWTH_FRONTIER_PRIORITY_BOOST = Math.max(
+  0,
+  readNonNegativeIntegerEnv("INGEST_GROWTH_FRONTIER_PRIORITY_BOOST") ?? 220
+);
+const GROWTH_NON_FRONTIER_PRIORITY_PENALTY = Math.max(
+  0,
+  readNonNegativeIntegerEnv("INGEST_GROWTH_NON_FRONTIER_PRIORITY_PENALTY") ?? 45
+);
+const GROWTH_REFRESH_HEAVY_PRIORITY_PENALTY = Math.max(
+  0,
+  readNonNegativeIntegerEnv("INGEST_GROWTH_REFRESH_HEAVY_PRIORITY_PENALTY") ?? 220
+);
+const GROWTH_HARD_COOLDOWN_HOURS = Math.max(
+  6,
+  readNonNegativeIntegerEnv("INGEST_GROWTH_HARD_COOLDOWN_HOURS") ?? 24
+);
+const GROWTH_SOURCE_QUERY_MULTIPLIER = Math.max(
+  3,
+  readNonNegativeIntegerEnv("INGEST_GROWTH_SOURCE_QUERY_MULTIPLIER") ?? 8
+);
+const FRONTIER_POLL_SLICE_CONCURRENCY = Math.max(
+  1,
+  Math.min(4, readNonNegativeIntegerEnv("INGEST_FRONTIER_POLL_SLICE_CONCURRENCY") ?? 2)
+);
 const COMPANY_SOURCE_POLL_PREVIEW_MULTIPLIER = 3;
 const COMPANY_SOURCE_POLL_DEFER_TIER_2_MINUTES = 10;
 const COMPANY_SOURCE_POLL_DEFER_TIER_3_MINUTES = 30;
@@ -151,21 +326,26 @@ const DEFAULT_CONNECTOR_POLL_RUNTIME_MS: Record<string, number> = {
   workable: 24_000,
   workday: 90_000,
 };
+// 2026-04-18: Halved/shrunk hard caps for top TIME_BUDGET offenders during the
+// rebuild. Slow polls (ashby/workday/taleo) were burning the full wall-clock
+// budget and starving the queue — cycles processed only 4-7/38 tasks before
+// hitting the cap. Failing-fast on these unlocks 3-5x more polls per cycle.
+// Hard caps are still >= 1.5x the DEFAULT soft budget so healthy polls finish.
 const HARD_CONNECTOR_POLL_TIMEOUT_MS: Record<string, number> = {
-  ashby: 120_000,
-  greenhouse: 90_000,
-  icims: 90_000,
-  jobvite: 75_000,
-  lever: 90_000,
-  recruitee: 60_000,
-  rippling: 60_000,
-  smartrecruiters: 90_000,
-  successfactors: 150_000,
-  taleo: 150_000,
-  teamtailor: 75_000,
-  workable: 75_000,
-  workday: 180_000,
-  "company-site": 120_000,
+  ashby: 60_000,
+  greenhouse: 60_000,
+  icims: 60_000,
+  jobvite: 40_000,
+  lever: 60_000,
+  recruitee: 45_000,
+  rippling: 45_000,
+  smartrecruiters: 60_000,
+  successfactors: 75_000,
+  taleo: 100_000,
+  teamtailor: 45_000,
+  workable: 45_000,
+  workday: 75_000,
+  "company-site": 80_000,
 };
 
 type PollTier = "TIER_1" | "TIER_2" | "TIER_3";
@@ -177,6 +357,13 @@ type WorkdayHostMetrics = {
   blockedStreak: number;
   cooldownUntil: Date | null;
   recentSuccessCount: number;
+};
+
+type RecentSourceYieldMetrics = {
+  sourceName: string;
+  canonicalCreatedCount7d: number;
+  acceptedCount7d: number;
+  runCount7d: number;
 };
 
 function clampScore(value: number, min: number, max: number) {
@@ -237,6 +424,7 @@ function computeSourceYieldScore(input: {
 }
 
 function computeValidationPriorityScore(input: {
+  now: Date;
   priorityScore: number;
   sourceQualityScore: number;
   yieldScore: number;
@@ -248,6 +436,10 @@ function computeValidationPriorityScore(input: {
   validationSuccessCount: number;
   sourceType: string | null;
   parserVersion: string | null;
+  metadataJson: Prisma.JsonValue | null | undefined;
+  companyMetadataJson: Prisma.JsonValue | null | undefined;
+  createdAt: Date | null | undefined;
+  updatedAt: Date | null | undefined;
 }) {
   const validationSuccessRate =
     input.validationAttemptCount > 0
@@ -260,6 +452,20 @@ function computeValidationPriorityScore(input: {
     Boolean(input.parserVersion?.startsWith("company-site:"))
       ? 16
       : 0;
+  const growthFrontier = isGrowthFrontierCandidate({
+    now: input.now,
+    createdAt: input.createdAt,
+    updatedAt: input.updatedAt,
+    pollAttemptCount: input.validationAttemptCount,
+    sourceType: input.sourceType,
+    metadataJson: input.metadataJson,
+    companyMetadataJson: input.companyMetadataJson,
+  });
+  const growthPriorityAdjustment = GROWTH_MODE_ENABLED
+    ? growthFrontier.frontierCandidate
+      ? GROWTH_FRONTIER_PRIORITY_BOOST
+      : -Math.round(GROWTH_NON_FRONTIER_PRIORITY_PENALTY * 0.5)
+    : 0;
 
   return (
     Math.round(input.priorityScore * 100) / 100 +
@@ -271,13 +477,121 @@ function computeValidationPriorityScore(input: {
     (input.validationState === "NEEDS_REDISCOVERY" ? 10 : 0) +
     csvImportBoost +
     structuredCompanySiteBoost +
+    growthPriorityAdjustment +
     Math.round(validationSuccessRate * 20) -
     Math.max(0, input.consecutiveFailures * 5) +
     Math.round(input.discoveryConfidence * 10)
   );
 }
 
+function computeNoveltyRatio(input: {
+  canonicalCreatedCount7d: number;
+  acceptedCount7d: number;
+  jobsCreatedCount: number;
+  jobsAcceptedCount: number;
+  lastJobsCreatedCount: number;
+  lastJobsAcceptedCount: number;
+}) {
+  const recentRatio =
+    input.acceptedCount7d > 0
+      ? input.canonicalCreatedCount7d / input.acceptedCount7d
+      : input.canonicalCreatedCount7d > 0
+        ? 1
+        : 0;
+  const historicalRatio =
+    input.jobsAcceptedCount > 0
+      ? input.jobsCreatedCount / input.jobsAcceptedCount
+      : input.jobsCreatedCount > 0
+        ? 1
+        : 0;
+  const lastRatio =
+    input.lastJobsAcceptedCount > 0
+      ? input.lastJobsCreatedCount / input.lastJobsAcceptedCount
+      : input.lastJobsCreatedCount > 0
+        ? 1
+        : 0;
+
+  return clampScore(
+    recentRatio * 0.6 + historicalRatio * 0.25 + lastRatio * 0.15,
+    0,
+    1
+  );
+}
+
+function shouldSuppressRecoveryAtsSource(input: {
+  sourceType: string | null;
+  pollSuccessCount: number;
+  recentAcceptedCount: number;
+  recentCanonicalCreatedCount: number;
+  jobsAcceptedCount: number;
+  jobsCreatedCount: number;
+  lastJobsCreatedCount: number;
+  noveltyRatio: number;
+}) {
+  if (!IN_RECOVERY_MODE || input.sourceType !== "ATS") {
+    return false;
+  }
+
+  const hasRecentSignal =
+    input.pollSuccessCount >= COMPANY_SOURCE_RECOVERY_ZERO_YIELD_SUCCESS_THRESHOLD ||
+    input.recentAcceptedCount >= COMPANY_SOURCE_RECOVERY_LOW_NOVELTY_ACCEPTED_THRESHOLD;
+  const historicalNoveltyRatio =
+    input.jobsAcceptedCount > 0
+      ? input.jobsCreatedCount / input.jobsAcceptedCount
+      : input.jobsCreatedCount > 0
+        ? 1
+        : 0;
+
+  if (!hasRecentSignal && input.pollSuccessCount < 10) {
+    return false;
+  }
+
+  if (
+    input.recentAcceptedCount >= 50 &&
+    input.recentCanonicalCreatedCount === 0 &&
+    input.lastJobsCreatedCount === 0
+  ) {
+    return true;
+  }
+
+  if (
+    input.recentAcceptedCount >= 100 &&
+    input.recentCanonicalCreatedCount <= 1 &&
+    input.noveltyRatio < 0.03
+  ) {
+    return true;
+  }
+
+  if (
+    input.recentAcceptedCount >= 200 &&
+    input.recentCanonicalCreatedCount <= 2 &&
+    input.noveltyRatio < 0.05
+  ) {
+    return true;
+  }
+
+  if (
+    input.pollSuccessCount >= 10 &&
+    input.jobsAcceptedCount >= 500 &&
+    historicalNoveltyRatio < 0.03 &&
+    input.lastJobsCreatedCount === 0
+  ) {
+    return true;
+  }
+
+  if (
+    input.pollSuccessCount >= 20 &&
+    input.jobsAcceptedCount >= 1000 &&
+    historicalNoveltyRatio < 0.05
+  ) {
+    return true;
+  }
+
+  return false;
+}
+
 function computePollPriorityScore(input: {
+  now: Date;
   connectorName: string;
   priorityScore: number;
   sourceQualityScore: number;
@@ -293,8 +607,15 @@ function computePollPriorityScore(input: {
   lastJobsAcceptedCount: number;
   lastJobsCreatedCount: number;
   retainedLiveJobCount: number;
+  recentCanonicalCreatedCount: number;
+  recentAcceptedCount: number;
   sourceType: string | null;
   parserVersion: string | null;
+  metadataJson: Prisma.JsonValue | null | undefined;
+  companyMetadataJson: Prisma.JsonValue | null | undefined;
+  createdAt: Date | null | undefined;
+  updatedAt: Date | null | undefined;
+  lastSuccessfulPollAt: Date | null | undefined;
 }) {
   const pollSuccessRate =
     input.pollAttemptCount > 0
@@ -304,6 +625,36 @@ function computePollPriorityScore(input: {
     input.pollSuccessCount > 0 ? input.jobsAcceptedCount / input.pollSuccessCount : 0;
   const createdPerSuccessfulPoll =
     input.pollSuccessCount > 0 ? input.jobsCreatedCount / input.pollSuccessCount : 0;
+  const noveltyRatio = computeNoveltyRatio({
+    canonicalCreatedCount7d: input.recentCanonicalCreatedCount,
+    acceptedCount7d: input.recentAcceptedCount,
+    jobsCreatedCount: input.jobsCreatedCount,
+    jobsAcceptedCount: input.jobsAcceptedCount,
+    lastJobsCreatedCount: input.lastJobsCreatedCount,
+    lastJobsAcceptedCount: input.lastJobsAcceptedCount,
+  });
+  const growthSignals = computeGrowthModePollSignals({
+    now: input.now,
+    createdAt: input.createdAt,
+    updatedAt: input.updatedAt,
+    lastSuccessfulPollAt: input.lastSuccessfulPollAt,
+    pollAttemptCount: input.pollAttemptCount,
+    pollSuccessCount: input.pollSuccessCount,
+    recentAcceptedCount: input.recentAcceptedCount,
+    recentCanonicalCreatedCount: input.recentCanonicalCreatedCount,
+    jobsAcceptedCount: input.jobsAcceptedCount,
+    jobsCreatedCount: input.jobsCreatedCount,
+    lastJobsCreatedCount: input.lastJobsCreatedCount,
+    noveltyRatio,
+    sourceType: input.sourceType,
+    metadataJson: input.metadataJson,
+    companyMetadataJson: input.companyMetadataJson,
+  });
+  const noveltyWeightedAcceptedPerPoll =
+    acceptedPerSuccessfulPoll * Math.max(0.05, noveltyRatio);
+  const noveltyWeightedRetainedCount =
+    input.retainedLiveJobCount *
+    (IN_RECOVERY_MODE ? Math.max(0.02, noveltyRatio * 0.08) : 0.18);
   const bootstrapBoost =
     input.pollAttemptCount === 0 ? 42 : input.pollSuccessCount === 0 ? 18 : 0;
   const csvImportBootstrapBoost =
@@ -348,6 +699,31 @@ function computePollPriorityScore(input: {
           consecutiveFailures: input.consecutiveFailures,
         })
       : 0;
+  const recentCreationBoost = IN_RECOVERY_MODE
+    ? Math.min(320, input.recentCanonicalCreatedCount * 18)
+    : Math.min(80, input.recentCanonicalCreatedCount * 3);
+  const recentZeroYieldPenalty =
+    IN_RECOVERY_MODE &&
+    input.pollSuccessCount >= COMPANY_SOURCE_RECOVERY_ZERO_YIELD_SUCCESS_THRESHOLD &&
+    input.recentCanonicalCreatedCount === 0 &&
+    input.lastJobsCreatedCount === 0
+      ? input.sourceType === "ATS"
+        ? 90
+        : 30
+      : 0;
+  const refreshHeavyPenalty =
+    IN_RECOVERY_MODE &&
+    input.sourceType === "ATS" &&
+    input.recentAcceptedCount >= COMPANY_SOURCE_RECOVERY_LOW_NOVELTY_ACCEPTED_THRESHOLD &&
+    noveltyRatio < COMPANY_SOURCE_RECOVERY_LOW_NOVELTY_RATIO &&
+    input.recentCanonicalCreatedCount <= 1
+      ? 140
+      : IN_RECOVERY_MODE &&
+          input.recentAcceptedCount >= COMPANY_SOURCE_RECOVERY_LOW_NOVELTY_ACCEPTED_THRESHOLD &&
+          noveltyRatio < COMPANY_SOURCE_RECOVERY_LOW_NOVELTY_RATIO
+        ? 60
+        : 0;
+  const noveltyBoost = IN_RECOVERY_MODE ? Math.round(noveltyRatio * 90) : Math.round(noveltyRatio * 30);
 
   return (
     Math.round(input.priorityScore * 100) / 100 +
@@ -355,22 +731,28 @@ function computePollPriorityScore(input: {
     Math.round(input.yieldScore * 72) +
     Math.round(pollSuccessRate * 18) +
     Math.min(36, input.historicalYield * 1.2) +
-    Math.min(44, acceptedPerSuccessfulPoll * 0.3) +
-    Math.min(120, createdPerSuccessfulPoll * 4) +
-    Math.min(42, input.retainedLiveJobCount * 0.25) +
-    Math.min(40, input.lastJobsAcceptedCount * 0.25) +
-    Math.min(90, input.lastJobsCreatedCount * 8) +
+    Math.min(18, noveltyWeightedAcceptedPerPoll * 0.12) +
+    Math.min(160, createdPerSuccessfulPoll * 6) +
+    Math.min(12, noveltyWeightedRetainedCount) +
+    Math.min(10, input.lastJobsAcceptedCount * Math.max(0.03, noveltyRatio * 0.08)) +
+    Math.min(120, input.lastJobsCreatedCount * 10) +
+    recentCreationBoost +
+    noveltyBoost +
     bootstrapBoost +
     csvImportBootstrapBoost +
+    growthSignals.frontierSignals.boost +
     productiveImportedConnectorBoost +
     structuredCompanySiteBootstrapBoost +
     workdayPriorityAdjustment +
+    growthSignals.priorityAdjustment +
     (input.status === "DEGRADED" ? 10 : 0) +
     Math.max(0, 15 - input.consecutiveFailures * 3) +
     Math.round(input.discoveryConfidence * 10) -
     lowYieldPenalty -
     emptyPenalty -
-    importedLowSignalPenalty
+    importedLowSignalPenalty -
+    recentZeroYieldPenalty -
+    refreshHeavyPenalty
   );
 }
 
@@ -514,6 +896,24 @@ function readNumberValue(value: unknown) {
   return null;
 }
 
+function readBooleanValue(value: unknown) {
+  if (typeof value === "boolean") {
+    return value;
+  }
+
+  if (typeof value === "string") {
+    const normalized = value.trim().toLowerCase();
+    if (normalized === "true" || normalized === "1" || normalized === "yes") {
+      return true;
+    }
+    if (normalized === "false" || normalized === "0" || normalized === "no") {
+      return false;
+    }
+  }
+
+  return null;
+}
+
 function mergeMetadataJson(
   currentValue: Prisma.JsonValue | null | undefined,
   nextValue: Record<string, unknown>
@@ -550,6 +950,185 @@ function mergeMetadataJson(
   }
 
   return merged as Prisma.InputJsonValue;
+}
+
+function readSeedSourceChain(
+  ...values: Array<Prisma.JsonValue | null | undefined>
+) {
+  for (const value of values) {
+    const seedSource = readSeedSource(value);
+    if (seedSource) {
+      return seedSource;
+    }
+  }
+
+  return null;
+}
+
+function isFrontierExpansionMetadata(value: Prisma.JsonValue | null | undefined) {
+  return readBooleanValue(readJsonRecord(value).frontierExpansion) === true;
+}
+
+function computeCompanyFrontierSeedBoost(
+  seedSource: string | null,
+  phase: "discovery" | "poll-bootstrap" | "poll-active" = "discovery"
+) {
+  if (!seedSource) return 0;
+
+  if (seedSource === "csv-job-board-seed") {
+    return phase === "discovery" ? 22 : phase === "poll-bootstrap" ? 18 : 10;
+  }
+
+  if (seedSource === "ats-url-expansion") {
+    return phase === "discovery" ? 20 : phase === "poll-bootstrap" ? 16 : 12;
+  }
+
+  if (EXTERNAL_FRONTIER_SEED_SOURCES.has(seedSource)) {
+    return phase === "discovery" ? 18 : phase === "poll-bootstrap" ? 14 : 9;
+  }
+
+  if (INTERNAL_FRONTIER_SEED_SOURCES.has(seedSource)) {
+    return phase === "discovery" ? 12 : phase === "poll-bootstrap" ? 9 : 6;
+  }
+
+  return 0;
+}
+
+function computeFrontierPollSignals(input: {
+  pollAttemptCount: number;
+  sourceType: string | null;
+  metadataJson: Prisma.JsonValue | null | undefined;
+  companyMetadataJson: Prisma.JsonValue | null | undefined;
+}) {
+  const seedSource = readSeedSourceChain(input.metadataJson, input.companyMetadataJson);
+  const frontierExpansion =
+    isFrontierExpansionMetadata(input.metadataJson) ||
+    isFrontierExpansionMetadata(input.companyMetadataJson);
+  const seedBoost = computeCompanyFrontierSeedBoost(
+    seedSource,
+    input.pollAttemptCount === 0 ? "poll-bootstrap" : "poll-active"
+  );
+  const frontierBoost = frontierExpansion
+    ? input.pollAttemptCount === 0
+      ? input.sourceType === "ATS"
+        ? 18
+        : 14
+      : 8
+    : 0;
+
+  return {
+    seedSource,
+    frontierExpansion,
+    boost: seedBoost + frontierBoost,
+  };
+}
+
+function isRecentGrowthWindow(date: Date | null | undefined, now: Date) {
+  if (!date) return false;
+  return (
+    now.getTime() - date.getTime() <=
+    GROWTH_FRONTIER_WINDOW_HOURS * 60 * 60 * 1000
+  );
+}
+
+function isGrowthFrontierCandidate(input: {
+  now: Date;
+  createdAt: Date | null | undefined;
+  updatedAt: Date | null | undefined;
+  lastSuccessfulPollAt?: Date | null | undefined;
+  pollAttemptCount: number;
+  sourceType: string | null;
+  metadataJson: Prisma.JsonValue | null | undefined;
+  companyMetadataJson: Prisma.JsonValue | null | undefined;
+}) {
+  const frontierSignals = computeFrontierPollSignals({
+    pollAttemptCount: input.pollAttemptCount,
+    sourceType: input.sourceType,
+    metadataJson: input.metadataJson,
+    companyMetadataJson: input.companyMetadataJson,
+  });
+  const recentlyTouched =
+    isRecentGrowthWindow(input.createdAt, input.now) ||
+    isRecentGrowthWindow(input.updatedAt, input.now) ||
+    isRecentGrowthWindow(input.lastSuccessfulPollAt, input.now);
+
+  return {
+    frontierSignals,
+    frontierCandidate:
+      frontierSignals.frontierExpansion ||
+      frontierSignals.seedSource != null ||
+      (input.pollAttemptCount <= 1 && recentlyTouched),
+  };
+}
+
+function computeGrowthModePollSignals(input: {
+  now: Date;
+  createdAt: Date | null | undefined;
+  updatedAt: Date | null | undefined;
+  lastSuccessfulPollAt?: Date | null | undefined;
+  pollAttemptCount: number;
+  pollSuccessCount: number;
+  recentAcceptedCount: number;
+  recentCanonicalCreatedCount: number;
+  jobsAcceptedCount: number;
+  jobsCreatedCount: number;
+  lastJobsCreatedCount: number;
+  noveltyRatio: number;
+  sourceType: string | null;
+  metadataJson: Prisma.JsonValue | null | undefined;
+  companyMetadataJson: Prisma.JsonValue | null | undefined;
+}) {
+  const growthFrontier = isGrowthFrontierCandidate({
+    now: input.now,
+    createdAt: input.createdAt,
+    updatedAt: input.updatedAt,
+    lastSuccessfulPollAt: input.lastSuccessfulPollAt,
+    pollAttemptCount: input.pollAttemptCount,
+    sourceType: input.sourceType,
+    metadataJson: input.metadataJson,
+    companyMetadataJson: input.companyMetadataJson,
+  });
+  const refreshHeavyLowNovelty =
+    input.pollSuccessCount >= COMPANY_SOURCE_RECOVERY_ZERO_YIELD_SUCCESS_THRESHOLD &&
+    input.recentAcceptedCount >= GROWTH_LOW_NOVELTY_ACCEPTED_THRESHOLD &&
+    input.recentCanonicalCreatedCount <= 1 &&
+    input.lastJobsCreatedCount === 0 &&
+    input.noveltyRatio < GROWTH_LOW_NOVELTY_RATIO;
+  const historicalNoveltyRatio =
+    input.jobsAcceptedCount > 0
+      ? input.jobsCreatedCount / input.jobsAcceptedCount
+      : input.jobsCreatedCount > 0
+        ? 1
+        : 0;
+  const historicalRefreshHeavy =
+    input.jobsAcceptedCount >= GROWTH_LOW_NOVELTY_ACCEPTED_THRESHOLD * 8 &&
+    input.lastJobsCreatedCount === 0 &&
+    historicalNoveltyRatio < GROWTH_LOW_NOVELTY_RATIO;
+  const refreshHeavyCandidate =
+    !growthFrontier.frontierCandidate &&
+    input.sourceType === "ATS" &&
+    (refreshHeavyLowNovelty || historicalRefreshHeavy);
+
+  let priorityAdjustment = 0;
+  if (GROWTH_MODE_ENABLED) {
+    if (growthFrontier.frontierCandidate) {
+      priorityAdjustment =
+        GROWTH_FRONTIER_PRIORITY_BOOST +
+        (input.pollAttemptCount === 0 ? 80 : input.pollAttemptCount <= 1 ? 40 : 0);
+    } else if (refreshHeavyCandidate) {
+      priorityAdjustment = -GROWTH_REFRESH_HEAVY_PRIORITY_PENALTY;
+    } else {
+      priorityAdjustment = -GROWTH_NON_FRONTIER_PRIORITY_PENALTY;
+    }
+  }
+
+  return {
+    ...growthFrontier,
+    refreshHeavyCandidate,
+    shouldHardCooldown:
+      GROWTH_MODE_ENABLED && refreshHeavyCandidate && input.sourceType === "ATS",
+    priorityAdjustment,
+  };
 }
 
 function computePollAdmissionBudgetMs(
@@ -681,7 +1260,9 @@ function computeBlockedRisk(input: {
 }
 
 function computeExpectedAcceptedJobs(input: {
+  now: Date;
   connectorName: string;
+  sourceType: string | null;
   sourceQualityScore: number;
   yieldScore: number;
   pollAttemptCount: number;
@@ -691,18 +1272,105 @@ function computeExpectedAcceptedJobs(input: {
   lastJobsAcceptedCount: number;
   lastJobsCreatedCount: number;
   retainedLiveJobCount: number;
+  canonicalCreatedCount7d: number;
+  acceptedCount7d: number;
+  metadataJson: Prisma.JsonValue | null | undefined;
+  companyMetadataJson: Prisma.JsonValue | null | undefined;
+  createdAt: Date | null | undefined;
+  updatedAt: Date | null | undefined;
+  lastSuccessfulPollAt: Date | null | undefined;
 }) {
   const acceptedPerSuccessfulPoll =
     input.pollSuccessCount > 0 ? input.jobsAcceptedCount / input.pollSuccessCount : 0;
   const createdPerSuccessfulPoll =
     input.pollSuccessCount > 0 ? input.jobsCreatedCount / input.pollSuccessCount : 0;
+  const noveltyRatio = computeNoveltyRatio({
+    canonicalCreatedCount7d: input.canonicalCreatedCount7d,
+    acceptedCount7d: input.acceptedCount7d,
+    jobsCreatedCount: input.jobsCreatedCount,
+    jobsAcceptedCount: input.jobsAcceptedCount,
+    lastJobsCreatedCount: input.lastJobsCreatedCount,
+    lastJobsAcceptedCount: input.lastJobsAcceptedCount,
+  });
+  const growthSignals = computeGrowthModePollSignals({
+    now: input.now,
+    createdAt: input.createdAt,
+    updatedAt: input.updatedAt,
+    lastSuccessfulPollAt: input.lastSuccessfulPollAt,
+    pollAttemptCount: input.pollAttemptCount,
+    pollSuccessCount: input.pollSuccessCount,
+    recentAcceptedCount: input.acceptedCount7d,
+    recentCanonicalCreatedCount: input.canonicalCreatedCount7d,
+    jobsAcceptedCount: input.jobsAcceptedCount,
+    jobsCreatedCount: input.jobsCreatedCount,
+    lastJobsCreatedCount: input.lastJobsCreatedCount,
+    noveltyRatio,
+    sourceType: input.sourceType,
+    metadataJson: input.metadataJson,
+    companyMetadataJson: input.companyMetadataJson,
+  });
   const bootstrapExpectation =
     input.pollAttemptCount === 0
       ? TIER_1_POLL_CONNECTORS.has(input.connectorName) ||
         TIER_1_CONDITIONAL_CONNECTORS.has(input.connectorName)
         ? 4
         : 1.5
+      + (growthSignals.frontierSignals.frontierExpansion ? 2 : 0)
+      + Math.min(2, growthSignals.frontierSignals.boost * 0.08)
       : 0;
+
+  if (IN_RECOVERY_MODE) {
+    const companyJsonBoost = input.sourceType === "COMPANY_JSON" ? 8 : 0;
+    const companyHtmlBoost = input.sourceType === "COMPANY_HTML" ? 3 : 0;
+    const recentCreatedDailyRate = input.canonicalCreatedCount7d / COMPANY_SOURCE_RECENT_YIELD_LOOKBACK_DAYS;
+    const recentAcceptedDailyRate =
+      (input.acceptedCount7d / COMPANY_SOURCE_RECENT_YIELD_LOOKBACK_DAYS) *
+      Math.max(0.05, noveltyRatio);
+    const staleAtsPenalty =
+      input.sourceType === "ATS" &&
+      input.pollSuccessCount >= COMPANY_SOURCE_RECOVERY_ZERO_YIELD_SUCCESS_THRESHOLD &&
+      input.canonicalCreatedCount7d === 0 &&
+      input.lastJobsCreatedCount === 0 &&
+      createdPerSuccessfulPoll < 0.5
+        ? 12
+        : 0;
+    const staleCompanySitePenalty =
+      (input.sourceType === "COMPANY_JSON" || input.sourceType === "COMPANY_HTML") &&
+      input.pollSuccessCount >= COMPANY_SOURCE_RECOVERY_ZERO_YIELD_SUCCESS_THRESHOLD &&
+      input.canonicalCreatedCount7d === 0 &&
+      input.lastJobsCreatedCount === 0
+        ? 4
+        : 0;
+    const refreshHeavyPenalty =
+      input.acceptedCount7d >= COMPANY_SOURCE_RECOVERY_LOW_NOVELTY_ACCEPTED_THRESHOLD &&
+      noveltyRatio < COMPANY_SOURCE_RECOVERY_LOW_NOVELTY_RATIO
+        ? input.sourceType === "ATS"
+          ? 18
+          : 8
+        : 0;
+
+    return Math.max(
+      bootstrapExpectation,
+      input.canonicalCreatedCount7d * 2.2 +
+        recentCreatedDailyRate * 18 +
+        recentAcceptedDailyRate * 1.5 +
+        input.lastJobsCreatedCount * 11 +
+        createdPerSuccessfulPoll * 7 +
+        input.lastJobsAcceptedCount * Math.max(0.02, noveltyRatio * 0.1) +
+        acceptedPerSuccessfulPoll * Math.max(0.02, noveltyRatio * 0.08) +
+        input.sourceQualityScore * 8 +
+        input.yieldScore * 12 +
+        noveltyRatio * 30 +
+        growthSignals.frontierSignals.boost * 0.45 +
+        (GROWTH_MODE_ENABLED && growthSignals.frontierCandidate ? 10 : 0) -
+        (GROWTH_MODE_ENABLED && growthSignals.refreshHeavyCandidate ? 18 : 0) +
+        companyJsonBoost +
+        companyHtmlBoost -
+        staleAtsPenalty -
+        staleCompanySitePenalty -
+        refreshHeavyPenalty
+    );
+  }
 
   return Math.max(
     bootstrapExpectation,
@@ -710,21 +1378,61 @@ function computeExpectedAcceptedJobs(input: {
       input.lastJobsCreatedCount * 2.5 +
       acceptedPerSuccessfulPoll * 0.45 +
       createdPerSuccessfulPoll * 3.5 +
-      input.retainedLiveJobCount * 0.1 +
+      input.retainedLiveJobCount * 0.05 +
       input.sourceQualityScore * 10 +
-      input.yieldScore * 18
+      input.yieldScore * 18 +
+      growthSignals.frontierSignals.boost * 0.35 +
+      (GROWTH_MODE_ENABLED && growthSignals.frontierCandidate ? 6 : 0) -
+      (GROWTH_MODE_ENABLED && growthSignals.refreshHeavyCandidate ? 6 : 0)
   );
 }
 
 function classifyPollTier(input: {
+  now: Date;
   connectorName: string;
   sourceType: string | null;
   pollAttemptCount: number;
   pollSuccessCount: number;
+  lastJobsCreatedCount: number;
   retainedLiveJobCount: number;
   blockedRisk: number;
   workdayTier: ReturnType<typeof getWorkdayTier> | null;
+  canonicalCreatedCount7d: number;
+  acceptedCount7d: number;
+  jobsAcceptedCount: number;
+  jobsCreatedCount: number;
+  metadataJson: Prisma.JsonValue | null | undefined;
+  companyMetadataJson: Prisma.JsonValue | null | undefined;
+  createdAt: Date | null | undefined;
+  updatedAt: Date | null | undefined;
+  lastSuccessfulPollAt: Date | null | undefined;
 }) {
+  const noveltyRatio = computeNoveltyRatio({
+    canonicalCreatedCount7d: input.canonicalCreatedCount7d,
+    acceptedCount7d: input.acceptedCount7d,
+    jobsCreatedCount: input.jobsCreatedCount,
+    jobsAcceptedCount: input.jobsAcceptedCount,
+    lastJobsCreatedCount: input.lastJobsCreatedCount,
+    lastJobsAcceptedCount: 0,
+  });
+  const growthSignals = computeGrowthModePollSignals({
+    now: input.now,
+    createdAt: input.createdAt,
+    updatedAt: input.updatedAt,
+    lastSuccessfulPollAt: input.lastSuccessfulPollAt,
+    pollAttemptCount: input.pollAttemptCount,
+    pollSuccessCount: input.pollSuccessCount,
+    recentAcceptedCount: input.acceptedCount7d,
+    recentCanonicalCreatedCount: input.canonicalCreatedCount7d,
+    jobsAcceptedCount: input.jobsAcceptedCount,
+    jobsCreatedCount: input.jobsCreatedCount,
+    lastJobsCreatedCount: input.lastJobsCreatedCount,
+    noveltyRatio,
+    sourceType: input.sourceType,
+    metadataJson: input.metadataJson,
+    companyMetadataJson: input.companyMetadataJson,
+  });
+
   if (input.connectorName === "workday") {
     return input.workdayTier === "A"
       ? "TIER_1"
@@ -733,7 +1441,67 @@ function classifyPollTier(input: {
         : "TIER_3";
   }
 
+  if (
+    input.pollAttemptCount === 0 &&
+    (growthSignals.frontierSignals.frontierExpansion ||
+      growthSignals.frontierSignals.seedSource != null)
+  ) {
+    return input.sourceType === "ATS" ||
+      input.sourceType === "COMPANY_JSON" ||
+      input.sourceType === "COMPANY_HTML"
+      ? "TIER_1"
+      : "TIER_2";
+  }
+
+  if (GROWTH_MODE_ENABLED && growthSignals.frontierCandidate) {
+    return "TIER_1";
+  }
+
+  if (GROWTH_MODE_ENABLED && growthSignals.refreshHeavyCandidate) {
+    return "TIER_3";
+  }
+
+  if (
+    IN_RECOVERY_MODE &&
+    input.canonicalCreatedCount7d === 0 &&
+    input.pollSuccessCount >= COMPANY_SOURCE_RECOVERY_ZERO_YIELD_SUCCESS_THRESHOLD
+  ) {
+    if (input.sourceType === "ATS") {
+      return "TIER_3";
+    }
+
+    if (input.sourceType === "COMPANY_JSON" || input.sourceType === "COMPANY_HTML") {
+      return input.retainedLiveJobCount > 0 ? "TIER_2" : "TIER_3";
+    }
+  }
+
+  if (IN_RECOVERY_MODE && input.canonicalCreatedCount7d > 0) {
+    if (input.sourceType === "COMPANY_JSON" || input.sourceType === "COMPANY_HTML") {
+      return "TIER_1";
+    }
+
+    if (input.sourceType === "ATS") {
+      return "TIER_1";
+    }
+  }
+
+  if (
+    IN_RECOVERY_MODE &&
+    input.sourceType === "COMPANY_JSON" &&
+    (input.pollSuccessCount > 0 || input.retainedLiveJobCount > 0)
+  ) {
+    return "TIER_1";
+  }
+
   if (TIER_1_POLL_CONNECTORS.has(input.connectorName)) {
+    if (
+      IN_RECOVERY_MODE &&
+      input.pollSuccessCount >= 3 &&
+      input.lastJobsCreatedCount === 0
+    ) {
+      return "TIER_2";
+    }
+
     return "TIER_1";
   }
 
@@ -748,7 +1516,7 @@ function classifyPollTier(input: {
   }
 
   if (
-    input.sourceType === "COMPANY_JSON" &&
+    (input.sourceType === "COMPANY_JSON" || input.sourceType === "COMPANY_HTML") &&
     (input.pollSuccessCount > 0 || input.retainedLiveJobCount > 0)
   ) {
     return "TIER_2";
@@ -770,15 +1538,60 @@ function computePollEfficiencyScore(input: {
   blockedRisk: number;
   recentSuccessRate: number;
   retainedLiveJobCount: number;
+  canonicalCreatedCount7d: number;
+  acceptedCount7d: number;
+  noveltyRatio: number;
 }) {
   const score =
     input.expectedAcceptedJobs * 5 +
-    input.retainedLiveJobCount * 0.2 +
+    input.canonicalCreatedCount7d * 24 +
+    input.acceptedCount7d * Math.max(0.01, input.noveltyRatio * 0.04) +
+    input.retainedLiveJobCount * Math.max(0.01, input.noveltyRatio * 0.035) +
+    input.noveltyRatio * 60 +
     input.recentSuccessRate * 20 +
     input.basePriorityScore * 0.12 -
     input.blockedRisk * 30;
 
   return score / Math.max(input.estimatedRuntimeMs / 1000, 1);
+}
+
+async function buildRecentSourceYieldMetrics(
+  sourceNames: string[],
+  now: Date
+) {
+  if (sourceNames.length === 0) {
+    return new Map<string, RecentSourceYieldMetrics>();
+  }
+
+  const cutoff = new Date(
+    now.getTime() - COMPANY_SOURCE_RECENT_YIELD_LOOKBACK_DAYS * 24 * 60 * 60 * 1000
+  );
+  const rows = await prisma.ingestionRun.groupBy({
+    by: ["sourceName"],
+    where: {
+      startedAt: { gte: cutoff },
+      sourceName: { in: sourceNames },
+    },
+    _sum: {
+      canonicalCreatedCount: true,
+      acceptedCount: true,
+    },
+    _count: {
+      _all: true,
+    },
+  });
+
+  return new Map<string, RecentSourceYieldMetrics>(
+    rows.map((row) => [
+      row.sourceName,
+      {
+        sourceName: row.sourceName,
+        canonicalCreatedCount7d: row._sum.canonicalCreatedCount ?? 0,
+        acceptedCount7d: row._sum.acceptedCount ?? 0,
+        runCount7d: row._count._all,
+      },
+    ])
+  );
 }
 
 function computeQueuePriorityScore(input: {
@@ -1149,7 +1962,7 @@ export async function enqueueCompanyDiscoveryTasks(options: {
         (left.sources.length === 0 ? 50 : 0) +
         (left.detectedAts ? 40 : 0) +
         (left.careersUrl ? 18 : 0) +
-        (leftSeedSource === "csv-job-board-seed" ? 22 : 0) +
+        computeCompanyFrontierSeedBoost(leftSeedSource, "discovery") +
         Math.round(left.discoveryConfidence * 20) +
         Math.min(30, left.jobs.length * 3) +
         (left.discoveryStatus === "FAILED" ? -20 : 0) +
@@ -1158,7 +1971,7 @@ export async function enqueueCompanyDiscoveryTasks(options: {
         (right.sources.length === 0 ? 50 : 0) +
         (right.detectedAts ? 40 : 0) +
         (right.careersUrl ? 18 : 0) +
-        (rightSeedSource === "csv-job-board-seed" ? 22 : 0) +
+        computeCompanyFrontierSeedBoost(rightSeedSource, "discovery") +
         Math.round(right.discoveryConfidence * 20) +
         Math.min(30, right.jobs.length * 3) +
         (right.discoveryStatus === "FAILED" ? -20 : 0) +
@@ -1175,7 +1988,7 @@ export async function enqueueCompanyDiscoveryTasks(options: {
       Math.min(40, company.jobs.length * 3) +
       (company.sources.length === 0 ? 30 : 0) +
       (company.careersUrl ? 12 : 0) +
-      (seedSource === "csv-job-board-seed" ? 18 : 0) +
+      computeCompanyFrontierSeedBoost(seedSource, "poll-bootstrap") +
       (company.discoveryStatus === "FAILED" ? -10 : 15) +
       Math.max(0, 20 - Math.round(company.discoveryConfidence * 20));
 
@@ -1233,18 +2046,30 @@ export async function enqueueRediscoveryTasks(options: {
 export async function enqueueSourceValidationTasks(options: {
   limit?: number;
   now?: Date;
+  companySourceIds?: string[];
+  frontierOnly?: boolean;
+  growthMode?: boolean;
 } = {}) {
   const now = options.now ?? new Date();
+  const frontierOnly = options.frontierOnly ?? DEFAULT_FRONTIER_ONLY_POLLING;
+  const growthMode = options.growthMode ?? GROWTH_MODE_ENABLED;
+  const targetIds =
+    options.companySourceIds && options.companySourceIds.length > 0
+      ? new Set(options.companySourceIds)
+      : null;
+  const requestedLimit = options.limit ?? SOURCE_VALIDATION_TASK_LIMIT;
   const sources = await prisma.companySource.findMany({
     where: {
       status: { not: "DISABLED" },
       validationState: { in: ["UNVALIDATED", "SUSPECT", "NEEDS_REDISCOVERY", "BLOCKED"] },
       OR: [{ cooldownUntil: null }, { cooldownUntil: { lte: now } }],
+      ...(targetIds ? { id: { in: [...targetIds] } } : {}),
     },
     include: {
       company: {
         select: {
           discoveryConfidence: true,
+          metadataJson: true,
           jobs: {
             where: { status: { in: ["LIVE", "AGING"] } },
             select: { id: true },
@@ -1258,12 +2083,69 @@ export async function enqueueSourceValidationTasks(options: {
       { priorityScore: "desc" },
       { updatedAt: "asc" },
     ],
-    take: options.limit ?? SOURCE_VALIDATION_TASK_LIMIT,
+    take: targetIds
+      ? Math.max(requestedLimit, targetIds.size)
+      : growthMode || frontierOnly
+        ? Math.max(requestedLimit * GROWTH_SOURCE_QUERY_MULTIPLIER, requestedLimit + 750)
+        : requestedLimit,
   });
 
-  for (const source of sources) {
+  const scheduledSources = [...sources]
+    .filter((source) => {
+      if (targetIds && !targetIds.has(source.id)) {
+        return false;
+      }
+
+      if (!frontierOnly) {
+        return true;
+      }
+
+      return isGrowthFrontierCandidate({
+        now,
+        createdAt: source.createdAt,
+        updatedAt: source.updatedAt,
+        pollAttemptCount: source.pollAttemptCount,
+        sourceType: source.sourceType,
+        metadataJson: source.metadataJson,
+        companyMetadataJson: source.company.metadataJson,
+      }).frontierCandidate;
+    })
+    .sort((left, right) => {
+      const leftFrontier = isGrowthFrontierCandidate({
+        now,
+        createdAt: left.createdAt,
+        updatedAt: left.updatedAt,
+        pollAttemptCount: left.pollAttemptCount,
+        sourceType: left.sourceType,
+        metadataJson: left.metadataJson,
+        companyMetadataJson: left.company.metadataJson,
+      }).frontierCandidate;
+      const rightFrontier = isGrowthFrontierCandidate({
+        now,
+        createdAt: right.createdAt,
+        updatedAt: right.updatedAt,
+        pollAttemptCount: right.pollAttemptCount,
+        sourceType: right.sourceType,
+        metadataJson: right.metadataJson,
+        companyMetadataJson: right.company.metadataJson,
+      }).frontierCandidate;
+
+      if (leftFrontier !== rightFrontier) {
+        return leftFrontier ? -1 : 1;
+      }
+
+      if (right.priorityScore !== left.priorityScore) {
+        return right.priorityScore - left.priorityScore;
+      }
+
+      return left.updatedAt.getTime() - right.updatedAt.getTime();
+    })
+    .slice(0, requestedLimit);
+
+  for (const source of scheduledSources) {
     const historicalYield = source.company.jobs.length;
     const priorityScore = computeValidationPriorityScore({
+      now,
       priorityScore: source.priorityScore,
       sourceQualityScore: source.sourceQualityScore,
       yieldScore: source.yieldScore,
@@ -1275,6 +2157,10 @@ export async function enqueueSourceValidationTasks(options: {
       validationSuccessCount: source.validationSuccessCount,
       sourceType: source.sourceType,
       parserVersion: source.parserVersion,
+      metadataJson: source.metadataJson,
+      companyMetadataJson: source.company.metadataJson,
+      createdAt: source.createdAt,
+      updatedAt: source.updatedAt,
     });
 
     await enqueueUniqueSourceTask({
@@ -1287,17 +2173,26 @@ export async function enqueueSourceValidationTasks(options: {
   }
 
   return {
-    enqueuedCount: sources.length,
-    companySourceIds: sources.map((source) => source.id),
+    enqueuedCount: scheduledSources.length,
+    companySourceIds: scheduledSources.map((source) => source.id),
   };
 }
 
 export async function enqueueCompanySourcePollTasks(options: {
   limit?: number;
   now?: Date;
+  companySourceIds?: string[];
+  frontierOnly?: boolean;
+  growthMode?: boolean;
 } = {}) {
   const now = options.now ?? new Date();
   const pollLimit = options.limit ?? COMPANY_SOURCE_POLL_LIMIT;
+  const frontierOnly = options.frontierOnly ?? DEFAULT_FRONTIER_ONLY_POLLING;
+  const growthMode = options.growthMode ?? GROWTH_MODE_ENABLED;
+  const targetIds =
+    options.companySourceIds && options.companySourceIds.length > 0
+      ? new Set(options.companySourceIds)
+      : null;
   const admissionBudgetMs = computePollAdmissionBudgetMs();
   const workdayHostMetrics = await buildWorkdayHostMetrics(now);
   const candidates = await prisma.companySource.findMany({
@@ -1306,12 +2201,14 @@ export async function enqueueCompanySourcePollTasks(options: {
       validationState: "VALIDATED",
       pollState: { in: ["READY", "ACTIVE", "BACKOFF"] },
       OR: [{ cooldownUntil: null }, { cooldownUntil: { lte: now } }],
+      ...(targetIds ? { id: { in: [...targetIds] } } : {}),
     },
     include: {
       company: {
         select: {
           id: true,
           discoveryConfidence: true,
+          metadataJson: true,
           jobs: {
             where: { status: { in: ["LIVE", "AGING"] } },
             select: { id: true },
@@ -1321,12 +2218,22 @@ export async function enqueueCompanySourcePollTasks(options: {
       },
     },
     orderBy: [{ priorityScore: "desc" }, { lastSuccessfulPollAt: "asc" }],
-    take: Math.max(pollLimit * 6, pollLimit + 600),
+    take: targetIds
+      ? Math.max(pollLimit, targetIds.size)
+      : growthMode || frontierOnly
+        ? Math.max(pollLimit * GROWTH_SOURCE_QUERY_MULTIPLIER, pollLimit + 1_200)
+        : Math.max(pollLimit * 6, pollLimit + 600),
   });
+  const recentYieldMetrics = await buildRecentSourceYieldMetrics(
+    candidates.map((source) => source.sourceName),
+    now
+  );
 
   const scoredSources = candidates.map((source) => {
     const historicalYield = source.company.jobs.length;
+    const recentYield = recentYieldMetrics.get(source.sourceName);
     const basePriorityScore = computePollPriorityScore({
+      now,
       connectorName: source.connectorName,
       priorityScore: source.priorityScore,
       sourceQualityScore: source.sourceQualityScore,
@@ -1342,8 +2249,15 @@ export async function enqueueCompanySourcePollTasks(options: {
       lastJobsAcceptedCount: source.lastJobsAcceptedCount,
       lastJobsCreatedCount: source.lastJobsCreatedCount,
       retainedLiveJobCount: source.retainedLiveJobCount,
+      recentCanonicalCreatedCount: recentYield?.canonicalCreatedCount7d ?? 0,
+      recentAcceptedCount: recentYield?.acceptedCount7d ?? 0,
       sourceType: source.sourceType,
       parserVersion: source.parserVersion,
+      metadataJson: source.metadataJson,
+      companyMetadataJson: source.company.metadataJson,
+      createdAt: source.createdAt,
+      updatedAt: source.updatedAt,
+      lastSuccessfulPollAt: source.lastSuccessfulPollAt,
     });
     const workdayHost = getWorkdayHostKey({
       connectorName: source.connectorName,
@@ -1379,7 +2293,9 @@ export async function enqueueCompanySourcePollTasks(options: {
       hostMetrics,
     });
     const expectedAcceptedJobs = computeExpectedAcceptedJobs({
+      now,
       connectorName: source.connectorName,
+      sourceType: source.sourceType,
       sourceQualityScore: source.sourceQualityScore,
       yieldScore: source.yieldScore,
       pollAttemptCount: source.pollAttemptCount,
@@ -1389,17 +2305,43 @@ export async function enqueueCompanySourcePollTasks(options: {
       lastJobsAcceptedCount: source.lastJobsAcceptedCount,
       lastJobsCreatedCount: source.lastJobsCreatedCount,
       retainedLiveJobCount: source.retainedLiveJobCount,
+      canonicalCreatedCount7d: recentYield?.canonicalCreatedCount7d ?? 0,
+      acceptedCount7d: recentYield?.acceptedCount7d ?? 0,
+      metadataJson: source.metadataJson,
+      companyMetadataJson: source.company.metadataJson,
+      createdAt: source.createdAt,
+      updatedAt: source.updatedAt,
+      lastSuccessfulPollAt: source.lastSuccessfulPollAt,
+    });
+    const noveltyRatio = computeNoveltyRatio({
+      canonicalCreatedCount7d: recentYield?.canonicalCreatedCount7d ?? 0,
+      acceptedCount7d: recentYield?.acceptedCount7d ?? 0,
+      jobsCreatedCount: source.jobsCreatedCount,
+      jobsAcceptedCount: source.jobsAcceptedCount,
+      lastJobsCreatedCount: source.lastJobsCreatedCount,
+      lastJobsAcceptedCount: source.lastJobsAcceptedCount,
     });
     const workdayTier =
       workdayValueScore === null ? null : getWorkdayTier(workdayValueScore);
     const tier = classifyPollTier({
+      now,
       connectorName: source.connectorName,
       sourceType: source.sourceType,
       pollAttemptCount: source.pollAttemptCount,
       pollSuccessCount: source.pollSuccessCount,
+      lastJobsCreatedCount: source.lastJobsCreatedCount,
       retainedLiveJobCount: source.retainedLiveJobCount,
       blockedRisk,
       workdayTier,
+      canonicalCreatedCount7d: recentYield?.canonicalCreatedCount7d ?? 0,
+      acceptedCount7d: recentYield?.acceptedCount7d ?? 0,
+      jobsAcceptedCount: source.jobsAcceptedCount,
+      jobsCreatedCount: source.jobsCreatedCount,
+      metadataJson: source.metadataJson,
+      companyMetadataJson: source.company.metadataJson,
+      createdAt: source.createdAt,
+      updatedAt: source.updatedAt,
+      lastSuccessfulPollAt: source.lastSuccessfulPollAt,
     });
     const efficiencyScore = computePollEfficiencyScore({
       basePriorityScore,
@@ -1408,11 +2350,41 @@ export async function enqueueCompanySourcePollTasks(options: {
       blockedRisk,
       recentSuccessRate,
       retainedLiveJobCount: source.retainedLiveJobCount,
+      canonicalCreatedCount7d: recentYield?.canonicalCreatedCount7d ?? 0,
+      acceptedCount7d: recentYield?.acceptedCount7d ?? 0,
+      noveltyRatio,
     });
     const priorityScore = computeQueuePriorityScore({
       tier,
       efficiencyScore,
       basePriorityScore,
+    });
+    const suppressedForLowNoveltyAts = shouldSuppressRecoveryAtsSource({
+      sourceType: source.sourceType,
+      pollSuccessCount: source.pollSuccessCount,
+      recentAcceptedCount: recentYield?.acceptedCount7d ?? 0,
+      recentCanonicalCreatedCount: recentYield?.canonicalCreatedCount7d ?? 0,
+      jobsAcceptedCount: source.jobsAcceptedCount,
+      jobsCreatedCount: source.jobsCreatedCount,
+      lastJobsCreatedCount: source.lastJobsCreatedCount,
+      noveltyRatio,
+    });
+    const growthSignals = computeGrowthModePollSignals({
+      now,
+      createdAt: source.createdAt,
+      updatedAt: source.updatedAt,
+      lastSuccessfulPollAt: source.lastSuccessfulPollAt,
+      pollAttemptCount: source.pollAttemptCount,
+      pollSuccessCount: source.pollSuccessCount,
+      recentAcceptedCount: recentYield?.acceptedCount7d ?? 0,
+      recentCanonicalCreatedCount: recentYield?.canonicalCreatedCount7d ?? 0,
+      jobsAcceptedCount: source.jobsAcceptedCount,
+      jobsCreatedCount: source.jobsCreatedCount,
+      lastJobsCreatedCount: source.lastJobsCreatedCount,
+      noveltyRatio,
+      sourceType: source.sourceType,
+      metadataJson: source.metadataJson,
+      companyMetadataJson: source.company.metadataJson,
     });
 
     return {
@@ -1429,13 +2401,41 @@ export async function enqueueCompanySourcePollTasks(options: {
       expectedAcceptedJobs,
       blockedRisk,
       efficiencyScore,
+      noveltyRatio,
+      suppressedForLowNoveltyAts,
+      frontierCandidate: growthSignals.frontierCandidate,
+      hardCooldownForGrowth: growthSignals.shouldHardCooldown,
     };
-  }).filter(({ hostMetrics }) => !(hostMetrics?.cooldownUntil && hostMetrics.cooldownUntil > now));
+  }).filter(({ hostMetrics, source, frontierCandidate }) => {
+    if (hostMetrics?.cooldownUntil && hostMetrics.cooldownUntil > now) {
+      return false;
+    }
+
+    if (targetIds && !targetIds.has(source.id)) {
+      return false;
+    }
+
+    if (frontierOnly && !frontierCandidate) {
+      return false;
+    }
+
+    return true;
+  });
+
+  const suppressedLowNoveltyAtsSourceIds = scoredSources
+    .filter((candidate) => candidate.suppressedForLowNoveltyAts)
+    .map((candidate) => candidate.source.id);
+  const hardCooldownGrowthSourceIds = scoredSources
+    .filter((candidate) => candidate.hardCooldownForGrowth)
+    .map((candidate) => candidate.source.id);
+  const eligibleScoredSources = scoredSources.filter(
+    (candidate) => !candidate.suppressedForLowNoveltyAts && !candidate.hardCooldownForGrowth
+  );
 
   const orderedByTier = (tier: PollTier) =>
     pickBalancedPollSources(
-      scoredSources.filter((candidate) => candidate.tier === tier),
-      scoredSources.length,
+      eligibleScoredSources.filter((candidate) => candidate.tier === tier),
+      eligibleScoredSources.length,
       (left, right) => {
         if (right.efficiencyScore !== left.efficiencyScore) {
           return right.efficiencyScore - left.efficiencyScore;
@@ -1494,7 +2494,7 @@ export async function enqueueCompanySourcePollTasks(options: {
     carryBudgetMs = Math.max(0, tierBudgetMs - tierUsedMs);
   }
 
-  const remainingCandidates = [...scoredSources]
+  const remainingCandidates = [...eligibleScoredSources]
     .filter((candidate) => !selectedIds.has(candidate.source.id))
     .sort((left, right) => {
       if (right.priorityScore !== left.priorityScore) {
@@ -1526,10 +2526,20 @@ export async function enqueueCompanySourcePollTasks(options: {
   }
 
   const deferredTier2SourceIds = scoredSources
-    .filter((candidate) => candidate.tier === "TIER_2" && !selectedIds.has(candidate.source.id))
+    .filter(
+      (candidate) =>
+        !candidate.suppressedForLowNoveltyAts &&
+        candidate.tier === "TIER_2" &&
+        !selectedIds.has(candidate.source.id)
+    )
     .map((candidate) => candidate.source.id);
   const deferredTier3SourceIds = scoredSources
-    .filter((candidate) => candidate.tier === "TIER_3" && !selectedIds.has(candidate.source.id))
+    .filter(
+      (candidate) =>
+        !candidate.suppressedForLowNoveltyAts &&
+        candidate.tier === "TIER_3" &&
+        !selectedIds.has(candidate.source.id)
+    )
     .map((candidate) => candidate.source.id);
 
   if (deferredTier2SourceIds.length > 0) {
@@ -1564,6 +2574,66 @@ export async function enqueueCompanySourcePollTasks(options: {
     });
   }
 
+  if (suppressedLowNoveltyAtsSourceIds.length > 0) {
+    const suppressionUntil = new Date(
+      now.getTime() + COMPANY_SOURCE_RECOVERY_SUPPRESSED_ATS_DEFER_MINUTES * 60 * 1000
+    );
+
+    await prisma.sourceTask.updateMany({
+      where: {
+        kind: "CONNECTOR_POLL",
+        status: "PENDING",
+        companySourceId: { in: suppressedLowNoveltyAtsSourceIds },
+      },
+      data: {
+        notBeforeAt: suppressionUntil,
+      },
+    });
+
+    await prisma.companySource.updateMany({
+      where: {
+        id: { in: suppressedLowNoveltyAtsSourceIds },
+        OR: [{ cooldownUntil: null }, { cooldownUntil: { lt: suppressionUntil } }],
+      },
+      data: {
+        cooldownUntil: suppressionUntil,
+        pollState: "BACKOFF",
+        validationMessage:
+          "Recovery novelty suppression: ATS source recently refreshed many known jobs without creating enough new canonicals.",
+      },
+    });
+  }
+
+  if (hardCooldownGrowthSourceIds.length > 0) {
+    const suppressionUntil = new Date(
+      now.getTime() + GROWTH_HARD_COOLDOWN_HOURS * 60 * 60 * 1000
+    );
+
+    await prisma.sourceTask.updateMany({
+      where: {
+        kind: "CONNECTOR_POLL",
+        status: "PENDING",
+        companySourceId: { in: hardCooldownGrowthSourceIds },
+      },
+      data: {
+        notBeforeAt: suppressionUntil,
+      },
+    });
+
+    await prisma.companySource.updateMany({
+      where: {
+        id: { in: hardCooldownGrowthSourceIds },
+        OR: [{ cooldownUntil: null }, { cooldownUntil: { lt: suppressionUntil } }],
+      },
+      data: {
+        cooldownUntil: suppressionUntil,
+        pollState: "BACKOFF",
+        validationMessage:
+          "Growth mode cooldown: source recently refreshed many known jobs without creating enough new canonicals.",
+      },
+    });
+  }
+
   for (const candidate of selectedSources) {
     await enqueueUniqueSourceTask({
       kind: "CONNECTOR_POLL",
@@ -1587,6 +2657,7 @@ export async function enqueueCompanySourcePollTasks(options: {
   return {
     enqueuedCount: selectedSources.length,
     companySourceIds: selectedSources.map(({ source }) => source.id),
+    suppressedLowNoveltyAtsCount: suppressedLowNoveltyAtsSourceIds.length,
   };
 }
 
@@ -1611,12 +2682,14 @@ export async function runRediscoveryQueue(options: {
 export async function runSourceValidationQueue(options: {
   limit?: number;
   now?: Date;
+  companySourceIds?: string[];
 } = {}) {
   const now = options.now ?? new Date();
   const tasks = await claimSourceTasks(
     "SOURCE_VALIDATION",
     options.limit ?? SOURCE_VALIDATION_TASK_LIMIT,
-    now
+    now,
+    { companySourceIds: options.companySourceIds }
   );
 
   let successCount = 0;
@@ -1669,6 +2742,7 @@ export async function runCompanySourcePollQueue(options: {
   limit?: number;
   now?: Date;
   maxWallClockMs?: number;
+  companySourceIds?: string[];
 } = {}) {
   const maxTasks = options.limit ?? COMPANY_SOURCE_POLL_LIMIT;
   const maxWallClockMs = options.maxWallClockMs ?? COMPANY_SOURCE_POLL_QUEUE_WALL_CLOCK_MS;
@@ -1719,7 +2793,7 @@ export async function runCompanySourcePollQueue(options: {
         ? COMPANY_SOURCE_POLL_CRITICAL_TIME_CONCURRENCY
         : remainingWallClockMs <= COMPANY_SOURCE_POLL_LATE_STAGE_WINDOW_MS
           ? COMPANY_SOURCE_POLL_LOW_TIME_CONCURRENCY
-          : COMPANY_SOURCE_POLL_CONCURRENCY;
+          : EFFECTIVE_COMPANY_SOURCE_POLL_CONCURRENCY;
     const effectiveRemainingMs = Math.max(
       0,
       remainingWallClockMs - COMPANY_SOURCE_POLL_BATCH_GRACE_MS
@@ -1743,6 +2817,9 @@ export async function runCompanySourcePollQueue(options: {
         kind: "CONNECTOR_POLL",
         status: "PENDING",
         notBeforeAt: { lte: batchNow },
+        ...(options.companySourceIds && options.companySourceIds.length > 0
+          ? { companySourceId: { in: options.companySourceIds } }
+          : {}),
       },
       orderBy: [{ priorityScore: "desc" }, { createdAt: "asc" }],
       take: Math.max(
@@ -1769,7 +2846,8 @@ export async function runCompanySourcePollQueue(options: {
     const tasks = await claimSourceTasks(
       "CONNECTOR_POLL",
       claimLimit,
-      batchNow
+      batchNow,
+      { companySourceIds: options.companySourceIds }
     );
 
     if (tasks.length === 0) {
@@ -1824,6 +2902,82 @@ export async function runCompanySourcePollQueue(options: {
 
   return {
     processedCount,
+    successCount,
+    failedCount,
+  };
+}
+
+export async function runCompanySourcePollSlice(options: {
+  companySourceIds: string[];
+  limit?: number;
+  now?: Date;
+  maxRuntimeMs?: number;
+  concurrency?: number;
+}) {
+  const companySourceIds = [...new Set(options.companySourceIds.filter(Boolean))];
+  if (companySourceIds.length === 0) {
+    return {
+      processedCount: 0,
+      successCount: 0,
+      failedCount: 0,
+    };
+  }
+
+  const now = options.now ?? new Date();
+  const maxRuntimeMs = options.maxRuntimeMs ?? COMPANY_SOURCE_POLL_MAX_RUNTIME_MS;
+  const tasks = await claimSourceTasks(
+    "CONNECTOR_POLL",
+    Math.min(options.limit ?? companySourceIds.length, companySourceIds.length),
+    now,
+    { companySourceIds }
+  );
+
+  let successCount = 0;
+  let failedCount = 0;
+  let cursor = 0;
+
+  async function worker() {
+    while (cursor < tasks.length) {
+      const task = tasks[cursor]!;
+      cursor += 1;
+
+      try {
+        if (!task.companySourceId) {
+          await finishSourceTask(task.id, "SKIPPED", {
+            finishedAt: new Date(),
+            lastError: "No company source is attached to connector poll task.",
+          });
+          continue;
+        }
+
+        await pollCompanySource(task.companySourceId, new Date(), maxRuntimeMs);
+        successCount += 1;
+        await finishSourceTask(task.id, "SUCCESS", { finishedAt: new Date() });
+      } catch (error) {
+        failedCount += 1;
+        const taskFailedAt = new Date();
+        const cooldownUntil = await handleCompanySourcePollFailure(
+          task.companySourceId,
+          taskFailedAt,
+          error
+        );
+        await finishSourceTask(task.id, "FAILED", {
+          lastError: error instanceof Error ? error.message : String(error),
+          retryAt: cooldownUntil ?? new Date(taskFailedAt.getTime() + 60 * 60 * 1000),
+        });
+      }
+    }
+  }
+
+  await Promise.all(
+    Array.from(
+      { length: Math.min(options.concurrency ?? FRONTIER_POLL_SLICE_CONCURRENCY, tasks.length) },
+      () => worker()
+    )
+  );
+
+  return {
+    processedCount: tasks.length,
     successCount,
     failedCount,
   };
@@ -2091,12 +3245,20 @@ async function persistAtsCandidate(
     connectorName: string;
     token: string;
     boardUrl: string;
+    atsTenantId?: string | null;
     careerPageUrls: string[];
     directAtsUrls: string[];
     matchedReasons: string[];
+    metadataJson?: Record<string, Prisma.InputJsonValue | null> | null;
   },
   now: Date
 ) {
+  const candidateMetadata = mergeMetadataJson(candidate.metadataJson as Prisma.JsonValue, {
+    matchedReasons: candidate.matchedReasons,
+    careerPageUrls: candidate.careerPageUrls,
+    directAtsUrls: candidate.directAtsUrls,
+  }) as Prisma.InputJsonValue;
+
   for (const pageUrl of candidate.careerPageUrls) {
     await prisma.companyDiscoveryPage.upsert({
       where: {
@@ -2113,10 +3275,7 @@ async function persistAtsCandidate(
         extractorRoute: "ATS_NATIVE",
         parserVersion: "ats-native:v1",
         lastCheckedAt: now,
-        metadataJson: {
-          matchedReasons: candidate.matchedReasons,
-          directAtsUrls: candidate.directAtsUrls,
-        } as Prisma.InputJsonValue,
+        metadataJson: candidateMetadata,
       },
       update: {
         confidence: 0.92,
@@ -2125,67 +3284,93 @@ async function persistAtsCandidate(
         parserVersion: "ats-native:v1",
         lastCheckedAt: now,
         lastError: null,
-        metadataJson: {
-          matchedReasons: candidate.matchedReasons,
-          directAtsUrls: candidate.directAtsUrls,
-        } as Prisma.InputJsonValue,
+        metadataJson: candidateMetadata,
       },
     });
   }
 
-  const companySource = await prisma.companySource.upsert({
-    where: { sourceName: candidate.sourceName },
-    create: {
-      companyId,
-      sourceName: candidate.sourceName,
-      connectorName: candidate.connectorName,
-      token: candidate.token,
-      boardUrl: candidate.boardUrl,
-      status: "PROVISIONED",
-      validationState: "UNVALIDATED",
-      pollState: "READY",
-      sourceType: "ATS",
-      extractionRoute: "ATS_NATIVE",
-      parserVersion: "ats-native:v1",
-      pollingCadenceMinutes: DEFAULT_SOURCE_POLL_CADENCE_MINUTES,
-      priorityScore: 0.95,
-      sourceQualityScore: 0.8,
-      yieldScore: 0.56,
-      firstSeenAt: now,
-      lastProvisionedAt: now,
-      lastDiscoveryAt: now,
-      metadataJson: {
-        matchedReasons: candidate.matchedReasons,
-        careerPageUrls: candidate.careerPageUrls,
-        directAtsUrls: candidate.directAtsUrls,
-      } as Prisma.InputJsonValue,
-    },
-    update: {
-      companyId,
-      boardUrl: candidate.boardUrl,
-      status: "PROVISIONED",
-      validationState: "UNVALIDATED",
-      pollState: "READY",
-      sourceType: "ATS",
-      extractionRoute: "ATS_NATIVE",
-      parserVersion: "ats-native:v1",
-      priorityScore: Math.max(0.95, 0.9),
-      sourceQualityScore: Math.max(0.8, 0.75),
-      yieldScore: Math.max(0.56, 0.75 * 0.7),
-      lastProvisionedAt: now,
-      lastDiscoveryAt: now,
-      lastValidatedAt: null,
-      lastHttpStatus: null,
-      consecutiveFailures: 0,
-      failureStreak: 0,
-      validationMessage: null,
-      metadataJson: {
-        matchedReasons: candidate.matchedReasons,
-        careerPageUrls: candidate.careerPageUrls,
-        directAtsUrls: candidate.directAtsUrls,
-      } as Prisma.InputJsonValue,
-    },
-  });
+  const existingSourceByTenant = candidate.atsTenantId
+    ? await prisma.companySource.findUnique({
+        where: { atsTenantId: candidate.atsTenantId },
+        select: {
+          id: true,
+          sourceName: true,
+        },
+      })
+    : null;
+
+  const companySource = existingSourceByTenant
+    ? await prisma.companySource.update({
+        where: { id: existingSourceByTenant.id },
+        data: {
+          companyId,
+          boardUrl: candidate.boardUrl,
+          status: "PROVISIONED",
+          validationState: "UNVALIDATED",
+          pollState: "READY",
+          sourceType: "ATS",
+          extractionRoute: "ATS_NATIVE",
+          parserVersion: "ats-native:v1",
+          priorityScore: Math.max(0.95, 0.9),
+          sourceQualityScore: Math.max(0.8, 0.75),
+          yieldScore: Math.max(0.56, 0.75 * 0.7),
+          lastProvisionedAt: now,
+          lastDiscoveryAt: now,
+          lastValidatedAt: null,
+          lastHttpStatus: null,
+          consecutiveFailures: 0,
+          failureStreak: 0,
+          validationMessage: null,
+          metadataJson: candidateMetadata,
+        },
+      })
+    : await prisma.companySource.upsert({
+        where: { sourceName: candidate.sourceName },
+        create: {
+          companyId,
+          atsTenantId: candidate.atsTenantId ?? null,
+          sourceName: candidate.sourceName,
+          connectorName: candidate.connectorName,
+          token: candidate.token,
+          boardUrl: candidate.boardUrl,
+          status: "PROVISIONED",
+          validationState: "UNVALIDATED",
+          pollState: "READY",
+          sourceType: "ATS",
+          extractionRoute: "ATS_NATIVE",
+          parserVersion: "ats-native:v1",
+          pollingCadenceMinutes: DEFAULT_SOURCE_POLL_CADENCE_MINUTES,
+          priorityScore: 0.95,
+          sourceQualityScore: 0.8,
+          yieldScore: 0.56,
+          firstSeenAt: now,
+          lastProvisionedAt: now,
+          lastDiscoveryAt: now,
+          metadataJson: candidateMetadata,
+        },
+        update: {
+          companyId,
+          atsTenantId: candidate.atsTenantId ?? null,
+          boardUrl: candidate.boardUrl,
+          status: "PROVISIONED",
+          validationState: "UNVALIDATED",
+          pollState: "READY",
+          sourceType: "ATS",
+          extractionRoute: "ATS_NATIVE",
+          parserVersion: "ats-native:v1",
+          priorityScore: Math.max(0.95, 0.9),
+          sourceQualityScore: Math.max(0.8, 0.75),
+          yieldScore: Math.max(0.56, 0.75 * 0.7),
+          lastProvisionedAt: now,
+          lastDiscoveryAt: now,
+          lastValidatedAt: null,
+          lastHttpStatus: null,
+          consecutiveFailures: 0,
+          failureStreak: 0,
+          validationMessage: null,
+          metadataJson: candidateMetadata,
+        },
+      });
 
   await enqueueUniqueSourceTask({
     kind: "SOURCE_VALIDATION",
@@ -2194,6 +3379,26 @@ async function persistAtsCandidate(
     priorityScore: 95,
     notBeforeAt: now,
   });
+
+  return companySource;
+}
+
+export async function promoteDiscoveredAtsCompanySource(
+  companyId: string,
+  candidate: {
+    sourceName: string;
+    connectorName: string;
+    token: string;
+    boardUrl: string;
+    atsTenantId?: string | null;
+    careerPageUrls: string[];
+    directAtsUrls: string[];
+    matchedReasons: string[];
+    metadataJson?: Record<string, Prisma.InputJsonValue | null> | null;
+  },
+  now: Date
+) {
+  return persistAtsCandidate(companyId, candidate, now);
 }
 
 async function provisionCompanySiteSource(
@@ -2282,6 +3487,23 @@ async function provisionCompanySiteSource(
     priorityScore: Math.round(route.confidence * 100),
     notBeforeAt: now,
   });
+
+  return companySource;
+}
+
+export async function promoteCompanySiteSourceRoute(
+  companyId: string,
+  companyKey: string,
+  route: {
+    url: string;
+    extractionRoute: ExtractionRouteKind;
+    parserVersion: string;
+    confidence: number;
+    metadata: Record<string, Prisma.InputJsonValue | null>;
+  },
+  now: Date
+) {
+  return provisionCompanySiteSource(companyId, companyKey, route, now);
 }
 
 function buildWeakFallbackRoute(company: {
