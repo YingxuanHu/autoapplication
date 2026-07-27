@@ -1699,8 +1699,8 @@ export function ApplicationWorkspaceClient({
   const timelineEvents = application.events.filter((event) => event.type !== "REMINDER");
 
   return (
-    <div className="grid gap-4 sm:gap-5">
-      <section className="surface-panel p-3.5 sm:p-6">
+    <div className="grid w-full min-w-0 gap-4 sm:gap-5">
+      <section className="surface-panel w-full min-w-0 p-3.5 sm:p-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-start sm:justify-between">
           <div className="min-w-0 flex-1 space-y-2">
             <ApplicationHeaderEditor
@@ -1760,12 +1760,12 @@ export function ApplicationWorkspaceClient({
         </div>
       </section>
 
-      <div className="grid min-w-0 items-start gap-4 sm:gap-5 xl:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)]">
+      <div className="grid w-full min-w-0 items-start gap-4 sm:gap-5 xl:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)]">
         {/* Main column — flat sections, ordered: job description → AI
             workspace (Fit analysis + Resume tailoring) → small Notes. The
             previous Documents section is gone; attach dropdowns live in the
             title-box footer above. */}
-        <div className="grid min-w-0 content-start gap-4 self-start sm:gap-5">
+        <div className="grid min-w-0 grid-cols-[minmax(0,1fr)] content-start gap-4 self-start sm:gap-5">
           <JobDescriptionField
             applicationId={application.id}
             hasRoleUrl={Boolean(application.roleUrl)}
@@ -1786,7 +1786,7 @@ export function ApplicationWorkspaceClient({
           <RemindersSection applicationId={application.id} reminders={reminders} />
         </div>
 
-        <div className="grid min-w-0 content-start gap-4 self-start sm:gap-5">
+        <div className="grid min-w-0 grid-cols-[minmax(0,1fr)] content-start gap-4 self-start sm:gap-5">
           <JobAssistant
             aiConfigured={aiConfigured}
             applicationId={application.id}
