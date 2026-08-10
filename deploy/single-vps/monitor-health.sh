@@ -11,14 +11,28 @@ MEM_AVAILABLE_WARN_MB="${MONITOR_MEMORY_AVAILABLE_WARN_MB:-768}"
 SWAP_WARN_PERCENT="${MONITOR_SWAP_USAGE_WARN_PERCENT:-80}"
 LOAD_WARN_PER_CORE="${MONITOR_LOAD_WARN_PER_CORE:-2.0}"
 FIVE_XX_WARN_COUNT="${MONITOR_5XX_WARN_COUNT:-20}"
+TABLESPACE_POLICY_SCRIPT="${POSTGRES_TABLESPACE_POLICY_SCRIPT:-$APP_DIR/deploy/single-vps/postgres-tablespace-policy.sh}"
 
 mkdir -p "$(dirname "$LOG_FILE")"
 
-if [[ -f "$APP_DIR/$ENV_FILE" ]]; then
-  set -a
-  # shellcheck disable=SC1090
-  source "$APP_DIR/$ENV_FILE"
-  set +a
+# Docker Compose env files are not shell programs; some valid Compose values
+# cannot be sourced by Bash. Read only the optional alert webhook literally.
+read_compose_env_value() {
+  local key="$1"
+  local line value
+  [[ -f "$APP_DIR/$ENV_FILE" ]] || return 0
+  line="$(awk -v key="$key" 'index($0, key "=") == 1 { print substr($0, length(key) + 2); exit }' "$APP_DIR/$ENV_FILE")"
+  value="$line"
+  if [[ "$value" == \"*\" && "$value" == *\" ]]; then
+    value="${value:1:${#value}-2}"
+  elif [[ "$value" == \'*\' && "$value" == *\' ]]; then
+    value="${value:1:${#value}-2}"
+  fi
+  printf '%s' "$value"
+}
+
+if [[ -z "${MONITOR_ALERT_WEBHOOK_URL:-}" ]]; then
+  MONITOR_ALERT_WEBHOOK_URL="$(read_compose_env_value MONITOR_ALERT_WEBHOOK_URL)"
 fi
 
 alerts=()
@@ -36,6 +50,18 @@ if mountpoint -q /mnt/HC_Volume_105915443; then
   volume_disk_pct="$(df -P /mnt/HC_Volume_105915443 | awk 'NR == 2 { gsub("%", "", $5); print $5 }')"
   if [[ "$volume_disk_pct" =~ ^[0-9]+$ ]] && (( volume_disk_pct >= DISK_WARN_PERCENT )); then
     add_alert "backup volume is ${volume_disk_pct}% full"
+  fi
+fi
+
+if [[ -x "$TABLESPACE_POLICY_SCRIPT" ]]; then
+  if ! tablespace_report="$(
+    APP_DIR="$APP_DIR" \
+      COMPOSE_FILE="$COMPOSE_FILE" \
+      ENV_FILE="$ENV_FILE" \
+      "$TABLESPACE_POLICY_SCRIPT" --check 2>&1
+  )"; then
+    tablespace_report="${tablespace_report//$'\n'/; }"
+    add_alert "PostgreSQL tablespace policy: ${tablespace_report:0:700}"
   fi
 fi
 

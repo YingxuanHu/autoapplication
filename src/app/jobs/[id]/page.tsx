@@ -18,13 +18,12 @@ import {
   pickApplyPlatformSourceName,
 } from "@/lib/job-trust-display";
 import { cn } from "@/lib/utils";
-import { getOptionalSessionUser, requireCurrentProfileId } from "@/lib/current-user";
-import { prisma } from "@/lib/db";
+import { getOptionalCurrentUserIds } from "@/lib/current-user";
 import {
   getJobsReturnLabel,
   getSafeJobsReturnHref,
 } from "@/lib/jobs/return-navigation";
-import { getApplicationReviewData } from "@/lib/queries/applications";
+import { getJobDetailPageData } from "@/lib/queries/applications";
 import { resolveJobSalaryRange } from "@/lib/salary-extraction";
 
 type JobDetailPageProps = {
@@ -36,34 +35,25 @@ export default async function JobDetailPage({
   params,
   searchParams,
 }: JobDetailPageProps) {
-  const sessionUser = await getOptionalSessionUser();
-  if (!sessionUser) {
+  const [currentUser, { id }, resolvedSearchParams] = await Promise.all([
+    getOptionalCurrentUserIds(),
+    params,
+    searchParams,
+  ]);
+  if (!currentUser) {
     redirect("/sign-in");
   }
 
-  const { id } = await params;
-  const resolvedSearchParams = await searchParams;
   const fromParam = getFirstSearchParamValue(resolvedSearchParams, "from");
   const returnHref = getSafeJobsReturnHref(fromParam) ?? "/jobs";
   const returnLabel = getJobsReturnLabel(returnHref);
-  const detailData = await getApplicationReviewData(id);
+  const detailData = await getJobDetailPageData(id, currentUser);
 
   if (!detailData) {
     notFound();
   }
 
-  // List the user's resumes so the AI workspace can offer a picker. We only
-  // need id/title for the dropdown; extractedText is loaded server-side at
-  // analysis time by the API endpoint.
-  const profileId = await requireCurrentProfileId();
-  const userResumes = await prisma.document.findMany({
-    where: { userId: profileId, type: "RESUME" },
-    orderBy: [{ isPrimary: "desc" }, { updatedAt: "desc" }],
-    select: { id: true, title: true, isPrimary: true },
-  });
-
-  const { job, reviewState, submissions } = detailData;
-  const latestSubmission = submissions[0] ?? null;
+  const { job, reviewState, latestSubmission } = detailData;
   const deadlineUrgency = getDeadlineUrgency(job.deadline);
   const expiringSoon = getExpiringSoonMeta(job.deadline);
   const deadlineValue = formatDeadlineValue(job.deadline);
@@ -81,19 +71,7 @@ export default async function JobDetailPage({
     description: job.description,
     regionHint: job.region,
   });
-  const trackedApplication = await prisma.trackedApplication.findUnique({
-    where: {
-      userId_canonicalJobId: {
-        userId: sessionUser.id,
-        canonicalJobId: job.id,
-      },
-    },
-    select: { status: true },
-  });
-  const hasAppliedStatus =
-    !!trackedApplication &&
-    trackedApplication.status !== "WISHLIST" &&
-    trackedApplication.status !== "PREPARING";
+  const hasAppliedStatus = detailData.hasApplied;
 
   return (
     <div className="app-page space-y-5">
@@ -238,7 +216,6 @@ export default async function JobDetailPage({
               jobId={job.id}
               jobTitle={job.title}
               showCoverLetter
-              userResumes={userResumes}
             />
           </div>
         </div>

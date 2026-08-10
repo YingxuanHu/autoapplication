@@ -13,7 +13,7 @@ export function JobsLoadingPopup({
     <div
       aria-live="polite"
       aria-busy="true"
-      className="pointer-events-none fixed inset-x-0 top-5 z-50 flex justify-center px-4 sm:top-6"
+      className="pointer-events-none fixed left-1/2 top-5 z-50 flex w-max max-w-[calc(100vw-2rem)] -translate-x-1/2 px-4 sm:top-6"
       role="status"
     >
       <div className="flex min-w-0 items-center gap-2 text-sm font-medium text-foreground">

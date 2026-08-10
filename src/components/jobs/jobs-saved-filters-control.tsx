@@ -15,6 +15,7 @@ import {
   clearInAppSearchParamMemory,
   SEARCH_PARAM_MEMORY_UPDATED_EVENT,
 } from "@/components/navigation/search-param-memory";
+import { normalizeJobsStateQuery } from "@/lib/jobs/search-state";
 
 export function JobsSavedFiltersControl({ storageKey }: { storageKey: string }) {
   const router = useRouter();
@@ -23,7 +24,16 @@ export function JobsSavedFiltersControl({ storageKey }: { storageKey: string }) 
   useEffect(() => {
     const updateSavedState = () => {
       try {
-        setHasSavedFilters(Boolean(window.localStorage.getItem(storageKey)));
+        const savedState = normalizeJobsStateQuery(
+          window.localStorage.getItem(storageKey) ?? "",
+          { includePage: false }
+        );
+        if (!savedState) {
+          window.localStorage.removeItem(storageKey);
+          setHasSavedFilters(false);
+          return;
+        }
+        setHasSavedFilters(true);
       } catch {
         setHasSavedFilters(false);
       }

@@ -167,6 +167,74 @@ export async function getApplicationReviewData(
   };
 }
 
+/**
+ * Minimal, user-scoped query for the job detail page. The full application
+ * review loader also fetches profile and resume-package data for /apply; that
+ * payload is not rendered on /jobs/[id] and made opening a job unnecessarily
+ * expensive.
+ */
+export async function getJobDetailPageData(
+  jobId: string,
+  user: { profileId: string; authUserId: string }
+): Promise<{
+  job: JobDetailData;
+  latestSubmission: ApplicationSubmissionSummary | null;
+  reviewState: ApplicationReviewState;
+  hasApplied: boolean;
+} | null> {
+  const job = await prisma.jobCanonical.findUnique({
+    where: { id: jobId },
+    include: {
+      eligibility: true,
+      feedIndex: {
+        select: { status: true },
+      },
+      sourceMappings: true,
+      savedJobs: {
+        where: { userId: user.profileId, status: "ACTIVE" },
+        select: { id: true },
+      },
+      applicationSubmissions: {
+        where: { userId: user.profileId },
+        orderBy: { updatedAt: "desc" },
+        take: 1,
+      },
+      trackedApplications: {
+        where: {
+          userId: user.authUserId,
+          status: { notIn: ["WISHLIST", "PREPARING"] },
+        },
+        select: { id: true },
+        take: 1,
+      },
+    },
+  });
+
+  if (!job) return null;
+  if (
+    isClearlyNonJobPosting({
+      title: job.title,
+      description: job.description,
+      applyUrl: job.applyUrl,
+    })
+  ) {
+    return null;
+  }
+  if (isUnavailableForJobDetail(job)) {
+    return null;
+  }
+
+  const detailJob = serializeJobDetail(job);
+  return {
+    job: detailJob,
+    latestSubmission: job.applicationSubmissions[0]
+      ? serializeApplicationSubmission(job.applicationSubmissions[0])
+      : null,
+    reviewState: getApplicationReviewState(detailJob),
+    hasApplied: job.trackedApplications.length > 0,
+  };
+}
+
 export async function prepareApplicationReview(jobId: string) {
   const context = await getMutableApplicationContext(jobId);
   if (!context) throw new Error("Application review context not found");

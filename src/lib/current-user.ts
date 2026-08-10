@@ -145,6 +145,23 @@ export async function getOptionalCurrentUserProfile() {
   return null;
 }
 
+/**
+ * Resolves both identifiers from one authenticated session/profile lookup.
+ * Use this in server-rendered views that need user-scoped job data.
+ */
+export async function getOptionalCurrentUserIds() {
+  const sessionUser = await getSessionUser();
+  if (!sessionUser) {
+    return null;
+  }
+
+  const profile = await ensureProfileForUser(sessionUser);
+  return {
+    authUserId: sessionUser.id,
+    profileId: profile.id,
+  };
+}
+
 export async function requireCurrentUserProfile() {
   const profile = await getOptionalCurrentUserProfile();
 

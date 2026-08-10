@@ -136,7 +136,7 @@ export function hasJobsStateParamsRecord(
     if (!JOBS_STATE_PARAM_KEY_SET.has(key)) return false;
     if ((key === "field" || key === "searchScope") && !hasSearchText) return false;
     const normalizedValue = Array.isArray(value) ? value.filter(Boolean).join(",") : value;
-    return normalizeTextValue(normalizedValue) !== undefined;
+    return normalizeParamValue(key, normalizedValue) !== undefined;
   });
 }
 
@@ -151,7 +151,7 @@ export function hasJobsStateParams(searchParams: URLSearchParams) {
 
   for (const key of JOBS_STATE_PARAM_KEYS) {
     if ((key === "field" || key === "searchScope") && !hasSearchText) continue;
-    if (normalizeTextValue(searchParams.get(key) ?? undefined)) return true;
+    if (normalizeParamValue(key, searchParams.get(key) ?? undefined)) return true;
   }
   return false;
 }
@@ -354,6 +354,7 @@ function hasSearchValue(params: URLSearchParams) {
 
 function normalizeParamValue(key: string, value?: string) {
   if (!value) return undefined;
+  if (key === "status" && value === "LIVE") return undefined;
   if (key === "searchScope") return normalizeFieldValue(value);
   if (key === "field") return normalizeFieldValue(value);
   if (key === "sort") return normalizeSortValue(value);

@@ -228,8 +228,8 @@ export function NaturalLanguageJobSearch() {
   return (
     <section className="space-y-2">
       <form className="flex flex-col gap-2 sm:flex-row sm:items-center" onSubmit={handleSubmit}>
-        <label className="flex min-w-0 flex-1 items-center rounded-[14px] border border-border/70 bg-background transition focus-within:border-ring focus-within:ring-2 focus-within:ring-ring/20">
-          <Sparkles className="ml-3.5 h-4 w-4 shrink-0 text-primary" />
+        <label className="flex min-w-0 flex-1 items-center rounded-[14px] border border-border bg-card transition-colors focus-within:border-ring focus-within:ring-2 focus-within:ring-ring/20">
+          <Sparkles className="ml-3.5 h-4 w-4 shrink-0 text-muted-foreground" />
           <Input
             aria-label="Describe the jobs you want"
             className="h-11 border-0 bg-transparent px-3 text-sm shadow-none focus-visible:ring-0"

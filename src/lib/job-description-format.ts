@@ -898,6 +898,40 @@ const METADATA_HEADING_KEYS = new Set([
   "domain",
 ]);
 
+const ROLE_OVERVIEW_HEADING_KEYS = new Set([
+  "about the job",
+  "about the role",
+  "about this role",
+  "role overview",
+  "position overview",
+  "job description",
+  "job summary",
+]);
+
+const RESPONSIBILITY_HEADING_KEYS = new Set([
+  "responsibilities",
+  "key responsibilities",
+  "what youll do",
+  "what you will do",
+]);
+
+const REQUIRED_QUALIFICATION_HEADING_KEYS = new Set([
+  "required qualifications",
+  "minimum qualifications",
+  "qualifications",
+  "requirements",
+  "what youll bring",
+  "what you will bring",
+  "what were looking for",
+]);
+
+const PREFERRED_QUALIFICATION_HEADING_KEYS = new Set([
+  "preferred qualifications",
+  "nice to have",
+  "skills",
+  "soft skills",
+]);
+
 function buildDescriptionSections(blocks: DescriptionBlock[]) {
   const sections: DescriptionSection[] = [];
   let current: DescriptionSection = { header: null, blocks: [] };
@@ -921,6 +955,51 @@ function buildDescriptionSections(blocks: DescriptionBlock[]) {
   return sections.filter((section) => section.header || section.blocks.length > 0);
 }
 
+type SummarySection = {
+  index: number;
+  section: DescriptionSection;
+  normalizedHeader: string;
+  paragraphBlocks: Array<Extract<DescriptionBlock, { kind: "paragraph" }>>;
+  listItems: string[];
+};
+
+function getSummarySectionPriority(normalizedHeader: string) {
+  if (RESPONSIBILITY_HEADING_KEYS.has(normalizedHeader)) return 0;
+  if (REQUIRED_QUALIFICATION_HEADING_KEYS.has(normalizedHeader)) return 1;
+  if (ROLE_OVERVIEW_HEADING_KEYS.has(normalizedHeader)) return 2;
+  if (PREFERRED_QUALIFICATION_HEADING_KEYS.has(normalizedHeader)) return 3;
+  if (normalizedHeader === "about the team" || normalizedHeader === "about us") return 6;
+  if (normalizedHeader === "benefits" || normalizedHeader === "our total rewards package") return 7;
+  return 4;
+}
+
+function getSummaryListItemLimit(normalizedHeader: string) {
+  if (
+    RESPONSIBILITY_HEADING_KEYS.has(normalizedHeader) ||
+    REQUIRED_QUALIFICATION_HEADING_KEYS.has(normalizedHeader)
+  ) {
+    return 6;
+  }
+
+  if (PREFERRED_QUALIFICATION_HEADING_KEYS.has(normalizedHeader)) {
+    return 5;
+  }
+
+  return 4;
+}
+
+function getSummaryParagraphLimit(normalizedHeader: string) {
+  return ROLE_OVERVIEW_HEADING_KEYS.has(normalizedHeader) || normalizedHeader === "" ? 2 : 1;
+}
+
+function getSummaryParagraphLength(normalizedHeader: string) {
+  return ROLE_OVERVIEW_HEADING_KEYS.has(normalizedHeader) ||
+    RESPONSIBILITY_HEADING_KEYS.has(normalizedHeader) ||
+    REQUIRED_QUALIFICATION_HEADING_KEYS.has(normalizedHeader)
+    ? 320
+    : 260;
+}
+
 export function getJobDescriptionSummaryBlocks(raw: string, maxSections = 6) {
   const blocks = parseJobDescriptionBlocks(raw);
   if (blocks.length === 0) {
@@ -928,82 +1007,83 @@ export function getJobDescriptionSummaryBlocks(raw: string, maxSections = 6) {
   }
 
   const sections = buildDescriptionSections(blocks);
-  const summary: DescriptionBlock[] = [];
+  const summarySections: SummarySection[] = [];
 
-  for (const [sectionIndex, section] of sections.entries()) {
-    if (summary.length >= maxSections * 2) {
-      break;
+  for (const [index, section] of sections.entries()) {
+    const normalizedHeader = section.header ? normalizeHeadingKey(section.header) : "";
+    if (METADATA_HEADING_KEYS.has(normalizedHeader)) {
+      continue;
     }
 
-    const normalizedHeader = section.header ? normalizeHeadingKey(section.header) : "";
     const listBlock = section.blocks.find((block) => block.kind === "list");
     const paragraphBlocks = section.blocks.filter(
       (block): block is Extract<DescriptionBlock, { kind: "paragraph" }> => block.kind === "paragraph"
-    );
-    const filteredParagraphBlocks = paragraphBlocks.filter(
-      (block) => !isDescriptionNoiseText(block.text)
-    );
-    const filteredListItems =
-      listBlock?.items.filter((item) => !isDescriptionNoiseText(item)) ?? [];
+    ).filter((block) => !isDescriptionNoiseText(block.text));
+    const listItems = listBlock?.items.filter((item) => !isDescriptionNoiseText(item)) ?? [];
 
-    if (
-      !section.header &&
-      filteredParagraphBlocks.length === 0 &&
-      filteredListItems.length === 0
-    ) {
+    if (!section.header && paragraphBlocks.length === 0 && listItems.length === 0) {
       continue;
     }
 
     if (
       !section.header &&
-      sectionIndex === 0 &&
-      filteredParagraphBlocks.length === 1 &&
-      filteredListItems.length === 0 &&
+      index === 0 &&
+      paragraphBlocks.length === 1 &&
+      listItems.length === 0 &&
       sections.slice(1).some((candidate) => candidate.header) &&
-      filteredParagraphBlocks[0].text.length <= 80 &&
-      !/[.!?]$/.test(filteredParagraphBlocks[0].text)
+      paragraphBlocks[0].text.length <= 80 &&
+      !/[.!?]$/.test(paragraphBlocks[0].text)
     ) {
       continue;
     }
 
-    if (section.header) {
+    summarySections.push({
+      index,
+      section,
+      normalizedHeader,
+      paragraphBlocks,
+      listItems,
+    });
+  }
+
+  // Source pages often start with employer marketing or location metadata. Pick the
+  // sections a candidate needs first, then render them in their natural source order.
+  const selectedSections = summarySections
+    .sort(
+      (left, right) =>
+        getSummarySectionPriority(left.normalizedHeader) -
+          getSummarySectionPriority(right.normalizedHeader) ||
+        left.index - right.index
+    )
+    .slice(0, Math.max(1, maxSections))
+    .sort((left, right) => left.index - right.index);
+  const summary: DescriptionBlock[] = [];
+
+  for (const summarySection of selectedSections) {
+    const { normalizedHeader, paragraphBlocks, listItems, section } = summarySection;
+
+    if (section.header && (paragraphBlocks.length > 0 || listItems.length > 0)) {
       summary.push({ kind: "header", text: section.header });
     }
 
-    if (filteredListItems.length > 0) {
+    if (listItems.length > 0) {
       summary.push({
         kind: "list",
-        items: filteredListItems.slice(
-          0,
-          normalizedHeader === "about the job" || normalizedHeader === "about the role" ? 3 : 4
-        ),
+        items: listItems.slice(0, getSummaryListItemLimit(normalizedHeader)),
       });
       continue;
     }
 
-    if (filteredParagraphBlocks.length === 0) {
+    if (paragraphBlocks.length === 0) {
       continue;
     }
 
-    if (
-      normalizedHeader === "about the job" ||
-      normalizedHeader === "job summary" ||
-      normalizedHeader === "about the role" ||
-      normalizedHeader === ""
-    ) {
-      for (const paragraph of filteredParagraphBlocks.slice(0, 2)) {
-        summary.push({
-          kind: "paragraph",
-          text: trimSummaryText(paragraph.text, 260),
-        });
-      }
-      continue;
+    for (const paragraph of paragraphBlocks.slice(0, getSummaryParagraphLimit(normalizedHeader))) {
+      summary.push({
+        kind: "paragraph",
+        text: trimSummaryText(paragraph.text, getSummaryParagraphLength(normalizedHeader)),
+      });
     }
-
-    summary.push({
-      kind: "paragraph",
-      text: trimSummaryText(filteredParagraphBlocks[0].text, 220),
-    });
   }
 
   return summary;

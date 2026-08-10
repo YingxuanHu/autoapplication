@@ -15,8 +15,9 @@ services:
       - "127.0.0.1:5432:5432"
     volumes:
       - postgres-data:/var/lib/postgresql
-      # Keep selected large indexes on the attached volume without moving the
-      # primary database cluster, which is larger than the volume itself.
+      # The tablespace policy keeps designated live indexes on the attached
+      # volume while the primary cluster remains on root (the cluster is
+      # larger than this volume and the volume also retains logical backups).
       - ${POSTGRES_TABLESPACE_HOST_DIR:-/mnt/HC_Volume_105915443/autoapplication/postgres-tablespace}:/var/lib/postgresql/tablespace
     healthcheck:
       test:

@@ -7,12 +7,12 @@ export default function JobsLoading() {
       <div className="app-page space-y-6">
         <header className="page-header">
           <div className="space-y-2">
-            <div className="h-8 w-24 rounded-lg bg-muted" />
-            <div className="h-4 w-[32rem] max-w-full rounded bg-muted" />
+            <div className="h-8 w-24 animate-pulse rounded-lg bg-muted motion-reduce:animate-none" />
+            <div className="h-4 w-[32rem] max-w-full animate-pulse rounded bg-muted motion-reduce:animate-none" />
           </div>
         </header>
 
-        <section className="surface-panel p-4 sm:p-5">
+        <section className="surface-panel animate-pulse p-4 motion-reduce:animate-none sm:p-5">
           <div className="space-y-3">
             <div className="h-10 w-64 max-w-full rounded-xl bg-muted sm:h-12 sm:w-80" />
             <div className="h-4 w-72 max-w-full rounded bg-muted" />
@@ -44,7 +44,7 @@ export default function JobsLoading() {
           </div>
         </section>
 
-        <section className="surface-panel p-4 sm:p-5">
+        <section className="surface-panel animate-pulse p-4 motion-reduce:animate-none sm:p-5">
           <div className="space-y-3">
             {Array.from({ length: 8 }).map((_, index) => (
               <JobRowSkeleton index={index} key={index} />
