@@ -864,7 +864,7 @@ function JobDescriptionField({
   const [draft, setDraft] = useState(value);
   const [importing, setImporting] = useState(false);
 
-  const [editState, editAction] = useActionState(updateApplicationField, INITIAL_ACTION_STATE);
+  const [editState, setEditState] = useState<ActionState>(INITIAL_ACTION_STATE);
   const [importState, importAction] = useActionState(importJobDescription, INITIAL_ACTION_STATE);
   useActionNotifications(editState);
   useActionNotifications(importState);
@@ -876,6 +876,16 @@ function JobDescriptionField({
   function handleCancel() {
     setDraft(value);
     setEditing(false);
+  }
+
+  async function handleEditSave(formData: FormData) {
+    const nextState = await updateApplicationField(INITIAL_ACTION_STATE, formData);
+    setEditState(nextState);
+
+    if (nextState.success) {
+      setDraft(String(formData.get("value") ?? ""));
+      setEditing(false);
+    }
   }
 
   function handlePasteClick() {
@@ -925,7 +935,10 @@ function JobDescriptionField({
           {!editing && !showPaste ? (
             <button
               className="min-w-0 truncate rounded-full px-2 py-1 text-xs font-medium text-muted-foreground transition hover:bg-muted hover:text-foreground"
-              onClick={() => setEditing(true)}
+              onClick={() => {
+                setDraft(value);
+                setEditing(true);
+              }}
               type="button"
             >
               Edit
@@ -953,7 +966,7 @@ function JobDescriptionField({
         >
           <input name="applicationId" type="hidden" value={applicationId} />
           <p className="text-xs text-muted-foreground">
-            Paste the job posting content below and it will be cleaned up into an organized summary.
+            Paste the full job posting. It will be saved as a clean, structured description, with the role, responsibilities, and qualifications highlighted in the workspace.
           </p>
           <Textarea
             className="min-h-[120px] resize-y text-sm"
@@ -1002,22 +1015,27 @@ function JobDescriptionField({
         </form>
       ) : editing ? (
         <form
-          action={async (formData) => {
-            await editAction(formData);
-            setEditing(false);
-          }}
+          action={handleEditSave}
           className="mt-3 grid gap-2"
         >
           <input name="applicationId" type="hidden" value={applicationId} />
           <input name="field" type="hidden" value="jobDescription" />
+          <p className="text-xs text-muted-foreground">
+            Editing the full saved posting. Save keeps your wording as entered; use Paste posting when you want it organized again.
+          </p>
           <Textarea
-            className="min-h-[80px] resize-y text-sm"
+            className="min-h-[12rem] resize-y text-sm"
             name="value"
             onChange={(event) => setDraft(event.target.value)}
             placeholder="Paste the job description here..."
-            rows={4}
+            rows={10}
             value={draft}
           />
+          {editState.error ? (
+            <p className="rounded-lg border border-destructive/20 bg-destructive/5 px-3 py-2 text-xs text-destructive">
+              {editState.error}
+            </p>
+          ) : null}
           <div className="flex gap-2">
             <SubmitBtn label="Save" saving="Saving..." />
             <Button

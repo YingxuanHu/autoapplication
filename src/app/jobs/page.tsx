@@ -30,7 +30,6 @@ import {
   normalizeSalaryCurrency,
   SALARY_COMPARISON_CURRENCIES,
 } from "@/lib/currency-conversion";
-import { prisma } from "@/lib/db";
 import { normalizeTextParam, splitFilterValues } from "@/lib/filter-values";
 import {
   EXPERIENCE_LEVEL_GROUP_OPTIONS,
@@ -116,16 +115,11 @@ export default async function JobsPage({ searchParams }: JobsPageProps) {
   const resolvedSearchParams = await searchParams;
   const cookieStore = await cookies();
 
-  const profileSettings = await prisma.userProfile.findUnique({
-    where: { id: viewerProfileId },
-    select: { salaryCurrency: true },
-  });
-
   const userTimeZone = normalizeUserTimeZone(
     cookieStore.get(USER_TIME_ZONE_COOKIE)?.value
   );
   const defaultSalaryCurrency =
-    normalizeSalaryCurrency(profileSettings?.salaryCurrency) ?? "USD";
+    normalizeSalaryCurrency(currentProfile.salaryCurrency) ?? "USD";
   const filters = parseJobFilters(resolvedSearchParams, defaultSalaryCurrency);
 
   const [jobsResult, ingestionStatus] = await Promise.all([
@@ -617,6 +611,7 @@ function parseJobFilters(
   });
   const parsedSalaryMin = getPositiveNumber(getSearchParam(searchParams, "salaryMin"));
   const parsedSalaryMax = getPositiveNumber(getSearchParam(searchParams, "salaryMax"));
+  const status = getSearchParam(searchParams, "status");
   const salaryMin =
     parsedSalaryMin && parsedSalaryMax && parsedSalaryMin > parsedSalaryMax
       ? parsedSalaryMax
@@ -652,7 +647,7 @@ function parseJobFilters(
     expiry: getSearchParam(searchParams, "expiry"),
     posted: getSearchParam(searchParams, "posted") ?? getSearchParam(searchParams, "datePosted"),
     submissionCategory: undefined,
-    status: getSearchParam(searchParams, "status"),
+    status: status === "LIVE" ? undefined : status,
     hideApplied: normalizeBooleanParam(getSearchParam(searchParams, "hideApplied")),
     sortBy: normalizeSortByParam(
       getSearchParam(searchParams, "sortBy") ?? getSearchParam(searchParams, "sort")

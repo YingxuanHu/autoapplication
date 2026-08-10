@@ -64,7 +64,10 @@ test("jobs filters support scoped search, removable chips, compact filters, and 
   assert.doesNotMatch(querySource, /salaryCurrency:\s*\{\s*notIn/);
   assert.match(querySource, /loadSalaryComparisonCurrency/);
   assert.match(querySource, /shouldUseJobFeedIndex\(filters: JobFilterParams, viewerProfileId: string \| null\)/);
-  assert.match(querySource, /const includeExactTotal = true/);
+  assert.match(querySource, /function hasScopedFeedRequest\(filters: JobFilterParams\)/);
+  assert.match(querySource, /function hasNonDefaultJobStatusFilter\(value\?: string\)/);
+  assert.match(querySource, /hasNonDefaultJobStatusFilter\(filters\.status\)/);
+  assert.match(querySource, /const includeExactTotal = hasScopedFeedRequest\(filters\)/);
   assert.match(querySource, /getSelectiveScopedSearchIds/);
   assert.match(querySource, /structured filters, we still use[\s\S]*selective id list as a prefilter/);
   assert.match(querySource, /useDirectPrefilterSlice = canSlicePrefilterIds/);
@@ -88,6 +91,7 @@ test("jobs filters support scoped search, removable chips, compact filters, and 
 
   assert.match(pageSource, /buildActiveFilterGroups\(filters, resolvedSearchParams\)/);
   assert.match(pageSource, /formatJobResultCount/);
+  assert.match(pageSource, /status: status === "LIVE" \? undefined : status/);
   assert.match(resultCountSource, /cached public-board count/);
   assert.match(pageSource, /buildLocationSearchRemoveHref/);
   assert.match(pageSource, /currentHadValues/);
@@ -116,13 +120,15 @@ test("jobs filters support scoped search, removable chips, compact filters, and 
   assert.match(jobsLoadingSource, /<JobsLoadingPopup \/>/);
   assert.match(naturalLanguageSearchSource, /mergeNaturalLanguageJobsSearch\(searchParams, searchResult\.params\)/);
   assert.match(naturalLanguageSearchSource, /showJobsLoadingPopup\(href\)/);
-  assert.match(loadingPopupSource, /fixed inset-x-0 top-5 z-50/);
+  assert.match(loadingPopupSource, /fixed left-1\/2 top-5 z-50/);
+  assert.match(loadingPopupSource, /-translate-x-1\/2/);
   assert.match(loadingPopupSource, /LoadingSpinner/);
   assert.match(loadingPopupSource, /Loading jobs/);
   assert.doesNotMatch(loadingPopupSource, /jobs-loading-sweep/);
-  assert.doesNotMatch(loadingPopupSource, /animate-pulse/);
   assert.doesNotMatch(loadingPopupSource, /bg-popover/);
   assert.doesNotMatch(loadingPopupSource, /shadow-\[/);
+  assert.match(jobsLoadingSource, /surface-panel animate-pulse p-4 motion-reduce:animate-none sm:p-5/g);
+  assert.doesNotMatch(jobsLoadingSource, /fixed inset-0/);
   assert.match(pendingBoundarySource, /onClickCapture/);
   assert.match(pendingBoundarySource, /onSubmitCapture/);
   assert.match(pendingBoundarySource, /buildGetFormHref/);

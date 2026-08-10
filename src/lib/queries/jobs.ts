@@ -118,11 +118,12 @@ const GENERIC_ATS_COMPANY_VISIBILITY_BLOCKS = [
 // demo counts that drive the header summary are the slowest part of /jobs;
 // they're stable on the order of minutes (lifecycle sweep runs every 30min),
 // so a 5-min TTL is safe and removes most cold-cache latency from tab
-// navigation. The feed query (paginated job list) shifts more often as new
-// jobs land, but a 60s TTL still feels live and skips redundant 150-row
-// re-fetches when the user toggles filters back and forth.
+// navigation. The feed query (paginated job list) is also invalidated by the
+// ingestion heartbeat for the default feed, while filtered views can safely
+// stay warm for five minutes. This avoids repeated cold reads when a user
+// switches filters or pages and then returns to a recent view.
 const JOB_FEED_SUMMARY_TTL_MS = 300_000;
-const JOB_FEED_QUERY_TTL_MS = 60_000;
+const JOB_FEED_QUERY_TTL_MS = 300_000;
 const HOT_FEED_QUERY_TTL_MS = 300_000;
 const FEED_INDEX_SEARCH_MATCH_ID_LIMIT = 10_000;
 // A sole title/company search for a SELECTIVE term (few matches relative to the
@@ -489,6 +490,10 @@ function normalizeJobStatusFilter(value?: string) {
   return value as "AGING" | "LIVE" | "EXPIRED" | "REMOVED" | "STALE";
 }
 
+function hasNonDefaultJobStatusFilter(value?: string) {
+  return Boolean(value && normalizeJobStatusFilter(value) !== "LIVE");
+}
+
 export function normalizeJobSortBy(value?: string): JobSortBy | undefined {
   if (!value || !JOB_SORT_VALUES.has(value)) return undefined;
   return value as JobSortBy;
@@ -650,6 +655,93 @@ async function countJobFeedIndexMatches(where: Prisma.JobFeedIndexWhereInput) {
   return prisma.jobFeedIndex.count({ where });
 }
 
+// Prisma binds enum filters as parameters, which prevents PostgreSQL from
+// proving the LIVE-only index predicate. Keep this default lookup's status
+// literal while parameterizing all request-derived values.
+function buildRawCompanyVisibilitySql(alias: "jfi" | "jc") {
+  const company = Prisma.raw(`${alias}.company`);
+  const applyUrl = Prisma.raw(`${alias}."applyUrl"`);
+  const unknownCompanies = Prisma.join(
+    UNKNOWN_COMPANY_VISIBILITY_BLOCKLIST.map((value) => Prisma.sql`${value}`)
+  );
+  const genericAtsBlocks = Prisma.join(
+    GENERIC_ATS_COMPANY_VISIBILITY_BLOCKS.map(
+      ({ company: blockedCompany, applyUrlContains }) =>
+        Prisma.sql`(lower(${company}) = ${blockedCompany} AND ${applyUrl} ILIKE ${`%${applyUrlContains}%`})`
+    ),
+    " OR "
+  );
+
+  return Prisma.sql`
+    NOT (
+      lower(${company}) IN (${unknownCompanies})
+      OR ${genericAtsBlocks}
+    )
+  `;
+}
+
+async function getDefaultPublicFeedIndexRows(input: {
+  now: Date;
+  viewerProfileId: string | null;
+  skip: number;
+}) {
+  const { now, viewerProfileId, skip } = input;
+  const recentSourceCutoff = new Date(now.getTime() - 14 * 86_400_000);
+  const recentAliveCutoff = new Date(now.getTime() - 30 * 86_400_000);
+  const excludedApplyLinkStatuses = [
+    "EXPIRED",
+    "BROKEN_APPLY_LINK",
+    "GENERIC_APPLY_PAGE",
+    "SOURCE_STALE",
+    "HIDDEN_LOW_QUALITY",
+  ];
+  const passedJobFilter = viewerProfileId
+    ? Prisma.sql`
+        AND NOT EXISTS (
+          SELECT 1
+          FROM "UserBehaviorSignal" AS signal
+          WHERE signal."canonicalJobId" = jc.id
+            AND signal."userId" = ${viewerProfileId}
+            AND signal.action = 'PASS'::"UserAction"
+        )
+      `
+    : Prisma.empty;
+
+  return prisma.$queryRaw<Array<{ canonicalJobId: string }>>(Prisma.sql`
+    SELECT jfi."canonicalJobId"
+    FROM "JobFeedIndex" AS jfi
+    INNER JOIN "JobCanonical" AS jc ON jc.id = jfi."canonicalJobId"
+    WHERE jfi.status = 'LIVE'::"JobStatus"
+      AND ${buildRawCompanyVisibilitySql("jfi")}
+      AND jc.status = 'LIVE'::"JobStatus"
+      AND jc."availabilityScore" >= ${DEFAULT_MIN_AVAILABILITY_SCORE}
+      AND jc."deadSignalAt" IS NULL
+      AND (jc."applyUrl" LIKE 'http://%' OR jc."applyUrl" LIKE 'https://%')
+      AND (
+        jc."applyUrlValidationStatus" IS NULL
+        OR jc."applyUrlValidationStatus"::text NOT IN (${Prisma.join(
+          excludedApplyLinkStatuses.map((value) => Prisma.sql`${value}`)
+        )})
+      )
+      AND (jc.deadline IS NULL OR jc.deadline >= ${now})
+      AND (
+        jc."lastSourceSeenAt" >= ${recentSourceCutoff}
+        OR jc."lastConfirmedAliveAt" >= ${recentAliveCutoff}
+      )
+      AND ${buildRawCompanyVisibilitySql("jc")}
+      ${passedJobFilter}
+    ORDER BY
+      jfi."rankingScore" DESC,
+      jfi."freshnessScore" DESC,
+      jfi."qualityScore" DESC,
+      jfi."trustScore" DESC,
+      jfi."postedAt" DESC,
+      jfi."canonicalJobId" DESC
+    LIMIT ${PAGE_SIZE + 1}
+    OFFSET ${skip}
+  `);
+}
+
 async function getJobsFromFeedIndex(input: {
   filters: JobFilterParams;
   viewerProfileId: string | null;
@@ -710,13 +802,13 @@ async function getJobsFromFeedIndex(input: {
   // ordered result and we can paginate it without re-querying the index.
   const canSlicePrefilterIds =
     !hasStructuredFeedFilters &&
-    !filters.status &&
+    !hasNonDefaultJobStatusFilter(filters.status) &&
     !filters.hideApplied &&
     !useSqlDemoVisibilityFilter &&
     (!filters.sortBy || filters.sortBy === "relevance");
   let useDirectPrefilterSlice = false;
 
-  if (filters.search && (!filters.status || normalizeJobStatusFilter(filters.status) === "LIVE")) {
+  if (filters.search && !hasNonDefaultJobStatusFilter(filters.status)) {
     const searchPrefilterLimit = hasStructuredFeedFilters
       ? FEED_INDEX_SEARCH_MATCH_ID_LIMIT
       : Math.min(
@@ -961,14 +1053,14 @@ async function getJobsFromFeedIndex(input: {
   }
 
   const requestedStatus = normalizeJobStatusFilter(filters.status);
-  if (filters.status) {
+  if (hasNonDefaultJobStatusFilter(filters.status)) {
     where.status = requestedStatus ?? { in: [] };
   } else {
     where.status = {
       in: [...DEFAULT_VISIBLE_JOB_STATUSES],
     };
   }
-  const requireLiveCanonicalJobs = !filters.status || requestedStatus === "LIVE";
+  const requireLiveCanonicalJobs = !hasNonDefaultJobStatusFilter(filters.status);
   if (requireLiveCanonicalJobs) {
     appendAndCondition(
       canonicalRelationWhere,
@@ -998,12 +1090,25 @@ async function getJobsFromFeedIndex(input: {
   const totalPromise = includeExactTotal
     ? countJobFeedIndexMatches(where)
     : Promise.resolve(null);
+  const useRawDefaultPublicFeedLookup =
+    !includeExactTotal &&
+    !useSqlDemoVisibilityFilter &&
+    !useDirectPrefilterSlice &&
+    searchPrefilterIds === null &&
+    !hasScopedFeedRequest(filters) &&
+    (!filters.sortBy || filters.sortBy === "relevance");
 
   const indexedRows =
     useDirectPrefilterSlice && searchPrefilterIds !== null
       ? searchPrefilterIds
           .slice(skip, skip + PAGE_SIZE + 1)
           .map((canonicalJobId) => ({ canonicalJobId }))
+      : useRawDefaultPublicFeedLookup
+        ? await getDefaultPublicFeedIndexRows({
+            now,
+            viewerProfileId,
+            skip,
+          })
       : await prisma.jobFeedIndex.findMany({
           where,
           select: { canonicalJobId: true },
@@ -2828,7 +2933,7 @@ function buildJobsCacheKey(
     expiry: filters.expiry ?? null,
     posted: filters.posted ?? null,
     submissionCategory: filters.submissionCategory ?? null,
-    status: filters.status ?? null,
+    status: hasNonDefaultJobStatusFilter(filters.status) ? filters.status ?? null : null,
     hideApplied: filters.hideApplied ? 1 : null,
     sortBy: filters.sortBy ?? null,
     page: filters.page ?? 1,
@@ -2838,8 +2943,8 @@ function buildJobsCacheKey(
   })}`;
 }
 
-function isHotDefaultFeedRequest(filters: JobFilterParams) {
-  return !(
+function hasScopedFeedRequest(filters: JobFilterParams) {
+  return Boolean(
     hasSearchFilters(filters) ||
     filters.location ||
     filters.source ||
@@ -2849,16 +2954,20 @@ function isHotDefaultFeedRequest(filters: JobFilterParams) {
     filters.industry ||
     filters.roleCategory ||
     filters.roleFamily ||
-    filters.salaryMin ||
-    filters.salaryMax ||
+    filters.salaryMin !== undefined ||
+    filters.salaryMax !== undefined ||
     filters.careerStage ||
     filters.experienceLevel ||
     filters.expiry ||
     filters.posted ||
     filters.submissionCategory ||
-    filters.status ||
+    hasNonDefaultJobStatusFilter(filters.status) ||
     filters.hideApplied
-  ) &&
+  );
+}
+
+function isHotDefaultFeedRequest(filters: JobFilterParams) {
+  return !hasScopedFeedRequest(filters) &&
     (!filters.sortBy || filters.sortBy === "relevance") &&
     (filters.page ?? 1) === 1;
 }
@@ -3222,10 +3331,11 @@ export async function getJobs(
     const hasAnySearch = hasSearchFilters(filters);
     const summaryPromise = getJobFeedSummary(userTimeZone);
     const useFeedIndexForRequest = shouldUseJobFeedIndex(filters, viewerProfileId);
-    // The feed headline always shows a concrete count. The default view reads
-    // its public-pool count from JobFeedSummaryCache; scoped views wait for the
-    // exact board-filtered total instead of rendering a page-size estimate.
-    const includeExactTotal = true;
+    // The unfiltered headline is the exact public-board count maintained in
+    // JobFeedSummaryCache. Do not repeat an expensive per-user COUNT merely to
+    // calculate pagination for that same default pool. Searches and filters
+    // still return their exact matching total for the headline and pagination.
+    const includeExactTotal = hasScopedFeedRequest(filters);
     const isExplicitSort = Boolean(filters.sortBy && filters.sortBy !== "relevance");
     const defaultScoringWindowPages = Math.floor(DEFAULT_SCORING_WINDOW_SIZE / PAGE_SIZE);
     const useSqlDemoVisibilityFilter =
@@ -3455,7 +3565,7 @@ export async function getJobs(
     }
 
     const requestedStatus = normalizeJobStatusFilter(filters.status);
-    if (filters.status) {
+    if (hasNonDefaultJobStatusFilter(filters.status)) {
       where.status = requestedStatus ?? { in: [] };
     } else {
       where.status = {

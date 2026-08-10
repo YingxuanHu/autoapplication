@@ -5,6 +5,7 @@ import {
   fetchFormattedJobDescriptionFromUrl,
   formatJobDescriptionText,
   getCleanJobDescriptionDisplayBlocks,
+  getJobDescriptionSummaryBlocks,
   isJobDescriptionSummaryUsable,
   isLowQualityJobDescription,
   selectDescriptionSource,
@@ -76,6 +77,43 @@ test("deduplicates repeated bullets and caps noisy lists", () => {
     ).length,
     1
   );
+});
+
+test("prioritizes detailed responsibilities and qualifications over early company copy", () => {
+  const raw = `
+    About us
+    Acme builds workplace software for organizations around the world.
+
+    About the role
+    Join the platform team as a Software Engineer and help deliver reliable systems for customers and internal teams.
+
+    Responsibilities
+    - Design and ship TypeScript services used by customer-facing product workflows.
+    - Build well-tested APIs and background jobs that handle high-volume operational data.
+    - Partner with product and design to turn ambiguous requirements into maintainable features.
+    - Improve observability with actionable logs, metrics, and alerts for on-call engineers.
+    - Review code and help establish practical engineering standards across the team.
+    - Document technical decisions and operational runbooks for reliable support handoffs.
+
+    Required qualifications
+    - Professional experience building production web applications with TypeScript or JavaScript.
+    - Strong understanding of API design, relational data modeling, and automated testing.
+    - Ability to collaborate with product, design, and infrastructure partners on delivery tradeoffs.
+    - Clear written communication when documenting technical decisions and operational risks.
+
+    Preferred qualifications
+    - Experience with cloud infrastructure, background processing, or observability tooling.
+    - Familiarity with PostgreSQL performance tuning and modern continuous delivery practices.
+  `;
+
+  const summary = JSON.stringify(getJobDescriptionSummaryBlocks(raw, 4));
+
+  assert.match(summary, /Join the platform team as a Software Engineer/);
+  assert.match(summary, /Design and ship TypeScript services/);
+  assert.match(summary, /Document technical decisions and operational runbooks/);
+  assert.match(summary, /Professional experience building production web applications/);
+  assert.match(summary, /Clear written communication when documenting technical decisions/);
+  assert.doesNotMatch(summary, /Acme builds workplace software/);
 });
 
 test("rejects metadata-only descriptions", () => {
