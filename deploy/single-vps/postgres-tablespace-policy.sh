@@ -107,6 +107,7 @@ MANAGED_INDEXES=(
   'SourceTask_companySourceId_kind_status_idx'
   'JobFeedIndex_searchText_trgm_idx'
   'JobFeedIndex_searchText_fts_idx'
+  'JobFeedIndex_live_relevance_order_idx'
 )
 
 needs_attention=0
