@@ -183,10 +183,15 @@ async function fetchOracleCloudJobs(input: {
   let offset = input.checkpoint?.offset ?? 0;
   let page = 0;
   let totalAvailable: number | null = null;
+  let lastPageItemCount = 0;
+  let stoppedBeforeCompletion = false;
 
   while (page < input.maxPages) {
     throwIfAborted(input.signal);
-    if (input.limit && jobs.length >= input.limit) break;
+    if (input.limit && jobs.length >= input.limit) {
+      stoppedBeforeCompletion = true;
+      break;
+    }
 
     const url = buildListUrl({
       tenant: input.tenant,
@@ -208,7 +213,9 @@ async function fetchOracleCloudJobs(input: {
       });
     } catch (error) {
       if (page === 0) throw error;
-      // Mid-pagination network failure — stop gracefully with what we have
+      // Mid-pagination network failure is an incomplete snapshot. Keep the
+      // checkpoint so a later poll can resume, but never remove prior mappings.
+      stoppedBeforeCompletion = true;
       break;
     }
 
@@ -218,24 +225,34 @@ async function fetchOracleCloudJobs(input: {
           `Oracle Cloud HCM fetch failed: ${response.status} ${response.statusText} @ ${url}`
         );
       }
+      stoppedBeforeCompletion = true;
       break;
     }
 
     const payload = (await response.json().catch(() => null)) as
       | OracleCloudListResponse
       | null;
-    if (!payload) break;
+    if (!payload) {
+      stoppedBeforeCompletion = true;
+      break;
+    }
 
     // Oracle Cloud HCM nests under items[0].requisitionList. The wrapping
     // items[0] also carries TotalJobsCount + Limit + Offset for the entire
     // search context.
     const wrapper = payload.items?.[0];
     const items = wrapper?.requisitionList ?? [];
-    if (items.length === 0) break;
 
     if (totalAvailable === null && typeof wrapper?.TotalJobsCount === "number") {
       totalAvailable = wrapper.TotalJobsCount;
     }
+    if (items.length === 0) {
+      if (totalAvailable !== null && offset < totalAvailable) {
+        stoppedBeforeCompletion = true;
+      }
+      break;
+    }
+    lastPageItemCount = items.length;
 
     for (const item of items) {
       const mapped = mapOracleCloudJob(item, {
@@ -261,11 +278,24 @@ async function fetchOracleCloudJobs(input: {
     // Stop when we've walked past the total job count
     if (totalAvailable !== null && offset >= totalAvailable) break;
 
+    if (input.limit && jobs.length >= input.limit) {
+      stoppedBeforeCompletion = true;
+      break;
+    }
+
     // Small delay between pages to be a polite citizen
     await new Promise((resolve) =>
       setTimeout(resolve, ORACLE_CLOUD_DEFAULT_RATE_DELAY_MS)
     );
   }
+
+  const hitPageCapBeforeCompletion =
+    page >= input.maxPages &&
+    (totalAvailable === null
+      ? lastPageItemCount >= input.limitPerPage
+      : offset < totalAvailable);
+  const exhausted = !stoppedBeforeCompletion && !hitPageCapBeforeCompletion;
+  const checkpoint = exhausted ? null : ({ offset } satisfies OracleCloudCheckpoint);
 
   return {
     jobs,
@@ -275,7 +305,10 @@ async function fetchOracleCloudJobs(input: {
       pagesFetched: page,
       totalAvailable,
       offsetAfterRun: offset,
+      snapshotComplete: exhausted,
     } as Prisma.InputJsonValue,
+    checkpoint,
+    exhausted,
   };
 }
 

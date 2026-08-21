@@ -4,7 +4,9 @@ import process from "node:process";
 import { prisma } from "@/lib/db";
 import { ingestConnector } from "@/lib/ingestion/pipeline";
 import {
+  getBulkRecoveryNextEligibleAt,
   getBulkRecoverySleepMs,
+  type BulkRecoveryAttempt,
   type BulkRecoveryCycleResult,
 } from "@/lib/ingestion/bulk-recovery-schedule";
 import { installProcessDiagnostics } from "./_process-diagnostics";
@@ -702,22 +704,27 @@ function getBulkRecoveryEntries(): Entry[] {
   return entries;
 }
 
-async function getLastSuccessAgeMinutes(connectorKey: string, now: Date) {
-  const lastRun = await prisma.ingestionRun.findFirst({
+async function getRecentAttempts(connectorKey: string) {
+  const attempts = await prisma.ingestionRun.findMany({
     where: {
       connectorKey,
-      status: "SUCCESS",
+      status: { in: ["SUCCESS", "FAILED"] },
     },
     orderBy: {
       startedAt: "desc",
     },
+    take: 8,
     select: {
       startedAt: true,
+      status: true,
     },
   });
-
-  if (!lastRun) return Number.POSITIVE_INFINITY;
-  return (now.getTime() - lastRun.startedAt.getTime()) / 60_000;
+  return attempts.map(
+    (attempt): BulkRecoveryAttempt => ({
+      startedAt: attempt.startedAt,
+      status: attempt.status === "SUCCESS" ? "SUCCESS" : "FAILED",
+    })
+  );
 }
 
 async function runCycle(entries: Entry[]) {
@@ -733,15 +740,24 @@ async function runCycle(entries: Entry[]) {
 
   for (const entry of entries) {
     const cadenceKey = entry.cadenceKey ?? entry.connector.key;
-    const ageMinutes = await getLastSuccessAgeMinutes(cadenceKey, now);
-    if (ageMinutes < entry.cadenceMinutes) {
+    const recentAttempts = await getRecentAttempts(cadenceKey);
+    const nextEligibleAt = getBulkRecoveryNextEligibleAt({
+      now,
+      cadenceMinutes: entry.cadenceMinutes,
+      recentAttempts,
+    });
+    if (nextEligibleAt && now < nextEligibleAt) {
+      const latestAttempt = recentAttempts[0]!;
+      const failureStreak = recentAttempts.findIndex(
+        (attempt) => attempt.status === "SUCCESS"
+      );
+      const isFailureBackoff = latestAttempt.status === "FAILED";
       results.push({
         key: entry.key,
-        skipped: `not due (age=${ageMinutes.toFixed(0)}m < cadence=${entry.cadenceMinutes}m)`,
-        nextDueInMs: Math.max(
-          0,
-          (entry.cadenceMinutes - ageMinutes) * 60_000
-        ),
+        skipped: isFailureBackoff
+          ? `failure backoff (streak=${failureStreak === -1 ? recentAttempts.length : failureStreak})`
+          : "not due",
+        nextDueInMs: Math.max(0, nextEligibleAt.getTime() - now.getTime()),
       });
       continue;
     }

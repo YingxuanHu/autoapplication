@@ -27,7 +27,7 @@ test("errored full-snapshot fetch never runs freshness removal", async () => {
   );
 });
 
-test("clean exhausted full snapshot (genuinely empty board) still removes", async () => {
+test("clean exhausted full snapshot removes when the source has no prior mappings", async () => {
   const { shouldRunFreshnessRemovalFor } = await loadPipeline();
   assert.equal(
     shouldRunFreshnessRemovalFor({
@@ -35,8 +35,46 @@ test("clean exhausted full snapshot (genuinely empty board) still removes", asyn
       limit: undefined,
       fetchExhausted: true,
       fetchHadError: false,
+      fetchedCount: 0,
+      existingActiveMappingCount: 0,
     }),
     true
+  );
+});
+
+test("empty, collapsed, and resumed snapshots preserve existing mappings", async () => {
+  const { shouldRunFreshnessRemovalFor } = await loadPipeline();
+  const base = {
+    freshnessMode: "FULL_SNAPSHOT" as const,
+    limit: undefined,
+    fetchExhausted: true,
+    fetchHadError: false,
+  };
+
+  assert.equal(
+    shouldRunFreshnessRemovalFor({
+      ...base,
+      fetchedCount: 0,
+      existingActiveMappingCount: 449,
+    }),
+    false
+  );
+  assert.equal(
+    shouldRunFreshnessRemovalFor({
+      ...base,
+      fetchedCount: 22,
+      existingActiveMappingCount: 223,
+    }),
+    false
+  );
+  assert.equal(
+    shouldRunFreshnessRemovalFor({
+      ...base,
+      fetchedCount: 500,
+      existingActiveMappingCount: 500,
+      startingCheckpoint: { offset: 1_000 },
+    }),
+    false
   );
 });
 

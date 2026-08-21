@@ -154,22 +154,48 @@ type CanonicalStatusTally = {
 
 // Full-snapshot freshness removal marks every mapping the connector did NOT
 // report this run as removed. It is only safe when the fetch is authoritative:
-// a full snapshot (not a bounded/limited fetch), fully paginated, and not an
-// errored fetch. Connectors surface upstream failures as `metadata.error`
-// without throwing, returning an empty job list — treating that as a snapshot
-// would wipe a whole source's live jobs on a single 429/5xx blip.
+// a full snapshot (not a bounded/limited fetch), fully paginated in this
+// invocation, and not an errored fetch. Connectors surface upstream failures
+// as `metadata.error` without throwing, returning an empty job list — treating
+// that as a snapshot would wipe a whole source's live jobs on a single 429/5xx
+// blip. The same is true for a parser regression that returns zero or a sharp
+// fraction of a previously healthy source: preserve existing mappings and let
+// the source retry instead of making an irreversible claim about job closure.
 export function shouldRunFreshnessRemovalFor(input: {
   freshnessMode: SourceConnector["freshnessMode"];
   limit: number | undefined;
   fetchExhausted: boolean;
   fetchHadError: boolean;
+  startingCheckpoint?: Prisma.InputJsonValue | null;
+  fetchedCount?: number;
+  existingActiveMappingCount?: number;
 }): boolean {
-  return (
-    input.freshnessMode === "FULL_SNAPSHOT" &&
-    input.limit === undefined &&
-    input.fetchExhausted &&
-    !input.fetchHadError
-  );
+  if (
+    input.freshnessMode !== "FULL_SNAPSHOT" ||
+    input.limit !== undefined ||
+    !input.fetchExhausted ||
+    input.fetchHadError
+  ) {
+    return false;
+  }
+
+  // A resumed cursor only contains the final page range. Until snapshot
+  // membership is persisted across all pages, it cannot safely remove entries
+  // that were seen in an earlier run.
+  if (input.startingCheckpoint != null) return false;
+
+  const previousMappings = Math.max(0, input.existingActiveMappingCount ?? 0);
+  const fetchedCount = Math.max(0, input.fetchedCount ?? 0);
+  if (previousMappings === 0) return true;
+
+  // Empty results after a source has had live mappings are never authoritative.
+  if (fetchedCount === 0) return false;
+
+  // A single fetch returning less than one quarter of a materially populated
+  // source is almost always pagination/parser degradation, not genuine closure.
+  // Keep the old mappings available until a later successful snapshot confirms
+  // the change or normal lifecycle evidence expires them.
+  return previousMappings < 50 || fetchedCount * 4 >= previousMappings;
 }
 
 export async function ingestConnector(
@@ -1004,12 +1030,47 @@ async function performConnectorIngestion(
     }
   }
 
+  const existingActiveMappingCount =
+    connector.freshnessMode === "FULL_SNAPSHOT"
+      ? await prisma.jobSourceMapping.count({
+          where: {
+            sourceName: connector.sourceName,
+            removedAt: null,
+          },
+        })
+      : 0;
   const shouldRunFreshnessRemoval = shouldRunFreshnessRemovalFor({
     freshnessMode: connector.freshnessMode,
     limit,
     fetchExhausted,
     fetchHadError,
+    startingCheckpoint: checkpoint,
+    fetchedCount: summary.fetchedCount,
+    existingActiveMappingCount,
   });
+
+  if (
+    connector.freshnessMode === "FULL_SNAPSHOT" &&
+    !shouldRunFreshnessRemoval &&
+    existingActiveMappingCount > 0
+  ) {
+    const skipReason =
+      checkpoint != null
+        ? "freshness_removal_resumed_snapshot"
+        : summary.fetchedCount === 0
+          ? "freshness_removal_empty_snapshot"
+          :
+              summary.fetchedCount * 4 < existingActiveMappingCount
+            ? "freshness_removal_snapshot_collapse"
+            : null;
+    if (skipReason) {
+      summary.skippedReasons[skipReason] =
+        (summary.skippedReasons[skipReason] ?? 0) + 1;
+      console.warn(
+        `[connector:${connector.key}] Preserved ${existingActiveMappingCount} active mappings; ${skipReason} (fetched=${summary.fetchedCount}).`
+      );
+    }
+  }
 
   if (shouldRunFreshnessRemoval) {
     const removalResult = await markMissingSourceMappingsRemoved({

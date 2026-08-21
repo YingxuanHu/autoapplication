@@ -3,7 +3,36 @@ export type BulkRecoveryCycleResult = {
   nextDueInMs?: number;
 };
 
+export type BulkRecoveryAttempt = {
+  startedAt: Date;
+  status: "SUCCESS" | "FAILED";
+};
+
 const MIN_IDLE_SLEEP_MS = 1_000;
+const MAX_FAILURE_BACKOFF_MULTIPLIER = 16;
+
+export function getBulkRecoveryNextEligibleAt(input: {
+  now: Date;
+  cadenceMinutes: number;
+  recentAttempts: BulkRecoveryAttempt[];
+}): Date | null {
+  const latest = input.recentAttempts[0];
+  if (!latest) return null;
+
+  const cadenceMs = Math.max(1, input.cadenceMinutes) * 60_000;
+  let failureStreak = 0;
+  for (const attempt of input.recentAttempts) {
+    if (attempt.status !== "FAILED") break;
+    failureStreak += 1;
+  }
+
+  const failureMultiplier =
+    failureStreak === 0
+      ? 1
+      : Math.min(MAX_FAILURE_BACKOFF_MULTIPLIER, 2 ** (failureStreak - 1));
+  const waitMs = cadenceMs * failureMultiplier;
+  return new Date(latest.startedAt.getTime() + waitMs);
+}
 
 export function getBulkRecoverySleepMs({
   results,

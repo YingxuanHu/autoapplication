@@ -1,7 +1,45 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { getBulkRecoverySleepMs } from "../src/lib/ingestion/bulk-recovery-schedule";
+import {
+  getBulkRecoveryNextEligibleAt,
+  getBulkRecoverySleepMs,
+} from "../src/lib/ingestion/bulk-recovery-schedule";
+
+test("backs failed recovery sources off exponentially", () => {
+  const startedAt = new Date("2026-08-21T00:00:00.000Z");
+  const nextEligibleAt = (statuses: Array<"SUCCESS" | "FAILED">) =>
+    getBulkRecoveryNextEligibleAt({
+      now: new Date("2026-08-21T00:01:00.000Z"),
+      cadenceMinutes: 15,
+      recentAttempts: statuses.map((status) => ({ startedAt, status })),
+    });
+
+  assert.equal(nextEligibleAt([]), null);
+  assert.equal(
+    nextEligibleAt(["SUCCESS"])?.toISOString(),
+    "2026-08-21T00:15:00.000Z"
+  );
+  assert.equal(
+    nextEligibleAt(["FAILED"])?.toISOString(),
+    "2026-08-21T00:15:00.000Z"
+  );
+  assert.equal(
+    nextEligibleAt(["FAILED", "FAILED", "FAILED"])?.toISOString(),
+    "2026-08-21T01:00:00.000Z"
+  );
+  assert.equal(
+    nextEligibleAt([
+      "FAILED",
+      "FAILED",
+      "FAILED",
+      "FAILED",
+      "FAILED",
+      "FAILED",
+    ])?.toISOString(),
+    "2026-08-21T04:00:00.000Z"
+  );
+});
 
 test("uses the short catch-up delay after active recovery work", () => {
   assert.equal(
